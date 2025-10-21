@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  line-height: 1.6;
+}
+
+/* Typography Hierarchy with Inter Font */
+
+/* Main Headings (H1) - Inter 700/800 */
+.heading-main {
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Sub Headings (H2) - Inter 600 */
+.heading-sub {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Feature Headings (H3) - Inter 600 */
+.heading-feature {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Body Text - Inter 400 */
+.body-text {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Buttons - Inter 500/600 */
+.btn-text {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+/* Small Text - Inter 400 */
+.small-text {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Enhanced Input Field Styling */
+.email-input {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.email-input::placeholder {
+  color: #6b7280 !important;
+  opacity: 1;
+  font-weight: 400;
+}
+
+.email-input:focus::placeholder {
+  color: #9ca3af !important;
+}
+
+.email-input-dark::placeholder {
+  color: #d1d5db !important;
+  opacity: 1;
+}
+
+.email-input-dark:focus::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s infinite;
+}
+
+/* Custom button hover effects */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl;
+}
+
+/* Gradient text effect */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
