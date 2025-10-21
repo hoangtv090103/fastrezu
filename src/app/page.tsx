@@ -143,7 +143,7 @@ export default function Home() {
                 Không hiểu ATS là gì?
               </h3>
               <p className="body-text text-gray-600">
-                Bạn không biết rằng CV của mình đang thiếu các "từ khóa" mà nhà
+                Bạn không biết rằng CV của mình đang thiếu các &ldquo;từ khóa&rdquo; mà nhà
                 tuyển dụng tìm kiếm, khiến bạn bị loại dù rất đủ năng lực.
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function Home() {
                 <span className="text-2xl">😴</span>
               </div>
               <h3 className="heading-feature text-xl text-gray-900 mb-4">
-                Mệt mỏi vì "rải" CV?
+                Mệt mỏi vì &ldquo;rải&rdquo; CV?
               </h3>
               <p className="body-text text-gray-600">
                 Gửi 50 CV nhưng không nhận được phản hồi nào. Bạn tốn thời gian
@@ -182,7 +182,7 @@ export default function Home() {
                 AI tự động viết nội dung
               </h3>
               <p className="body-text text-gray-600 text-center">
-                Chỉ cần nhập tên công việc (ví dụ: "Digital Marketing"), AI của
+                Chỉ cần nhập tên công việc (ví dụ: &ldquo;Digital Marketing&rdquo;), AI của
                 chúng tôi sẽ tạo ra 10+ gạch đầu dòng mô tả thành tích chuyên
                 nghiệp, ấn tượng.
               </p>
@@ -198,7 +198,7 @@ export default function Home() {
               </h3>
               <p className="body-text text-gray-600 text-center">
                 Copy-paste mô tả công việc bạn muốn ứng tuyển. FastRezu sẽ
-                "quét" và chỉ ra chính xác các từ khóa bạn CẦN PHẢI có trong CV.
+                &ldquo;quét&rdquo; và chỉ ra chính xác các từ khóa bạn CẦN PHẢI có trong CV.
               </p>
             </div>
 
