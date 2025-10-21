@@ -46,7 +46,7 @@ export default function Home() {
               </h1>
 
               <h2 className="heading-sub text-xl lg:text-2xl text-gray-700 mb-6">
-                Để AI của FastRezu giúp bạn viết CV "chuẩn ATS" chỉ trong 5
+                Để AI của FastRezu giúp bạn viết CV &ldquo;chuẩn ATS&rdquo; chỉ trong 5
                 phút.
                 <span className="text-green-600 font-bold">
                   {" "}
@@ -58,7 +58,7 @@ export default function Home() {
                 Hơn 75% CV tại Việt Nam bị loại bởi hệ thống lọc (ATS) trước khi
                 đến tay nhà tuyển dụng. FastRezu là công cụ AI đầu tiên giúp bạn
                 phân tích mô tả công việc, gợi ý từ khóa, và tự động viết nội
-                dung CV giúp bạn "đánh bại" cỗ máy
+                dung CV giúp bạn &ldquo;đánh bại&rdquo; cỗ máy
               </p>
 
               <form
@@ -130,8 +130,8 @@ export default function Home() {
               </h3>
               <p className="body-text text-gray-600">
                 Bạn loay hoay cả ngày không biết phải mô tả kinh nghiệm của mình
-                thế nào cho "kêu", làm sao để biến "trách nhiệm" thành "thành
-                tích".
+                thế nào cho &ldquo;kêu&rdquo;, làm sao để biến &ldquo;trách nhiệm&rdquo; thành &ldquo;thành
+                tích&rdquo;.
               </p>
             </div>
 
