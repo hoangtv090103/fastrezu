@@ -251,8 +251,7 @@ export default function Home() {
                 </button>
               </div>
               <p className="small-text text-gray-400">
-                Chúng tôi sẽ gửi email mời bạn ngay khi bản beta ra mắt. Không
-                spam.
+                Chúng tôi sẽ gửi email mời bạn ngay khi bản beta ra mắt.
               </p>
               {isSubmitted && (
                 <p className="small-text text-green-400 mt-2">
@@ -268,7 +267,7 @@ export default function Home() {
       <footer className="bg-gray-800 text-white py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-gray-400">
-            © 2024 FastRezu. Tất cả quyền được bảo lưu.
+            © 2025 FastRezu. Tất cả quyền được bảo lưu.
           </p>
         </div>
       </footer>
