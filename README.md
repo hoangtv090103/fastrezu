@@ -1,4 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FastRezu - AI-Powered CV Builder
+
+This is a [Next.js](https://nextjs.org) project for building AI-optimized CVs with ATS scoring.
+
+## Environment Setup
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# Site URL for production deployment
+# This should be your actual domain (e.g., https://yourdomain.com)
+NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+**Important**: For production deployment, make sure to set `NEXT_PUBLIC_SITE_URL` to your actual domain. This ensures magic link authentication works correctly.
 
 ## Getting Started
 

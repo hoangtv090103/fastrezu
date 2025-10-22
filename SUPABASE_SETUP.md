@@ -20,18 +20,37 @@
 Cập nhật file `.env.local` với thông tin thực:
 
 ```env
+# Site URL - quan trọng cho magic link authentication
+NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-## 4. Tạo bảng trong Supabase
+**Lưu ý quan trọng**: 
+- `NEXT_PUBLIC_SITE_URL` phải được set đúng domain production để magic link hoạt động
+- Trong development, có thể bỏ qua biến này (sẽ dùng localhost)
+- Trong production, phải set đúng domain (ví dụ: https://fastrezu.com)
+
+## 4. Cấu hình Authentication trong Supabase
+
+1. Vào **Authentication** > **URL Configuration** trong Supabase Dashboard
+2. Thêm các URL sau vào **Redirect URLs**:
+   - `https://yourdomain.com/auth/callback` (production)
+   - `http://localhost:3000/auth/callback` (development)
+3. Thêm các URL sau vào **Site URL**:
+   - `https://yourdomain.com` (production)
+   - `http://localhost:3000` (development)
+
+## 5. Tạo bảng trong Supabase
 
 1. Vào **SQL Editor** trong Supabase Dashboard
 2. Copy và chạy nội dung file `supabase-schema.sql`
 3. Kiểm tra bảng `subscribers` đã được tạo
 
-## 5. Test API
+## 6. Test API
 
 Sau khi setup xong, bạn có thể test API bằng cách:
 
@@ -41,7 +60,7 @@ curl -X POST http://localhost:3000/api/subscribe \
   -d '{"email":"test@example.com"}'
 ```
 
-## 6. Kiểm tra dữ liệu
+## 7. Kiểm tra dữ liệu
 
 Vào **Table Editor** trong Supabase Dashboard để xem các email đã đăng ký.
 
