@@ -12,31 +12,32 @@ export default function Home() {
     e.preventDefault();
     if (!email) return;
 
-    try {
-      const response = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Redirect to thank you page for conversion tracking
-        router.push("/thank-you");
-      } else {
-        alert(data.error || "Có lỗi xảy ra khi đăng ký");
-      }
-    } catch (error) {
-      console.error("Error submitting email:", error);
-      alert("Có lỗi xảy ra khi đăng ký");
-    }
+    // Redirect to login page instead of waitlist
+    router.push("/login");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">F</span>
+              </div>
+              <span className="heading-feature text-xl text-gray-900">FastRezu</span>
+            </div>
+            <a
+              href="/login"
+              className="btn-primary btn-text"
+            >
+              Đăng nhập
+            </a>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 lg:py-24">
         <div className="max-w-6xl mx-auto">
@@ -75,11 +76,11 @@ export default function Home() {
                     type="submit"
                     className="btn-primary btn-text whitespace-nowrap"
                   >
-                    ĐĂNG KÝ DÙNG THỬ BẢN BETA
+                    BẮT ĐẦU TẠO CV
                   </button>
                 </div>
                 <p className="small-text text-gray-500 text-center lg:text-left">
-                  Chúng tôi sẽ gửi email mời bạn ngay khi bản beta ra mắt.
+                  Đăng nhập để bắt đầu tạo CV được tối ưu cho ATS.
                 </p>
               </form>
             </div>
@@ -181,7 +182,7 @@ export default function Home() {
               </h3>
               <p className="body-text text-gray-600 text-center">
                 Dán mô tả công việc (JD) bạn muốn ứng tuyển vào. AI của chúng
-                tôi sẽ &ldquo;quét&rdquo; và chỉ ra chính xác các {" "}
+                tôi sẽ &ldquo;quét&rdquo; và chỉ ra chính xác các{" "}
                 <strong>từ khóa &ldquo;vàng&rdquo;</strong> mà hệ thống ATS đang
                 tìm kiếm.
               </p>
@@ -245,11 +246,11 @@ export default function Home() {
                   type="submit"
                   className="btn-secondary btn-text whitespace-nowrap"
                 >
-                  NHẬN QUYỀN TRUY CẬP SỚM
+                  BẮT ĐẦU TẠO CV
                 </button>
               </div>
               <p className="small-text text-gray-400">
-                Chúng tôi sẽ gửi email mời bạn ngay khi bản beta ra mắt.
+                Đăng nhập để bắt đầu tạo CV được tối ưu cho ATS.
               </p>
             </form>
           </div>
