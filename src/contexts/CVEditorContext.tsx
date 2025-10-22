@@ -9,7 +9,7 @@ export interface CVData {
   title: string;
   ats_score: number;
   sections: {
-    [key: string]: Record<string, unknown>;
+    [key: string]: Record<string, unknown> | Record<string, unknown>[];
   };
   jd_analysis?: {
     keywords: string[];
@@ -29,7 +29,7 @@ export interface CVEditorState {
 type CVEditorAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_CV_DATA'; payload: CVData }
-  | { type: 'UPDATE_SECTION'; payload: { sectionType: string; data: Record<string, unknown> } }
+  | { type: 'UPDATE_SECTION'; payload: { sectionType: string; data: Record<string, unknown> | Record<string, unknown>[] } }
   | { type: 'SET_CURRENT_STEP'; payload: number }
   | { type: 'SET_SAVE_STATUS'; payload: 'saved' | 'saving' | 'error' }
   | { type: 'SET_ERROR'; payload: string | null }
@@ -84,7 +84,7 @@ function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditor
 
 interface CVEditorContextType {
   state: CVEditorState;
-  updateSection: (sectionType: string, data: Record<string, unknown>) => void;
+  updateSection: (sectionType: string, data: Record<string, unknown> | Record<string, unknown>[]) => void;
   setCurrentStep: (step: number) => void;
   setJDAnalysis: (keywords: string[], analysis: Record<string, unknown>) => void;
   saveCV: () => Promise<void>;
@@ -213,7 +213,7 @@ export function CVEditorProvider({
     return () => clearTimeout(timeoutId);
   }, [state.cvData, saveCV, state.isLoading]);
 
-  const updateSection = (sectionType: string, data: Record<string, unknown>) => {
+  const updateSection = (sectionType: string, data: Record<string, unknown> | Record<string, unknown>[]) => {
     dispatch({ type: 'UPDATE_SECTION', payload: { sectionType, data } });
   };
 

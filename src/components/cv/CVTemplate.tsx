@@ -17,7 +17,16 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
 
   // Helper function to safely get string values
   const getString = (obj: Record<string, unknown>, key: string): string => {
-    return (obj[key] as string) || '';
+    const value = obj[key];
+    return typeof value === 'string' ? value : '';
+  };
+
+  // Helper to safely render unknown values
+  const renderValue = (value: unknown): React.ReactNode => {
+    if (typeof value === 'string' || typeof value === 'number') {
+      return value;
+    }
+    return null;
   };
 
   return (
@@ -39,7 +48,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
       </div>
 
       {/* Professional Summary */}
-      {summary.content && (
+      {getString(summary, 'content') && (
         <div className="mb-6">
           <h2 className="text-lg font-bold mb-2 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
             Tóm tắt nghề nghiệp
@@ -60,21 +69,21 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             <div key={index} className="mb-4">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-bold" style={{ fontSize: '11pt', fontWeight: 'bold' }}>
-                  {exp.job_title || "Chức vụ"}
+                  {renderValue(exp.job_title) || "Chức vụ"}
                 </h3>
                 <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  {exp.start_date && exp.end_date ? `${exp.start_date} - ${exp.end_date}` : "Thời gian"}
+                  {exp.start_date && exp.end_date ? `${renderValue(exp.start_date)} - ${renderValue(exp.end_date)}` : "Thời gian"}
                 </span>
               </div>
               <div className="flex justify-between items-start mb-2">
                 <p className="font-medium" style={{ fontSize: '11pt', fontWeight: '600' }}>
-                  {exp.company || "Tên công ty"}
+                  {renderValue(exp.company) || "Tên công ty"}
                 </p>
                 <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  {exp.location || "Địa điểm"}
+                  {renderValue(exp.location) || "Địa điểm"}
                 </span>
               </div>
-              {exp.achievements && exp.achievements.length > 0 && (
+              {Array.isArray(exp.achievements) && exp.achievements.length > 0 && (
                 <ul className="list-disc list-inside text-sm ml-4" style={{ fontSize: '10pt' }}>
                   {exp.achievements.map((achievement: string, achIndex: number) => (
                     <li key={achIndex} className="mb-1">
@@ -98,23 +107,23 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             <div key={index} className="mb-3">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-bold" style={{ fontSize: '11pt', fontWeight: 'bold' }}>
-                  {edu.degree || "Bằng cấp"}
+                  {renderValue(edu.degree) || "Bằng cấp"}
                 </h3>
                 <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  {edu.graduation_date || "Năm tốt nghiệp"}
+                  {renderValue(edu.graduation_date) || "Năm tốt nghiệp"}
                 </span>
               </div>
               <p className="font-medium" style={{ fontSize: '11pt', fontWeight: '600' }}>
-                {edu.school || "Tên trường"}
+                {renderValue(edu.school) || "Tên trường"}
               </p>
-              {edu.field_of_study && (
+              {renderValue(edu.field_of_study) && (
                 <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  Chuyên ngành: {edu.field_of_study}
+                  Chuyên ngành: {renderValue(edu.field_of_study)}
                 </p>
               )}
-              {edu.gpa && (
+              {renderValue(edu.gpa) && (
                 <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  GPA: {edu.gpa}
+                  GPA: {renderValue(edu.gpa)}
                 </p>
               )}
             </div>
@@ -132,25 +141,25 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             <div key={index} className="mb-4">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-bold" style={{ fontSize: '11pt', fontWeight: 'bold' }}>
-                  {project.name || "Tên dự án"}
+                  {renderValue(project.name) || "Tên dự án"}
                 </h3>
-                {project.link && (
-                  <a href={project.link} className="text-sm text-blue-600" style={{ fontSize: '10pt' }}>
+                {renderValue(project.link) && (
+                  <a href={String(project.link)} className="text-sm text-blue-600" style={{ fontSize: '10pt' }}>
                     Xem dự án
                   </a>
                 )}
               </div>
-              {project.description && (
+              {renderValue(project.description) && (
                 <p className="text-sm mb-2" style={{ fontSize: '10pt' }}>
-                  {project.description}
+                  {renderValue(project.description)}
                 </p>
               )}
-              {project.technologies && (
+              {renderValue(project.technologies) && (
                 <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  Công nghệ: {project.technologies}
+                  Công nghệ: {renderValue(project.technologies)}
                 </p>
               )}
-              {project.achievements && project.achievements.length > 0 && (
+              {Array.isArray(project.achievements) && project.achievements.length > 0 && (
                 <ul className="list-disc list-inside text-sm ml-4 mt-2" style={{ fontSize: '10pt' }}>
                   {project.achievements.map((achievement: string, achIndex: number) => (
                     <li key={achIndex} className="mb-1">
@@ -165,28 +174,28 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
       )}
 
       {/* Skills */}
-      {(skills.technical || skills.soft) && (
+      {((Array.isArray(skills.technical) && skills.technical.length > 0) || (Array.isArray(skills.soft) && skills.soft.length > 0)) && (
         <div className="mb-6">
           <h2 className="text-lg font-bold mb-3 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
             Kỹ năng
           </h2>
-          {skills.technical && skills.technical.length > 0 && (
+          {Array.isArray(skills.technical) && skills.technical.length > 0 && (
             <div className="mb-3">
               <h3 className="font-medium mb-1" style={{ fontSize: '11pt', fontWeight: '600' }}>
                 Kỹ năng kỹ thuật:
               </h3>
               <p className="text-sm" style={{ fontSize: '10pt' }}>
-                {skills.technical.join(", ")}
+                {(skills.technical as string[]).join(", ")}
               </p>
             </div>
           )}
-          {skills.soft && skills.soft.length > 0 && (
+          {Array.isArray(skills.soft) && skills.soft.length > 0 && (
             <div>
               <h3 className="font-medium mb-1" style={{ fontSize: '11pt', fontWeight: '600' }}>
                 Kỹ năng mềm:
               </h3>
               <p className="text-sm" style={{ fontSize: '10pt' }}>
-                {skills.soft.join(", ")}
+                {(skills.soft as string[]).join(", ")}
               </p>
             </div>
           )}
@@ -203,18 +212,18 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             <div key={index} className="mb-3">
               <div className="flex justify-between items-start mb-1">
                 <h3 className="font-bold" style={{ fontSize: '11pt', fontWeight: 'bold' }}>
-                  {cert.name || "Tên chứng chỉ"}
+                  {renderValue(cert.name) || "Tên chứng chỉ"}
                 </h3>
                 <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  {cert.date || "Ngày cấp"}
+                  {renderValue(cert.date) || "Ngày cấp"}
                 </span>
               </div>
               <p className="font-medium" style={{ fontSize: '11pt', fontWeight: '600' }}>
-                {cert.issuing_organization || "Tổ chức cấp"}
+                {renderValue(cert.issuing_organization) || "Tổ chức cấp"}
               </p>
-              {cert.credential_id && (
+              {renderValue(cert.credential_id) && (
                 <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  ID: {cert.credential_id}
+                  ID: {renderValue(cert.credential_id)}
                 </p>
               )}
             </div>

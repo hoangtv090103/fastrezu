@@ -1,18 +1,22 @@
 "use client";
 
 import { useCVEditor } from "@/contexts/CVEditorContext";
-import { useEffect } from "react";
 
 export default function PersonalInfoStep() {
   const { state, updateSection } = useCVEditor();
   
-  const personalInfo = state.cvData?.sections.personal_info || {};
+  const personalInfo = (state.cvData?.sections.personal_info || {}) as Record<string, unknown>;
 
   const handleInputChange = (field: string, value: string) => {
     updateSection('personal_info', {
       ...personalInfo,
       [field]: value,
     });
+  };
+
+  const getStringValue = (key: string): string => {
+    const value = personalInfo[key];
+    return typeof value === 'string' ? value : '';
   };
 
   return (
@@ -34,7 +38,7 @@ export default function PersonalInfoStep() {
           <input
             type="text"
             id="full-name"
-            value={personalInfo.full_name || ""}
+            value={getStringValue('full_name')}
             onChange={(e) => handleInputChange('full_name', e.target.value)}
             placeholder="Nguyễn Văn A"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -49,7 +53,7 @@ export default function PersonalInfoStep() {
           <input
             type="email"
             id="email"
-            value={personalInfo.email || ""}
+            value={getStringValue('email')}
             onChange={(e) => handleInputChange('email', e.target.value)}
             placeholder="nguyenvana@email.com"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -64,7 +68,7 @@ export default function PersonalInfoStep() {
           <input
             type="tel"
             id="phone"
-            value={personalInfo.phone || ""}
+            value={getStringValue('phone')}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             placeholder="0123 456 789"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -78,7 +82,7 @@ export default function PersonalInfoStep() {
           <input
             type="text"
             id="location"
-            value={personalInfo.location || ""}
+            value={getStringValue('location')}
             onChange={(e) => handleInputChange('location', e.target.value)}
             placeholder="Hà Nội, Việt Nam"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -92,7 +96,7 @@ export default function PersonalInfoStep() {
           <input
             type="url"
             id="linkedin"
-            value={personalInfo.linkedin || ""}
+            value={getStringValue('linkedin')}
             onChange={(e) => handleInputChange('linkedin', e.target.value)}
             placeholder="https://linkedin.com/in/nguyenvana"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -106,7 +110,7 @@ export default function PersonalInfoStep() {
           <input
             type="url"
             id="portfolio"
-            value={personalInfo.portfolio || ""}
+            value={getStringValue('portfolio')}
             onChange={(e) => handleInputChange('portfolio', e.target.value)}
             placeholder="https://nguyenvana.dev"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

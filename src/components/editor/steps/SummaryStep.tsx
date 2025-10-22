@@ -8,11 +8,14 @@ export default function SummaryStep() {
   const { state, updateSection } = useCVEditor();
   const [isGenerating, setIsGenerating] = useState(false);
   
-  const summary = state.cvData?.sections.summary || {};
+  const summaryData = (state.cvData?.sections.summary || {}) as Record<string, unknown>;
+  const summary = {
+    content: typeof summaryData.content === 'string' ? summaryData.content : ''
+  };
 
   const handleInputChange = (value: string) => {
     updateSection('summary', {
-      ...summary,
+      ...summaryData,
       content: value,
     });
   };
@@ -45,7 +48,7 @@ export default function SummaryStep() {
     }
   };
 
-  const characterCount = summary.content?.length || 0;
+  const characterCount = summary.content.length;
   const isOptimalLength = characterCount >= 200 && characterCount <= 500;
 
   return (
@@ -74,7 +77,7 @@ export default function SummaryStep() {
           </div>
           <textarea
             id="summary"
-            value={summary.content || ""}
+            value={summary.content}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder="Ví dụ: Chuyên viên phát triển phần mềm với 3 năm kinh nghiệm trong việc xây dựng ứng dụng web và mobile. Có kinh nghiệm làm việc với React, Node.js, và các công nghệ cloud. Mong muốn đóng góp vào các dự án có tác động lớn và phát triển kỹ năng lãnh đạo kỹ thuật."
             className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
@@ -88,7 +91,7 @@ export default function SummaryStep() {
           onClick={handleGenerateWithAI}
           loading={isGenerating}
           label="Tạo tóm tắt với AI"
-          disabled={!state.cvData?.sections.personal_info?.full_name}
+          disabled={!state.cvData || !state.cvData.sections.personal_info}
         />
 
         {state.cvData?.jd_analysis?.keywords && (

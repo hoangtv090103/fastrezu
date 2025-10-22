@@ -5,7 +5,7 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 export default function EducationStep() {
   const { state, updateSection } = useCVEditor();
   
-  const education = state.cvData?.sections.education || [];
+  const education = (state.cvData?.sections.education || []) as Record<string, unknown>[];
 
   const addEducation = () => {
     const newEducation = {
@@ -30,6 +30,11 @@ export default function EducationStep() {
       [field]: value,
     };
     updateSection('education', updatedEducation);
+  };
+
+  const getStringValue = (edu: Record<string, unknown>, key: string): string => {
+    const value = edu[key];
+    return typeof value === 'string' ? value : '';
   };
 
   return (
@@ -65,7 +70,7 @@ export default function EducationStep() {
                 </label>
                 <input
                   type="text"
-                  value={edu.school || ""}
+                  value={getStringValue(edu, 'school')}
                   onChange={(e) => updateEducation(index, 'school', e.target.value)}
                   placeholder="Đại học Bách Khoa Hà Nội"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -78,7 +83,7 @@ export default function EducationStep() {
                 </label>
                 <input
                   type="text"
-                  value={edu.degree || ""}
+                  value={getStringValue(edu, 'degree')}
                   onChange={(e) => updateEducation(index, 'degree', e.target.value)}
                   placeholder="Cử nhân"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -91,7 +96,7 @@ export default function EducationStep() {
                 </label>
                 <input
                   type="text"
-                  value={edu.field_of_study || ""}
+                  value={getStringValue(edu, 'field_of_study')}
                   onChange={(e) => updateEducation(index, 'field_of_study', e.target.value)}
                   placeholder="Công nghệ thông tin"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -104,7 +109,7 @@ export default function EducationStep() {
                 </label>
                 <input
                   type="number"
-                  value={edu.graduation_date || ""}
+                  value={getStringValue(edu, 'graduation_date')}
                   onChange={(e) => updateEducation(index, 'graduation_date', e.target.value)}
                   placeholder="2023"
                   min="1950"
@@ -119,7 +124,7 @@ export default function EducationStep() {
                 </label>
                 <input
                   type="text"
-                  value={edu.gpa || ""}
+                  value={getStringValue(edu, 'gpa')}
                   onChange={(e) => updateEducation(index, 'gpa', e.target.value)}
                   placeholder="3.5/4.0"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

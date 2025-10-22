@@ -8,40 +8,44 @@ export default function SkillsStep() {
   const { state, updateSection } = useCVEditor();
   const [isExtracting, setIsExtracting] = useState(false);
   
-  const skills = state.cvData?.sections.skills || { technical: [], soft: [] };
+  const skillsData = (state.cvData?.sections.skills || {}) as Record<string, unknown>;
+  const skills = {
+    technical: Array.isArray(skillsData.technical) ? skillsData.technical as string[] : [],
+    soft: Array.isArray(skillsData.soft) ? skillsData.soft as string[] : []
+  };
 
   const addTechnicalSkill = (skill: string) => {
-    if (skill.trim() && !skills.technical?.includes(skill.trim())) {
+    if (skill.trim() && !skills.technical.includes(skill.trim())) {
       updateSection('skills', {
-        ...skills,
-        technical: [...(skills.technical || []), skill.trim()],
+        ...skillsData,
+        technical: [...skills.technical, skill.trim()],
       });
     }
   };
 
   const removeTechnicalSkill = (index: number) => {
-    const updatedSkills = [...(skills.technical || [])];
+    const updatedSkills = [...skills.technical];
     updatedSkills.splice(index, 1);
     updateSection('skills', {
-      ...skills,
+      ...skillsData,
       technical: updatedSkills,
     });
   };
 
   const addSoftSkill = (skill: string) => {
-    if (skill.trim() && !skills.soft?.includes(skill.trim())) {
+    if (skill.trim() && !skills.soft.includes(skill.trim())) {
       updateSection('skills', {
-        ...skills,
-        soft: [...(skills.soft || []), skill.trim()],
+        ...skillsData,
+        soft: [...skills.soft, skill.trim()],
       });
     }
   };
 
   const removeSoftSkill = (index: number) => {
-    const updatedSkills = [...(skills.soft || [])];
+    const updatedSkills = [...skills.soft];
     updatedSkills.splice(index, 1);
     updateSection('skills', {
-      ...skills,
+      ...skillsData,
       soft: updatedSkills,
     });
   };
@@ -67,14 +71,14 @@ export default function SkillsStep() {
         
         // Add new technical skills
         technicalSkills.forEach((skill: string) => {
-          if (!skills.technical?.includes(skill)) {
+          if (!skills.technical.includes(skill)) {
             addTechnicalSkill(skill);
           }
         });
 
         // Add new soft skills
         softSkills.forEach((skill: string) => {
-          if (!skills.soft?.includes(skill)) {
+          if (!skills.soft.includes(skill)) {
             addSoftSkill(skill);
           }
         });

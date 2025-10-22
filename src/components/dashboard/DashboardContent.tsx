@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase-client";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 
@@ -21,7 +20,6 @@ interface DashboardContentProps {
 export default function DashboardContent({ cvs }: DashboardContentProps) {
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const handleCreateCV = async () => {
     setIsCreating(true);

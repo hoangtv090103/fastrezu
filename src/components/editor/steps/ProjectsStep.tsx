@@ -6,7 +6,7 @@ import AIAssistButton from "@/components/ui/AIAssistButton";
 export default function ProjectsStep() {
   const { state, updateSection } = useCVEditor();
   
-  const projects = state.cvData?.sections.projects || [];
+  const projects = (state.cvData?.sections.projects || []) as Record<string, unknown>[];
 
   const addProject = () => {
     const newProject = {
@@ -33,27 +33,51 @@ export default function ProjectsStep() {
     updateSection('projects', updatedProjects);
   };
 
+  const getStringValue = (project: Record<string, unknown>, key: string): string => {
+    const value = project[key];
+    return typeof value === 'string' ? value : '';
+  };
+
+  const getArrayValue = (project: Record<string, unknown>, key: string): string[] => {
+    const value = project[key];
+    return Array.isArray(value) ? value : [];
+  };
+
   const addAchievement = (projIndex: number) => {
     const updatedProjects = [...projects];
-    updatedProjects[projIndex].achievements.push("");
+    const achievements = getArrayValue(updatedProjects[projIndex], 'achievements');
+    updatedProjects[projIndex] = {
+      ...updatedProjects[projIndex],
+      achievements: [...achievements, ""]
+    };
     updateSection('projects', updatedProjects);
   };
 
   const removeAchievement = (projIndex: number, achIndex: number) => {
     const updatedProjects = [...projects];
-    updatedProjects[projIndex].achievements = updatedProjects[projIndex].achievements.filter((_: unknown, i: number) => i !== achIndex);
+    const achievements = getArrayValue(updatedProjects[projIndex], 'achievements');
+    updatedProjects[projIndex] = {
+      ...updatedProjects[projIndex],
+      achievements: achievements.filter((_: unknown, i: number) => i !== achIndex)
+    };
     updateSection('projects', updatedProjects);
   };
 
   const updateAchievement = (projIndex: number, achIndex: number, value: string) => {
     const updatedProjects = [...projects];
-    updatedProjects[projIndex].achievements[achIndex] = value;
+    const achievements = getArrayValue(updatedProjects[projIndex], 'achievements');
+    achievements[achIndex] = value;
+    updatedProjects[projIndex] = {
+      ...updatedProjects[projIndex],
+      achievements
+    };
     updateSection('projects', updatedProjects);
   };
 
   const handleImproveAchievement = async (projIndex: number, achIndex: number) => {
-    const achievement = projects[projIndex].achievements[achIndex];
-    if (!achievement.trim()) return;
+    const achievements = getArrayValue(projects[projIndex], 'achievements');
+    const achievement = achievements[achIndex];
+    if (typeof achievement !== 'string' || !achievement.trim()) return;
 
     try {
       const response = await fetch('/api/ai/improve-bullet', {
@@ -110,7 +134,7 @@ export default function ProjectsStep() {
                 </label>
                 <input
                   type="text"
-                  value={project.name || ""}
+                  value={getStringValue(project, 'name')}
                   onChange={(e) => updateProject(projIndex, 'name', e.target.value)}
                   placeholder="Website bán hàng trực tuyến"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -122,7 +146,7 @@ export default function ProjectsStep() {
                   Mô tả dự án
                 </label>
                 <textarea
-                  value={project.description || ""}
+                  value={getStringValue(project, 'description')}
                   onChange={(e) => updateProject(projIndex, 'description', e.target.value)}
                   placeholder="Mô tả ngắn gọn về dự án, mục đích và phạm vi..."
                   className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
@@ -136,7 +160,7 @@ export default function ProjectsStep() {
                   </label>
                   <input
                     type="text"
-                    value={project.technologies || ""}
+                    value={getStringValue(project, 'technologies')}
                     onChange={(e) => updateProject(projIndex, 'technologies', e.target.value)}
                     placeholder="React, Node.js, MongoDB"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -149,7 +173,7 @@ export default function ProjectsStep() {
                   </label>
                   <input
                     type="url"
-                    value={project.link || ""}
+                    value={getStringValue(project, 'link')}
                     onChange={(e) => updateProject(projIndex, 'link', e.target.value)}
                     placeholder="https://github.com/username/project"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -161,7 +185,7 @@ export default function ProjectsStep() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Thành tích và đóng góp
                 </label>
-                {project.achievements?.map((achievement: string, achIndex: number) => (
+                {getArrayValue(project, 'achievements').map((achievement: string, achIndex: number) => (
                   <div key={achIndex} className="flex items-start space-x-2 mb-2">
                     <input
                       type="text"

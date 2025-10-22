@@ -6,7 +6,7 @@ import AIAssistButton from "@/components/ui/AIAssistButton";
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
   
-  const experience = state.cvData?.sections.experience || [];
+  const experience = (state.cvData?.sections.experience || []) as Record<string, unknown>[];
 
   const addExperience = () => {
     const newExperience = {
@@ -34,27 +34,51 @@ export default function ExperienceStep() {
     updateSection('experience', updatedExperience);
   };
 
+  const getStringValue = (exp: Record<string, unknown>, key: string): string => {
+    const value = exp[key];
+    return typeof value === 'string' ? value : '';
+  };
+
+  const getArrayValue = (exp: Record<string, unknown>, key: string): string[] => {
+    const value = exp[key];
+    return Array.isArray(value) ? value : [];
+  };
+
   const addAchievement = (expIndex: number) => {
     const updatedExperience = [...experience];
-    updatedExperience[expIndex].achievements.push("");
+    const achievements = getArrayValue(updatedExperience[expIndex], 'achievements');
+    updatedExperience[expIndex] = {
+      ...updatedExperience[expIndex],
+      achievements: [...achievements, ""]
+    };
     updateSection('experience', updatedExperience);
   };
 
   const removeAchievement = (expIndex: number, achIndex: number) => {
     const updatedExperience = [...experience];
-    updatedExperience[expIndex].achievements = updatedExperience[expIndex].achievements.filter((_: unknown, i: number) => i !== achIndex);
+    const achievements = getArrayValue(updatedExperience[expIndex], 'achievements');
+    updatedExperience[expIndex] = {
+      ...updatedExperience[expIndex],
+      achievements: achievements.filter((_: unknown, i: number) => i !== achIndex)
+    };
     updateSection('experience', updatedExperience);
   };
 
   const updateAchievement = (expIndex: number, achIndex: number, value: string) => {
     const updatedExperience = [...experience];
-    updatedExperience[expIndex].achievements[achIndex] = value;
+    const achievements = getArrayValue(updatedExperience[expIndex], 'achievements');
+    achievements[achIndex] = value;
+    updatedExperience[expIndex] = {
+      ...updatedExperience[expIndex],
+      achievements
+    };
     updateSection('experience', updatedExperience);
   };
 
   const handleImproveAchievement = async (expIndex: number, achIndex: number) => {
-    const achievement = experience[expIndex].achievements[achIndex];
-    if (!achievement.trim()) return;
+    const achievements = getArrayValue(experience[expIndex], 'achievements');
+    const achievement = achievements[achIndex];
+    if (typeof achievement !== 'string' || !achievement.trim()) return;
 
     try {
       const response = await fetch('/api/ai/improve-bullet', {
@@ -111,7 +135,7 @@ export default function ExperienceStep() {
                 </label>
                 <input
                   type="text"
-                  value={exp.company || ""}
+                  value={getStringValue(exp, 'company')}
                   onChange={(e) => updateExperience(expIndex, 'company', e.target.value)}
                   placeholder="Công ty ABC"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -124,7 +148,7 @@ export default function ExperienceStep() {
                 </label>
                 <input
                   type="text"
-                  value={exp.job_title || ""}
+                  value={getStringValue(exp, 'job_title')}
                   onChange={(e) => updateExperience(expIndex, 'job_title', e.target.value)}
                   placeholder="Frontend Developer"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -137,7 +161,7 @@ export default function ExperienceStep() {
                 </label>
                 <input
                   type="month"
-                  value={exp.start_date || ""}
+                  value={getStringValue(exp, 'start_date')}
                   onChange={(e) => updateExperience(expIndex, 'start_date', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -149,7 +173,7 @@ export default function ExperienceStep() {
                 </label>
                 <input
                   type="month"
-                  value={exp.end_date || ""}
+                  value={getStringValue(exp, 'end_date')}
                   onChange={(e) => updateExperience(expIndex, 'end_date', e.target.value)}
                   placeholder="Hiện tại"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -162,7 +186,7 @@ export default function ExperienceStep() {
                 </label>
                 <input
                   type="text"
-                  value={exp.location || ""}
+                  value={getStringValue(exp, 'location')}
                   onChange={(e) => updateExperience(expIndex, 'location', e.target.value)}
                   placeholder="Hà Nội, Việt Nam"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -174,7 +198,7 @@ export default function ExperienceStep() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Thành tích và trách nhiệm
               </label>
-              {exp.achievements?.map((achievement: string, achIndex: number) => (
+              {getArrayValue(exp, 'achievements').map((achievement: string, achIndex: number) => (
                 <div key={achIndex} className="flex items-start space-x-2 mb-2">
                   <input
                     type="text"
