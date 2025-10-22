@@ -14,14 +14,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FastRezu - AI viết CV chuẩn ATS",
+  title: "FastRezu - AI tối ưu CV cho hệ thống ATS | Gửi 50 CV, nhận 0 phản hồi?",
   description:
-    "Công cụ AI đầu tiên giúp bạn viết CV chuẩn ATS, tăng X3 cơ hội được gọi phỏng vấn. Phân tích mô tả công việc, gợi ý từ khóa, và tự động viết nội dung CV bằng tiếng Việt.",
-  keywords: "CV, ATS, AI, viết CV, tìm việc, FastRezu, ứng tuyển",
+    "FastRezu là công cụ AI chuyên sâu giúp bạn tối ưu CV chuẩn theo từng mô tả công việc. Không chỉ CV đẹp, mà là CV được nhà tuyển dụng nhìn thấy. Phân tích JD, gợi ý từ khóa, soạn thảo nội dung CV bằng tiếng Việt.",
+  keywords: "CV, ATS, AI, viết CV, tìm việc, FastRezu, ứng tuyển, phỏng vấn, từ khóa, JD analyzer, tối ưu CV",
   openGraph: {
-    title: "FastRezu - AI viết CV chuẩn ATS",
+    title: "FastRezu - AI tối ưu CV cho hệ thống ATS | Gửi 50 CV, nhận 0 phản hồi?",
     description:
-      "Công cụ AI đầu tiên giúp bạn viết CV chuẩn ATS, tăng X3 cơ hội được gọi phỏng vấn.",
+      "FastRezu là công cụ AI chuyên sâu giúp bạn tối ưu CV chuẩn theo từng mô tả công việc. Không chỉ CV đẹp, mà là CV được nhà tuyển dụng nhìn thấy.",
     type: "website",
   },
 };
