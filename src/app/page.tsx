@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,8 +24,8 @@ export default function Home() {
       const data = await response.json();
 
       if (response.ok) {
-        setIsSubmitted(true);
-        setEmail(""); // Clear the form
+        // Redirect to thank you page for conversion tracking
+        router.push("/thank-you");
       } else {
         alert(data.error || "Có lỗi xảy ra khi đăng ký");
       }
@@ -46,8 +48,8 @@ export default function Home() {
               </h1>
 
               <h2 className="heading-sub text-xl lg:text-2xl text-gray-700 mb-6">
-                Để AI của FastRezu giúp bạn viết CV &ldquo;chuẩn ATS&rdquo; chỉ trong 5
-                phút.
+                Để AI của FastRezu giúp bạn viết CV &ldquo;chuẩn ATS&rdquo; chỉ
+                trong 5 phút.
                 <span className="text-green-600 font-bold">
                   {" "}
                   Tăng X3 cơ hội được gọi phỏng vấn.
@@ -84,11 +86,6 @@ export default function Home() {
                 <p className="small-text text-gray-500 text-center lg:text-left">
                   Chúng tôi sẽ gửi email mời bạn ngay khi bản beta ra mắt.
                 </p>
-                {isSubmitted && (
-                  <p className="font-bold small-text text-green-600 mt-2 text-center lg:text-left">
-                    Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm.
-                  </p>
-                )}
               </form>
             </div>
 
@@ -130,8 +127,8 @@ export default function Home() {
               </h3>
               <p className="body-text text-gray-600">
                 Bạn loay hoay cả ngày không biết phải mô tả kinh nghiệm của mình
-                thế nào cho &ldquo;kêu&rdquo;, làm sao để biến &ldquo;trách nhiệm&rdquo; thành &ldquo;thành
-                tích&rdquo;.
+                thế nào cho &ldquo;kêu&rdquo;, làm sao để biến &ldquo;trách
+                nhiệm&rdquo; thành &ldquo;thành tích&rdquo;.
               </p>
             </div>
 
@@ -143,8 +140,9 @@ export default function Home() {
                 Không hiểu ATS là gì?
               </h3>
               <p className="body-text text-gray-600">
-                Bạn không biết rằng CV của mình đang thiếu các &ldquo;từ khóa&rdquo; mà nhà
-                tuyển dụng tìm kiếm, khiến bạn bị loại dù rất đủ năng lực.
+                Bạn không biết rằng CV của mình đang thiếu các &ldquo;từ
+                khóa&rdquo; mà nhà tuyển dụng tìm kiếm, khiến bạn bị loại dù rất
+                đủ năng lực.
               </p>
             </div>
 
@@ -182,9 +180,9 @@ export default function Home() {
                 AI tự động viết nội dung
               </h3>
               <p className="body-text text-gray-600 text-center">
-                Chỉ cần nhập tên công việc (ví dụ: &ldquo;Digital Marketing&rdquo;), AI của
-                chúng tôi sẽ tạo ra 10+ gạch đầu dòng mô tả thành tích chuyên
-                nghiệp, ấn tượng.
+                Chỉ cần nhập tên công việc (ví dụ: &ldquo;Digital
+                Marketing&rdquo;), AI của chúng tôi sẽ tạo ra 10+ gạch đầu dòng
+                mô tả thành tích chuyên nghiệp, ấn tượng.
               </p>
             </div>
 
@@ -198,7 +196,8 @@ export default function Home() {
               </h3>
               <p className="body-text text-gray-600 text-center">
                 Copy-paste mô tả công việc bạn muốn ứng tuyển. FastRezu sẽ
-                &ldquo;quét&rdquo; và chỉ ra chính xác các từ khóa bạn CẦN PHẢI có trong CV.
+                &ldquo;quét&rdquo; và chỉ ra chính xác các từ khóa bạn CẦN PHẢI
+                có trong CV.
               </p>
             </div>
 
@@ -253,11 +252,6 @@ export default function Home() {
               <p className="small-text text-gray-400">
                 Chúng tôi sẽ gửi email mời bạn ngay khi bản beta ra mắt.
               </p>
-              {isSubmitted && (
-                <p className="small-text text-green-400 mt-2">
-                  ✅ Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm.
-                </p>
-              )}
             </form>
           </div>
         </div>
