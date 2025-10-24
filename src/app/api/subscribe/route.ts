@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
-  console.log('API route called')
   try {
     const body = await request.json()
-    console.log('Request body:', body)
     const { email } = body
 
     // Validate email
@@ -17,7 +15,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert email into Supabase
-    console.log('Attempting to insert email:', email)
     const { data, error } = await supabaseAdmin
       .from('subscribers')
       .insert([
@@ -28,8 +25,6 @@ export async function POST(request: NextRequest) {
         }
       ])
       .select()
-    
-    console.log('Supabase response - data:', data, 'error:', error)
 
     if (error) {
       // Check if it's a duplicate email error
@@ -40,7 +35,6 @@ export async function POST(request: NextRequest) {
         )
       }
       
-      console.error('Supabase error:', error)
       return NextResponse.json(
         { error: 'Có lỗi xảy ra khi đăng ký email' },
         { status: 500 }
@@ -56,7 +50,6 @@ export async function POST(request: NextRequest) {
     )
 
   } catch (error) {
-    console.error('API error:', error)
     return NextResponse.json(
       { error: 'Có lỗi xảy ra' },
       { status: 500 }

@@ -94,28 +94,68 @@ const CVEditorContext = createContext<CVEditorContextType | undefined>(undefined
 
 export function CVEditorProvider({ 
   children, 
-  cvId 
+  cvId,
+  userId 
 }: { 
   children: React.ReactNode;
   cvId: string;
+  userId?: string;
 }) {
   const [state, dispatch] = useReducer(cvEditorReducer, initialState);
   const supabase = createClient();
 
   // Load CV data
   useEffect(() => {
+    let mounted = true;
+    
     const loadCVData = async () => {
       try {
         dispatch({ type: 'SET_LOADING', payload: true });
+        
+        // Use userId from server-side if available, otherwise check client-side
+        let user;
+        if (userId) {
+          user = { id: userId };
+        } else {
+          const { data: { user: clientUser }, error: authError } = await supabase.auth.getUser();
+          if (authError) {
+            console.error('Auth error:', authError);
+            if (mounted) {
+              dispatch({ type: 'SET_ERROR', payload: 'Authentication error' });
+            }
+            return;
+          }
+          user = clientUser;
+        }
+        
+        if (!user) {
+          // User not authenticated, redirect will be handled by middleware
+          if (mounted) {
+            dispatch({ type: 'SET_ERROR', payload: 'User not authenticated' });
+          }
+          return;
+        }
         
         // Get CV basic info
         const { data: cv, error: cvError } = await supabase
           .from('cvs')
           .select('*')
           .eq('id', cvId)
-          .single();
+          .eq('user_id', user.id) // Ensure user owns this CV
+          .maybeSingle();
 
-        if (cvError) throw cvError;
+        if (cvError) {
+          console.error('CV query error:', cvError);
+          throw new Error(`CV query failed: ${cvError.message}`);
+        }
+
+        if (!cv) {
+          // Redirect to dashboard if CV not found
+          if (typeof window !== 'undefined') {
+            window.location.href = '/dashboard';
+          }
+          throw new Error('CV not found or you do not have permission to access it');
+        }
 
         // Get CV sections
         const { data: sections, error: sectionsError } = await supabase
@@ -124,22 +164,62 @@ export function CVEditorProvider({
           .eq('cv_id', cvId)
           .order('order_index');
 
-        if (sectionsError) throw sectionsError;
+        if (sectionsError) {
+          console.error('CV sections query error:', sectionsError);
+          throw new Error(`Failed to load CV sections: ${sectionsError.message}`);
+        }
 
-        // Get JD analysis if exists
-        const { data: jdAnalysis } = await supabase
+        // Get JD analysis if exists (use maybeSingle to avoid error if no data)
+        const { data: jdAnalysis, error: jdError } = await supabase
           .from('jd_analyses')
           .select('*')
           .eq('cv_id', cvId)
           .order('created_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
+
+        if (jdError) {
+          console.error('JD analysis query error:', jdError);
+          // Don't throw error for JD analysis, it's optional
+        }
 
         // Transform sections into object
         const sectionsData: { [key: string]: Record<string, unknown> } = {};
-        sections?.forEach(section => {
+        sections?.forEach((section: any) => {
           sectionsData[section.section_type] = section.data;
         });
+
+        // If no sections exist, create default empty sections
+        if (!sections || sections.length === 0) {
+          const defaultSections = {
+            personal_info: {},
+            summary: {},
+            experience: [],
+            education: [],
+            projects: [],
+            skills: [],
+            certifications: []
+          };
+          
+          // Create default sections in database
+          for (const [sectionType, data] of Object.entries(defaultSections)) {
+            const { error: insertError } = await supabase
+              .from('cv_sections')
+              .insert({
+                cv_id: cvId,
+                section_type: sectionType,
+                data: data,
+                order_index: getSectionOrder(sectionType),
+              });
+            
+            if (insertError) {
+              console.error(`Error creating default section ${sectionType}:`, insertError);
+            }
+          }
+          
+          // Use default sections
+          Object.assign(sectionsData, defaultSections);
+        }
 
         const cvData: CVData = {
           id: cv.id,
@@ -152,15 +232,23 @@ export function CVEditorProvider({
           } : undefined,
         };
 
-        dispatch({ type: 'SET_CV_DATA', payload: cvData });
+        if (mounted) {
+          dispatch({ type: 'SET_CV_DATA', payload: cvData });
+        }
       } catch (error) {
         console.error('Error loading CV data:', error);
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to load CV data' });
+        if (mounted) {
+          dispatch({ type: 'SET_ERROR', payload: 'Failed to load CV data' });
+        }
       }
     };
 
     loadCVData();
-  }, [cvId, supabase]);
+    
+    return () => {
+      mounted = false;
+    };
+  }, [cvId, supabase, userId]);
 
   // Auto-save functionality
   const saveCV = useCallback(async () => {
@@ -168,6 +256,19 @@ export function CVEditorProvider({
 
     try {
       dispatch({ type: 'SET_SAVE_STATUS', payload: 'saving' });
+
+      // Check authentication first
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError) {
+        console.error('Authentication error during save:', authError);
+        throw new Error(`Authentication failed: ${authError.message}`);
+      }
+      
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      console.log('Saving CV with data:', { cvId, title: state.cvData.title, sections: Object.keys(state.cvData.sections) });
 
       // Update CV basic info
       const { error: cvError } = await supabase
@@ -177,9 +278,13 @@ export function CVEditorProvider({
           ats_score: state.cvData.ats_score,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', cvId);
+        .eq('id', cvId)
+        .eq('user_id', user.id); // Ensure user owns this CV
 
-      if (cvError) throw cvError;
+      if (cvError) {
+        console.error('CV update error:', cvError);
+        throw new Error(`Failed to update CV: ${cvError.message}`);
+      }
 
       // Update sections
       for (const [sectionType, data] of Object.entries(state.cvData.sections)) {
@@ -190,14 +295,25 @@ export function CVEditorProvider({
             section_type: sectionType,
             data: data,
             order_index: getSectionOrder(sectionType),
+          }, {
+            onConflict: 'cv_id,section_type'
           });
 
-        if (sectionError) throw sectionError;
+        if (sectionError) {
+          console.error(`Section ${sectionType} update error:`, sectionError);
+          throw new Error(`Failed to update section ${sectionType}: ${sectionError.message}`);
+        }
       }
 
+      console.log('CV saved successfully');
       dispatch({ type: 'SET_SAVE_STATUS', payload: 'saved' });
     } catch (error) {
       console.error('Error saving CV:', error);
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        error: error
+      });
       dispatch({ type: 'SET_SAVE_STATUS', payload: 'error' });
     }
   }, [state.cvData, cvId, supabase]);

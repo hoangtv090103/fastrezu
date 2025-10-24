@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import AuthenticatedHeader from "@/components/layout/AuthenticatedHeader";
 
@@ -7,7 +7,7 @@ export default async function AuthenticatedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = createServerClient();
+  const supabase = await createClient();
   
   const {
     data: { user },

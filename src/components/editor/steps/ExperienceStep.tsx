@@ -102,6 +102,43 @@ export default function ExperienceStep() {
     }
   };
 
+  const handleAIWriteExperience = async (expIndex: number) => {
+    const exp = experience[expIndex];
+    const jobTitle = getStringValue(exp, 'job_title');
+    const company = getStringValue(exp, 'company');
+    
+    if (!jobTitle.trim()) {
+      alert('Vui lòng nhập chức vụ trước khi sử dụng AI');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/ai/write-experience', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jobTitle,
+          company,
+          jdKeywords: state.cvData?.jd_analysis?.keywords || [],
+          experienceLevel: 'Mid-level', // Could be determined from other data
+        }),
+      });
+
+      if (response.ok) {
+        const { achievements } = await response.json();
+        updateExperience(expIndex, 'achievements', achievements);
+      } else {
+        const errorData = await response.json();
+        alert(`Lỗi: ${errorData.error || 'Có lỗi xảy ra khi tạo mô tả kinh nghiệm'}`);
+      }
+    } catch (error) {
+      console.error('Error writing experience with AI:', error);
+      alert('Không thể kết nối đến server. Vui lòng kiểm tra kết nối internet và thử lại.');
+    }
+  };
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -195,9 +232,17 @@ export default function ExperienceStep() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Thành tích và trách nhiệm
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Thành tích và trách nhiệm
+                </label>
+                <AIAssistButton
+                  onClick={() => handleAIWriteExperience(expIndex)}
+                  loading={false}
+                  label="Để AI viết giúp bạn ✍️"
+                  disabled={!getStringValue(exp, 'job_title').trim()}
+                />
+              </div>
               {getArrayValue(exp, 'achievements').map((achievement: string, achIndex: number) => (
                 <div key={achIndex} className="flex items-start space-x-2 mb-2">
                   <input

@@ -30,30 +30,74 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
   };
 
   return (
-    <div className="cv-template p-8 text-gray-900" style={{ fontFamily: 'Arial, sans-serif', fontSize: '11pt', lineHeight: '1.4' }}>
+    <div className="cv-template bg-white text-gray-900 max-w-4xl mx-auto shadow-lg" style={{ 
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
+      fontSize: '11pt', 
+      lineHeight: '1.5',
+      padding: '2rem'
+    }}>
       {/* Header */}
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold mb-2" style={{ fontSize: '18pt', fontWeight: 'bold' }}>
+      <div className="text-center mb-8 border-b-2 border-blue-600 pb-6">
+        <h1 className="text-3xl font-bold mb-3 text-gray-900" style={{ 
+          fontSize: '24pt', 
+          fontWeight: '700',
+          letterSpacing: '-0.5px'
+        }}>
           {getString(personalInfo, 'full_name') || "Họ và tên"}
         </h1>
-        <div className="text-sm text-gray-600">
-          {getString(personalInfo, 'email') && <span>{getString(personalInfo, 'email')}</span>}
-          {getString(personalInfo, 'phone') && <span> • {getString(personalInfo, 'phone')}</span>}
-          {getString(personalInfo, 'location') && <span> • {getString(personalInfo, 'location')}</span>}
-        </div>
-        <div className="text-sm text-gray-600 mt-1">
-          {getString(personalInfo, 'linkedin') && <span>LinkedIn: {getString(personalInfo, 'linkedin')}</span>}
-          {getString(personalInfo, 'portfolio') && <span> • Portfolio: {getString(personalInfo, 'portfolio')}</span>}
+        <div className="text-sm text-gray-600 space-y-1">
+          <div className="flex justify-center items-center gap-4 flex-wrap">
+            {getString(personalInfo, 'email') && (
+              <span className="flex items-center gap-1">
+                <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                {getString(personalInfo, 'email')}
+              </span>
+            )}
+            {getString(personalInfo, 'phone') && (
+              <span className="flex items-center gap-1">
+                <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                {getString(personalInfo, 'phone')}
+              </span>
+            )}
+            {getString(personalInfo, 'location') && (
+              <span className="flex items-center gap-1">
+                <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
+                {getString(personalInfo, 'location')}
+              </span>
+            )}
+          </div>
+          <div className="flex justify-center items-center gap-4 flex-wrap">
+            {getString(personalInfo, 'linkedin') && (
+              <span className="text-blue-600 hover:text-blue-800 transition-colors">
+                LinkedIn: {getString(personalInfo, 'linkedin')}
+              </span>
+            )}
+            {getString(personalInfo, 'portfolio') && (
+              <span className="text-blue-600 hover:text-blue-800 transition-colors">
+                Portfolio: {getString(personalInfo, 'portfolio')}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Professional Summary */}
       {getString(summary, 'content') && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold mb-2 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-4 text-blue-600 uppercase tracking-wide" style={{ 
+            fontSize: '14pt', 
+            fontWeight: '700', 
+            borderBottom: '2px solid #2563eb', 
+            paddingBottom: '4px',
+            letterSpacing: '1px'
+          }}>
             Tóm tắt nghề nghiệp
           </h2>
-          <p className="text-sm" style={{ fontSize: '11pt' }}>
+          <p className="text-sm leading-relaxed" style={{ 
+            fontSize: '11pt',
+            lineHeight: '1.6',
+            color: '#374151'
+          }}>
             {getString(summary, 'content')}
           </p>
         </div>
@@ -61,33 +105,40 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
 
       {/* Work Experience */}
       {experience.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-6 text-blue-600 uppercase tracking-wide" style={{ 
+            fontSize: '14pt', 
+            fontWeight: '700', 
+            borderBottom: '2px solid #2563eb', 
+            paddingBottom: '4px',
+            letterSpacing: '1px'
+          }}>
             Kinh nghiệm làm việc
           </h2>
           {experience.map((exp: Record<string, unknown>, index: number) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-start mb-1">
-                <h3 className="font-bold" style={{ fontSize: '11pt', fontWeight: 'bold' }}>
+            <div key={index} className="mb-6 pb-4 border-b border-gray-100 last:border-b-0">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-bold text-gray-900" style={{ fontSize: '12pt', fontWeight: '700' }}>
                   {renderValue(exp.job_title) || "Chức vụ"}
                 </h3>
-                <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
+                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded" style={{ fontSize: '10pt' }}>
                   {exp.start_date && exp.end_date ? `${renderValue(exp.start_date)} - ${renderValue(exp.end_date)}` : "Thời gian"}
                 </span>
               </div>
-              <div className="flex justify-between items-start mb-2">
-                <p className="font-medium" style={{ fontSize: '11pt', fontWeight: '600' }}>
+              <div className="flex justify-between items-start mb-3">
+                <p className="font-semibold text-blue-600" style={{ fontSize: '11pt', fontWeight: '600' }}>
                   {renderValue(exp.company) || "Tên công ty"}
                 </p>
-                <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
+                <span className="text-sm text-gray-500" style={{ fontSize: '10pt' }}>
                   {renderValue(exp.location) || "Địa điểm"}
                 </span>
               </div>
               {Array.isArray(exp.achievements) && exp.achievements.length > 0 && (
-                <ul className="list-disc list-inside text-sm ml-4" style={{ fontSize: '10pt' }}>
+                <ul className="space-y-2" style={{ fontSize: '10pt' }}>
                   {exp.achievements.map((achievement: string, achIndex: number) => (
-                    <li key={achIndex} className="mb-1">
-                      {achievement}
+                    <li key={achIndex} className="flex items-start">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                      <span className="text-gray-700 leading-relaxed">{achievement}</span>
                     </li>
                   ))}
                 </ul>
@@ -99,25 +150,31 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
 
       {/* Education */}
       {education.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-6 text-blue-600 uppercase tracking-wide" style={{ 
+            fontSize: '14pt', 
+            fontWeight: '700', 
+            borderBottom: '2px solid #2563eb', 
+            paddingBottom: '4px',
+            letterSpacing: '1px'
+          }}>
             Học vấn
           </h2>
           {education.map((edu: Record<string, unknown>, index: number) => (
-            <div key={index} className="mb-3">
-              <div className="flex justify-between items-start mb-1">
-                <h3 className="font-bold" style={{ fontSize: '11pt', fontWeight: 'bold' }}>
+            <div key={index} className="mb-4 pb-3 border-b border-gray-100 last:border-b-0">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-bold text-gray-900" style={{ fontSize: '12pt', fontWeight: '700' }}>
                   {renderValue(edu.degree) || "Bằng cấp"}
                 </h3>
-                <span className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
+                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded" style={{ fontSize: '10pt' }}>
                   {renderValue(edu.graduation_date) || "Năm tốt nghiệp"}
                 </span>
               </div>
-              <p className="font-medium" style={{ fontSize: '11pt', fontWeight: '600' }}>
+              <p className="font-semibold text-blue-600 mb-1" style={{ fontSize: '11pt', fontWeight: '600' }}>
                 {renderValue(edu.school) || "Tên trường"}
               </p>
               {renderValue(edu.field_of_study) && (
-                <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
+                <p className="text-sm text-gray-600 mb-1" style={{ fontSize: '10pt' }}>
                   Chuyên ngành: {renderValue(edu.field_of_study)}
                 </p>
               )}
@@ -133,8 +190,14 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
 
       {/* Projects */}
       {projects.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-6 text-blue-600 uppercase tracking-wide" style={{ 
+            fontSize: '14pt', 
+            fontWeight: '700', 
+            borderBottom: '2px solid #2563eb', 
+            paddingBottom: '4px',
+            letterSpacing: '1px'
+          }}>
             Dự án
           </h2>
           {projects.map((project: Record<string, unknown>, index: number) => (
@@ -175,8 +238,14 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
 
       {/* Skills */}
       {((Array.isArray(skills.technical) && skills.technical.length > 0) || (Array.isArray(skills.soft) && skills.soft.length > 0)) && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-6 text-blue-600 uppercase tracking-wide" style={{ 
+            fontSize: '14pt', 
+            fontWeight: '700', 
+            borderBottom: '2px solid #2563eb', 
+            paddingBottom: '4px',
+            letterSpacing: '1px'
+          }}>
             Kỹ năng
           </h2>
           {Array.isArray(skills.technical) && skills.technical.length > 0 && (
@@ -204,8 +273,14 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
 
       {/* Certifications */}
       {certifications.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 uppercase" style={{ fontSize: '12pt', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '2px' }}>
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-6 text-blue-600 uppercase tracking-wide" style={{ 
+            fontSize: '14pt', 
+            fontWeight: '700', 
+            borderBottom: '2px solid #2563eb', 
+            paddingBottom: '4px',
+            letterSpacing: '1px'
+          }}>
             Chứng chỉ
           </h2>
           {certifications.map((cert: Record<string, unknown>, index: number) => (

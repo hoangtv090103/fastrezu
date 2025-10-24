@@ -10,6 +10,7 @@ import EducationStep from "@/components/editor/steps/EducationStep";
 import ProjectsStep from "@/components/editor/steps/ProjectsStep";
 import SkillsStep from "@/components/editor/steps/SkillsStep";
 import CertificationsStep from "@/components/editor/steps/CertificationsStep";
+import ReviewStep from "@/components/editor/steps/ReviewStep";
 
 const STEPS = [
   { id: 0, title: "Phân tích JD", component: JDAnalysisStep },
@@ -20,6 +21,7 @@ const STEPS = [
   { id: 5, title: "Dự án", component: ProjectsStep },
   { id: 6, title: "Kỹ năng", component: SkillsStep },
   { id: 7, title: "Chứng chỉ", component: CertificationsStep },
+  { id: 8, title: "Xem lại & Chấm điểm", component: ReviewStep },
 ];
 
 export default function WizardPanel() {

@@ -7,7 +7,10 @@ import { Suspense } from "react";
 function ErrorContent() {
   const searchParams = useSearchParams();
   const message = searchParams.get('message') || 'Có lỗi xảy ra trong quá trình xác thực';
-
+  
+  // Check if it's an expired link error
+  const isExpiredLink = message.includes('expired') || message.includes('invalid');
+  
   return (
     <div className="max-w-md w-full">
       <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
@@ -19,9 +22,18 @@ function ErrorContent() {
           Lỗi xác thực
         </h1>
         
-        <p className="body-text text-gray-600 mb-6">
+        <p className="body-text text-gray-600 mb-4">
           {message}
         </p>
+        
+        {isExpiredLink && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 text-left">
+            <p className="text-sm text-yellow-800">
+              <strong>Link đã hết hạn hoặc không hợp lệ.</strong> Magic link chỉ có hiệu lực trong 1 giờ. 
+              Vui lòng yêu cầu gửi link mới.
+            </p>
+          </div>
+        )}
         
         <div className="space-y-3">
           <Link

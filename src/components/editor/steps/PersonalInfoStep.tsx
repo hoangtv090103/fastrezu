@@ -1,23 +1,38 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { validatePersonalInfo } from "@/lib/validation";
 
 export default function PersonalInfoStep() {
   const { state, updateSection } = useCVEditor();
   
   const personalInfo = (state.cvData?.sections.personal_info || {}) as Record<string, unknown>;
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleInputChange = (field: string, value: string) => {
-    updateSection('personal_info', {
+    const updatedInfo = {
       ...personalInfo,
       [field]: value,
-    });
+    };
+    
+    updateSection('personal_info', updatedInfo);
+    
+    // Validate on change
+    const validation = validatePersonalInfo(updatedInfo);
+    setErrors(validation.errors);
   };
 
   const getStringValue = (key: string): string => {
     const value = personalInfo[key];
     return typeof value === 'string' ? value : '';
   };
+
+  // Validate on mount
+  useEffect(() => {
+    const validation = validatePersonalInfo(personalInfo);
+    setErrors(validation.errors);
+  }, [personalInfo]);
 
   return (
     <div className="p-6">
@@ -117,6 +132,27 @@ export default function PersonalInfoStep() {
           />
         </div>
       </div>
+
+      {/* Validation Errors */}
+      {errors.length > 0 && (
+        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-start">
+            <div className="shrink-0">
+              <span className="text-red-600 text-lg">⚠️</span>
+            </div>
+            <div className="ml-3">
+              <h4 className="text-sm font-medium text-red-700 mb-2">
+                Vui lòng sửa các lỗi sau:
+              </h4>
+              <ul className="text-sm text-red-600 space-y-1">
+                {errors.map((error, index) => (
+                  <li key={index}>• {error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

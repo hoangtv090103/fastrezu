@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase-server";
+import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { CVEditorProvider } from "@/contexts/CVEditorContext";
 import CVEditorLayout from "@/components/editor/CVEditorLayout";
@@ -10,7 +10,8 @@ interface EditorPageProps {
 }
 
 export default async function EditorPage({ params }: EditorPageProps) {
-  const supabase = createServerClient();
+  const { cvId } = await params;
+  const supabase = await createClient();
   
   const {
     data: { user },
@@ -21,18 +22,23 @@ export default async function EditorPage({ params }: EditorPageProps) {
   }
 
   // Verify CV ownership
-  const { data: cv, error } = await supabase
+  const { data: cv, error } = await (supabase as any)
     .from('cvs')
-    .select('user_id')
-    .eq('id', params.cvId)
+    .select('user_id, title')
+    .eq('id', cvId)
     .single();
 
-  if (error || !cv || cv.user_id !== user.id) {
+
+  if (error) {
+    redirect("/dashboard");
+  }
+
+  if (!cv || cv.user_id !== user.id) {
     redirect("/dashboard");
   }
 
   return (
-    <CVEditorProvider cvId={params.cvId}>
+    <CVEditorProvider cvId={cvId} userId={user.id}>
       <CVEditorLayout />
     </CVEditorProvider>
   );

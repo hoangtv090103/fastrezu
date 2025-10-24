@@ -18,6 +18,7 @@ export default function LoginPage() {
     try {
       // Use environment variable for production, fallback to window.location.origin for development
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      console.log(siteUrl)
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
