@@ -156,17 +156,17 @@ export default function ExperienceStep() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h3 className="heading-feature text-lg text-gray-900 mb-2">
+    <div className="p-4 sm:p-6">
+      <div className="mb-4 sm:mb-6">
+        <h3 className="heading-feature text-base sm:text-lg text-gray-900 mb-2">
           Kinh nghiệm làm việc
         </h3>
-        <p className="body-text text-gray-600 mb-4">
+        <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
           Liệt kê kinh nghiệm làm việc của bạn theo thứ tự thời gian gần nhất. Sử dụng các động từ hành động và số liệu cụ thể.
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {experience.map((exp: Record<string, unknown>, expIndex: number) => (
           <div key={expIndex} className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
@@ -181,7 +181,7 @@ export default function ExperienceStep() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Tên công ty *
@@ -233,7 +233,7 @@ export default function ExperienceStep() {
                 />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Địa điểm
                 </label>

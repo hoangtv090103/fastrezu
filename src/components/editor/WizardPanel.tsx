@@ -38,8 +38,8 @@ export default function WizardPanel() {
   return (
     <div className="h-full flex flex-col">
       {/* Progress Header */}
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="heading-feature text-lg text-gray-900 mb-4">
+      <div className="p-4 sm:p-6 border-b border-gray-200">
+        <h2 className="heading-feature text-base sm:text-lg text-gray-900 mb-3 sm:mb-4">
           Tạo CV của bạn
         </h2>
         <StepNavigation

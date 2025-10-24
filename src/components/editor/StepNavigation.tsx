@@ -11,11 +11,11 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
   const steps = Array.from({ length: totalSteps }, (_, i) => i);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2 sm:space-y-3">
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 rounded-full h-2">
+      <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
         <div
-          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+          className="bg-blue-600 h-1.5 sm:h-2 rounded-full transition-all duration-300"
           style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
         />
       </div>
@@ -26,7 +26,7 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
           <button
             key={step}
             onClick={() => onStepChange(step)}
-            className={`w-8 h-8 rounded-full text-sm font-medium transition-colors duration-200 ${
+            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 ${
               step === currentStep
                 ? 'bg-blue-600 text-white'
                 : step < currentStep
@@ -44,7 +44,7 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
         {steps.map((step) => (
           <span
             key={step}
-            className={`text-center ${
+            className={`text-center hidden sm:block ${
               step === currentStep ? 'text-blue-600 font-medium' : ''
             }`}
             style={{ width: `${100 / totalSteps}%` }}

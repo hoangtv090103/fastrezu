@@ -102,17 +102,17 @@ export default function ReviewStep() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h3 className="heading-feature text-lg text-gray-900 mb-2">
+    <div className="p-4 sm:p-6">
+      <div className="mb-4 sm:mb-6">
+        <h3 className="heading-feature text-base sm:text-lg text-gray-900 mb-2">
           Xem lại & Chấm điểm CV
         </h3>
-        <p className="body-text text-gray-600 mb-4">
+        <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
           Kiểm tra điểm ATS và nhận gợi ý cải thiện CV của bạn.
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* JD Analysis Summary */}
         {state.cvData?.jd_analysis && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -154,27 +154,27 @@ export default function ReviewStep() {
               </div>
 
               {/* Analysis Breakdown */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
+              <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-2xl font-bold text-blue-600">
                     {scoringResult.analysis?.keyword_match || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Từ khóa khớp</div>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-2xl font-bold text-green-600">
                     {scoringResult.analysis?.completeness || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Hoàn thiện</div>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-purple-600">
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-2xl font-bold text-purple-600">
                     {scoringResult.analysis?.formatting || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Định dạng</div>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">
+                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+                  <div className="text-lg sm:text-2xl font-bold text-orange-600">
                     {scoringResult.analysis?.relevance || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Liên quan</div>

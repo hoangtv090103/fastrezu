@@ -73,14 +73,14 @@ export default function CVEditorLayout() {
       </div>
 
       {/* Main Content */}
-      <div className="flex h-[calc(100vh-80px)]">
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-80px)]">
         {/* Left Panel - Wizard */}
-        <div className="w-2/5 bg-white border-r border-gray-200 overflow-y-auto">
+        <div className="w-full lg:w-2/5 bg-white border-r-0 lg:border-r border-gray-200 overflow-y-auto max-h-[50vh] lg:max-h-none">
           <WizardPanel />
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="w-3/5 bg-gray-100 overflow-y-auto">
+        <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto max-h-[50vh] lg:max-h-none">
           <CVPreview />
         </div>
       </div>
