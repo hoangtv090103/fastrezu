@@ -53,7 +53,7 @@ const handleAnalyzeJD = async () => {
     <div className="p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          Phân tích Mô tả Công việc (JD)
+          Phân tích Mô tả công việc (JD)
         </h3>
         <p className="body-text text-gray-600 mb-4">
           Dán mô tả công việc bạn muốn ứng tuyển để AI phân tích và trích xuất từ khóa quan trọng.

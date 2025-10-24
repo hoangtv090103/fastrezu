@@ -12,15 +12,22 @@ export default openai;
 export async function callOpenAI(
   systemPrompt: string,
   userMessage: string,
+  options: { 
+    responseFormat?: 'json_object' | 'text',
+    temperature?: number 
+  } = {}
 ) {
   try {
+    const { responseFormat = 'json_object', temperature = 0.3 } = options;
+    
     const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || 'gpt-4o',
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage }
       ],
-      temperature: 0.3,
+      temperature,
+      ...(responseFormat === 'json_object' && { response_format: { type: "json_object" } })
     });
 
     const content = response.choices[0]?.message?.content;
@@ -28,7 +35,12 @@ export async function callOpenAI(
       throw new Error(`No response from AI service`);
     }
 
-    // Clean the content to remove markdown code blocks if present
+    // If using json_object format, parse directly
+    if (responseFormat === 'json_object') {
+      return JSON.parse(content);
+    }
+
+    // For text format, clean and parse as before
     let cleanedContent = content.trim();
     
     // Remove markdown code blocks
@@ -39,6 +51,34 @@ export async function callOpenAI(
     }
 
     return JSON.parse(cleanedContent);
+  } catch (error) {
+    console.error('AI API error:', error);
+    throw new Error('Failed to get AI response');
+  }
+}
+
+// Helper function for text-only responses (no JSON parsing)
+export async function callOpenAIText(
+  systemPrompt: string,
+  userMessage: string,
+  temperature: number = 0.3
+) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: process.env.OPENAI_MODEL || 'gpt-4o',
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      temperature,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      throw new Error(`No response from AI service`);
+    }
+
+    return content.trim();
   } catch (error) {
     console.error('AI API error:', error);
     throw new Error('Failed to get AI response');

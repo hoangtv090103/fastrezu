@@ -15,10 +15,10 @@ export async function POST(request: NextRequest) {
 Your primary goal is to assess how well the CV aligns with the job requirements implied by the keywords, assign an overall ATS compatibility score (from 0 to 100), identify matched and missing keywords, provide a brief analysis breakdown, and offer actionable suggestions for improvement.
 
 **Scoring Criteria (approximate weighting):**
-1.  **Keyword Match (60%):** How many "jdKeywords" are present in the "cvData"? Are they used in relevant contexts (e.g., job titles, achievements)? Are important keywords repeated appropriately?
-2.  **Quantifiable Achievements (25%):** Does the CV use numbers, percentages, or specific metrics to demonstrate impact, especially in the 'experience' and 'projects' sections?
-3.  **Relevance & Clarity (10%):** Is the content (especially 'summary' and 'experience') relevant to the likely role based on the keywords? Is it clearly written?
-4.  **Completeness (5%):** Are essential sections like 'personal_info', 'experience', 'education', 'skills' present and filled?
+1.  **Keyword Match (40%):** How many "jdKeywords" are present in the "cvData"? Are they used in relevant contexts (e.g., job titles, achievements)? Are important keywords repeated appropriately?
+2.  **Completeness (25%):** Are essential sections like 'personal_info', 'experience', 'education', 'skills' present and filled with meaningful content?
+3.  **Formatting (20%):** Is the CV well-structured, readable, and follows professional formatting standards? Are sections clearly organized?
+4.  **Relevance (15%):** Is the content (especially 'summary' and 'experience') relevant to the likely role based on the keywords? Is it clearly written and targeted?
 
 You MUST output *only* a valid JSON object. Do not include any introductory text, concluding remarks, or explanations outside the JSON structure.
 
@@ -27,10 +27,10 @@ The JSON object should adhere strictly to the following structure:
 {
   "score": <number between 0 and 100>,
   "analysis": {
-    "keyword_match_percentage": <number between 0 and 100, estimate based on keyword presence/density>,
-    "achievement_quantification_level": <string, e.g., "Low", "Medium", "High">,
-    "relevance_clarity_level": <string, e.g., "Needs Improvement", "Acceptable", "Good">,
-    "completeness_score": <number between 0 and 100, based on presence of key sections>
+    "keyword_match": <number between 0 and 100, estimate based on keyword presence/density>,
+    "completeness": <number between 0 and 100, based on presence of key sections>,
+    "formatting": <number between 0 and 100, based on CV structure and readability>,
+    "relevance": <number between 0 and 100, based on content relevance to job requirements>
   },
   "suggestions": [
     "<string, actionable suggestion 1, e.g., 'Thêm từ khóa X vào phần Kinh nghiệm'>",
@@ -46,6 +46,13 @@ The JSON object should adhere strictly to the following structure:
     ...
   ]
 }
+
+**Detailed Scoring Instructions:**
+
+- **keyword_match**: Calculate percentage of jdKeywords found in cvData. Score 0-100 based on keyword presence and density.
+- **completeness**: Score 0-100 based on presence and quality of all essential CV sections (personal_info, summary, experience, education, skills).
+- **formatting**: Score 0-100 based on CV structure, readability, professional appearance, and organization.
+- **relevance**: Score 0-100 based on how well CV content aligns with the target job role and requirements.
 
 Be strict in evaluating keyword presence. Suggestions should be specific and helpful for improving the ATS score. Ensure the score reflects the combined evaluation based on the criteria.`;
 

@@ -4,9 +4,10 @@ interface StepNavigationProps {
   currentStep: number;
   totalSteps: number;
   onStepChange: (step: number) => void;
+  stepTitles: string[];
 }
 
-export default function StepNavigation({ currentStep, totalSteps, onStepChange }: StepNavigationProps) {
+export default function StepNavigation({ currentStep, totalSteps, onStepChange, stepTitles }: StepNavigationProps) {
   const steps = Array.from({ length: totalSteps }, (_, i) => i);
 
   return (
@@ -48,7 +49,7 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange }
             }`}
             style={{ width: `${100 / totalSteps}%` }}
           >
-            Bước {step + 1}
+            {stepTitles[step] || `Bước ${step + 1}`}
           </span>
         ))}
       </div>

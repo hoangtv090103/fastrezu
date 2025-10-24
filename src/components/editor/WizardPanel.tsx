@@ -13,15 +13,15 @@ import CertificationsStep from "@/components/editor/steps/CertificationsStep";
 import ReviewStep from "@/components/editor/steps/ReviewStep";
 
 const STEPS = [
-  { id: 0, title: "Phân tích JD", component: JDAnalysisStep },
-  { id: 1, title: "Thông tin cá nhân", component: PersonalInfoStep },
-  { id: 2, title: "Tóm tắt nghề nghiệp", component: SummaryStep },
-  { id: 3, title: "Kinh nghiệm làm việc", component: ExperienceStep },
+  { id: 0, title: "JD", component: JDAnalysisStep },
+  { id: 1, title: "Thông tin", component: PersonalInfoStep },
+  { id: 2, title: "Nghề nghiệp", component: SummaryStep },
+  { id: 3, title: "Kinh nghiệm", component: ExperienceStep },
   { id: 4, title: "Học vấn", component: EducationStep },
   { id: 5, title: "Dự án", component: ProjectsStep },
   { id: 6, title: "Kỹ năng", component: SkillsStep },
   { id: 7, title: "Chứng chỉ", component: CertificationsStep },
-  { id: 8, title: "Xem lại & Chấm điểm", component: ReviewStep },
+  { id: 8, title: "Review", component: ReviewStep },
 ];
 
 export default function WizardPanel() {
@@ -44,6 +44,7 @@ export default function WizardPanel() {
           currentStep={state.currentStep}
           totalSteps={STEPS.length}
           onStepChange={handleStepChange}
+          stepTitles={STEPS.map(step => step.title)}
         />
       </div>
 

@@ -27,7 +27,7 @@ export default function CVPreview() {
       <div className="p-6 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
           <h2 className="heading-feature text-lg text-gray-900">
-            Xem trước CV
+            Preview
           </h2>
           <ATSScoreWidget score={state.cvData.ats_score} />
         </div>

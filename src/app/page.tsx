@@ -178,7 +178,7 @@ export default function Home() {
                 <span className="text-2xl">✍️</span>
               </div>
               <h3 className="heading-feature text-xl text-gray-900 mb-4 text-center">
-                AI Phân tích Mô tả Công việc (JD)
+                AI Phân tích Mô tả công việc (JD)
               </h3>
               <p className="body-text text-gray-600 text-center">
                 Dán mô tả công việc (JD) bạn muốn ứng tuyển vào. AI của chúng
