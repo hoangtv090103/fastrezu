@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 
 export default function ProjectsStep() {
   const { state, updateSection } = useCVEditor();
+  const [loadingStates, setLoadingStates] = useState<{
+    [key: string]: boolean;
+  }>({});
   
   const projects = (state.cvData?.sections.projects || []) as Record<string, unknown>[];
 
@@ -79,6 +83,9 @@ export default function ProjectsStep() {
     const achievement = achievements[achIndex];
     if (typeof achievement !== 'string' || !achievement.trim()) return;
 
+    const loadingKey = `improve-${projIndex}-${achIndex}`;
+    setLoadingStates(prev => ({ ...prev, [loadingKey]: true }));
+
     try {
       const response = await fetch('/api/ai/improve-bullet', {
         method: 'POST',
@@ -98,6 +105,8 @@ export default function ProjectsStep() {
       }
     } catch (error) {
       console.error('Error improving achievement:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
     }
   };
 
@@ -196,7 +205,7 @@ export default function ProjectsStep() {
                     />
                     <AIAssistButton
                       onClick={() => handleImproveAchievement(projIndex, achIndex)}
-                      loading={false}
+                      loading={loadingStates[`improve-${projIndex}-${achIndex}`] || false}
                       label="AI"
                       disabled={!achievement.trim()}
                     />

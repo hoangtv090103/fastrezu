@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
+  const [loadingStates, setLoadingStates] = useState<{
+    [key: string]: boolean;
+  }>({});
   
   const experience = (state.cvData?.sections.experience || []) as Record<string, unknown>[];
 
@@ -80,6 +84,9 @@ export default function ExperienceStep() {
     const achievement = achievements[achIndex];
     if (typeof achievement !== 'string' || !achievement.trim()) return;
 
+    const loadingKey = `improve-${expIndex}-${achIndex}`;
+    setLoadingStates(prev => ({ ...prev, [loadingKey]: true }));
+
     try {
       const response = await fetch('/api/ai/improve-bullet', {
         method: 'POST',
@@ -99,6 +106,8 @@ export default function ExperienceStep() {
       }
     } catch (error) {
       console.error('Error improving achievement:', error);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
     }
   };
 
@@ -111,6 +120,9 @@ export default function ExperienceStep() {
       alert('Vui lòng nhập chức vụ trước khi sử dụng AI');
       return;
     }
+
+    const loadingKey = `write-${expIndex}`;
+    setLoadingStates(prev => ({ ...prev, [loadingKey]: true }));
 
     try {
       const response = await fetch('/api/ai/write-experience', {
@@ -136,6 +148,8 @@ export default function ExperienceStep() {
     } catch (error) {
       console.error('Error writing experience with AI:', error);
       alert('Không thể kết nối đến server. Vui lòng kiểm tra kết nối internet và thử lại.');
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
     }
   };
 
@@ -238,7 +252,7 @@ export default function ExperienceStep() {
                 </label>
                 <AIAssistButton
                   onClick={() => handleAIWriteExperience(expIndex)}
-                  loading={false}
+                  loading={loadingStates[`write-${expIndex}`] || false}
                   label="Để AI viết giúp bạn ✍️"
                   disabled={!getStringValue(exp, 'job_title').trim()}
                 />
@@ -254,7 +268,7 @@ export default function ExperienceStep() {
                   />
                   <AIAssistButton
                     onClick={() => handleImproveAchievement(expIndex, achIndex)}
-                    loading={false}
+                    loading={loadingStates[`improve-${expIndex}-${achIndex}`] || false}
                     label="AI"
                     disabled={!achievement.trim()}
                   />
