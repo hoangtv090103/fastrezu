@@ -35,7 +35,7 @@ Số điện thoại: ${personalInfo.phone || 'Chưa cung cấp'}`;
     // Add experience information if available
     if (experience && Array.isArray(experience) && experience.length > 0) {
       userMessage += `\n\nKinh nghiệm làm việc:`;
-      experience.forEach((exp: any, index: number) => {
+      experience.forEach((exp: { title?: string; company?: string; start_date?: string; end_date?: string; description?: string }, index: number) => {
         userMessage += `\n${index + 1}. ${exp.title || 'Vị trí'} tại ${exp.company || 'Công ty'} (${exp.start_date || 'Năm bắt đầu'} - ${exp.end_date || 'Hiện tại'})`;
         if (exp.description) {
           userMessage += `\n   Mô tả: ${exp.description}`;

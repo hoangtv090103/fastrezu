@@ -11,6 +11,13 @@ interface EditorPageProps {
 
 export default async function EditorPage({ params }: EditorPageProps) {
   const { cvId } = await params;
+  
+  // Validate cvId parameter
+  if (!cvId || typeof cvId !== 'string') {
+    console.error('Invalid cvId parameter:', cvId);
+    redirect("/dashboard");
+  }
+
   const supabase = await createClient();
   
   const {
@@ -22,18 +29,27 @@ export default async function EditorPage({ params }: EditorPageProps) {
   }
 
   // Verify CV ownership
-  const { data: cv, error } = await (supabase as any)
+  const { data: cv, error } = await supabase
     .from('cvs')
     .select('user_id, title')
     .eq('id', cvId)
     .single();
 
-
   if (error) {
+    console.error('Error fetching CV:', error);
     redirect("/dashboard");
   }
 
-  if (!cv || cv.user_id !== user.id) {
+  if (!cv) {
+    console.error('CV not found:', cvId);
+    redirect("/dashboard");
+  }
+
+  // Type assertion to fix TypeScript issue
+  const cvData = cv as { user_id: string; title: string };
+  
+  if (cvData.user_id !== user.id) {
+    console.error('User does not own CV:', { cvId, userId: user.id, cvUserId: cvData.user_id });
     redirect("/dashboard");
   }
 

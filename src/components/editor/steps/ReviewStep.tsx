@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
@@ -24,7 +24,7 @@ export default function ReviewStep() {
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [isScoring, setIsScoring] = useState(false);
 
-  const handleScoreCV = async () => {
+  const handleScoreCV = useCallback(async () => {
     if (!state.cvData) return;
 
     setIsScoring(true);
@@ -51,14 +51,14 @@ export default function ReviewStep() {
     } finally {
       setIsScoring(false);
     }
-  };
+  }, [state.cvData]);
 
   // Auto-score when component mounts if we have JD analysis
   useEffect(() => {
     if (state.cvData?.jd_analysis && !scoringResult) {
       handleScoreCV();
     }
-  }, [state.cvData?.jd_analysis]);
+  }, [state.cvData?.jd_analysis, handleScoreCV, scoringResult]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';

@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import { validatePersonalInfo } from "@/lib/validation";
 
 export default function PersonalInfoStep() {
   const { state, updateSection } = useCVEditor();
   
-  const personalInfo = (state.cvData?.sections.personal_info || {}) as Record<string, unknown>;
+  const personalInfo = useMemo(() => 
+    (state.cvData?.sections.personal_info || {}) as Record<string, unknown>, 
+    [state.cvData?.sections.personal_info]
+  );
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleInputChange = (field: string, value: string) => {

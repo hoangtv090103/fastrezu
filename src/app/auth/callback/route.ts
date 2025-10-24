@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
             subscription_tier: 'beta_free'
           }
           
-          const { error: profileError } = await (supabase as any)
+          const { error: profileError } = await supabase
             .from('user_profiles')
             .insert(profileData)
 

@@ -12,22 +12,16 @@ export default openai;
 export async function callOpenAI(
   systemPrompt: string,
   userMessage: string,
-  model: string = 'gpt-4o'
 ) {
-  let response: any;
-  
   try {
-    
-    const requestConfig: any = {
+    const response = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || 'gpt-4o',
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage }
       ],
       temperature: 0.3,
-    };
-
-    response = await openai.chat.completions.create(requestConfig);
+    });
 
     const content = response.choices[0]?.message?.content;
     if (!content) {
@@ -47,9 +41,6 @@ export async function callOpenAI(
     return JSON.parse(cleanedContent);
   } catch (error) {
     console.error('AI API error:', error);
-    if (error instanceof SyntaxError) {
-      console.error('JSON parsing failed. Raw content was:', response?.choices?.[0]?.message?.content);
-    }
     throw new Error('Failed to get AI response');
   }
 }

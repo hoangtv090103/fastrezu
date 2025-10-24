@@ -185,7 +185,7 @@ export function CVEditorProvider({
 
         // Transform sections into object
         const sectionsData: { [key: string]: Record<string, unknown> } = {};
-        sections?.forEach((section: any) => {
+        sections?.forEach((section: { section_type: string; data: Record<string, unknown> }) => {
           sectionsData[section.section_type] = section.data;
         });
 

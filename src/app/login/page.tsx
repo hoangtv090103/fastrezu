@@ -8,7 +8,7 @@ import MagicLinkForm from "@/components/auth/MagicLinkForm";
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const router = useRouter();
+  const _router = useRouter();
   const supabase = createClient();
 
   const handleMagicLink = async (email: string) => {
