@@ -22,24 +22,52 @@ export async function POST(request: NextRequest) {
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('extract_skills', language as CVLanguage);
 
-    const userMessage = language === 'vi' ? `Dựa trên danh sách từ khóa JD sau đây, hãy trích xuất và phân loại các kỹ năng Kỹ thuật (tiếng Anh) và Kỹ năng Mềm (tiếng Việt):\n\nTừ khóa JD:\n${JSON.stringify(
-      jdKeywords
-    )}\n\nHãy trả về kết quả dưới dạng JSON theo cấu trúc yêu cầu.` : `Based on the following JD keywords list, please extract and categorize Technical Skills (in English) and Soft Skills (in English):\n\nJD Keywords:\n${JSON.stringify(
-      jdKeywords
-    )}\n\nPlease return the result in JSON format according to the required structure.`;
+    const userMessage = language === 'vi' ? `Hãy phân tích danh sách từ khóa JD sau và trích xuất các kỹ năng liên quan:
+
+Từ khóa JD: ${jdKeywords.join(', ')}
+
+Yêu cầu:
+- Trích xuất kỹ năng kỹ thuật (công nghệ, công cụ, ngôn ngữ lập trình) - viết bằng tiếng Anh
+- Trích xuất kỹ năng mềm (giao tiếp, làm việc nhóm, lãnh đạo) - viết bằng tiếng Việt
+- Chỉ trích xuất kỹ năng thực sự có trong từ khóa, không thêm kỹ năng chung chung
+- Trả về JSON với format: {"technicalSkills": [...], "softSkills": [...]}` : `Please analyze the following JD keywords and extract relevant skills:
+
+JD Keywords: ${jdKeywords.join(', ')}
+
+Requirements:
+- Extract technical skills (technologies, tools, programming languages) - write in English
+- Extract soft skills (communication, teamwork, leadership) - write in English
+- Only extract skills that are actually present in the keywords, don't add generic skills
+- Return JSON with format: {"technicalSkills": [...], "softSkills": [...]}`;
 
     // Call AI API
-    console.log("Extracting skills from JD keywords...");
     const result = await callOpenAI(systemPrompt, userMessage);
 
-    if (!result.technicalSkills || !result.softSkills) {
-      throw new Error("AI did not generate skills properly");
+    // Extract skills from AI response with better validation
+    const technicalSkills = result?.technicalSkills || [];
+    const softSkills = result?.softSkills || [];
+
+    // Validate response format
+    if (!Array.isArray(technicalSkills)) {
+      console.error("Technical skills is not an array:", technicalSkills);
+      throw new Error("AI did not return technical skills as an array");
+    }
+
+    if (!Array.isArray(softSkills)) {
+      console.error("Soft skills is not an array:", softSkills);
+      throw new Error("AI did not return soft skills as an array");
+    }
+
+    // Validate that we have at least some skills
+    if (technicalSkills.length === 0 && softSkills.length === 0) {
+      console.warn("No skills extracted from JD keywords");
+      // Don't throw error, just return empty arrays
     }
 
     return NextResponse.json(
       {
-        technicalSkills: result.technicalSkills,
-        softSkills: result.softSkills,
+        technicalSkills,
+        softSkills,
       },
       { status: 200 }
     );
