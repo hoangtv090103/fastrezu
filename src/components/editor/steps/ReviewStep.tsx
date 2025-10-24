@@ -67,7 +67,6 @@ export default function ReviewStep() {
           // Save to database
           try {
             await saveCV();
-            console.log('ATS score saved to database:', result.score);
           } catch (error) {
             console.error('Failed to save ATS score to database:', error);
           }

@@ -29,7 +29,15 @@ export async function POST(request: NextRequest) {
     const userMessage = userMessageTemplates.analyze_jd(jdText)
 
     // Gọi OpenAI API
-    const analysis = await callOpenAI(systemPrompt, userMessage);
+    let analysis;
+    try {
+      analysis = await callOpenAI(systemPrompt, userMessage);
+    } catch (openaiError) {
+      console.error('OpenAI API error:', openaiError);
+      return NextResponse.json({ 
+        error: 'Lỗi kết nối đến dịch vụ AI. Vui lòng thử lại sau.' 
+      }, { status: 502 });
+    }
 
     // Lưu JD analysis vào database
     const cookieStore = await cookies()
@@ -87,13 +95,21 @@ export async function POST(request: NextRequest) {
     if (saveError) {
       console.error('Error saving JD analysis:', saveError)
       // Don't fail the request, just log the error
-    } else {
-      console.log('JD analysis saved to database:', jdAnalysis?.id)
     }
 
     return NextResponse.json(analysis, { status: 200 })
   } catch (error) {
     console.error('JD Analysis API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    
+    // Handle specific error types
+    if (error instanceof SyntaxError) {
+      return NextResponse.json({ 
+        error: 'Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra lại.' 
+      }, { status: 400 });
+    }
+    
+    return NextResponse.json({ 
+      error: 'Có lỗi xảy ra trên server. Vui lòng thử lại sau.' 
+    }, { status: 500 });
   }
 }

@@ -294,7 +294,6 @@ export function CVEditorProvider({
         throw new Error('User not authenticated');
       }
 
-      console.log('Saving CV with data:', { cvId, title: state.cvData.title, sections: Object.keys(state.cvData.sections) });
 
       // Update CV basic info
       const { error: cvError } = await supabase
@@ -351,7 +350,6 @@ export function CVEditorProvider({
         }
       }
 
-      console.log('CV saved successfully');
       dispatch({ type: 'SET_SAVE_STATUS', payload: 'saved' });
     } catch (error) {
       console.error('Error saving CV:', error);

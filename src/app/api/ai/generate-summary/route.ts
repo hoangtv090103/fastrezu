@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     const userMessage = userMessageTemplates.generate_summary(personalInfo, experience, jdKeywords)
 
     // Call AI API
-    console.log('Generating professional summary...');
     const result = await callOpenAI(systemPrompt, userMessage);
 
     if (!result.summary) {

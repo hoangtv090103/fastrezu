@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CVData } from "@/contexts/CVEditorContext";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import toast from "react-hot-toast";
 
 interface ExportButtonsProps {
   cvData: CVData;
@@ -21,24 +22,26 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
         throw new Error('CV template not found');
       }
 
-      // Create canvas from HTML element
+      // Create canvas from HTML element with improved settings
       const canvas = await html2canvas(cvElement as HTMLElement, {
-        scale: 2, // Higher quality
+        scale: 3, // Higher quality for better text rendering
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: cvElement.scrollWidth,
         height: cvElement.scrollHeight,
+        logging: false, // Disable console logging
         ignoreElements: (element) => {
           // Skip elements that might cause issues
           return element.classList.contains('ignore-pdf');
         },
         onclone: (clonedDoc) => {
-          // Convert modern CSS color functions to hex/rgb for PDF compatibility
+          // CSS for PDF rendering
           const style = clonedDoc.createElement('style');
           style.textContent = `
             * {
               color: inherit !important;
+              font-family: 'Helvetica', 'Arial', sans-serif !important;
             }
             .text-blue-600 {
               color: #2563eb !important;
@@ -70,37 +73,63 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
             .border-gray-200 {
               border-color: #e5e7eb !important;
             }
+            /* Ensure proper text rendering */
+            h1, h2, h3, h4, h5, h6 {
+              font-weight: bold !important;
+              line-height: 1.2 !important;
+            }
+            p, li, span {
+              line-height: 1.4 !important;
+            }
+            /* Remove any shadows or gradients that might not render well */
+            * {
+              box-shadow: none !important;
+              text-shadow: none !important;
+            }
           `;
           clonedDoc.head.appendChild(style);
         }
       });
 
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png');
+      // Create PDF with better settings
+      const imgData = canvas.toDataURL('image/png', 0.95); // Slight compression for smaller file size
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
+        compress: true, // Enable compression
       });
 
-      // Calculate dimensions
+      // Calculate dimensions with proper margins
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10; // 10mm margin
+      const availableWidth = pdfWidth - (margin * 2);
+      const availableHeight = pdfHeight - (margin * 2);
+      
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
+      const ratio = Math.min(availableWidth / imgWidth, availableHeight / imgHeight);
+      
+      const finalWidth = imgWidth * ratio;
+      const finalHeight = imgHeight * ratio;
+      const imgX = (pdfWidth - finalWidth) / 2;
+      const imgY = margin;
 
       // Add image to PDF
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
 
-      // Download PDF
-      const fileName = `${cvData.title || 'CV'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      // Download PDF with better filename
+      const sanitizedTitle = (cvData.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
       pdf.save(fileName);
+      
+      // Show success message
+      toast.success('PDF đã được tạo thành công!');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      toast.error(`Có lỗi xảy ra khi tạo PDF: ${errorMessage}. Vui lòng thử lại.`);
     } finally {
       setIsExporting(false);
     }
@@ -171,13 +200,13 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
 
       // Copy to clipboard
       navigator.clipboard.writeText(textCV).then(() => {
-        alert('Đã sao chép CV vào clipboard!');
+        toast.success('Đã sao chép CV vào clipboard!');
       }).catch(() => {
-        alert('Không thể sao chép vào clipboard. Vui lòng thử lại.');
+        toast.error('Không thể sao chép vào clipboard. Vui lòng thử lại.');
       });
     } catch (error) {
       console.error('Error copying text:', error);
-      alert('Có lỗi xảy ra khi sao chép văn bản. Vui lòng thử lại.');
+      toast.error('Có lỗi xảy ra khi sao chép văn bản. Vui lòng thử lại.');
     }
   };
 

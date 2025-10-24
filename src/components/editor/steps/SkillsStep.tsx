@@ -70,7 +70,6 @@ export default function SkillsStep() {
       if (response.ok) {
         const { technicalSkills, softSkills } = await response.json();
         
-        console.log('Received skills from AI:', { technicalSkills, softSkills });
         
         // Filter out skills that already exist
         const newTechnicalSkills = technicalSkills.filter((skill: string) => 
@@ -81,7 +80,6 @@ export default function SkillsStep() {
           skill.trim() && !skills.soft.includes(skill.trim())
         );
         
-        console.log('New skills to add:', { newTechnicalSkills, newSoftSkills });
         
         // Update skills section with all new skills at once
         if (newTechnicalSkills.length > 0 || newSoftSkills.length > 0) {
