@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 Từ khóa JD: ${jdKeywords.join(', ')}
 
 Yêu cầu:
-- Trích xuất kỹ năng kỹ thuật (công nghệ, công cụ, ngôn ngữ lập trình) - viết bằng tiếng Anh
+- Trích xuất kỹ năng chuyên môn (công nghệ, công cụ, ngôn ngữ lập trình) - viết bằng tiếng Anh
 - Trích xuất kỹ năng mềm (giao tiếp, làm việc nhóm, lãnh đạo) - viết bằng tiếng Việt
 - Chỉ trích xuất kỹ năng thực sự có trong từ khóa, không thêm kỹ năng chung chung
 - Trả về JSON với format: {"technicalSkills": [...], "softSkills": [...]}` : `Please analyze the following JD keywords and extract relevant skills:

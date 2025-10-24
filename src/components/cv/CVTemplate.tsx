@@ -28,7 +28,7 @@ const getTemplateLabels = (language: 'vi' | 'en') => {
       projectName: "Tên dự án",
       viewProject: "Xem dự án",
       technologies: "Công nghệ",
-      technicalSkills: "Kỹ năng kỹ thuật",
+      technicalSkills: "Kỹ năng chuyên môn",
       softSkills: "Kỹ năng mềm",
       certificationName: "Tên chứng chỉ",
       issueDate: "Ngày cấp",

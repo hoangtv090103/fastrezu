@@ -129,32 +129,32 @@ export default function ReviewStep() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">
-                    {scoringResult.analysis.keyword_match || 0}%
+                    {scoringResult.analysis?.keyword_match || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Từ khóa khớp</div>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">
-                    {scoringResult.analysis.completeness || 0}%
+                    {scoringResult.analysis?.completeness || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Hoàn thiện</div>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <div className="text-2xl font-bold text-purple-600">
-                    {scoringResult.analysis.formatting || 0}%
+                    {scoringResult.analysis?.formatting || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Định dạng</div>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">
-                    {scoringResult.analysis.relevance || 0}%
+                    {scoringResult.analysis?.relevance || 0}%
                   </div>
                   <div className="text-xs text-gray-600">Liên quan</div>
                 </div>
               </div>
 
               {/* Keywords Analysis */}
-              {scoringResult.matchedKeywords.length > 0 && (
+              {scoringResult.matchedKeywords && scoringResult.matchedKeywords.length > 0 && (
                 <div>
                   <h5 className="text-sm font-medium text-green-700 mb-2">
                     ✓ Từ khóa đã khớp ({scoringResult.matchedKeywords.length || 0}):
@@ -169,7 +169,7 @@ export default function ReviewStep() {
                 </div>
               )}
 
-              {scoringResult.missingKeywords.length > 0 && (
+              {scoringResult.missingKeywords && scoringResult.missingKeywords.length > 0 && (
                 <div>
                   <h5 className="text-sm font-medium text-red-700 mb-2">
                     ⚠️ Từ khóa còn thiếu ({scoringResult.missingKeywords.length}):
@@ -185,7 +185,7 @@ export default function ReviewStep() {
               )}
 
               {/* Suggestions */}
-              {scoringResult.suggestions.length > 0 && (
+              {scoringResult.suggestions && scoringResult.suggestions.length > 0 && (
                 <div>
                   <h5 className="text-sm font-medium text-gray-700 mb-2">
                     💡 Gợi ý cải thiện:

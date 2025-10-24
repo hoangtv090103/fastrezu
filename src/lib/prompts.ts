@@ -299,7 +299,7 @@ You MUST output *only* a valid JSON object with the following structure:
 
 **Hướng dẫn:**
 1. Phân tích từng từ khóa trong danh sách JD keywords
-2. Trích xuất kỹ năng kỹ thuật (hard skills) - viết bằng tiếng Anh
+2. Trích xuất Kỹ năng chuyên môn (hard skills) - viết bằng tiếng Anh
 3. Trích xuất kỹ năng mềm (soft skills) - viết bằng tiếng Việt
 4. Chỉ trích xuất kỹ năng thực sự có trong từ khóa, không thêm kỹ năng chung chung
 5. Loại bỏ trùng lặp và sắp xếp theo thứ tự quan trọng
@@ -311,7 +311,7 @@ You MUST output *only* a valid JSON object with the following structure:
 Bạn PHẢI trả về CHỈ một JSON object hợp lệ với cấu trúc sau:
 
 {
-  "technicalSkills": ["<string> Kỹ năng kỹ thuật 1", "<string> Kỹ năng kỹ thuật 2"],
+  "technicalSkills": ["<string> Kỹ năng chuyên môn 1", "<string> Kỹ năng chuyên môn 2"],
   "softSkills": ["<string> Kỹ năng mềm 1", "<string> Kỹ năng mềm 2"]
 }`,
     en: `You are FastRezu AI, an expert JD analyst specializing in extracting skills for the international job market.

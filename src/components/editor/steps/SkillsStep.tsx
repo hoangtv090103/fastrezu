@@ -106,7 +106,7 @@ export default function SkillsStep() {
           Kỹ năng
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          Liệt kê các kỹ năng kỹ thuật và kỹ năng mềm của bạn. Sử dụng từ khóa phù hợp với công việc bạn đang ứng tuyển.
+          Liệt kê các Kỹ năng chuyên môn và kỹ năng mềm của bạn. Sử dụng từ khóa phù hợp với công việc bạn đang ứng tuyển.
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function SkillsStep() {
         {/* Technical Skills */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h4 className="font-medium text-gray-900">Kỹ năng kỹ thuật</h4>
+            <h4 className="font-medium text-gray-900">Kỹ năng chuyên môn</h4>
             {state.cvData?.jd_analysis?.keywords && (
               <AIAssistButton
                 onClick={handleExtractSkillsFromJD}
@@ -146,7 +146,7 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder="Thêm kỹ năng kỹ thuật..."
+                placeholder="Thêm Kỹ năng chuyên môn..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
