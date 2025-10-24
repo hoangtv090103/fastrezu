@@ -1,6 +1,7 @@
 "use client";
 
 import { CVData } from "@/contexts/CVEditorContext";
+import { parseMarkdown } from "@/lib/markdown";
 
 interface CVTemplateProps {
   cvData: CVData;
@@ -93,19 +94,19 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
       fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', 
       fontSize: '11pt', 
       lineHeight: '1.5',
-      padding: '2rem'
+      padding: '1rem'
     }}>
       {/* Header */}
-      <div className="text-center mb-8 border-b-2 border-blue-600 pb-6">
-        <h1 className="text-3xl font-bold mb-3 text-gray-900" style={{ 
-          fontSize: '24pt', 
+      <div className="text-center mb-6 sm:mb-8 border-b-2 border-blue-600 pb-4 sm:pb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-gray-900" style={{ 
+          fontSize: '20pt', 
           fontWeight: '700',
           letterSpacing: '-0.5px'
         }}>
           {getString(personalInfo, 'full_name') || labels.fullName}
         </h1>
-        <div className="text-sm text-gray-600 space-y-1">
-          <div className="flex justify-center items-center gap-4 flex-wrap">
+        <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+          <div className="flex justify-center items-center gap-2 sm:gap-4 flex-wrap">
             {getString(personalInfo, 'email') && (
               <span className="flex items-center gap-1">
                 <span className="w-1 h-1 bg-blue-600 rounded-full"></span>
@@ -125,7 +126,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
               </span>
             )}
           </div>
-          <div className="flex justify-center items-center gap-4 flex-wrap">
+          <div className="flex justify-center items-center gap-2 sm:gap-4 flex-wrap">
             {getString(personalInfo, 'linkedin') && (
               <span className="text-blue-600 hover:text-blue-800 transition-colors">
                 LinkedIn: {getString(personalInfo, 'linkedin')}
@@ -157,7 +158,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             lineHeight: '1.6',
             color: '#374151'
           }}>
-            {getString(summary, 'content')}
+            {parseMarkdown(getString(summary, 'content'))}
           </p>
         </div>
       )}
@@ -197,7 +198,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                   {exp.achievements.map((achievement: string, achIndex: number) => (
                     <li key={achIndex} className="flex items-start">
                       <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                      <span className="text-gray-700 leading-relaxed">{achievement}</span>
+                      <span className="text-gray-700 leading-relaxed">{parseMarkdown(achievement)}</span>
                     </li>
                   ))}
                 </ul>
@@ -273,7 +274,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
               </div>
               {renderValue(project.description) && (
                 <p className="text-sm mb-2" style={{ fontSize: '10pt' }}>
-                  {renderValue(project.description)}
+                  {parseMarkdown(String(renderValue(project.description)))}
                 </p>
               )}
               {renderValue(project.technologies) && (
@@ -285,7 +286,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                 <ul className="list-disc list-inside text-sm ml-4 mt-2" style={{ fontSize: '10pt' }}>
                   {project.achievements.map((achievement: string, achIndex: number) => (
                     <li key={achIndex} className="mb-1">
-                      {achievement}
+                      {parseMarkdown(achievement)}
                     </li>
                   ))}
                 </ul>

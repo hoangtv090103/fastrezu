@@ -24,9 +24,9 @@ export default function CVPreview() {
   return (
     <div className="h-full flex flex-col">
       {/* Header with ATS Score */}
-      <div className="p-6 border-b border-gray-200 bg-white">
+      <div className="p-4 sm:p-6 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
-          <h2 className="heading-feature text-lg text-gray-900">
+          <h2 className="heading-feature text-base sm:text-lg text-gray-900">
             Preview
           </h2>
           <ATSScoreWidget score={state.cvData.ats_score} />
@@ -34,7 +34,7 @@ export default function CVPreview() {
       </div>
 
       {/* CV Preview */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">
             <CVTemplate cvData={state.cvData} />
@@ -43,7 +43,7 @@ export default function CVPreview() {
       </div>
 
       {/* Export Buttons */}
-      <div className="p-6 border-t border-gray-200 bg-white">
+      <div className="p-4 sm:p-6 border-t border-gray-200 bg-white">
         <ExportButtons cvData={state.cvData} />
       </div>
     </div>
