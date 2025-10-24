@@ -18,6 +18,15 @@ export interface CVData {
     keywords: string[];
     analysis: Record<string, unknown>;
   };
+  ats_analysis?: {
+    keyword_match: number;
+    formatting: number;
+    completeness: number;
+    relevance: number;
+    matched_keywords: string[];
+    missing_keywords: string[];
+    suggestions: string[];
+  };
 }
 
 export interface CVEditorState {
@@ -38,7 +47,8 @@ type CVEditorAction =
   | { type: 'SET_SAVE_STATUS'; payload: 'saved' | 'saving' | 'error' }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_JD_ANALYSIS'; payload: { keywords: string[]; analysis: Record<string, unknown> } }
-  | { type: 'SET_LANGUAGE'; payload: CVLanguage };
+  | { type: 'SET_LANGUAGE'; payload: CVLanguage }
+  | { type: 'UPDATE_CV_DATA'; payload: CVData };
 
 const initialState: CVEditorState = {
   currentStep: 0,
@@ -85,6 +95,8 @@ function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditor
       };
     case 'SET_LANGUAGE':
       return { ...state, selectedLanguage: action.payload };
+    case 'UPDATE_CV_DATA':
+      return { ...state, cvData: action.payload };
     default:
       return state;
   }
@@ -96,6 +108,7 @@ interface CVEditorContextType {
   setCurrentStep: (step: number) => void;
   setJDAnalysis: (keywords: string[], analysis: Record<string, unknown>) => void;
   setLanguage: (language: CVLanguage) => void;
+  updateCVData: (cvData: CVData) => void;
   saveCV: () => Promise<void>;
 }
 
@@ -240,6 +253,7 @@ export function CVEditorProvider({
             keywords: jdAnalysis.keywords_extracted,
             analysis: jdAnalysis.analysis_result,
           } : undefined,
+          ats_analysis: sectionsData.ats_analysis as CVData['ats_analysis'],
         };
 
         if (mounted) {
@@ -318,6 +332,25 @@ export function CVEditorProvider({
         }
       }
 
+      // Save ATS analysis if it exists
+      if (state.cvData.ats_analysis) {
+        const { error: atsError } = await supabase
+          .from('cv_sections')
+          .upsert({
+            cv_id: cvId,
+            section_type: 'ats_analysis',
+            data: state.cvData.ats_analysis,
+            order_index: getSectionOrder('ats_analysis'),
+          }, {
+            onConflict: 'cv_id,section_type'
+          });
+
+        if (atsError) {
+          console.error('ATS analysis update error:', atsError);
+          throw new Error(`Failed to update ATS analysis: ${atsError.message}`);
+        }
+      }
+
       console.log('CV saved successfully');
       dispatch({ type: 'SET_SAVE_STATUS', payload: 'saved' });
     } catch (error) {
@@ -363,6 +396,10 @@ export function CVEditorProvider({
     }
   };
 
+  const updateCVData = (cvData: CVData) => {
+    dispatch({ type: 'UPDATE_CV_DATA', payload: cvData });
+  };
+
   return (
     <CVEditorContext.Provider
       value={{
@@ -371,6 +408,7 @@ export function CVEditorProvider({
         setCurrentStep,
         setJDAnalysis,
         setLanguage,
+        updateCVData,
         saveCV,
       }}
     >
@@ -397,6 +435,7 @@ function getSectionOrder(sectionType: string): number {
     'projects': 4,
     'skills': 5,
     'certifications': 6,
+    'ats_analysis': 7,
   };
   return orderMap[sectionType] || 0;
 }

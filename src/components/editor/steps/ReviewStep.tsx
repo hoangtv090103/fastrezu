@@ -20,7 +20,7 @@ interface ScoringResult {
 }
 
 export default function ReviewStep() {
-  const { state } = useCVEditor();
+  const { state, updateCVData, saveCV } = useCVEditor();
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [isScoring, setIsScoring] = useState(false);
 
@@ -44,6 +44,34 @@ export default function ReviewStep() {
       if (response.ok) {
         const result = await response.json();
         setScoringResult(result);
+        
+        // Update CV data with ATS score and analysis
+        if (state.cvData && result.score !== undefined) {
+          const updatedCVData = {
+            ...state.cvData,
+            ats_score: result.score,
+            ats_analysis: {
+              keyword_match: result.analysis?.keyword_match || 0,
+              formatting: result.analysis?.formatting || 0,
+              completeness: result.analysis?.completeness || 0,
+              relevance: result.analysis?.relevance || 0,
+              matched_keywords: result.matchedKeywords || [],
+              missing_keywords: result.missingKeywords || [],
+              suggestions: result.suggestions || []
+            }
+          };
+          
+          // Update context with new data
+          updateCVData(updatedCVData);
+          
+          // Save to database
+          try {
+            await saveCV();
+            console.log('ATS score saved to database:', result.score);
+          } catch (error) {
+            console.error('Failed to save ATS score to database:', error);
+          }
+        }
       } else {
         console.error('Failed to score CV');
       }
