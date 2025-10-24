@@ -239,22 +239,19 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 - Focus on ATS optimization and Vietnamese market standards
 - Be constructive and specific in recommendations
 
-You MUST output *only* a valid JSON object with the following structure:
+You MUST output *only* a valid JSON object with the following structure. Do not include any text before or after the JSON:
 
 {
-  "overall_score": <number> (0-100),
-  "criteria_scores": {
-    "keywords_match": <number> (0-100),
-    "format_structure": <number> (0-100),
-    "content_quality": <number> (0-100),
-    "length_conciseness": <number> (0-100),
-    "contact_basic_info": <number> (0-100)
+  "score": 85,
+  "analysis": {
+    "keyword_match": 80,
+    "formatting": 90,
+    "completeness": 85,
+    "relevance": 88
   },
-  "feedback": {
-    "strengths": ["<string> Strength 1", "<string> Strength 2"],
-    "improvements": ["<string> Improvement 1", "<string> Improvement 2"],
-    "specific_recommendations": ["<string> Recommendation 1", "<string> Recommendation 2"]
-  }
+  "matchedKeywords": ["keyword1", "keyword2"],
+  "missingKeywords": ["keyword3", "keyword4"],
+  "suggestions": ["suggestion1", "suggestion2"]
 }`,
     en: `You are FastRezu AI, an expert ATS (Applicant Tracking System) analyst specializing in evaluating CVs for the international job market. Your task is to provide a comprehensive ATS score and detailed feedback.
 
@@ -273,22 +270,19 @@ You MUST output *only* a valid JSON object with the following structure:
 - Focus on ATS optimization and international market standards
 - Be constructive and specific in recommendations
 
-You MUST output *only* a valid JSON object with the following structure:
+You MUST output *only* a valid JSON object with the following structure. Do not include any text before or after the JSON:
 
 {
-  "overall_score": <number> (0-100),
-  "criteria_scores": {
-    "keywords_match": <number> (0-100),
-    "format_structure": <number> (0-100),
-    "content_quality": <number> (0-100),
-    "length_conciseness": <number> (0-100),
-    "contact_basic_info": <number> (0-100)
+  "score": 85,
+  "analysis": {
+    "keyword_match": 80,
+    "formatting": 90,
+    "completeness": 85,
+    "relevance": 88
   },
-  "feedback": {
-    "strengths": ["<string> Strength 1", "<string> Strength 2"],
-    "improvements": ["<string> Improvement 1", "<string> Improvement 2"],
-    "specific_recommendations": ["<string> Recommendation 1", "<string> Recommendation 2"]
-  }
+  "matchedKeywords": ["keyword1", "keyword2"],
+  "missingKeywords": ["keyword3", "keyword4"],
+  "suggestions": ["suggestion1", "suggestion2"]
 }`,
   },
 

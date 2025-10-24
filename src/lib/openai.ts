@@ -37,7 +37,13 @@ export async function callOpenAI(
 
     // If using json_object format, parse directly
     if (responseFormat === 'json_object') {
-      return JSON.parse(content);
+      try {
+        return JSON.parse(content);
+      } catch (parseError) {
+        console.error('JSON parse error for json_object format:', parseError);
+        console.error('Raw content:', content);
+        throw new Error(`Invalid JSON response from AI: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+      }
     }
 
     // For text format, clean and parse as before
@@ -50,7 +56,20 @@ export async function callOpenAI(
       cleanedContent = cleanedContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
     }
 
-    return JSON.parse(cleanedContent);
+    // Try to find JSON object in the content
+    const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      cleanedContent = jsonMatch[0];
+    }
+
+    try {
+      return JSON.parse(cleanedContent);
+    } catch (parseError) {
+      console.error('JSON parse error for text format:', parseError);
+      console.error('Raw content:', content);
+      console.error('Cleaned content:', cleanedContent);
+      throw new Error(`Invalid JSON response from AI: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    }
   } catch (error) {
     console.error('AI API error:', error);
     throw new Error('Failed to get AI response');
