@@ -4,7 +4,7 @@ import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
 
 export async function POST(request: NextRequest) {
   try {
-    const { jdKeywords, existingSkills: _existingSkills, language = 'vi' } =
+    const { jdKeywords, language = 'vi' } =
       await request.json();
 
     if (!jdKeywords || !Array.isArray(jdKeywords)) {

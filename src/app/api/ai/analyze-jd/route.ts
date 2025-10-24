@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { callOpenAI } from '@/lib/openai'
 import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/prompts'
-import { createClient } from '@/lib/supabase-server'
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +32,28 @@ export async function POST(request: NextRequest) {
     const analysis = await callOpenAI(systemPrompt, userMessage);
 
     // Lưu JD analysis vào database
-    const supabase = await createClient()
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll()
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options)
+              })
+            } catch (error) {
+              console.error('Error setting cookies:', error)
+            }
+          },
+        },
+      }
+    )
+    
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
@@ -58,7 +80,7 @@ export async function POST(request: NextRequest) {
         jd_text: jdText,
         keywords_extracted: analysis.ats_keywords || [],
         analysis_result: analysis
-      } as any)
+      })
       .select()
       .single()
 
@@ -66,7 +88,7 @@ export async function POST(request: NextRequest) {
       console.error('Error saving JD analysis:', saveError)
       // Don't fail the request, just log the error
     } else {
-      console.log('JD analysis saved to database:', (jdAnalysis as any).id)
+      console.log('JD analysis saved to database:', jdAnalysis?.id)
     }
 
     return NextResponse.json(analysis, { status: 200 })

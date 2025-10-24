@@ -21,25 +21,6 @@ export async function POST(request: NextRequest) {
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('score_cv', language as CVLanguage);
 
-    // Prepare CV data for AI
-    const cvText = language === 'vi' ? `
-**Thông tin cá nhân:** ${JSON.stringify(cvData.sections?.personal_info || {})}
-**Tóm tắt:** ${JSON.stringify(cvData.sections?.summary || {})}
-**Kinh nghiệm:** ${JSON.stringify(cvData.sections?.experience || [])}
-**Học vấn:** ${JSON.stringify(cvData.sections?.education || [])}
-**Dự án:** ${JSON.stringify(cvData.sections?.projects || [])}
-**Kỹ năng:** ${JSON.stringify(cvData.sections?.skills || [])}
-**Chứng chỉ:** ${JSON.stringify(cvData.sections?.certifications || [])}
-` : `
-**Personal Information:** ${JSON.stringify(cvData.sections?.personal_info || {})}
-**Summary:** ${JSON.stringify(cvData.sections?.summary || {})}
-**Experience:** ${JSON.stringify(cvData.sections?.experience || [])}
-**Education:** ${JSON.stringify(cvData.sections?.education || [])}
-**Projects:** ${JSON.stringify(cvData.sections?.projects || [])}
-**Skills:** ${JSON.stringify(cvData.sections?.skills || [])}
-**Certifications:** ${JSON.stringify(cvData.sections?.certifications || [])}
-`;
-
     const userMessage = language === 'vi' ? `Hãy đánh giá CV sau đây dựa trên các từ khóa JD và tiêu chí đã cho. Trả về kết quả dưới dạng JSON.
 
 Từ khóa JD:
