@@ -1,19 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    // Redirect to login page instead of waitlist
-    router.push("/login");
-  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
@@ -27,12 +12,12 @@ export default function Home() {
               </div>
               <span className="heading-feature text-xl text-gray-900">FastRezu</span>
             </div>
-            <a
+            {/* <a
               href="/login"
               className="btn-primary btn-text"
             >
               Đăng nhập
-            </a>
+            </a> */}
           </div>
         </div>
       </header>
@@ -54,34 +39,22 @@ export default function Home() {
 
               <p className="body-text text-lg text-gray-600 mb-8">
                 FastRezu là công cụ AI chuyên sâu, giúp bạn tối ưu CV
-                &ldquo;chuẩn&rdquo; theo từng mô tả công việc. Chúng tôi không
+                &ldquo;chuẩn&rdquo; (cho cả <strong>Tiếng Việt & Tiếng Anh</strong>) theo từng mô tả công việc. Chúng tôi không
                 chỉ làm CV đẹp, chúng tôi làm CV được nhà tuyển dụng nhìn thấy.
               </p>
 
-              <form
-                onSubmit={handleSubmit}
-                className="max-w-md mx-auto lg:mx-0"
-              >
-                <div className="flex flex-col sm:flex-row gap-3 mb-4">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Nhập email của bạn..."
-                    className="email-input flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 shadow-sm hover:border-gray-400 transition-colors duration-200"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="btn-primary btn-text whitespace-nowrap"
-                  >
-                    BẮT ĐẦU TẠO CV
-                  </button>
-                </div>
-                <p className="small-text text-gray-500 text-center lg:text-left">
-                  Đăng nhập để bắt đầu tạo CV được tối ưu cho ATS.
+              {/* Nút CTA mới */}
+              <div className="max-w-md mx-auto lg:mx-0">
+                <a
+                  href="/login"
+                  className="btn-primary btn-text w-full sm:w-auto inline-block text-center whitespace-nowrap"
+                >
+                  BẮT ĐẦU TẠO CV MIỄN PHÍ
+                </a>
+                <p className="small-text text-gray-500 text-center lg:text-left mt-3">
+                  Đăng nhập hoặc đăng ký nhanh chóng bằng email.
                 </p>
-              </form>
+              </div>
             </div>
 
             <div className="flex justify-center">
@@ -197,7 +170,7 @@ export default function Home() {
               <p className="body-text text-gray-600 text-center">
                 Không còn &ldquo;bí&rdquo; từ. Dựa trên các từ khóa từ JD,
                 FastRezu sẽ <strong>soạn thảo</strong> giúp bạn các gạch đầu
-                dòng mô tả thành tích nhằm đảm bảo đạt điểm ATS cao nhất.
+                dòng mô tả thành tích (bằng <strong>Tiếng Việt hoặc Tiếng Anh</strong>) nhằm đảm bảo đạt điểm ATS cao nhất.
               </p>
             </div>
 
@@ -227,31 +200,22 @@ export default function Home() {
             </h2>
             <p className="body-text text-xl text-gray-300 mb-8">
               Bạn chỉ cách công việc mơ ước một CV được tối ưu. Trở thành những
-              người đầu tiên tại Việt Nam dùng AI để qua vòng lọc hồ sơ. Để lại
-              email, chúng tôi sẽ gửi bạn vé mời.
+              người đầu tiên tại Việt Nam dùng AI để qua vòng lọc hồ sơ. Bắt đầu
+              ngay hôm nay, hoàn toàn miễn phí.
             </p>
 
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-              <div className="flex flex-col sm:flex-row gap-3 mb-4">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Nhập email của bạn..."
-                  className="email-input email-input-dark flex-1 px-4 py-3 border-2 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400 bg-gray-800 text-white shadow-sm hover:border-gray-500 transition-colors duration-200"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="btn-secondary btn-text whitespace-nowrap"
-                >
-                  BẮT ĐẦU TẠO CV
-                </button>
-              </div>
-              <p className="small-text text-gray-400">
-                Đăng nhập để bắt đầu tạo CV được tối ưu cho ATS.
+            {/* Nút CTA mới */}
+            <div className="max-w-md mx-auto">
+              <a
+                href="/login"
+                className="btn-secondary btn-text w-full sm:w-auto inline-block text-center whitespace-nowrap"
+              >
+                BẮT ĐẦU TẠO CV MIỄN PHÍ
+              </a>
+              <p className="small-text text-gray-400 mt-3">
+                Đăng nhập hoặc đăng ký nhanh chóng bằng email.
               </p>
-            </form>
+            </div>
           </div>
         </div>
       </section>
