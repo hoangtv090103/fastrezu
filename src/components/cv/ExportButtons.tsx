@@ -29,6 +29,50 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
         backgroundColor: '#ffffff',
         width: cvElement.scrollWidth,
         height: cvElement.scrollHeight,
+        ignoreElements: (element) => {
+          // Skip elements that might cause issues
+          return element.classList.contains('ignore-pdf');
+        },
+        onclone: (clonedDoc) => {
+          // Convert modern CSS color functions to hex/rgb for PDF compatibility
+          const style = clonedDoc.createElement('style');
+          style.textContent = `
+            * {
+              color: inherit !important;
+            }
+            .text-blue-600 {
+              color: #2563eb !important;
+            }
+            .text-gray-900 {
+              color: #111827 !important;
+            }
+            .text-gray-600 {
+              color: #4b5563 !important;
+            }
+            .text-gray-500 {
+              color: #6b7280 !important;
+            }
+            .text-gray-700 {
+              color: #374151 !important;
+            }
+            .bg-blue-600 {
+              background-color: #2563eb !important;
+            }
+            .bg-gray-100 {
+              background-color: #f3f4f6 !important;
+            }
+            .border-blue-600 {
+              border-color: #2563eb !important;
+            }
+            .border-gray-100 {
+              border-color: #f3f4f6 !important;
+            }
+            .border-gray-200 {
+              border-color: #e5e7eb !important;
+            }
+          `;
+          clonedDoc.head.appendChild(style);
+        }
       });
 
       // Create PDF
