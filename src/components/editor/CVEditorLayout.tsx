@@ -57,12 +57,12 @@ export default function CVEditorLayout() {
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <button
+            {/* <button
               onClick={() => router.push("/dashboard")}
               className="text-gray-600 hover:text-gray-800 small-text transition-colors duration-200"
             >
               ← Về Dashboard
-            </button>
+            </button> */}
             <div className="h-6 w-px bg-gray-300"></div>
             <h1 className="heading-feature text-lg text-gray-900">
               {state.cvData?.title || "CV Editor"}
