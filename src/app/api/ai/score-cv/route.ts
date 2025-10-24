@@ -1,63 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { callOpenAI } from '@/lib/openai'
+import { NextRequest, NextResponse } from "next/server";
+import { callOpenAI } from "@/lib/openai";
+import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvData, jdKeywords } = await request.json()
+    const { cvData, jdKeywords, language = 'vi' } = await request.json();
 
     if (!cvData) {
-      return NextResponse.json({ error: 'CV data is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: "CV data is required" },
+        { status: 400 }
+      );
     }
 
-    // System prompt để chấm điểm CV
-    const systemPrompt = `You are an AI-powered ATS simulator and expert CV reviewer, specifically designed for the Vietnamese job market. Your task is to evaluate a given CV's content ("cvData"), provided as structured data/JSON) against a list of target keywords ("jdKeywords", provided as an array of strings) extracted from a specific Job Description.
+    // Validate language parameter
+    if (!['vi', 'en'].includes(language)) {
+      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+    }
 
-Your primary goal is to assess how well the CV aligns with the job requirements implied by the keywords, assign an overall ATS compatibility score (from 0 to 100), identify matched and missing keywords, provide a brief analysis breakdown, and offer actionable suggestions for improvement.
+    // Get system prompt based on language
+    const systemPrompt = getSystemPrompt('score_cv', language as CVLanguage);
 
-**Scoring Criteria (approximate weighting):**
-1.  **Keyword Match (40%):** How many "jdKeywords" are present in the "cvData"? Are they used in relevant contexts (e.g., job titles, achievements)? Are important keywords repeated appropriately?
-2.  **Completeness (25%):** Are essential sections like 'personal_info', 'experience', 'education', 'skills' present and filled with meaningful content?
-3.  **Formatting (20%):** Is the CV well-structured, readable, and follows professional formatting standards? Are sections clearly organized?
-4.  **Relevance (15%):** Is the content (especially 'summary' and 'experience') relevant to the likely role based on the keywords? Is it clearly written and targeted?
-
-You MUST output *only* a valid JSON object. Do not include any introductory text, concluding remarks, or explanations outside the JSON structure.
-
-The JSON object should adhere strictly to the following structure:
-
-{
-  "score": <number between 0 and 100>,
-  "analysis": {
-    "keyword_match": <number between 0 and 100, estimate based on keyword presence/density>,
-    "completeness": <number between 0 and 100, based on presence of key sections>,
-    "formatting": <number between 0 and 100, based on CV structure and readability>,
-    "relevance": <number between 0 and 100, based on content relevance to job requirements>
-  },
-  "suggestions": [
-    "<string, actionable suggestion 1, e.g., 'Thêm từ khóa X vào phần Kinh nghiệm'>",
-    "<string, actionable suggestion 2, e.g., 'Sử dụng số liệu cụ thể để mô tả thành tích Y'>",
-    ..."up to 3-4 concise suggestions"
-  ],
-  "matchedKeywords": [
-    "<string, keyword from jdKeywords found in cvData>",
-    ...
-  ],
-  "missingKeywords": [
-    "<string, keyword from jdKeywords NOT found in cvData>",
-    ...
-  ]
-}
-
-**Detailed Scoring Instructions:**
-
-- **keyword_match**: Calculate percentage of jdKeywords found in cvData. Score 0-100 based on keyword presence and density.
-- **completeness**: Score 0-100 based on presence and quality of all essential CV sections (personal_info, summary, experience, education, skills).
-- **formatting**: Score 0-100 based on CV structure, readability, professional appearance, and organization.
-- **relevance**: Score 0-100 based on how well CV content aligns with the target job role and requirements.
-
-Be strict in evaluating keyword presence. Suggestions should be specific and helpful for improving the ATS score. Ensure the score reflects the combined evaluation based on the criteria.`;
-
-    // Chuẩn bị dữ liệu CV để gửi cho AI
-    const cvText = `
+    // Prepare CV data for AI
+    const cvText = language === 'vi' ? `
 **Thông tin cá nhân:** ${JSON.stringify(cvData.sections?.personal_info || {})}
 **Tóm tắt:** ${JSON.stringify(cvData.sections?.summary || {})}
 **Kinh nghiệm:** ${JSON.stringify(cvData.sections?.experience || [])}
@@ -65,24 +30,39 @@ Be strict in evaluating keyword presence. Suggestions should be specific and hel
 **Dự án:** ${JSON.stringify(cvData.sections?.projects || [])}
 **Kỹ năng:** ${JSON.stringify(cvData.sections?.skills || [])}
 **Chứng chỉ:** ${JSON.stringify(cvData.sections?.certifications || [])}
+` : `
+**Personal Information:** ${JSON.stringify(cvData.sections?.personal_info || {})}
+**Summary:** ${JSON.stringify(cvData.sections?.summary || {})}
+**Experience:** ${JSON.stringify(cvData.sections?.experience || [])}
+**Education:** ${JSON.stringify(cvData.sections?.education || [])}
+**Projects:** ${JSON.stringify(cvData.sections?.projects || [])}
+**Skills:** ${JSON.stringify(cvData.sections?.skills || [])}
+**Certifications:** ${JSON.stringify(cvData.sections?.certifications || [])}
 `;
 
-    const userMessage = `Hãy chấm điểm CV sau dựa trên từ khóa JD:
+    const userMessage = language === 'vi' ? `Hãy đánh giá CV sau đây dựa trên các từ khóa JD và tiêu chí đã cho. Trả về kết quả dưới dạng JSON.
 
-**Từ khóa JD cần kiểm tra:** ${jdKeywords?.join(', ') || 'Không có'}
+Từ khóa JD:
+${JSON.stringify(jdKeywords)}
 
-**Nội dung CV:**
-${cvText}
+Dữ liệu CV:
+${JSON.stringify(cvData)}` : `Please evaluate the following CV based on the JD keywords and criteria provided. Return the result in JSON format.
 
-Yêu cầu: Chấm điểm và đưa ra gợi ý cải thiện cụ thể.`;
+JD Keywords:
+${JSON.stringify(jdKeywords)}
+
+CV Data:
+${JSON.stringify(cvData)}`;
 
     // Gọi OpenAI API
     const result = await callOpenAI(systemPrompt, userMessage);
 
-    return NextResponse.json(result, { status: 200 })
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.error('Score CV API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Score CV API error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
-

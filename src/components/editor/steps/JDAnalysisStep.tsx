@@ -23,7 +23,10 @@ const handleAnalyzeJD = async () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ jdText }),
+        body: JSON.stringify({ 
+          jdText,
+          language: state.cvData?.language || 'vi'
+        }),
       });
 
       if (response.ok) {

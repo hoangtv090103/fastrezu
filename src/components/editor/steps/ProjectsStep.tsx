@@ -96,6 +96,7 @@ export default function ProjectsStep() {
           bulletPoint: achievement,
           context: projects[projIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
+          language: state.cvData?.language || 'vi'
         }),
       });
 

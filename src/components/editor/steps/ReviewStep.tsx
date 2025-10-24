@@ -37,6 +37,7 @@ export default function ReviewStep() {
         body: JSON.stringify({
           cvData: state.cvData,
           jdKeywords: state.cvData.jd_analysis?.keywords || [],
+          language: state.cvData?.language || 'vi'
         }),
       });
 

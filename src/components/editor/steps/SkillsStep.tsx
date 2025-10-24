@@ -63,6 +63,7 @@ export default function SkillsStep() {
         body: JSON.stringify({
           jdKeywords: state.cvData.jd_analysis.keywords,
           existingSkills: skills,
+          language: state.cvData?.language || 'vi'
         }),
       });
 

@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
+    const { language = 'vi' } = await request.json()
+    
+    // Validate language parameter
+    if (!['vi', 'en'].includes(language)) {
+      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+    }
+
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -34,14 +41,15 @@ export async function POST(_request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Create new CV
+    // Create new CV with language
     const { data: cv, error } = await supabase
       .from('cvs')
       .insert({
         user_id: user.id,
-        title: 'CV mới',
+        title: language === 'vi' ? 'CV mới' : 'New CV',
         is_active: true,
         ats_score: 0,
+        language: language,
       })
       .select()
       .single()

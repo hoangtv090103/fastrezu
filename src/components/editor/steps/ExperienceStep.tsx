@@ -97,6 +97,7 @@ export default function ExperienceStep() {
           bulletPoint: achievement,
           context: experience[expIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
+          language: state.cvData?.language || 'vi'
         }),
       });
 
@@ -135,6 +136,7 @@ export default function ExperienceStep() {
           company,
           jdKeywords: state.cvData?.jd_analysis?.keywords || [],
           experienceLevel: 'Mid-level', // Could be determined from other data
+          language: state.cvData?.language || 'vi'
         }),
       });
 

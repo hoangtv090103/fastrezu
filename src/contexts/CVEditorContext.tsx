@@ -4,10 +4,13 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback } 
 import { createClient } from '@/lib/supabase-client';
 
 // Types
+export type CVLanguage = 'vi' | 'en';
+
 export interface CVData {
   id: string;
   title: string;
   ats_score: number;
+  language: CVLanguage;
   sections: {
     [key: string]: Record<string, unknown> | Record<string, unknown>[];
   };
@@ -24,6 +27,7 @@ export interface CVEditorState {
   isSaving: boolean;
   saveStatus: 'saved' | 'saving' | 'error';
   error: string | null;
+  selectedLanguage: CVLanguage | null;
 }
 
 type CVEditorAction =
@@ -33,7 +37,8 @@ type CVEditorAction =
   | { type: 'SET_CURRENT_STEP'; payload: number }
   | { type: 'SET_SAVE_STATUS'; payload: 'saved' | 'saving' | 'error' }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_JD_ANALYSIS'; payload: { keywords: string[]; analysis: Record<string, unknown> } };
+  | { type: 'SET_JD_ANALYSIS'; payload: { keywords: string[]; analysis: Record<string, unknown> } }
+  | { type: 'SET_LANGUAGE'; payload: CVLanguage };
 
 const initialState: CVEditorState = {
   currentStep: 0,
@@ -42,6 +47,7 @@ const initialState: CVEditorState = {
   isSaving: false,
   saveStatus: 'saved',
   error: null,
+  selectedLanguage: null,
 };
 
 function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditorState {
@@ -77,6 +83,8 @@ function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditor
           jd_analysis: action.payload,
         },
       };
+    case 'SET_LANGUAGE':
+      return { ...state, selectedLanguage: action.payload };
     default:
       return state;
   }
@@ -87,6 +95,7 @@ interface CVEditorContextType {
   updateSection: (sectionType: string, data: Record<string, unknown> | Record<string, unknown>[]) => void;
   setCurrentStep: (step: number) => void;
   setJDAnalysis: (keywords: string[], analysis: Record<string, unknown>) => void;
+  setLanguage: (language: CVLanguage) => void;
   saveCV: () => Promise<void>;
 }
 
@@ -225,6 +234,7 @@ export function CVEditorProvider({
           id: cv.id,
           title: cv.title,
           ats_score: cv.ats_score,
+          language: (cv.language as CVLanguage) || 'vi', // Default to Vietnamese for existing CVs
           sections: sectionsData,
           jd_analysis: jdAnalysis ? {
             keywords: jdAnalysis.keywords_extracted,
@@ -234,6 +244,8 @@ export function CVEditorProvider({
 
         if (mounted) {
           dispatch({ type: 'SET_CV_DATA', payload: cvData });
+          // Set the language in state as well
+          dispatch({ type: 'SET_LANGUAGE', payload: cvData.language });
         }
       } catch (error) {
         console.error('Error loading CV data:', error);
@@ -276,6 +288,7 @@ export function CVEditorProvider({
         .update({
           title: state.cvData.title,
           ats_score: state.cvData.ats_score,
+          language: state.cvData.language,
           updated_at: new Date().toISOString(),
         })
         .eq('id', cvId)
@@ -341,6 +354,15 @@ export function CVEditorProvider({
     dispatch({ type: 'SET_JD_ANALYSIS', payload: { keywords, analysis } });
   };
 
+  const setLanguage = (language: CVLanguage) => {
+    dispatch({ type: 'SET_LANGUAGE', payload: language });
+    // Also update the CV data if it exists
+    if (state.cvData) {
+      const updatedCVData = { ...state.cvData, language };
+      dispatch({ type: 'SET_CV_DATA', payload: updatedCVData });
+    }
+  };
+
   return (
     <CVEditorContext.Provider
       value={{
@@ -348,6 +370,7 @@ export function CVEditorProvider({
         updateSection,
         setCurrentStep,
         setJDAnalysis,
+        setLanguage,
         saveCV,
       }}
     >

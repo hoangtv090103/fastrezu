@@ -37,6 +37,7 @@ export type Database = {
           title: string;
           is_active: boolean;
           ats_score: number;
+          language: "vi" | "en";
           created_at: string;
           updated_at: string;
         };
@@ -46,6 +47,7 @@ export type Database = {
           title?: string;
           is_active?: boolean;
           ats_score?: number;
+          language?: "vi" | "en";
           created_at?: string;
           updated_at?: string;
         };
@@ -55,6 +57,7 @@ export type Database = {
           title?: string;
           is_active?: boolean;
           ats_score?: number;
+          language?: "vi" | "en";
           created_at?: string;
           updated_at?: string;
         };

@@ -32,6 +32,7 @@ export default function SummaryStep() {
           personalInfo: state.cvData?.sections.personal_info,
           experience: state.cvData?.sections.experience,
           jdKeywords: state.cvData?.jd_analysis?.keywords,
+          language: state.cvData?.language || 'vi'
         }),
       });
 

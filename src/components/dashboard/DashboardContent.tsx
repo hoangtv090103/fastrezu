@@ -19,6 +19,8 @@ interface DashboardContentProps {
 
 export default function DashboardContent({ cvs }: DashboardContentProps) {
   const [isCreating, setIsCreating] = useState(false);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<'vi' | 'en'>('vi');
   const router = useRouter();
 
   const handleCreateCV = async () => {
@@ -29,6 +31,9 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          language: selectedLanguage
+        }),
       });
 
       if (response.ok) {
@@ -41,7 +46,12 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
       console.error('Error creating CV:', error);
     } finally {
       setIsCreating(false);
+      setShowLanguageModal(false);
     }
+  };
+
+  const handleCreateCVClick = () => {
+    setShowLanguageModal(true);
   };
 
   const handleDeleteCV = async (cvId: string) => {
@@ -81,7 +91,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
 
       <div className="mb-6">
         <button
-          onClick={handleCreateCV}
+          onClick={handleCreateCVClick}
           disabled={isCreating}
           className="btn-primary btn-text disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -101,7 +111,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
             Bắt đầu tạo CV đầu tiên của bạn với sự hỗ trợ của AI để tối ưu hóa cho hệ thống ATS.
           </p>
           <button
-            onClick={handleCreateCV}
+            onClick={handleCreateCVClick}
             disabled={isCreating}
             className="btn-primary btn-text disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -141,6 +151,92 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Language Selection Modal */}
+      {showLanguageModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="heading-feature text-lg text-gray-900 mb-4">
+              Chọn ngôn ngữ cho CV
+            </h3>
+            <p className="body-text text-gray-600 mb-6">
+              Chọn ngôn ngữ mà bạn muốn tạo CV. Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.
+            </p>
+
+            <div className="space-y-3 mb-6">
+              {/* Vietnamese Option */}
+              <div
+                className={`p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                  selectedLanguage === 'vi'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => setSelectedLanguage('vi')}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`w-4 h-4 rounded-full border-2 ${
+                    selectedLanguage === 'vi' 
+                      ? 'border-blue-500 bg-blue-500' 
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedLanguage === 'vi' && (
+                      <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Tiếng Việt</h4>
+                    <p className="text-sm text-gray-600">Tạo CV bằng tiếng Việt</p>
+                  </div>
+                  <div className="ml-auto text-xl">🇻🇳</div>
+                </div>
+              </div>
+
+              {/* English Option */}
+              <div
+                className={`p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                  selectedLanguage === 'en'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+                onClick={() => setSelectedLanguage('en')}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`w-4 h-4 rounded-full border-2 ${
+                    selectedLanguage === 'en' 
+                      ? 'border-blue-500 bg-blue-500' 
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedLanguage === 'en' && (
+                      <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">English</h4>
+                    <p className="text-sm text-gray-600">Create CV in English</p>
+                  </div>
+                  <div className="ml-auto text-xl">🇺🇸</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowLanguageModal(false)}
+                className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleCreateCV}
+                disabled={isCreating}
+                className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                {isCreating ? "Đang tạo..." : "Tạo CV"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
