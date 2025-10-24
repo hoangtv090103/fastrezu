@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
+
+interface SavedJD {
+  id: string;
+  jdText: string;
+  keywords: string[];
+  analysis: Record<string, unknown>;
+  createdAt: string;
+  preview: string;
+}
 
 export default function JDAnalysisStep() {
   const { state, setJDAnalysis, setCurrentStep } = useCVEditor();
@@ -11,6 +20,56 @@ export default function JDAnalysisStep() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [keywords, setKeywords] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [savedJDs, setSavedJDs] = useState<SavedJD[]>([]);
+  const [isLoadingJDs, setIsLoadingJDs] = useState(false);
+
+  // Load saved JDs when component mounts
+  useEffect(() => {
+    if (state.cvData?.id) {
+      loadSavedJDs();
+    }
+  }, [state.cvData?.id]);
+
+  const loadSavedJDs = async () => {
+    if (!state.cvData?.id) return;
+    
+    setIsLoadingJDs(true);
+    try {
+      const response = await fetch(`/api/jd/list?cvId=${state.cvData.id}`);
+      if (response.ok) {
+        const { jdAnalyses } = await response.json();
+        setSavedJDs(jdAnalyses);
+      }
+    } catch (error) {
+      console.error('Error loading saved JDs:', error);
+    } finally {
+      setIsLoadingJDs(false);
+    }
+  };
+
+  const handleDeleteJD = async (jdId: string) => {
+    try {
+      const response = await fetch('/api/jd/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jdId }),
+      });
+
+      if (response.ok) {
+        setSavedJDs(prev => prev.filter(jd => jd.id !== jdId));
+      }
+    } catch (error) {
+      console.error('Error deleting JD:', error);
+    }
+  };
+
+  const handleUseSavedJD = (savedJD: SavedJD) => {
+    setJdText(savedJD.jdText);
+    setKeywords(savedJD.keywords);
+    setJDAnalysis(savedJD.keywords, savedJD.analysis);
+  };
 
 const handleAnalyzeJD = async () => {
     if (!jdText.trim()) return;
@@ -25,6 +84,7 @@ const handleAnalyzeJD = async () => {
         },
         body: JSON.stringify({ 
           jdText,
+          cvId: state.cvData?.id,
           language: state.cvData?.language || 'vi'
         }),
       });
@@ -40,6 +100,9 @@ const handleAnalyzeJD = async () => {
         
         setKeywords(extractedKeywords);
         setJDAnalysis(extractedKeywords, analysis);
+        
+        // Reload saved JDs to show the newly saved one
+        loadSavedJDs();
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Có lỗi xảy ra khi phân tích JD');
@@ -64,9 +127,44 @@ const handleAnalyzeJD = async () => {
       </div>
 
       <div className="space-y-4">
+        {/* Saved JDs Section */}
+        {savedJDs.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-sm font-medium text-gray-700 mb-3">JD đã lưu</h4>
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {savedJDs.map((savedJD) => (
+                <div key={savedJD.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900 truncate">
+                      {savedJD.preview}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {new Date(savedJD.createdAt).toLocaleDateString('vi-VN')} • {savedJD.keywords.length} từ khóa
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-3">
+                    <button
+                      onClick={() => handleUseSavedJD(savedJD)}
+                      className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                    >
+                      Sử dụng
+                    </button>
+                    <button
+                      onClick={() => handleDeleteJD(savedJD.id)}
+                      className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div>
           <label htmlFor="jd-text" className="block text-sm font-medium text-gray-700 mb-2">
-            Mô tả công việc
+            Mô tả công việc mới
           </label>
           <textarea
             id="jd-text"
