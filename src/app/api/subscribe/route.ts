@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
 
-          } catch (_error) {
+          } catch {
     return NextResponse.json(
       { error: 'Có lỗi xảy ra' },
       { status: 500 }

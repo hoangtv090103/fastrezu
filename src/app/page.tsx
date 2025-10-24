@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [email, setEmail] = useState("");
-  const [_isSubmitted, _setIsSubmitted] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {

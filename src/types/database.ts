@@ -73,7 +73,8 @@ export type Database = {
             | "education"
             | "projects"
             | "skills"
-            | "certifications";
+            | "certifications"
+            | "ats_analysis";
           order_index: number;
           data: Record<string, unknown>;
           created_at: string;
@@ -89,7 +90,8 @@ export type Database = {
             | "education"
             | "projects"
             | "skills"
-            | "certifications";
+            | "certifications"
+            | "ats_analysis";
           order_index?: number;
           data?: Record<string, unknown>;
           created_at?: string;

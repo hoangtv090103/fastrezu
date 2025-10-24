@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
@@ -21,19 +21,10 @@ export default function JDAnalysisStep() {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [savedJDs, setSavedJDs] = useState<SavedJD[]>([]);
-  const [isLoadingJDs, setIsLoadingJDs] = useState(false);
 
-  // Load saved JDs when component mounts
-  useEffect(() => {
-    if (state.cvData?.id) {
-      loadSavedJDs();
-    }
-  }, [state.cvData?.id]);
-
-  const loadSavedJDs = async () => {
+  const loadSavedJDs = useCallback(async () => {
     if (!state.cvData?.id) return;
     
-    setIsLoadingJDs(true);
     try {
       const response = await fetch(`/api/jd/list?cvId=${state.cvData.id}`);
       if (response.ok) {
@@ -42,10 +33,15 @@ export default function JDAnalysisStep() {
       }
     } catch (error) {
       console.error('Error loading saved JDs:', error);
-    } finally {
-      setIsLoadingJDs(false);
     }
-  };
+  }, [state.cvData?.id]);
+
+  // Load saved JDs when component mounts
+  useEffect(() => {
+    if (state.cvData?.id) {
+      loadSavedJDs();
+    }
+  }, [state.cvData?.id, loadSavedJDs]);
 
   const handleDeleteJD = async (jdId: string) => {
     try {

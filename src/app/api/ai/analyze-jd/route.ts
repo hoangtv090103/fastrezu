@@ -28,9 +28,7 @@ export async function POST(request: NextRequest) {
     const userMessage = userMessageTemplates.analyze_jd(jdText)
 
     // Gọi OpenAI API
-    console.log('Calling OpenAI API with prompt length:', systemPrompt.length);
     const analysis = await callOpenAI(systemPrompt, userMessage);
-    console.log('OpenAI API response:', analysis);
 
     // Lưu JD analysis vào database
     const supabase = await createClient()
