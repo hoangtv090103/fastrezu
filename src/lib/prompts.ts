@@ -351,9 +351,9 @@ export function getUserMessageTemplate(language: CVLanguage) {
   const templates = {
     vi: {
       generate_summary: (
-        personalInfo: any,
-        experience: any,
-        jdKeywords: any
+        personalInfo: Record<string, unknown>,
+        experience: Record<string, unknown>[],
+        jdKeywords: string[]
       ) => `Tạo professional summary cho ứng viên với thông tin sau:
 
 Tên: ${personalInfo.full_name}
@@ -365,7 +365,7 @@ ${
     ? `Kinh nghiệm làm việc:
 ${experience
   .map(
-    (exp: any, index: number) => `${index + 1}. ${exp.title || "Vị trí"} tại ${
+    (exp: Record<string, unknown>, index: number) => `${index + 1}. ${exp.title || "Vị trí"} tại ${
       exp.company || "Công ty"
     } (${exp.start_date || "Năm bắt đầu"} - ${exp.end_date || "Hiện tại"})
    Mô tả: ${exp.description || "Chưa có mô tả"}`
@@ -401,8 +401,8 @@ ${jdText}`,
 Yêu cầu: Viết 5-7 gạch đầu dòng mô tả thành tích và trách nhiệm, tích hợp các từ khóa trên một cách tự nhiên.`,
       improve_bullet: (
         bulletPoint: string,
-        context: any,
-        jdKeywords: any
+        context: Record<string, unknown>,
+        jdKeywords: string[]
       ) => `Hãy viết lại gạch đầu dòng sau đây bằng tiếng Việt theo phương pháp STAR (ngầm định), tập trung vào thành tích và tích hợp từ khóa nếu phù hợp:
 
 Bullet point gốc:
@@ -418,9 +418,9 @@ Hãy trả về JSON chỉ chứa bullet point đã cải thiện.`,
     },
     en: {
       generate_summary: (
-        personalInfo: any,
-        experience: any,
-        jdKeywords: any
+        personalInfo: Record<string, unknown>,
+        experience: Record<string, unknown>[],
+        jdKeywords: string[]
       ) => `Create a professional summary for the candidate with the following information:
 
 Name: ${personalInfo.full_name}
@@ -432,7 +432,7 @@ ${
     ? `Work Experience:
 ${experience
   .map(
-    (exp: any, index: number) => `${index + 1}. ${exp.title || "Position"} at ${
+    (exp: Record<string, unknown>, index: number) => `${index + 1}. ${exp.title || "Position"} at ${
       exp.company || "Company"
     } (${exp.start_date || "Start year"} - ${exp.end_date || "Present"})
    Description: ${exp.description || "No description provided"}`
@@ -468,8 +468,8 @@ ${jdText}`,
 Requirements: Write 5-7 bullet points describing achievements and responsibilities, naturally integrating the keywords above.`,
       improve_bullet: (
         bulletPoint: string,
-        context: any,
-        jdKeywords: any
+        context: Record<string, unknown>,
+        jdKeywords: string[]
       ) => `Please rewrite the following bullet point in English using the STAR method (implicitly), focusing on achievements and integrating keywords if relevant:
 
 Original bullet point:

@@ -80,7 +80,7 @@ export default function ReviewStep() {
     } finally {
       setIsScoring(false);
     }
-  }, [state.cvData]);
+  }, [state.cvData, updateCVData, saveCV]);
 
   // Auto-score when component mounts if we have JD analysis
   useEffect(() => {
