@@ -17,8 +17,11 @@ export default function LoginPage() {
 
     try {
       // Use environment variable for production, fallback to window.location.origin for development
+      // Configure NEXT_PUBLIC_SITE_URL in .env.local for your environment:
+      // - Development: http://localhost:3000
+      // - Production: https://yourdomain.com
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-      console.log(siteUrl)
+      console.log('Using site URL for magic link:', siteUrl);
       
       const { error } = await supabase.auth.signInWithOtp({
         email,
