@@ -81,7 +81,7 @@ export default function SummaryStep() {
             value={summary.content}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder="Ví dụ: Chuyên viên phát triển phần mềm với 3 năm kinh nghiệm trong việc xây dựng ứng dụng web và mobile. Có kinh nghiệm làm việc với React, Node.js, và các công nghệ cloud. Mong muốn đóng góp vào các dự án có tác động lớn và phát triển kỹ năng lãnh đạo kỹ thuật."
-            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
           />
           <p className="text-xs text-gray-500 mt-1">
             Khuyến nghị: 200-500 ký tự để tối ưu cho ATS

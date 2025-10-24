@@ -191,7 +191,7 @@ export default function ExperienceStep() {
                   value={getStringValue(exp, 'company')}
                   onChange={(e) => updateExperience(expIndex, 'company', e.target.value)}
                   placeholder="Công ty ABC"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -204,7 +204,7 @@ export default function ExperienceStep() {
                   value={getStringValue(exp, 'job_title')}
                   onChange={(e) => updateExperience(expIndex, 'job_title', e.target.value)}
                   placeholder="Frontend Developer"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -216,7 +216,7 @@ export default function ExperienceStep() {
                   type="month"
                   value={getStringValue(exp, 'start_date')}
                   onChange={(e) => updateExperience(expIndex, 'start_date', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 />
               </div>
 
@@ -229,7 +229,7 @@ export default function ExperienceStep() {
                   value={getStringValue(exp, 'end_date')}
                   onChange={(e) => updateExperience(expIndex, 'end_date', e.target.value)}
                   placeholder="Hiện tại"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 />
               </div>
 
@@ -242,7 +242,7 @@ export default function ExperienceStep() {
                   value={getStringValue(exp, 'location')}
                   onChange={(e) => updateExperience(expIndex, 'location', e.target.value)}
                   placeholder="Hà Nội, Việt Nam"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function ExperienceStep() {
                     value={achievement}
                     onChange={(e) => updateAchievement(expIndex, achIndex, e.target.value)}
                     placeholder="Ví dụ: Phát triển ứng dụng web tăng 30% hiệu suất..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                   <AIAssistButton
                     onClick={() => handleImproveAchievement(expIndex, achIndex)}

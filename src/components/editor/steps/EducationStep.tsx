@@ -73,7 +73,7 @@ export default function EducationStep() {
                   value={getStringValue(edu, 'school')}
                   onChange={(e) => updateEducation(index, 'school', e.target.value)}
                   placeholder="Đại học Bách Khoa Hà Nội"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -86,7 +86,7 @@ export default function EducationStep() {
                   value={getStringValue(edu, 'degree')}
                   onChange={(e) => updateEducation(index, 'degree', e.target.value)}
                   placeholder="Cử nhân"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -99,7 +99,7 @@ export default function EducationStep() {
                   value={getStringValue(edu, 'field_of_study')}
                   onChange={(e) => updateEducation(index, 'field_of_study', e.target.value)}
                   placeholder="Công nghệ thông tin"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -114,7 +114,7 @@ export default function EducationStep() {
                   placeholder="2023"
                   min="1950"
                   max="2030"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -127,7 +127,7 @@ export default function EducationStep() {
                   value={getStringValue(edu, 'gpa')}
                   onChange={(e) => updateEducation(index, 'gpa', e.target.value)}
                   placeholder="3.5/4.0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>

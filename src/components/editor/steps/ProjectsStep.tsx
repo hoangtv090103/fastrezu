@@ -147,7 +147,7 @@ export default function ProjectsStep() {
                   value={getStringValue(project, 'name')}
                   onChange={(e) => updateProject(projIndex, 'name', e.target.value)}
                   placeholder="Website bán hàng trực tuyến"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -159,7 +159,7 @@ export default function ProjectsStep() {
                   value={getStringValue(project, 'description')}
                   onChange={(e) => updateProject(projIndex, 'description', e.target.value)}
                   placeholder="Mô tả ngắn gọn về dự án, mục đích và phạm vi..."
-                  className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -173,7 +173,7 @@ export default function ProjectsStep() {
                     value={getStringValue(project, 'technologies')}
                     onChange={(e) => updateProject(projIndex, 'technologies', e.target.value)}
                     placeholder="React, Node.js, MongoDB"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
 
@@ -186,7 +186,7 @@ export default function ProjectsStep() {
                     value={getStringValue(project, 'link')}
                     onChange={(e) => updateProject(projIndex, 'link', e.target.value)}
                     placeholder="https://github.com/username/project"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function ProjectsStep() {
                       value={achievement}
                       onChange={(e) => updateAchievement(projIndex, achIndex, e.target.value)}
                       placeholder="Ví dụ: Tăng 40% tốc độ tải trang..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                     />
                     <AIAssistButton
                       onClick={() => handleImproveAchievement(projIndex, achIndex)}

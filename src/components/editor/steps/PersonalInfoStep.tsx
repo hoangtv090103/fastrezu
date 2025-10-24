@@ -59,7 +59,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('full_name')}
             onChange={(e) => handleInputChange('full_name', e.target.value)}
             placeholder="Nguyễn Văn A"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             required
           />
         </div>
@@ -74,7 +74,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('email')}
             onChange={(e) => handleInputChange('email', e.target.value)}
             placeholder="nguyenvana@email.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             required
           />
         </div>
@@ -89,7 +89,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('phone')}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             placeholder="0123 456 789"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>
 
@@ -103,7 +103,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('location')}
             onChange={(e) => handleInputChange('location', e.target.value)}
             placeholder="Hà Nội, Việt Nam"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>
 
@@ -117,7 +117,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('linkedin')}
             onChange={(e) => handleInputChange('linkedin', e.target.value)}
             placeholder="https://linkedin.com/in/nguyenvana"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>
 
@@ -131,7 +131,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('portfolio')}
             onChange={(e) => handleInputChange('portfolio', e.target.value)}
             placeholder="https://nguyenvana.dev"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>
       </div>

@@ -73,7 +73,7 @@ export default function CertificationsStep() {
                   value={getStringValue(cert, 'name')}
                   onChange={(e) => updateCertification(index, 'name', e.target.value)}
                   placeholder="AWS Certified Solutions Architect"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -86,7 +86,7 @@ export default function CertificationsStep() {
                   value={getStringValue(cert, 'issuing_organization')}
                   onChange={(e) => updateCertification(index, 'issuing_organization', e.target.value)}
                   placeholder="Amazon Web Services"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -99,7 +99,7 @@ export default function CertificationsStep() {
                     type="month"
                     value={getStringValue(cert, 'date')}
                     onChange={(e) => updateCertification(index, 'date', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   />
                 </div>
 
@@ -112,7 +112,7 @@ export default function CertificationsStep() {
                     value={getStringValue(cert, 'credential_id')}
                     onChange={(e) => updateCertification(index, 'credential_id', e.target.value)}
                     placeholder="AWS-123456"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
               </div>
@@ -126,7 +126,7 @@ export default function CertificationsStep() {
                   value={getStringValue(cert, 'credential_url')}
                   onChange={(e) => updateCertification(index, 'credential_url', e.target.value)}
                   placeholder="https://www.credly.com/badges/..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>

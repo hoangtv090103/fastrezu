@@ -167,7 +167,7 @@ const handleAnalyzeJD = async () => {
             value={jdText}
             onChange={(e) => setJdText(e.target.value)}
             placeholder="Dán mô tả công việc vào đây..."
-            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
           />
         </div>
 
