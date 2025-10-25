@@ -13,10 +13,17 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // Get user's CVs
+  // Get user's CVs with sections data
   const { data: cvs, error } = await supabase
     .from('cvs')
-    .select('*')
+    .select(`
+      *,
+      cv_sections (
+        section_type,
+        data,
+        order_index
+      )
+    `)
     .eq('user_id', user.id)
     .order('updated_at', { ascending: false });
 

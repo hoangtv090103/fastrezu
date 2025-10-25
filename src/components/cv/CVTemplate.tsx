@@ -67,13 +67,16 @@ const getTemplateLabels = (language: 'vi' | 'en') => {
 
 export default function CVTemplate({ cvData }: CVTemplateProps) {
   const labels = getTemplateLabels(cvData.language);
-  const personalInfo = (cvData.sections.personal_info as Record<string, unknown>) || {};
-  const summary = (cvData.sections.summary as Record<string, unknown>) || {};
-  const experience = (cvData.sections.experience as unknown as Record<string, unknown>[]) || [];
-  const education = (cvData.sections.education as unknown as Record<string, unknown>[]) || [];
-  const projects = (cvData.sections.projects as unknown as Record<string, unknown>[]) || [];
-  const skills = (cvData.sections.skills as Record<string, unknown>) || {};
-  const certifications = (cvData.sections.certifications as unknown as Record<string, unknown>[]) || [];
+  
+  // Safely access sections with fallbacks
+  const sections = cvData.sections || {};
+  const personalInfo = (sections.personal_info as Record<string, unknown>) || {};
+  const summary = (sections.summary as Record<string, unknown>) || {};
+  const experience = (sections.experience as unknown as Record<string, unknown>[]) || [];
+  const education = (sections.education as unknown as Record<string, unknown>[]) || [];
+  const projects = (sections.projects as unknown as Record<string, unknown>[]) || [];
+  const skills = (sections.skills as Record<string, unknown>) || {};
+  const certifications = (sections.certifications as unknown as Record<string, unknown>[]) || [];
 
   // Helper function to safely get string values
   const getString = (obj: Record<string, unknown>, key: string): string => {
