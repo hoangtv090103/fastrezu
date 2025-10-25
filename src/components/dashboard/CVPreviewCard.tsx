@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 
 interface CVSection {
   section_type: string;
-  data: any;
+  data: Record<string, unknown>;
   order_index: number;
 }
 
@@ -53,7 +53,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
 
   // Convert cv_sections to the format expected by CVTemplate
   const convertSectionsToCVData = (cv: CV) => {
-    const sections: any = {};
+    const sections: { [key: string]: Record<string, unknown> | Record<string, unknown>[] } = {};
     
     if (cv.cv_sections && cv.cv_sections.length > 0) {
       cv.cv_sections.forEach((section) => {
@@ -83,14 +83,14 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
         case 'personal_info':
           return section.data.full_name || section.data.email || section.data.phone;
         case 'summary':
-          return section.data.content && section.data.content.trim().length > 0;
+          return section.data.content && typeof section.data.content === 'string' && section.data.content.trim().length > 0;
         case 'experience':
           return Array.isArray(section.data) && section.data.length > 0;
         case 'education':
           return Array.isArray(section.data) && section.data.length > 0;
         case 'skills':
-          return (section.data.technical && section.data.technical.length > 0) || 
-                 (section.data.soft && section.data.soft.length > 0);
+          return (Array.isArray(section.data.technical) && section.data.technical.length > 0) || 
+                 (Array.isArray(section.data.soft) && section.data.soft.length > 0);
         default:
           return Object.keys(section.data).length > 0;
       }
@@ -255,7 +255,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                   <span className="text-2xl text-gray-400">📄</span>
                 </div>
                 <p className="text-sm text-gray-500">CV chưa có nội dung</p>
-                <p className="text-xs text-gray-400 mt-1">Nhấn "Chỉnh sửa" để thêm thông tin</p>
+                <p className="text-xs text-gray-400 mt-1">Nhấn &quot;Chỉnh sửa&quot; để thêm thông tin</p>
               </div>
             </div>
           )}

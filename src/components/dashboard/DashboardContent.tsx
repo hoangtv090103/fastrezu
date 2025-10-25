@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
 import CVPreviewCard from "./CVPreviewCard";
 
 interface CVSection {
   section_type: string;
-  data: any;
+  data: Record<string, unknown>;
   order_index: number;
 }
 
