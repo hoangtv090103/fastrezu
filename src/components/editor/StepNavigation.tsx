@@ -21,36 +21,37 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
       </div>
 
       {/* Step Indicators */}
-      <div className="flex justify-between">
+      <div className="flex">
         {steps.map((step) => (
-          <button
-            key={step}
-            onClick={() => onStepChange(step)}
-            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 ${
-              step === currentStep
-                ? 'bg-blue-600 text-white'
-                : step < currentStep
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-            }`}
-          >
-            {step + 1}
-          </button>
+          <div key={step} className="flex-1 flex justify-center">
+            <button
+              onClick={() => onStepChange(step)}
+              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 ${
+                step === currentStep
+                  ? 'bg-blue-600 text-white'
+                  : step < currentStep
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
+            >
+              {step + 1}
+            </button>
+          </div>
         ))}
       </div>
 
       {/* Step Labels */}
-      <div className="flex justify-between text-xs text-gray-500">
+      <div className="flex text-xs text-gray-500">
         {steps.map((step) => (
-          <span
-            key={step}
-            className={`text-center hidden sm:block ${
-              step === currentStep ? 'text-blue-600 font-medium' : ''
-            }`}
-            style={{ width: `${100 / totalSteps}%` }}
-          >
-            {stepTitles[step] || `Bước ${step + 1}`}
-          </span>
+          <div key={step} className="flex-1 flex justify-center">
+            <span
+              className={`text-center hidden sm:block ${
+                step === currentStep ? 'text-blue-600 font-medium' : ''
+              }`}
+            >
+              {stepTitles[step] || `Bước ${step + 1}`}
+            </span>
+          </div>
         ))}
       </div>
     </div>
