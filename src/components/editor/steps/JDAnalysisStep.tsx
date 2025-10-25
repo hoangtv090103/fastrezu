@@ -22,10 +22,12 @@ export default function JDAnalysisStep() {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [savedJDs, setSavedJDs] = useState<SavedJD[]>([]);
+  const [isLoadingJDs, setIsLoadingJDs] = useState(false);
 
   const loadSavedJDs = useCallback(async () => {
     if (!state.cvData?.id) return;
     
+    setIsLoadingJDs(true);
     try {
       const response = await fetch(`/api/jd/list?cvId=${state.cvData.id}`);
       if (response.ok) {
@@ -34,6 +36,8 @@ export default function JDAnalysisStep() {
       }
     } catch (error) {
       console.error('Error loading saved JDs:', error);
+    } finally {
+      setIsLoadingJDs(false);
     }
   }, [state.cvData?.id]);
 
@@ -135,7 +139,26 @@ const handleAnalyzeJD = async () => {
 
       <div className="space-y-4">
         {/* Saved JDs Section */}
-        {savedJDs.length > 0 && (
+        {isLoadingJDs ? (
+          <div className="mb-4 sm:mb-6">
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">JD đã lưu</h4>
+            <div className="space-y-2">
+              {/* Loading skeleton */}
+              {[1, 2, 3].map((index) => (
+                <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border animate-pulse">
+                  <div className="flex-1 min-w-0">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                  <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-3">
+                    <div className="h-6 bg-gray-200 rounded w-12"></div>
+                    <div className="h-6 bg-gray-200 rounded w-12"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : savedJDs.length > 0 ? (
           <div className="mb-4 sm:mb-6">
             <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">JD đã lưu</h4>
             <div className="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
@@ -167,7 +190,7 @@ const handleAnalyzeJD = async () => {
               ))}
             </div>
           </div>
-        )}
+        ) : null}
 
         <div>
           <label htmlFor="jd-text" className="block text-sm font-medium text-gray-700 mb-2">
