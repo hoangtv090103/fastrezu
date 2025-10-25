@@ -191,7 +191,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
                     <h4 className="font-medium text-gray-900">Tiếng Việt</h4>
                     <p className="text-sm text-gray-600">Tạo CV bằng tiếng Việt</p>
                   </div>
-                  <div className="ml-auto text-xl">🇻🇳</div>
+                  <div className="ml-auto text-xl font-semibold text-gray-500">VN</div>
                 </div>
               </div>
 
@@ -218,7 +218,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
                     <h4 className="font-medium text-gray-900">English</h4>
                     <p className="text-sm text-gray-600">Create CV in English</p>
                   </div>
-                  <div className="ml-auto text-xl">🇺🇸</div>
+                  <div className="ml-auto text-xl font-semibold text-gray-500">EN</div>
                 </div>
               </div>
             </div>
