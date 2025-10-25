@@ -1,5 +1,4 @@
 export default function Home() {
-
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -10,7 +9,9 @@ export default function Home() {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">F</span>
               </div>
-              <span className="heading-feature text-xl text-gray-900">FastRezu</span>
+              <span className="heading-feature text-xl text-gray-900">
+                FastRezu
+              </span>
             </div>
             {/* <a
               href="/login"
@@ -33,11 +34,15 @@ export default function Home() {
               </h1>
 
               <h2 className="heading-sub text-lg sm:text-xl lg:text-2xl text-gray-700 mb-4 sm:mb-6">
-                Kinh nghiệm tốt nhưng CV không &ldquo;kêu&rdquo;? AI giúp bạn mô tả thành tích ấn tượng &amp; vượt qua bộ lọc ATS.
+                Kinh nghiệm tốt nhưng CV không &ldquo;kêu&rdquo;? <br />
+                AI giúp bạn mô tả thành tích ấn tượng &amp; vượt qua bộ lọc ATS.
               </h2>
 
               <p className="body-text text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
-                FastRezu là công cụ AI chuyên sâu giúp bạn biến kinh nghiệm thành <strong>thành tích quantifiable</strong>, tối ưu CV (cho cả <strong>Tiếng Việt & Tiếng Anh</strong>) chỉ trong vài phút. Không chỉ CV đẹp, chúng tôi làm CV được gọi phỏng vấn.
+                FastRezu là công cụ AI chuyên sâu giúp bạn biến kinh nghiệm
+                thành <strong>thành tích quantifiable</strong>, tối ưu CV (cho
+                cả <strong>Tiếng Việt & Tiếng Anh</strong>) chỉ trong vài phút.
+                Không chỉ CV đẹp, chúng tôi làm CV được gọi phỏng vấn.
               </p>
 
               {/* Nút CTA mới */}
@@ -65,7 +70,9 @@ export default function Home() {
                   <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-2 animate-pulse-slow">
                     92/100
                   </div>
-                  <div className="text-xs sm:text-sm text-gray-600">Điểm ATS</div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Điểm ATS
+                  </div>
                 </div>
               </div>
             </div>
@@ -78,11 +85,14 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              Viết CV: Cuộc chiến với &ldquo;Trang giấy trắng&rdquo; và &ldquo;Thành tích mờ nhạt&rdquo;?
+              Viết CV: Cuộc chiến với &ldquo;Trang giấy trắng&rdquo; và
+              &ldquo;Thành tích mờ nhạt&rdquo;?
             </h2>
 
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Khảo sát gần đây cho thấy, người tìm việc tại Việt Nam gặp khó khăn nhất khi mô tả thành tích và mất quá nhiều thời gian để tùy chỉnh CV.
+              Khảo sát gần đây cho thấy, người tìm việc tại Việt Nam gặp khó
+              khăn nhất khi mô tả thành tích và mất quá nhiều thời gian để tùy
+              chỉnh CV.
             </p>
           </div>
 
@@ -95,7 +105,9 @@ export default function Home() {
                 Khó diễn tả thành tích?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                Bạn biết mình làm được việc, nhưng không biết viết sao cho &ldquo;kêu&rdquo;, biến trách nhiệm thành kết quả đo lường được (số liệu, %) để thuyết phục nhà tuyển dụng.
+                Bạn biết mình làm được việc, nhưng không biết viết sao cho
+                &ldquo;kêu&rdquo;, biến trách nhiệm thành kết quả đo lường được
+                (số liệu, %) để thuyết phục nhà tuyển dụng.
               </p>
             </div>
 
@@ -107,7 +119,9 @@ export default function Home() {
                 Tốn giờ tùy chỉnh CV?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                Mỗi công việc yêu cầu một CV khác nhau. Việc viết lại, chỉnh sửa lặp đi lặp lại khiến bạn mệt mỏi và tốn quá nhiều thời gian quý báu.
+                Mỗi công việc yêu cầu một CV khác nhau. Việc viết lại, chỉnh sửa
+                lặp đi lặp lại khiến bạn mệt mỏi và tốn quá nhiều thời gian quý
+                báu.
               </p>
             </div>
 
@@ -119,7 +133,9 @@ export default function Home() {
                 Và &ldquo;cuộc chiến ngầm&rdquo; ATS?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                Bạn có biết gần 70% CV bị máy lọc (ATS) loại trước khi đến tay người? Thiếu từ khóa phù hợp khiến CV của bạn &ldquo;vô hình&rdquo; dù rất tiềm năng.
+                Bạn có biết gần 70% CV bị máy lọc (ATS) loại trước khi đến tay
+                người? Thiếu từ khóa phù hợp khiến CV của bạn &ldquo;vô
+                hình&rdquo; dù rất tiềm năng.
               </p>
             </div>
           </div>
@@ -131,11 +147,15 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              FastRezu: Trợ lý AI giúp bạn viết CV &ldquo;chất&rdquo; và nhanh hơn
+              FastRezu: Trợ lý AI giúp bạn viết CV &ldquo;chất&rdquo; và nhanh
+              hơn
             </h2>
 
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Chúng tôi không chỉ cung cấp template. AI của FastRezu tập trung giải quyết nỗi đau cốt lõi: <strong>viết nội dung thành tích</strong> và <strong>tối ưu từ khóa</strong> cho cả Tiếng Việt &amp; Tiếng Anh.
+              Chúng tôi không chỉ cung cấp template. AI của FastRezu tập trung
+              giải quyết nỗi đau cốt lõi:{" "}
+              <strong>viết nội dung thành tích</strong> và{" "}
+              <strong>tối ưu từ khóa</strong> cho cả Tiếng Việt &amp; Tiếng Anh.
             </p>
           </div>
 
@@ -148,7 +168,10 @@ export default function Home() {
                 AI Soạn thảo Thành tích ấn tượng
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Không còn &ldquo;bí&rdquo; từ! Chỉ cần nhập vị trí, AI sẽ tự động viết các gạch đầu dòng mô tả <strong>thành tích</strong> (VI/EN), sử dụng <strong>số liệu</strong> và <strong>động từ mạnh</strong>, tích hợp từ khóa từ JD.
+                Không còn &ldquo;bí&rdquo; từ! Chỉ cần nhập vị trí, AI sẽ tự
+                động viết các gạch đầu dòng mô tả <strong>thành tích</strong>{" "}
+                (VI/EN), sử dụng <strong>số liệu</strong> và{" "}
+                <strong>động từ mạnh</strong>, tích hợp từ khóa từ JD.
               </p>
             </div>
 
@@ -160,7 +183,9 @@ export default function Home() {
                 AI &ldquo;đọc vị&rdquo; JD &amp; tìm từ khóa vàng
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Dán JD vào, AI sẽ &ldquo;quét&rdquo; và chỉ ra chính xác các <strong>từ khóa quan trọng</strong> mà hệ thống ATS và nhà tuyển dụng đang tìm kiếm. Giúp bạn tùy chỉnh CV đúng trọng tâm.
+                Dán JD vào, AI sẽ &ldquo;quét&rdquo; và chỉ ra chính xác các{" "}
+                <strong>từ khóa quan trọng</strong> mà hệ thống ATS và nhà tuyển
+                dụng đang tìm kiếm. Giúp bạn tùy chỉnh CV đúng trọng tâm.
               </p>
             </div>
 
@@ -172,7 +197,9 @@ export default function Home() {
                 Chấm điểm ATS & Gợi ý cải thiện
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Theo dõi điểm số CV tăng lên khi bạn tối ưu. Nhận gợi ý cụ thể để đạt điểm cao, tự tin nộp đơn và <strong>tăng cơ hội được gọi phỏng vấn</strong>.
+                Theo dõi điểm số CV tăng lên khi bạn tối ưu. Nhận gợi ý cụ thể
+                để đạt điểm cao, tự tin nộp đơn và{" "}
+                <strong>tăng cơ hội được gọi phỏng vấn</strong>.
               </p>
             </div>
           </div>
@@ -187,7 +214,9 @@ export default function Home() {
               Sẵn sàng để CV của bạn được nhà tuyển dụng nhìn thấy.
             </h2>
             <p className="body-text text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8">
-              Ngừng lãng phí thời gian và bỏ lỡ cơ hội vì CV chưa đủ &ldquo;chất&rdquo;. Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí.
+              Ngừng lãng phí thời gian và bỏ lỡ cơ hội vì CV chưa đủ
+              &ldquo;chất&rdquo;. Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong
+              vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí.
             </p>
 
             {/* Nút CTA mới */}
