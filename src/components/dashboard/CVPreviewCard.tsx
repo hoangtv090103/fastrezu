@@ -399,9 +399,14 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
           </div>
         </div>
         
-        <p className="small-text text-gray-500">
-          Cập nhật: {format(new Date(cv.updated_at), 'dd/MM/yyyy', { locale: vi })}
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="small-text text-gray-500">
+            Cập nhật: {format(new Date(cv.updated_at), 'dd/MM/yyyy', { locale: vi })}
+          </p>
+          <span className="text-lg font-medium text-gray-500" title={cv.language === 'vi' ? 'Tiếng Việt' : 'English'}>
+            {cv.language === 'vi' ? 'VN' : 'EN'}
+          </span>
+        </div>
       </div>
     </div>
   );
