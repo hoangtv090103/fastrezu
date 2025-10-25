@@ -30,7 +30,7 @@ export default function Home() {
 
               {/* === Tối ưu H2: Nhấn mạnh AI viết hộ === */}
               <h2 className="heading-sub text-lg sm:text-xl lg:text-2xl text-gray-700 mb-4 sm:mb-6">
-                Đừng để CV "trống" hay mô tả mờ nhạt cản bước bạn. AI của FastRezu <span className="font-semibold">viết hộ bạn</span> những thành tích ấn tượng nhất.
+                Đừng để CV &quot;trống&quot; hay mô tả mờ nhạt cản bước bạn. AI của FastRezu <span className="font-semibold">viết hộ bạn</span> những thành tích ấn tượng nhất.
               </h2>
 
               {/* === Tối ưu P: Rõ ràng về VI/EN và kết quả === */}
@@ -142,7 +142,7 @@ export default function Home() {
               FastRezu không chỉ <span className="italic">kiểm tra</span>, mà <span className="font-semibold text-blue-600">cùng bạn viết</span> CV hoàn hảo
             </h2>
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Với hướng dẫn thông minh và AI tạo sinh nội dung (VI/EN), FastRezu dẫn dắt bạn từng bước, giải quyết mọi khó khăn từ "bí từ" đến tối ưu ATS.
+              Với hướng dẫn thông minh và AI tạo sinh nội dung (VI/EN), FastRezu dẫn dắt bạn từng bước, giải quyết mọi khó khăn từ &quot;bí từ&quot; đến tối ưu ATS.
             </p>
           </div>
 

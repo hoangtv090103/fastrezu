@@ -25,7 +25,6 @@ interface ScoreResult {
 export default function CheckCVPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
-  const [extractedText, setExtractedText] = useState("");
   const [editedText, setEditedText] = useState("");
   const [isConfirmingText, setIsConfirmingText] = useState(false);
   const [jdText, setJdText] = useState("");
@@ -68,7 +67,6 @@ export default function CheckCVPage() {
         throw new Error(data.error || "Upload failed");
       }
 
-      setExtractedText(data.extractedText);
       setEditedText(data.extractedText);
       setCurrentStep('review');
       toast.success("Tải lên file và trích xuất văn bản thành công!");
@@ -133,7 +131,6 @@ export default function CheckCVPage() {
 
   const resetProcess = () => {
     setFile(null);
-    setExtractedText("");
     setEditedText("");
     setJdText("");
     setScoreResult(null);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { extractText, getDocumentProxy } from "unpdf";
-const mammoth = require("mammoth");
+import mammoth from "mammoth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Get form data
     const formData = await request.formData();
-    const file = (formData as any).get("file") as File | null;
+    const file = (formData as unknown as { get: (key: string) => File | null }).get("file");
 
     if (!file) {
       return NextResponse.json(
