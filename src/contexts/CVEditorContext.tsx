@@ -48,7 +48,8 @@ type CVEditorAction =
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_JD_ANALYSIS'; payload: { keywords: string[]; analysis: Record<string, unknown> } }
   | { type: 'SET_LANGUAGE'; payload: CVLanguage }
-  | { type: 'UPDATE_CV_DATA'; payload: CVData };
+  | { type: 'UPDATE_CV_DATA'; payload: CVData }
+  | { type: 'UPDATE_TITLE'; payload: string };
 
 const initialState: CVEditorState = {
   currentStep: 0,
@@ -97,6 +98,15 @@ function cvEditorReducer(state: CVEditorState, action: CVEditorAction): CVEditor
       return { ...state, selectedLanguage: action.payload };
     case 'UPDATE_CV_DATA':
       return { ...state, cvData: action.payload };
+    case 'UPDATE_TITLE':
+      if (!state.cvData) return state;
+      return {
+        ...state,
+        cvData: {
+          ...state.cvData,
+          title: action.payload,
+        },
+      };
     default:
       return state;
   }
@@ -109,6 +119,7 @@ interface CVEditorContextType {
   setJDAnalysis: (keywords: string[], analysis: Record<string, unknown>) => void;
   setLanguage: (language: CVLanguage) => void;
   updateCVData: (cvData: CVData) => void;
+  updateTitle: (title: string) => void;
   saveCV: () => Promise<void>;
 }
 
@@ -398,6 +409,58 @@ export function CVEditorProvider({
     dispatch({ type: 'UPDATE_CV_DATA', payload: cvData });
   };
 
+  const updateTitle = useCallback(async (title: string) => {
+    if (!state.cvData || !cvId) return;
+
+    try {
+      dispatch({ type: 'UPDATE_TITLE', payload: title });
+
+      // Check authentication
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Update CV title via API
+      const response = await fetch(`/api/cv/${cvId}/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: title.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update CV title');
+      }
+
+      const { cv: updatedCv } = await response.json();
+
+      // Update the full CV data in state
+      if (state.cvData) {
+        const updatedCVData = {
+          ...state.cvData,
+          title: updatedCv.title,
+          ats_score: updatedCv.ats_score,
+        };
+        dispatch({ type: 'SET_CV_DATA', payload: updatedCVData });
+      }
+    } catch (error) {
+      console.error('Error updating CV title:', error);
+
+      // Revert the optimistic update on error
+      if (state.cvData) {
+        dispatch({ type: 'SET_CV_DATA', payload: state.cvData });
+      }
+
+      // You might want to show a toast notification here
+      throw error;
+    }
+  }, [state.cvData, cvId, supabase]);
+
   return (
     <CVEditorContext.Provider
       value={{
@@ -407,6 +470,7 @@ export function CVEditorProvider({
         setJDAnalysis,
         setLanguage,
         updateCVData,
+        updateTitle,
         saveCV,
       }}
     >

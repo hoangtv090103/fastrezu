@@ -4,11 +4,16 @@ import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
-    const { language = 'vi' } = await request.json()
-    
+    const { title = '', language = 'vi' } = await request.json()
+
     // Validate language parameter
     if (!['vi', 'en'].includes(language)) {
       return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+    }
+
+    // Validate title parameter
+    if (typeof title !== 'string' || title.length > 100) {
+      return NextResponse.json({ error: 'Title must be a string and less than 100 characters' }, { status: 400 })
     }
 
     const cookieStore = await cookies()
@@ -41,12 +46,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Generate default title if not provided
+    const defaultTitle = language === 'vi' ? 'CV mới' : 'New CV'
+    const finalTitle = title.trim() || defaultTitle
+
     // Create new CV with language
     const { data: cv, error } = await supabase
       .from('cvs')
       .insert({
         user_id: user.id,
-        title: language === 'vi' ? 'CV mới' : 'New CV',
+        title: finalTitle,
         is_active: true,
         ats_score: 0,
         language: language,

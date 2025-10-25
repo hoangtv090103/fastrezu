@@ -9,6 +9,7 @@ interface CV {
   id: string;
   title: string;
   ats_score: number;
+  language: "vi" | "en";
   updated_at: string;
   created_at: string;
 }
@@ -21,6 +22,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<'vi' | 'en'>('vi');
+  const [cvTitle, setCvTitle] = useState("");
   const router = useRouter();
 
   const handleCreateCV = async () => {
@@ -32,6 +34,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          title: cvTitle.trim() || `CV ${selectedLanguage.toUpperCase()}`,
           language: selectedLanguage
         }),
       });
@@ -47,6 +50,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
     } finally {
       setIsCreating(false);
       setShowLanguageModal(false);
+      setCvTitle("");
     }
   };
 
@@ -159,11 +163,32 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="heading-feature text-lg text-gray-900 mb-4">
-              Chọn ngôn ngữ cho CV
+              Tạo CV mới
             </h3>
-            <p className="body-text text-gray-600 mb-6">
-              Chọn ngôn ngữ mà bạn muốn tạo CV. Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.
-            </p>
+
+            {/* Title Input */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Tên CV
+              </label>
+              <input
+                type="text"
+                value={cvTitle}
+                onChange={(e) => setCvTitle(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors duration-200"
+                placeholder={`CV ${selectedLanguage.toUpperCase()}`}
+                autoFocus
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-900 mb-3">
+                Chọn ngôn ngữ
+              </label>
+              <p className="body-text text-gray-700 mb-4">
+                Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.
+              </p>
+            </div>
 
             <div className="space-y-3 mb-6">
               {/* Vietnamese Option */}
