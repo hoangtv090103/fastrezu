@@ -4,12 +4,16 @@ import { User } from "@supabase/supabase-js";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { Database } from "@/types/database";
+
+type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
 
 interface AuthenticatedHeaderProps {
   user: User;
+  userProfile?: UserProfile | null;
 }
 
-export default function AuthenticatedHeader({ user }: AuthenticatedHeaderProps) {
+export default function AuthenticatedHeader({ user, userProfile }: AuthenticatedHeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -17,6 +21,14 @@ export default function AuthenticatedHeader({ user }: AuthenticatedHeaderProps) 
   const getUserInitials = (email: string) => {
     const name = email.split('@')[0];
     return name.substring(0, 2).toUpperCase();
+  };
+
+  // Format subscription tier: replace _ with space and capitalize words
+  const formatSubscriptionTier = (tier: string) => {
+    return tier
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
   // Close dropdown when clicking outside
@@ -70,7 +82,7 @@ export default function AuthenticatedHeader({ user }: AuthenticatedHeaderProps) 
                   {user.email?.split('@')[0] || 'User'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  Beta Free
+                  {userProfile?.subscription_tier ? formatSubscriptionTier(userProfile.subscription_tier) : 'Beta Free'}
                 </p>
               </div>
               <svg 
@@ -87,7 +99,9 @@ export default function AuthenticatedHeader({ user }: AuthenticatedHeaderProps) 
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <p className="text-sm font-medium text-gray-900">{user.email}</p>
-                  <p className="text-xs text-gray-500 mt-1">Beta Free Plan</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {userProfile?.subscription_tier ? formatSubscriptionTier(userProfile.subscription_tier) + ' Plan' : 'Beta Free Plan'}
+                  </p>
                 </div>
                 
                 <div className="py-1">

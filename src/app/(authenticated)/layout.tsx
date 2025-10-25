@@ -17,9 +17,16 @@ export default async function AuthenticatedLayout({
     redirect("/login");
   }
 
+  // Fetch user profile
+  const { data: userProfile } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <AuthenticatedHeader user={user} />
+      <AuthenticatedHeader user={user} userProfile={userProfile} />
       <main className="container mx-auto px-4 py-8">
         {children}
       </main>
