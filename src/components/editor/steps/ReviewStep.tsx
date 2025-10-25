@@ -24,6 +24,24 @@ export default function ReviewStep() {
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [isScoring, setIsScoring] = useState(false);
 
+  // Initialize scoring result from existing CV data if available
+  useEffect(() => {
+    if (state.cvData?.ats_score && state.cvData?.ats_analysis && !scoringResult) {
+      setScoringResult({
+        score: state.cvData.ats_score,
+        suggestions: state.cvData.ats_analysis.suggestions || [],
+        analysis: {
+          keyword_match: state.cvData.ats_analysis.keyword_match || 0,
+          formatting: state.cvData.ats_analysis.formatting || 0,
+          completeness: state.cvData.ats_analysis.completeness || 0,
+          relevance: state.cvData.ats_analysis.relevance || 0,
+        },
+        matchedKeywords: state.cvData.ats_analysis.matched_keywords || [],
+        missingKeywords: state.cvData.ats_analysis.missing_keywords || [],
+      });
+    }
+  }, [state.cvData?.ats_score, state.cvData?.ats_analysis, scoringResult]);
+
   const handleScoreCV = useCallback(async () => {
     if (!state.cvData) return;
 
@@ -81,12 +99,12 @@ export default function ReviewStep() {
     }
   }, [state.cvData, updateCVData, saveCV]);
 
-  // Auto-score when component mounts if we have JD analysis
+  // Auto-score when component mounts if we have JD analysis but no existing ATS score
   useEffect(() => {
-    if (state.cvData?.jd_analysis && !scoringResult) {
+    if (state.cvData?.jd_analysis && !scoringResult && !state.cvData?.ats_score) {
       handleScoreCV();
     }
-  }, [state.cvData?.jd_analysis, handleScoreCV, scoringResult]);
+  }, [state.cvData?.jd_analysis, state.cvData?.ats_score, handleScoreCV, scoringResult]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600';
