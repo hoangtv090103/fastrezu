@@ -33,14 +33,11 @@ export default function Home() {
               </h1>
 
               <h2 className="heading-sub text-lg sm:text-xl lg:text-2xl text-gray-700 mb-4 sm:mb-6">
-                Kinh nghiệm của bạn có thể rất tốt, nhưng CV của bạn có thể chưa
-                &ldquo;vượt qua&rdquo; được hệ thống lọc tự động.
+                Kinh nghiệm tốt nhưng CV không "kêu"? AI giúp bạn mô tả thành tích ấn tượng & vượt qua bộ lọc ATS.
               </h2>
 
               <p className="body-text text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
-                FastRezu là công cụ AI chuyên sâu, giúp bạn tối ưu CV
-                &ldquo;chuẩn&rdquo; (cho cả <strong>Tiếng Việt & Tiếng Anh</strong>) theo từng mô tả công việc. Chúng tôi không
-                chỉ làm CV đẹp, chúng tôi làm CV được nhà tuyển dụng nhìn thấy.
+                FastRezu là công cụ AI chuyên sâu giúp bạn biến kinh nghiệm thành <strong>thành tích quantifiable</strong>, tối ưu CV (cho cả <strong>Tiếng Việt & Tiếng Anh</strong>) chỉ trong vài phút. Không chỉ CV đẹp, chúng tôi làm CV được gọi phỏng vấn.
               </p>
 
               {/* Nút CTA mới */}
@@ -81,46 +78,48 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              Hệ thống ATS là gì? <br className="hidden sm:block" />
-              <span className="block sm:inline">(Và tại sao nó lại lọc CV của bạn?)</span>
+              Viết CV: Cuộc chiến với "Trang giấy trắng" và "Thành tích mờ nhạt"?
             </h2>
 
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Các công ty lớn (FPT, Techcombank, Shopee...) hiện dùng một hệ
-              thống lọc CV tự động gọi là
-              <br className="hidden sm:block" />
-              <strong>ATS (Applicant Tracking System)</strong> để xử lý hàng
-              ngàn hồ sơ.
+              Khảo sát gần đây cho thấy, người tìm việc tại Việt Nam gặp khó khăn nhất khi mô tả thành tích và mất quá nhiều thời gian để tùy chỉnh CV.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             <div className="text-center p-4 sm:p-6">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-xl sm:text-2xl">⚡</span>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-xl sm:text-2xl">🏆</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Hệ thống quét CV trong 6 giây
+                Khó diễn tả thành tích?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                ATS không &ldquo;đọc&rdquo; CV như người. Nó &ldquo;quét&rdquo;
-                hồ sơ của bạn để tìm kiếm các{" "}
-                <strong>&ldquo;từ khóa&rdquo; (Keywords)</strong> liên quan trực
-                tiếp đến mô tả công việc.
+                Bạn biết mình làm được việc, nhưng không biết viết sao cho "kêu", biến trách nhiệm thành kết quả đo lường được (số liệu, %) để thuyết phục nhà tuyển dụng.
+              </p>
+            </div>
+
+            <div className="text-center p-4 sm:p-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-xl sm:text-2xl">⏳</span>
+              </div>
+              <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
+                Tốn giờ tùy chỉnh CV?
+              </h3>
+              <p className="body-text text-gray-600 text-sm sm:text-base">
+                Mỗi công việc yêu cầu một CV khác nhau. Việc viết lại, chỉnh sửa lặp đi lặp lại khiến bạn mệt mỏi và tốn quá nhiều thời gian quý báu.
               </p>
             </div>
 
             <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-xl sm:text-2xl">🗑️</span>
+                <span className="text-xl sm:text-2xl">🤖</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                CV thiếu &ldquo;Từ khóa&rdquo; = Bị bỏ lỡ
+                Và "cuộc chiến ngầm" ATS?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                Nếu CV của bạn (dù kinh nghiệm tốt) không chứa đúng các từ khóa
-                này, hệ thống sẽ xếp hạng bạn ở mức thấp. Nhà tuyển dụng có thể
-                không bao giờ nhìn thấy hồ sơ của bạn.
+                Bạn có biết gần 70% CV bị máy lọc (ATS) loại trước khi đến tay người? Thiếu từ khóa phù hợp khiến CV của bạn "vô hình" dù rất tiềm năng.
               </p>
             </div>
           </div>
@@ -132,59 +131,48 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              Giải pháp của FastRezu: Dùng AI để tối ưu cho AI
+              FastRezu: Trợ lý AI giúp bạn viết CV "chất" và nhanh hơn
             </h2>
 
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Các công cụ truyền thống giúp bạn có một CV đẹp về hình thức
-              (Template).
-              <br className="hidden sm:block" />
-              FastRezu tập trung vào thứ quyết định bạn có được phỏng vấn hay
-              không: <strong>Nội dung CV.</strong>
+              Chúng tôi không chỉ cung cấp template. AI của FastRezu tập trung giải quyết nỗi đau cốt lõi: <strong>viết nội dung thành tích</strong> và <strong>tối ưu từ khóa</strong> cho cả Tiếng Việt & Tiếng Anh.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">✍️</span>
+                <span className="text-xl sm:text-2xl">✍️✨</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI Phân tích Mô tả công việc (JD)
+                AI Soạn thảo Thành tích ấn tượng
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Dán mô tả công việc (JD) bạn muốn ứng tuyển vào. AI của chúng
-                tôi sẽ &ldquo;quét&rdquo; và chỉ ra chính xác các{" "}
-                <strong>từ khóa &ldquo;vàng&rdquo;</strong> mà hệ thống ATS đang
-                tìm kiếm.
+                Không còn "bí" từ! Chỉ cần nhập vị trí, AI sẽ tự động viết các gạch đầu dòng mô tả <strong>thành tích</strong> (VI/EN), sử dụng <strong>số liệu</strong> và <strong>động từ mạnh</strong>, tích hợp từ khóa từ JD.
               </p>
             </div>
 
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">🔍</span>
+                <span className="text-xl sm:text-2xl">🔍🎯</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI Soạn thảo Nội dung CV
+                AI "đọc vị" JD & tìm từ khóa vàng
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Không còn &ldquo;bí&rdquo; từ. Dựa trên các từ khóa từ JD,
-                FastRezu sẽ <strong>soạn thảo</strong> giúp bạn các gạch đầu
-                dòng mô tả thành tích (bằng <strong>Tiếng Việt hoặc Tiếng Anh</strong>) nhằm đảm bảo đạt điểm ATS cao nhất.
+                Dán JD vào, AI sẽ "quét" và chỉ ra chính xác các <strong>từ khóa quan trọng</strong> mà hệ thống ATS và nhà tuyển dụng đang tìm kiếm. Giúp bạn tùy chỉnh CV đúng trọng tâm.
               </p>
             </div>
 
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg sm:col-span-2 lg:col-span-1">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <span className="text-xl sm:text-2xl">📊</span>
+                <span className="text-xl sm:text-2xl">📊✅</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                Chấm điểm CV theo thời gian thực
+                Chấm điểm ATS & Gợi ý cải thiện
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Theo dõi điểm số CV của bạn tăng lên (ví dụ: từ 45/100 lên
-                95/100) khi bạn thêm các từ khóa quan trọng. Tự tin 100% trước
-                khi &ldquo;Nộp đơn&rdquo;.
+                Theo dõi điểm số CV tăng lên khi bạn tối ưu. Nhận gợi ý cụ thể để đạt điểm cao, tự tin nộp đơn và <strong>tăng cơ hội được gọi phỏng vấn</strong>.
               </p>
             </div>
           </div>
@@ -199,9 +187,7 @@ export default function Home() {
               Sẵn sàng để CV của bạn được nhà tuyển dụng nhìn thấy.
             </h2>
             <p className="body-text text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8">
-              Bạn chỉ cách công việc mơ ước một CV được tối ưu. Trở thành những
-              người đầu tiên tại Việt Nam dùng AI để qua vòng lọc hồ sơ. Bắt đầu
-              ngay hôm nay, hoàn toàn miễn phí.
+              Ngừng lãng phí thời gian và bỏ lỡ cơ hội vì CV chưa đủ "chất". Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí.
             </p>
 
             {/* Nút CTA mới */}
