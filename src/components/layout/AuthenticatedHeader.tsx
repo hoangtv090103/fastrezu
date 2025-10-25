@@ -77,11 +77,11 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
                   {getUserInitials(user.email || '')}
                 </span>
               </div>
-              <div className="hidden sm:block text-left">
-                <p className="small-text text-gray-900 font-medium">
+              <div className="hidden sm:block text-left max-w-32">
+                <p className="small-text text-gray-900 font-medium truncate">
                   {user.email?.split('@')[0] || 'User'}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 truncate">
                   {userProfile?.subscription_tier ? formatSubscriptionTier(userProfile.subscription_tier) : 'Beta Free'}
                 </p>
               </div>
@@ -96,15 +96,15 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">{user.email}</p>
+                  <p className="text-sm font-medium text-gray-900 break-all">{user.email?.split('@')[0]}</p>
                   <p className="text-xs text-gray-500 mt-1">
                     {userProfile?.subscription_tier ? formatSubscriptionTier(userProfile.subscription_tier) + ' Plan' : 'Beta Free Plan'}
                   </p>
                 </div>
                 
-                <div className="py-1">
+                {/* <div className="py-1">
                   <Link
                     href="/dashboard"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
@@ -126,7 +126,7 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
                     </svg>
                     Profile Settings
                   </button>
-                </div>
+                </div> */}
                 
                 <div className="border-t border-gray-100 py-1">
                   <LogoutButton />
