@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save JD analysis to database
-    const { data: jdAnalysis, error: saveError } = await supabase
+    const { error: saveError } = await supabase
       .from('jd_analyses')
       .insert({
         cv_id: cvId,
@@ -89,8 +89,6 @@ export async function POST(request: NextRequest) {
         keywords_extracted: analysis.ats_keywords || [],
         analysis_result: analysis
       })
-      .select()
-      .single()
 
     if (saveError) {
       console.error('Error saving JD analysis:', saveError)

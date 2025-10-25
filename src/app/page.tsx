@@ -33,7 +33,7 @@ export default function Home() {
               </h1>
 
               <h2 className="heading-sub text-lg sm:text-xl lg:text-2xl text-gray-700 mb-4 sm:mb-6">
-                Kinh nghiệm tốt nhưng CV không "kêu"? AI giúp bạn mô tả thành tích ấn tượng & vượt qua bộ lọc ATS.
+                Kinh nghiệm tốt nhưng CV không &ldquo;kêu&rdquo;? AI giúp bạn mô tả thành tích ấn tượng &amp; vượt qua bộ lọc ATS.
               </h2>
 
               <p className="body-text text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
@@ -78,7 +78,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              Viết CV: Cuộc chiến với "Trang giấy trắng" và "Thành tích mờ nhạt"?
+              Viết CV: Cuộc chiến với &ldquo;Trang giấy trắng&rdquo; và &ldquo;Thành tích mờ nhạt&rdquo;?
             </h2>
 
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
@@ -95,7 +95,7 @@ export default function Home() {
                 Khó diễn tả thành tích?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                Bạn biết mình làm được việc, nhưng không biết viết sao cho "kêu", biến trách nhiệm thành kết quả đo lường được (số liệu, %) để thuyết phục nhà tuyển dụng.
+                Bạn biết mình làm được việc, nhưng không biết viết sao cho &ldquo;kêu&rdquo;, biến trách nhiệm thành kết quả đo lường được (số liệu, %) để thuyết phục nhà tuyển dụng.
               </p>
             </div>
 
@@ -116,10 +116,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">🤖</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Và "cuộc chiến ngầm" ATS?
+                Và &ldquo;cuộc chiến ngầm&rdquo; ATS?
               </h3>
               <p className="body-text text-gray-600 text-sm sm:text-base">
-                Bạn có biết gần 70% CV bị máy lọc (ATS) loại trước khi đến tay người? Thiếu từ khóa phù hợp khiến CV của bạn "vô hình" dù rất tiềm năng.
+                Bạn có biết gần 70% CV bị máy lọc (ATS) loại trước khi đến tay người? Thiếu từ khóa phù hợp khiến CV của bạn &ldquo;vô hình&rdquo; dù rất tiềm năng.
               </p>
             </div>
           </div>
@@ -131,11 +131,11 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              FastRezu: Trợ lý AI giúp bạn viết CV "chất" và nhanh hơn
+              FastRezu: Trợ lý AI giúp bạn viết CV &ldquo;chất&rdquo; và nhanh hơn
             </h2>
 
             <p className="body-text text-gray-600 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Chúng tôi không chỉ cung cấp template. AI của FastRezu tập trung giải quyết nỗi đau cốt lõi: <strong>viết nội dung thành tích</strong> và <strong>tối ưu từ khóa</strong> cho cả Tiếng Việt & Tiếng Anh.
+              Chúng tôi không chỉ cung cấp template. AI của FastRezu tập trung giải quyết nỗi đau cốt lõi: <strong>viết nội dung thành tích</strong> và <strong>tối ưu từ khóa</strong> cho cả Tiếng Việt &amp; Tiếng Anh.
             </p>
           </div>
 
@@ -148,7 +148,7 @@ export default function Home() {
                 AI Soạn thảo Thành tích ấn tượng
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Không còn "bí" từ! Chỉ cần nhập vị trí, AI sẽ tự động viết các gạch đầu dòng mô tả <strong>thành tích</strong> (VI/EN), sử dụng <strong>số liệu</strong> và <strong>động từ mạnh</strong>, tích hợp từ khóa từ JD.
+                Không còn &ldquo;bí&rdquo; từ! Chỉ cần nhập vị trí, AI sẽ tự động viết các gạch đầu dòng mô tả <strong>thành tích</strong> (VI/EN), sử dụng <strong>số liệu</strong> và <strong>động từ mạnh</strong>, tích hợp từ khóa từ JD.
               </p>
             </div>
 
@@ -157,10 +157,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">🔍🎯</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI "đọc vị" JD & tìm từ khóa vàng
+                AI &ldquo;đọc vị&rdquo; JD &amp; tìm từ khóa vàng
               </h3>
               <p className="body-text text-gray-600 text-center text-sm sm:text-base">
-                Dán JD vào, AI sẽ "quét" và chỉ ra chính xác các <strong>từ khóa quan trọng</strong> mà hệ thống ATS và nhà tuyển dụng đang tìm kiếm. Giúp bạn tùy chỉnh CV đúng trọng tâm.
+                Dán JD vào, AI sẽ &ldquo;quét&rdquo; và chỉ ra chính xác các <strong>từ khóa quan trọng</strong> mà hệ thống ATS và nhà tuyển dụng đang tìm kiếm. Giúp bạn tùy chỉnh CV đúng trọng tâm.
               </p>
             </div>
 
@@ -187,7 +187,7 @@ export default function Home() {
               Sẵn sàng để CV của bạn được nhà tuyển dụng nhìn thấy.
             </h2>
             <p className="body-text text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8">
-              Ngừng lãng phí thời gian và bỏ lỡ cơ hội vì CV chưa đủ "chất". Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí.
+              Ngừng lãng phí thời gian và bỏ lỡ cơ hội vì CV chưa đủ &ldquo;chất&rdquo;. Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí.
             </p>
 
             {/* Nút CTA mới */}
