@@ -27,7 +27,7 @@ export default async function AuthenticatedLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <AuthenticatedHeader user={user} userProfile={userProfile} />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4">
         {children}
       </main>
     </div>
