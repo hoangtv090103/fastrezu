@@ -110,6 +110,8 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
     }
 
     setIsDownloading(true);
+    toast.loading('Đang tạo PDF...', { id: 'pdf-generation' });
+    
     try {
       // Create a temporary container for the CV template
       const tempContainer = document.createElement('div');
@@ -137,50 +139,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
       // Wait for rendering to complete
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Create canvas from HTML element
-      const canvas = await html2canvas(cvElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: cvElement.scrollWidth,
-        height: cvElement.scrollHeight,
-        logging: false,
-        onclone: (clonedDoc) => {
-          const style = clonedDoc.createElement('style');
-          style.textContent = `
-            * {
-              color: inherit !important;
-              font-family: 'Helvetica', 'Arial', sans-serif !important;
-            }
-            .text-blue-600 { color: #2563eb !important; }
-            .text-gray-900 { color: #111827 !important; }
-            .text-gray-600 { color: #4b5563 !important; }
-            .text-gray-500 { color: #6b7280 !important; }
-            .text-gray-700 { color: #374151 !important; }
-            .bg-blue-600 { background-color: #2563eb !important; }
-            .bg-gray-100 { background-color: #f3f4f6 !important; }
-            .border-blue-600 { border-color: #2563eb !important; }
-            .border-gray-100 { border-color: #f3f4f6 !important; }
-            .border-gray-200 { border-color: #e5e7eb !important; }
-            h1, h2, h3, h4, h5, h6 {
-              font-weight: bold !important;
-              line-height: 1.2 !important;
-            }
-            p, li, span {
-              line-height: 1.4 !important;
-            }
-            * {
-              box-shadow: none !important;
-              text-shadow: none !important;
-            }
-          `;
-          clonedDoc.head.appendChild(style);
-        }
-      });
-
-      // Create PDF
-      const imgData = canvas.toDataURL('image/png', 0.95);
+      // Create PDF using jsPDF html() method
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -188,36 +147,73 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
         compress: true,
       });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-      const availableWidth = pdfWidth - (margin * 2);
-      const availableHeight = pdfHeight - (margin * 2);
+      // Use pdf.html() instead of html2canvas + addImage
+      await pdf.html(cvElement, {
+        callback: (doc) => {
+          // This callback runs after PDF rendering is complete
+          const sanitizedTitle = (cv.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+          const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
+          doc.save(fileName);
+          
+          // Clean up
+          document.body.removeChild(tempContainer);
+          
+          toast.success('PDF đã được tải xuống thành công!', { id: 'pdf-generation' });
+          
+          // Reset downloading state after a short delay
+          setTimeout(() => {
+            setIsDownloading(false);
+          }, 500);
+        },
+        margin: [15, 10, 15, 10], // Top, Right, Bottom, Left margins in mm
+        autoPaging: 'text', // Try to break pages without cutting text
+        width: 190, // Available width after margins (210mm - 20mm)
+        windowWidth: 190,
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          onclone: (clonedDoc) => {
+            const style = clonedDoc.createElement('style');
+            style.textContent = `
+              * {
+                color: inherit !important;
+                font-family: 'Helvetica', 'Arial', sans-serif !important;
+              }
+              .text-blue-600 { color: #2563eb !important; }
+              .text-gray-900 { color: #111827 !important; }
+              .text-gray-600 { color: #4b5563 !important; }
+              .text-gray-500 { color: #6b7280 !important; }
+              .text-gray-700 { color: #374151 !important; }
+              .bg-blue-600 { background-color: #2563eb !important; }
+              .bg-gray-100 { background-color: #f3f4f6 !important; }
+              .border-blue-600 { border-color: #2563eb !important; }
+              .border-gray-100 { border-color: #f3f4f6 !important; }
+              .border-gray-200 { border-color: #e5e7eb !important; }
+              h1, h2, h3, h4, h5, h6 {
+                font-weight: bold !important;
+                line-height: 1.2 !important;
+              }
+              p, li, span {
+                line-height: 1.4 !important;
+              }
+              * {
+                box-shadow: none !important;
+                text-shadow: none !important;
+                background-image: none !important;
+                background: none !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
+          }
+        }
+      });
       
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(availableWidth / imgWidth, availableHeight / imgHeight);
-      
-      const finalWidth = imgWidth * ratio;
-      const finalHeight = imgHeight * ratio;
-      const imgX = (pdfWidth - finalWidth) / 2;
-      const imgY = margin;
-
-      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
-
-      // Clean up
-      document.body.removeChild(tempContainer);
-
-      // Download PDF
-      const sanitizedTitle = (cv.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
-      
-      toast.success('PDF đã được tải xuống thành công!');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.');
-    } finally {
+      toast.error('Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.', { id: 'pdf-generation' });
       setIsDownloading(false);
     }
   };
@@ -243,7 +239,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
     >
       {/* CV Preview */}
       <div className="h-80 overflow-hidden relative">
-        <div className="h-full overflow-y-auto p-4 bg-gray-50 hide-scrollbar">
+        <div className="h-full overflow-y-auto p-4 bg-gray-50 hide-scrollbar relative z-0">
           {hasContent(cv) ? (
             <div className="transform scale-50 origin-top-left w-[200%] h-[200%] hide-scrollbar">
               <CVTemplate cvData={convertSectionsToCVData(cv)} />
@@ -263,7 +259,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
         
         {/* Overlay with actions */}
         {isHovered && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center z-10">
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleDownloadPDF}
@@ -308,8 +304,8 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
 
                 {/* Dropdown menu */}
                 {showDropdown && (
-                  <div className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[160px] z-50">
-                    <button
+                  <div className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[160px]" style={{ zIndex: 9999 }}>
+                    {/* <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowDropdown(false);
@@ -357,7 +353,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                       <span>Đổi tên</span>
                     </button>
                     
-                    <hr className="my-1" />
+                    <hr className="my-1" /> */}
                     
                     <button
                       onClick={(e) => {
