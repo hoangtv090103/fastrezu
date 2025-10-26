@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import BlockNoteEditor from "./BlockNoteEditor";
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -217,7 +218,7 @@ export default function PDFViewer({
   return (
     <div className="flex flex-col lg:flex-row h-full">
       {/* Left side - Extracted Text */}
-      <div className="flex-1 border-r-0 lg:border-r border-gray-300 p-3 lg:p-4 lg:min-w-0">
+      <div className="flex-1 border-r-0 lg:border-r border-gray-300 p-3 lg:p-4 lg:min-w-0 flex flex-col">
         <div className="mb-3 lg:mb-4">
           <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-2">
             Văn bản đã trích xuất
@@ -228,12 +229,14 @@ export default function PDFViewer({
           </p>
         </div>
 
-        <textarea
-          value={extractedText}
-          onChange={(e) => onTextChange(e.target.value)}
-          className="w-full h-64 lg:h-96 p-3 lg:p-4 border border-gray-300 rounded-lg font-mono text-xs lg:text-sm text-gray-900 bg-white resize-none"
-          placeholder="Văn bản đã trích xuất sẽ xuất hiện ở đây..."
-        />
+        <div className="flex-1 min-h-0">
+          <BlockNoteEditor
+            value={extractedText}
+            onChange={onTextChange}
+            placeholder="Văn bản đã trích xuất sẽ xuất hiện ở đây..."
+            className="w-full h-full"
+          />
+        </div>
       </div>
 
       {/* Right side - PDF Viewer */}
