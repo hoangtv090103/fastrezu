@@ -6,7 +6,6 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import CVTemplate from "@/components/cv/CVTemplate";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
 
 interface CVSection {

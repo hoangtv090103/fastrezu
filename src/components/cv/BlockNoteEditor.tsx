@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useCreateBlockNote, useEditorChange } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
+import type { Block } from "@blocknote/core";
 import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
 import "./BlockNoteEditor.css";
@@ -17,7 +18,6 @@ interface BlockNoteEditorProps {
 export default function BlockNoteEditor({
   value,
   onChange,
-  placeholder = "Văn bản đã trích xuất sẽ xuất hiện ở đây...",
   className = "",
 }: BlockNoteEditorProps) {
   const isUpdatingFromProps = useRef(false);
@@ -28,12 +28,12 @@ export default function BlockNoteEditor({
   });
 
   // Convert blocks to plain text
-  const blocksToPlainText = useCallback((blocks: any[]) => {
-    return blocks
+  const blocksToPlainText = useCallback((blocks: unknown[]) => {
+    return (blocks as Block[])
       .map((block) => {
         if (block.type === "paragraph" && block.content) {
           return block.content
-            .map((item: any) => (item.type === "text" ? item.text : ""))
+            .map((item) => (item.type === "text" ? (item as { type: "text"; text: string; styles: Record<string, unknown> }).text : ""))
             .join("");
         }
         return "";

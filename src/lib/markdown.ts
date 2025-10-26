@@ -60,7 +60,7 @@ export function parseMarkdown(text: string): React.ReactNode {
         const currentLine = lines[i];
         const match = currentLine.trim().match(/^(\d+)\.\s+(.+)$/);
         if (match) {
-          const [, number, content] = match;
+          const [, , content] = match;
           numberedItems.push(
             React.createElement('li', { key: i, className: 'mb-1' },
               React.createElement('span', { className: 'text-gray-700' }, parseInlineMarkdown(content))

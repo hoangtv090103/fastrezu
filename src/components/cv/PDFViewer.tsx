@@ -96,7 +96,7 @@ export default function PDFViewer({
     if (customZoomInput === "") {
       setCustomZoomInput(Math.round(scale * 100).toString());
     }
-  }, [scale]);
+  }, [scale, customZoomInput]);
 
   const onDocumentLoadSuccess = useCallback(
     async (document: {
