@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
 
 interface ScoreResult {
   score: number;
@@ -139,48 +140,57 @@ export default function CheckCVPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="w-full max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Kiểm tra CV
-          </h1>
-          <p className="text-gray-600">
-            Tải lên CV hiện tại của bạn để nhận điểm ATS và gợi ý cải thiện.
-          </p>
-        </div>
-
-        {/* Step Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            {[
-              { key: 'upload', label: 'Tải lên', icon: '📁' },
-              { key: 'review', label: 'Kiểm tra', icon: '✏️' },
-              { key: 'jd', label: 'Mô tả công việc', icon: '📋' },
-              { key: 'results', label: 'Kết quả', icon: '📊' },
-            ].map((step, index) => (
-              <div key={step.key} className="flex items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                    currentStep === step.key
-                      ? 'bg-blue-600 text-white'
-                      : ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}
-                >
-                  {['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index ? '✓' : step.icon}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                Kiểm tra CV
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600">
+                Tải lên CV hiện tại của bạn để nhận điểm ATS và gợi ý cải thiện.
+              </p>
+            </div>
+            
+            {/* Compact Step Indicator */}
+            <div className="flex items-center space-x-1 sm:space-x-2 ml-4">
+              {[
+                { key: 'upload', label: 'Tải lên', icon: '📁' },
+                { key: 'review', label: 'Kiểm tra', icon: '✏️' },
+                { key: 'jd', label: 'Mô tả công việc', icon: '📋' },
+                { key: 'results', label: 'Kết quả', icon: '📊' },
+              ].map((step, index) => (
+                <div key={step.key} className="relative group">
+                  <div
+                    className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 ${
+                      currentStep === step.key
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
+                        ? 'bg-green-600 text-white shadow-md'
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
+                  >
+                    {['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index ? '✓' : step.icon}
+                  </div>
+                  
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                    {step.label}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                  
+                  {/* Connector line */}
+                  {index < 3 && (
+                    <div className={`absolute top-1/2 left-full w-2 sm:w-4 h-0.5 transform -translate-y-1/2 ${
+                      ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
+                        ? 'bg-green-600'
+                        : 'bg-gray-200'
+                    }`} />
+                  )}
                 </div>
-                <span className="ml-2 text-sm font-medium text-gray-700">{step.label}</span>
-                {index < 3 && (
-                  <div className={`w-16 h-0.5 mx-4 ${
-                    ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
-                      ? 'bg-green-600'
-                      : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -225,7 +235,7 @@ export default function CheckCVPage() {
             <button
               onClick={handleFileUpload}
               disabled={!file || isLoadingUpload}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isLoadingUpload ? "Đang tải lên và trích xuất văn bản..." : "Tải lên & trích xuất văn bản"}
             </button>
@@ -235,33 +245,36 @@ export default function CheckCVPage() {
         {/* Step 2: Review Text */}
         {currentStep === 'review' && (
           <div className="space-y-6">
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Xem lại và sửa văn bản đã trích xuất
               </label>
               <p className="text-sm text-gray-600 mb-4">
-                Vui lòng xem lại văn bản đã trích xuất bên dưới và thực hiện các chỉnh sửa cần thiết. 
-                Độ chính xác có thể thay đổi tùy theo bố cục phức tạp.
+                Vui lòng xem lại văn bản đã trích xuất và so sánh với bản PDF gốc. 
+                Bạn có thể chỉnh sửa văn bản ở bên trái và xem PDF gốc ở bên phải.
               </p>
-              <textarea
-                value={editedText}
-                onChange={(e) => setEditedText(e.target.value)}
-                className="w-full h-96 p-4 border border-gray-300 rounded-lg font-mono text-sm text-gray-900 bg-white"
-                placeholder="Văn bản đã trích xuất sẽ xuất hiện ở đây..."
+            </div> */}
+
+            {/* PDF Viewer with responsive split layout */}
+            <div className="border border-gray-300 rounded-lg overflow-hidden h-[500px] sm:h-[600px] lg:h-[700px]">
+              <PDFViewerWrapper
+                file={file}
+                extractedText={editedText}
+                onTextChange={setEditedText}
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setCurrentStep('upload')}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
               >
-                Back to Upload
+                Quay lại
               </button>
               <button
                 onClick={handleConfirmText}
                 disabled={!editedText.trim() || isConfirmingText}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
               >
                 {isConfirmingText ? "Đang xác nhận..." : "Tiếp tục"}
               </button>
@@ -287,17 +300,17 @@ export default function CheckCVPage() {
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setCurrentStep('review')}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
               >
-                Quay lại xem lại
+                Quay lại
               </button>
               <button
                 onClick={handleScoreCV}
                 disabled={isLoadingScore}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-sm sm:text-base"
               >
                 {isLoadingScore ? "Đang phân tích CV..." : "Kiểm tra điểm ATS"}
               </button>
@@ -318,30 +331,30 @@ export default function CheckCVPage() {
             </div>
 
             {/* Score Breakdown */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-gray-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-blue-600">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">
                   {scoreResult.analysis.keyword_match}
                 </div>
-                <div className="text-sm text-gray-600">Khớp từ khóa</div>
+                <div className="text-xs sm:text-sm text-gray-600">Khớp từ khóa</div>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-green-600">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
+                <div className="text-xl sm:text-2xl font-bold text-green-600">
                   {scoreResult.analysis.formatting}
                 </div>
-                <div className="text-sm text-gray-600">Định dạng</div>
+                <div className="text-xs sm:text-sm text-gray-600">Định dạng</div>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-purple-600">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
+                <div className="text-xl sm:text-2xl font-bold text-purple-600">
                   {scoreResult.analysis.completeness}
                 </div>
-                <div className="text-sm text-gray-600">Đầy đủ</div>
+                <div className="text-xs sm:text-sm text-gray-600">Đầy đủ</div>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg text-center">
-                <div className="text-2xl font-bold text-orange-600">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
+                <div className="text-xl sm:text-2xl font-bold text-orange-600">
                   {scoreResult.analysis.relevance}
                 </div>
-                <div className="text-sm text-gray-600">Liên quan</div>
+                <div className="text-xs sm:text-sm text-gray-600">Liên quan</div>
               </div>
             </div>
 
@@ -408,10 +421,10 @@ export default function CheckCVPage() {
               </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex justify-center">
               <button
                 onClick={resetProcess}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base"
               >
                 Kiểm tra CV khác
               </button>
