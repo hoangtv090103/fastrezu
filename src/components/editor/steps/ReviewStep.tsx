@@ -5,6 +5,7 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
 import ExportButtons from "@/components/cv/ExportButtons";
+import { parseMarkdown } from "@/lib/markdown";
 
 interface ScoringResult {
   score: number;
@@ -235,14 +236,13 @@ export default function ReviewStep() {
                   <h5 className="text-sm font-medium text-gray-700 mb-2">
                     💡 Gợi ý cải thiện:
                   </h5>
-                  <ul className="space-y-1">
+                  <div className="space-y-1">
                     {scoringResult.suggestions.map((suggestion: string, index: number) => (
-                      <li key={index} className="text-sm text-gray-600 flex items-start">
-                        <span className="text-blue-500 mr-2">•</span>
-                        {suggestion}
-                      </li>
+                      <div key={index} className="text-sm text-gray-600">
+                        {parseMarkdown(suggestion)}
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </div>

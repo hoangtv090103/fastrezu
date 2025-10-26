@@ -3,6 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
+import { parseMarkdown } from "@/lib/markdown";
 
 interface ScoreResult {
   score: number;
@@ -401,14 +402,13 @@ export default function CheckCVPage() {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Gợi ý cải thiện
                 </h3>
-                <ul className="space-y-2">
+                <div className="space-y-2">
                   {scoreResult.suggestions.map((suggestion, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-blue-600 mr-2">•</span>
-                      <span className="text-gray-700">{suggestion}</span>
-                    </li>
+                    <div key={index} className="text-gray-700">
+                      {parseMarkdown(suggestion)}
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
