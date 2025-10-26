@@ -53,7 +53,7 @@ export default function PDFViewer({
   const [error, setError] = useState<string | null>(null);
   const [containerWidth, setContainerWidth] = useState<number>(800);
   const [pageWidth, setPageWidth] = useState<number>(595); // Default A4 width
-  const [customZoomInput, setCustomZoomInput] = useState<string>("");
+  const [customZoomInput, setCustomZoomInput] = useState<string>("100");
 
   // Calculate optimal scale to fit container width
   const calculateOptimalScale = useCallback(() => {
@@ -91,10 +91,11 @@ export default function PDFViewer({
 
   // Update custom zoom input when scale changes from buttons
   useEffect(() => {
-    if (!customZoomInput) {
-      setCustomZoomInput("");
+    // Only update customZoomInput if it's empty (user hasn't typed anything)
+    if (customZoomInput === "") {
+      setCustomZoomInput(Math.round(scale * 100).toString());
     }
-  }, [scale, customZoomInput]);
+  }, [scale]);
 
   const onDocumentLoadSuccess = useCallback(
     async (document: {
@@ -149,19 +150,21 @@ export default function PDFViewer({
   }, [numPages]);
 
   const zoomIn = useCallback(() => {
-    setScale((prev) => Math.min(prev + 0.2, 5.0));
-    setCustomZoomInput("");
-  }, []);
+    const newScale = Math.min(scale + 0.2, 5.0);
+    setScale(newScale);
+    setCustomZoomInput(Math.round(newScale * 100).toString());
+  }, [scale]);
 
   const zoomOut = useCallback(() => {
-    setScale((prev) => Math.max(prev - 0.2, 0.1));
-    setCustomZoomInput("");
-  }, []);
+    const newScale = Math.max(scale - 0.2, 0.1);
+    setScale(newScale);
+    setCustomZoomInput(Math.round(newScale * 100).toString());
+  }, [scale]);
 
   const resetZoom = useCallback(() => {
     const optimalScale = calculateOptimalScale();
     setScale(optimalScale);
-    setCustomZoomInput("");
+    setCustomZoomInput(Math.round(optimalScale * 100).toString());
   }, [calculateOptimalScale]);
 
   const handleCustomZoom = useCallback((value: string) => {
@@ -173,6 +176,9 @@ export default function PDFViewer({
       // Convert percentage to scale (e.g., 100% = 1.0)
       const newScale = Math.min(Math.max(numericValue / 100, 0.1), 5.0); // Min 10%, Max 500%
       setScale(newScale);
+    } else if (value === "") {
+      // If input is empty, don't change the scale, just keep the input empty
+      // The user can type a new value
     }
   }, []);
 
@@ -306,7 +312,7 @@ export default function PDFViewer({
               <div className="flex items-center border-r border-gray-300">
                 <input
                   type="text"
-                  value={customZoomInput || Math.round(scale * 100)}
+                  value={customZoomInput}
                   onChange={(e) => setCustomZoomInput(e.target.value)}
                   onKeyPress={handleZoomInputKeyPress}
                   onBlur={() => handleCustomZoom(customZoomInput)}
