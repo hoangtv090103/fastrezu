@@ -37,7 +37,8 @@ export async function middleware(req: NextRequest) {
 
   // Protected routes
   if (req.nextUrl.pathname.startsWith('/dashboard') || 
-      req.nextUrl.pathname.startsWith('/editor')) {
+      req.nextUrl.pathname.startsWith('/editor') ||
+      req.nextUrl.pathname.startsWith('/check-cv')) {
     if (!session) {
       return NextResponse.redirect(new URL('/login', req.url))
     }

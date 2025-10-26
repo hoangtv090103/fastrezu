@@ -64,6 +64,12 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
               >
                 Dashboard
               </Link>
+              <Link 
+                href="/check-cv" 
+                className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
+              >
+                Kiểm tra CV
+              </Link>
             </nav>
           </div>
 
