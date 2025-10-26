@@ -80,7 +80,7 @@ export function parseMarkdown(text: string): React.ReactNode {
 
     // Regular paragraph
     processedLines.push(
-      React.createElement('div', { key: i, className: 'mb-2' }, parseInlineMarkdown(line))
+      React.createElement('span', { key: i, className: 'block mb-2' }, parseInlineMarkdown(line))
     );
     i++;
   }

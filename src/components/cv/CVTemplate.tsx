@@ -156,13 +156,13 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
           }}>
             {labels.professionalSummary}
           </h2>
-          <p className="text-sm leading-relaxed" style={{ 
+          <div className="text-sm leading-relaxed" style={{ 
             fontSize: '11pt',
             lineHeight: '1.6',
             color: '#374151'
           }}>
             {parseMarkdown(getString(summary, 'content'))}
-          </p>
+          </div>
         </div>
       )}
 
@@ -276,9 +276,9 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                 )}
               </div>
               {renderValue(project.description) && (
-                <p className="text-sm mb-2" style={{ fontSize: '10pt' }}>
+                <div className="text-sm mb-2" style={{ fontSize: '10pt' }}>
                   {parseMarkdown(String(renderValue(project.description)))}
-                </p>
+                </div>
               )}
               {renderValue(project.technologies) && (
                 <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>

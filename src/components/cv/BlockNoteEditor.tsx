@@ -91,6 +91,8 @@ export default function BlockNoteEditor({
         editor={editor}
         theme="light"
         className="flex-1 border border-gray-300 rounded-lg overflow-y-auto"
+        sideMenu={true}
+        slashMenu={true}
       />
     </div>
   );

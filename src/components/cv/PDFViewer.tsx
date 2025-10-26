@@ -229,7 +229,7 @@ export default function PDFViewer({
           </p>
         </div>
 
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 pl-10">
           <BlockNoteEditor
             value={extractedText}
             onChange={onTextChange}

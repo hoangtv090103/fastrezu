@@ -1,6 +1,7 @@
 /* BlockNote Editor Custom Styles */
 .blocknote-editor-container {
   position: relative;
+  overflow: hidden; /* Prevent floating elements from escaping */
 }
 
 .blocknote-editor-container .bn-editor {
@@ -11,6 +12,7 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f1f5f9;
+  position: relative; /* Ensure proper positioning context */
 }
 
 /* Custom scrollbar styling for webkit browsers */
@@ -44,6 +46,43 @@
   margin: 0;
 }
 
+/* Side menu positioning fix */
+.blocknote-editor-container .bn-side-menu {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: absolute !important; /* Force absolute positioning */
+  z-index: 1000; /* Ensure it's above other elements */
+}
+
+/* Block drag handle positioning */
+.blocknote-editor-container .bn-block-handle {
+  position: absolute !important;
+  left: -40px !important; /* Position outside the content area */
+  z-index: 1000;
+}
+
+/* Block drag handle styling */
+.blocknote-editor-container .bn-block-handle button {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.blocknote-editor-container .bn-block-handle button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
 /* Toolbar styling */
 .blocknote-editor-container .bn-toolbar {
   border-bottom: 1px solid #e5e7eb;
@@ -67,20 +106,14 @@
   color: #1d4ed8;
 }
 
-/* Side menu styling */
-.blocknote-editor-container .bn-side-menu {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
 /* Slash menu styling */
 .blocknote-editor-container .bn-slash-menu {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: absolute !important;
+  z-index: 1000;
 }
 
 .blocknote-editor-container .bn-slash-menu button {
@@ -98,6 +131,12 @@
   font-style: italic;
 }
 
+/* Block content container */
+.blocknote-editor-container .bn-block-content-container {
+  position: relative;
+  margin-left: 40px; /* Make space for the drag handle */
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .blocknote-editor-container .bn-editor {
@@ -106,5 +145,18 @@
   
   .blocknote-editor-container .bn-editor .bn-block-content {
     padding: 8px 12px;
+  }
+  
+  .blocknote-editor-container .bn-block-handle {
+    left: -35px !important;
+  }
+  
+  .blocknote-editor-container .bn-block-handle button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .blocknote-editor-container .bn-block-content-container {
+    margin-left: 35px;
   }
 }
