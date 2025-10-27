@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { CVData } from "@/contexts/CVEditorContext";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
 
 interface ExportButtonsProps {
@@ -16,114 +14,52 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
   const handleDownloadPDF = async () => {
     setIsExporting(true);
     try {
-      // Get the CV template element
-      const cvElement = document.querySelector('.cv-template');
-      if (!cvElement) {
-        throw new Error('CV template not found');
+      // Call the server-side PDF export API
+      const response = await fetch('/api/cv/export-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cvData }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
-      // Create canvas from HTML element with improved settings
-      const canvas = await html2canvas(cvElement as HTMLElement, {
-        scale: 3, // Higher quality for better text rendering
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: cvElement.scrollWidth,
-        height: cvElement.scrollHeight,
-        logging: false, // Disable console logging
-        ignoreElements: (element) => {
-          // Skip elements that might cause issues
-          return element.classList.contains('ignore-pdf');
-        },
-        onclone: (clonedDoc) => {
-          // CSS for PDF rendering
-          const style = clonedDoc.createElement('style');
-          style.textContent = `
-            * {
-              color: inherit !important;
-              font-family: 'Helvetica', 'Arial', sans-serif !important;
-            }
-            .text-blue-600 {
-              color: #2563eb !important;
-            }
-            .text-gray-900 {
-              color: #111827 !important;
-            }
-            .text-gray-600 {
-              color: #4b5563 !important;
-            }
-            .text-gray-500 {
-              color: #6b7280 !important;
-            }
-            .text-gray-700 {
-              color: #374151 !important;
-            }
-            .bg-blue-600 {
-              background-color: #2563eb !important;
-            }
-            .bg-gray-100 {
-              background-color: #f3f4f6 !important;
-            }
-            .border-blue-600 {
-              border-color: #2563eb !important;
-            }
-            .border-gray-100 {
-              border-color: #f3f4f6 !important;
-            }
-            .border-gray-200 {
-              border-color: #e5e7eb !important;
-            }
-            /* Ensure proper text rendering */
-            h1, h2, h3, h4, h5, h6 {
-              font-weight: bold !important;
-              line-height: 1.2 !important;
-            }
-            p, li, span {
-              line-height: 1.4 !important;
-            }
-            /* Remove any shadows or gradients that might not render well */
-            * {
-              box-shadow: none !important;
-              text-shadow: none !important;
-            }
-          `;
-          clonedDoc.head.appendChild(style);
+      // Get the PDF blob
+      const pdfBlob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+
+      // Generate filename from response headers or fallback
+      const contentDisposition = response.headers.get('content-disposition');
+      let filename = 'cv.pdf';
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="([^"]*)"/) ||
+                              contentDisposition.match(/filename=([^;]*)/);
+        if (filenameMatch) {
+          filename = filenameMatch[1].trim();
         }
-      });
+      } else {
+        // Fallback filename generation
+        const sanitizedTitle = (cvData.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        filename = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
+      }
 
-      // Create PDF with better settings
-      const imgData = canvas.toDataURL('image/png', 0.95); // Slight compression for smaller file size
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true, // Enable compression
-      });
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-      // Calculate dimensions with proper margins
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10; // 10mm margin
-      const availableWidth = pdfWidth - (margin * 2);
-      const availableHeight = pdfHeight - (margin * 2);
-      
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(availableWidth / imgWidth, availableHeight / imgHeight);
-      
-      const finalWidth = imgWidth * ratio;
-      const finalHeight = imgHeight * ratio;
-      const imgX = (pdfWidth - finalWidth) / 2;
-      const imgY = margin;
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
 
-      // Add image to PDF
-      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
-
-      // Download PDF with better filename
-      const sanitizedTitle = (cvData.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
-      const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
-      pdf.save(fileName);
-      
       // Show success message
       toast.success('PDF đã được tạo thành công!');
     } catch (error) {

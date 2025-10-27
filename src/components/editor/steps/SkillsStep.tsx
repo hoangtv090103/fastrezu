@@ -220,7 +220,7 @@ export default function SkillsStep() {
           <h5 className="font-medium text-gray-900 mb-2">Gợi ý kỹ năng phổ biến:</h5>
           <div className="space-y-2">
             <div>
-              <span className="text-sm text-gray-600">Kỹ thuật: </span>
+              <span className="text-sm text-gray-600">Chuyên môn: </span>
               <span className="text-sm text-blue-600">
                 JavaScript, Python, React, Node.js, SQL, Git, Docker, AWS, Agile, Scrum
               </span>

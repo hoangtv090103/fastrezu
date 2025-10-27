@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import CVTemplate from "@/components/cv/CVTemplate";
-import jsPDF from "jspdf";
 import toast from "react-hot-toast";
 
 interface CVSection {
@@ -110,109 +109,63 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
 
     setIsDownloading(true);
     toast.loading('Đang tạo PDF...', { id: 'pdf-generation' });
-    
+
     try {
-      // Create a temporary container for the CV template
-      const tempContainer = document.createElement('div');
-      tempContainer.style.position = 'absolute';
-      tempContainer.style.left = '-9999px';
-      tempContainer.style.top = '-9999px';
-      tempContainer.style.width = '210mm'; // A4 width
-      tempContainer.style.backgroundColor = 'white';
-      document.body.appendChild(tempContainer);
-
-      // Render CV template in the temporary container
-      const cvElement = document.createElement('div');
-      cvElement.className = 'cv-template';
-      tempContainer.appendChild(cvElement);
-
-      // Create a React element and render it
-      const { createRoot } = await import('react-dom/client');
-      const root = createRoot(cvElement);
-      
-      // Convert CV data to the format expected by CVTemplate
+      // Convert CV data to the format expected by the PDF API
       const cvData = convertSectionsToCVData(cv);
 
-      root.render(<CVTemplate cvData={cvData} />);
-
-      // Wait for rendering to complete
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Create PDF using jsPDF html() method
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
-
-      // Use pdf.html() instead of html2canvas + addImage
-      await pdf.html(cvElement, {
-        callback: (doc) => {
-          // This callback runs after PDF rendering is complete
-          const sanitizedTitle = (cv.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
-          const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
-          doc.save(fileName);
-          
-          // Clean up
-          document.body.removeChild(tempContainer);
-          
-          toast.success('PDF đã được tải xuống thành công!', { id: 'pdf-generation' });
-          
-          // Reset downloading state after a short delay
-          setTimeout(() => {
-            setIsDownloading(false);
-          }, 500);
+      // Call the server-side PDF export API
+      const response = await fetch('/api/cv/export-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        margin: [15, 10, 15, 10], // Top, Right, Bottom, Left margins in mm
-        autoPaging: 'text', // Try to break pages without cutting text
-        width: 190, // Available width after margins (210mm - 20mm)
-        windowWidth: 190,
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          onclone: (clonedDoc) => {
-            const style = clonedDoc.createElement('style');
-            style.textContent = `
-              * {
-                color: inherit !important;
-                font-family: 'Helvetica', 'Arial', sans-serif !important;
-              }
-              .text-blue-600 { color: #2563eb !important; }
-              .text-gray-900 { color: #111827 !important; }
-              .text-gray-600 { color: #4b5563 !important; }
-              .text-gray-500 { color: #6b7280 !important; }
-              .text-gray-700 { color: #374151 !important; }
-              .bg-blue-600 { background-color: #2563eb !important; }
-              .bg-gray-100 { background-color: #f3f4f6 !important; }
-              .border-blue-600 { border-color: #2563eb !important; }
-              .border-gray-100 { border-color: #f3f4f6 !important; }
-              .border-gray-200 { border-color: #e5e7eb !important; }
-              h1, h2, h3, h4, h5, h6 {
-                font-weight: bold !important;
-                line-height: 1.2 !important;
-              }
-              p, li, span {
-                line-height: 1.4 !important;
-              }
-              * {
-                box-shadow: none !important;
-                text-shadow: none !important;
-                background-image: none !important;
-                background: none !important;
-              }
-            `;
-            clonedDoc.head.appendChild(style);
-          }
-        }
+        body: JSON.stringify({ cvData }),
       });
-      
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Get the PDF blob
+      const pdfBlob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+
+      // Generate filename from response headers or fallback
+      const contentDisposition = response.headers.get('content-disposition');
+      let filename = 'cv.pdf';
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="([^"]*)"/) ||
+                              contentDisposition.match(/filename=([^;]*)/);
+        if (filenameMatch) {
+          filename = filenameMatch[1].trim();
+        }
+      } else {
+        // Fallback filename generation
+        const sanitizedTitle = (cv.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+        filename = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
+      }
+
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
+
+      toast.success('PDF đã được tải xuống thành công!', { id: 'pdf-generation' });
+
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error('Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.', { id: 'pdf-generation' });
+    } finally {
       setIsDownloading(false);
     }
   };
