@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 import { CVData } from '@/contexts/CVEditorContext';
 
 // Create a server-side PDF template component
@@ -561,7 +561,7 @@ const createPDFTemplate = (cvData: CVData): string => {
 };
 
 export async function POST(request: NextRequest) {
-  let browser: any = null;
+  let browser: Browser | null = null;
   try {
     const { cvData }: { cvData: CVData } = await request.json();
 
@@ -573,7 +573,6 @@ export async function POST(request: NextRequest) {
     const htmlTemplate = createPDFTemplate(cvData);
 
     try {
-      // Try a minimal launch first
       browser = await puppeteer.launch({
         headless: true,
         args: [
@@ -588,20 +587,12 @@ export async function POST(request: NextRequest) {
           '--disable-features=VizDisplayCompositor',
         ],
       });
-      console.log('Puppeteer launched successfully');
     } catch (puppeteerError) {
       console.error('Puppeteer launch failed:', puppeteerError);
-      console.error('Error type:', typeof puppeteerError);
-      console.error('Error stack:', puppeteerError instanceof Error ? puppeteerError.stack : 'No stack');
       return Response.json(
         {
           error: 'PDF generation is not available in this environment. Please try using a different export method.',
-          details: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown Puppeteer error',
-          errorType: typeof puppeteerError,
-          debug: {
-            puppeteerAvailable: !!puppeteer,
-            errorMessage: puppeteerError instanceof Error ? puppeteerError.message : String(puppeteerError)
-          }
+          details: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown Puppeteer error'
         },
         { status: 503 }
       );
@@ -651,8 +642,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error generating PDF:', error);
-    console.error('General error type:', typeof error);
-    console.error('General error stack:', error instanceof Error ? error.stack : 'No stack');
     if (browser) {
       try {
         await browser.close();
