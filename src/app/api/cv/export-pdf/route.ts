@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import puppeteer from 'puppeteer';
 import { CVData } from '@/contexts/CVEditorContext';
 
@@ -561,29 +561,51 @@ const createPDFTemplate = (cvData: CVData): string => {
 };
 
 export async function POST(request: NextRequest) {
+  let browser: any = null;
   try {
     const { cvData }: { cvData: CVData } = await request.json();
 
     if (!cvData) {
-      return NextResponse.json({ error: 'CV data is required' }, { status: 400 });
+      return Response.json({ error: 'CV data is required' }, { status: 400 });
     }
 
     // Generate HTML template
     const htmlTemplate = createPDFTemplate(cvData);
 
-    // Launch Puppeteer
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--no-first-run',
-        '--no-zygote',
-        '--single-process',
-      ],
-    });
+    try {
+      // Try a minimal launch first
+      browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-web-security',
+          '--disable-features=VizDisplayCompositor',
+        ],
+      });
+      console.log('Puppeteer launched successfully');
+    } catch (puppeteerError) {
+      console.error('Puppeteer launch failed:', puppeteerError);
+      console.error('Error type:', typeof puppeteerError);
+      console.error('Error stack:', puppeteerError instanceof Error ? puppeteerError.stack : 'No stack');
+      return Response.json(
+        {
+          error: 'PDF generation is not available in this environment. Please try using a different export method.',
+          details: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown Puppeteer error',
+          errorType: typeof puppeteerError,
+          debug: {
+            puppeteerAvailable: !!puppeteer,
+            errorMessage: puppeteerError instanceof Error ? puppeteerError.message : String(puppeteerError)
+          }
+        },
+        { status: 503 }
+      );
+    }
 
     const page = await browser.newPage();
 
@@ -609,14 +631,16 @@ export async function POST(request: NextRequest) {
       preferCSSPageSize: false,
     });
 
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
 
     // Generate filename
     const sanitizedTitle = (cvData.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
     const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
 
     // Return PDF as response
-    return new NextResponse(pdfBuffer, {
+    return new Response(pdfBuffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
@@ -627,8 +651,17 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error generating PDF:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate PDF' },
+    console.error('General error type:', typeof error);
+    console.error('General error stack:', error instanceof Error ? error.stack : 'No stack');
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (closeError) {
+        console.error('Error closing browser:', closeError);
+      }
+    }
+    return Response.json(
+      { error: 'Failed to generate PDF', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
