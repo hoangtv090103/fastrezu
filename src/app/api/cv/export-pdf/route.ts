@@ -566,7 +566,10 @@ export async function POST(request: NextRequest) {
     const { cvData }: { cvData: CVData } = await request.json();
 
     if (!cvData) {
-      return Response.json({ error: 'CV data is required' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'CV data is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
     // Generate HTML template
@@ -589,13 +592,13 @@ export async function POST(request: NextRequest) {
       });
     } catch (puppeteerError) {
       console.error('Puppeteer launch failed:', puppeteerError);
-      return Response.json(
-        {
-          error: 'PDF generation is not available in this environment. Please try using a different export method.',
-          details: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown Puppeteer error'
-        },
-        { status: 503 }
-      );
+      return new Response(JSON.stringify({
+        error: 'PDF generation is not available in this environment. Please try using a different export method.',
+        details: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown Puppeteer error'
+      }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
     const page = await browser.newPage();
@@ -631,12 +634,13 @@ export async function POST(request: NextRequest) {
     const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
 
     // Return PDF as response
-    return new Response(pdfBuffer, {
+    const buffer = Buffer.from(pdfBuffer);
+    return new Response(buffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${fileName}"`,
-        'Content-Length': pdfBuffer.length.toString(),
+        'Content-Length': buffer.length.toString(),
       },
     });
 
@@ -649,9 +653,12 @@ export async function POST(request: NextRequest) {
         console.error('Error closing browser:', closeError);
       }
     }
-    return Response.json(
-      { error: 'Failed to generate PDF', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({
+      error: 'Failed to generate PDF',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
