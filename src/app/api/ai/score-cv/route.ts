@@ -4,7 +4,7 @@ import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvData, jdKeywords, language = 'vi' } = await request.json();
+    const { cvData, jdKeywords } = await request.json();
 
     if (!cvData) {
       return NextResponse.json(
@@ -12,6 +12,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const language = 'vi'
 
     // Validate language parameter
     if (!['vi', 'en'].includes(language)) {
@@ -21,19 +23,33 @@ export async function POST(request: NextRequest) {
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('score_cv', language as CVLanguage);
 
-    const userMessage = language === 'vi' ? `Hãy đánh giá CV sau đây dựa trên các từ khóa JD và tiêu chí đã cho. Trả về kết quả dưới dạng JSON.
+    // Build a more structured CV summary for better analysis
+    const cvSummary = {
+      personalInfo: cvData.sections?.personal_info || {},
+      summary: cvData.sections?.summary || {},
+      experience: cvData.sections?.experience || [],
+      education: cvData.sections?.education || [],
+      skills: cvData.sections?.skills || [],
+      projects: cvData.sections?.projects || [],
+      certifications: cvData.sections?.certifications || []
+    };
 
-Từ khóa JD:
-${JSON.stringify(jdKeywords)}
+    const userMessage = `Hãy đánh giá CV sau đây dựa trên các từ khóa JD và tiêu chí đã cho.
 
-Dữ liệu CV:
-${JSON.stringify(cvData)}` : `Please evaluate the following CV based on the JD keywords and criteria provided. Return the result in JSON format.
+**Từ khóa JD (${jdKeywords?.length || 0} từ khóa):**
+${JSON.stringify(jdKeywords, null, 2)}
 
-JD Keywords:
-${JSON.stringify(jdKeywords)}
+**Dữ liệu CV:**
+${JSON.stringify(cvSummary, null, 2)}
 
-CV Data:
-${JSON.stringify(cvData)}`;
+**Yêu cầu:**
+1. So sánh từng từ khóa JD với nội dung CV
+2. Tính chính xác % từ khóa khớp (số từ khóa tìm thấy / tổng số từ khóa JD)
+3. Đánh giá định dạng, độ hoàn thiện, và độ liên quan
+4. Liệt kê rõ ràng từ khóa đã khớp và còn thiếu
+5. Đưa ra 3-5 gợi ý cải thiện cụ thể
+
+Trả về JSON theo đúng format đã chỉ định.`;
 
     // Gọi OpenAI API
     const result = await callOpenAI(systemPrompt, userMessage);

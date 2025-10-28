@@ -5,6 +5,8 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
 import ExportButtons from "@/components/cv/ExportButtons";
+import ATSOptimizationPanel from "@/components/editor/ATSOptimizationPanel";
+import InfoTooltip from "@/components/ui/InfoTooltip";
 import { parseMarkdown } from "@/lib/markdown";
 
 interface ScoringResult {
@@ -21,9 +23,13 @@ interface ScoringResult {
 }
 
 export default function ReviewStep() {
-  const { state, updateCVData, saveCV } = useCVEditor();
+  const { state, updateCVData, saveCV, setCurrentStep } = useCVEditor();
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [isScoring, setIsScoring] = useState(false);
+
+  const handleNavigateToSection = useCallback((stepIndex: number) => {
+    setCurrentStep(stepIndex);
+  }, [setCurrentStep]);
 
   // Initialize scoring result from existing CV data if available
   useEffect(() => {
@@ -62,21 +68,37 @@ export default function ReviewStep() {
 
       if (response.ok) {
         const result = await response.json();
-        setScoringResult(result);
+        
+        // Validate and normalize the result
+        const normalizedResult = {
+          score: Math.round(result.score || 0),
+          analysis: {
+            keyword_match: Math.min(100, Math.max(0, Math.round(result.analysis?.keyword_match || 0))),
+            formatting: Math.min(100, Math.max(0, Math.round(result.analysis?.formatting || 0))),
+            completeness: Math.min(100, Math.max(0, Math.round(result.analysis?.completeness || 0))),
+            relevance: Math.min(100, Math.max(0, Math.round(result.analysis?.relevance || 0)))
+          },
+          matchedKeywords: result.matchedKeywords || [],
+          missingKeywords: result.missingKeywords || [],
+          suggestions: result.suggestions || []
+        };
+        
+        console.log('ATS Scoring Result:', normalizedResult);
+        setScoringResult(normalizedResult);
         
         // Update CV data with ATS score and analysis
-        if (state.cvData && result.score !== undefined) {
+        if (state.cvData && normalizedResult.score !== undefined) {
           const updatedCVData = {
             ...state.cvData,
-            ats_score: result.score,
+            ats_score: normalizedResult.score,
             ats_analysis: {
-              keyword_match: result.analysis?.keyword_match || 0,
-              formatting: result.analysis?.formatting || 0,
-              completeness: result.analysis?.completeness || 0,
-              relevance: result.analysis?.relevance || 0,
-              matched_keywords: result.matchedKeywords || [],
-              missing_keywords: result.missingKeywords || [],
-              suggestions: result.suggestions || []
+              keyword_match: normalizedResult.analysis.keyword_match,
+              formatting: normalizedResult.analysis.formatting,
+              completeness: normalizedResult.analysis.completeness,
+              relevance: normalizedResult.analysis.relevance,
+              matched_keywords: normalizedResult.matchedKeywords,
+              missing_keywords: normalizedResult.missingKeywords,
+              suggestions: normalizedResult.suggestions
             }
           };
           
@@ -175,27 +197,75 @@ export default function ReviewStep() {
               <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-blue-600">
-                    {scoringResult.analysis?.keyword_match || 0}%
+                    {Math.round(scoringResult.analysis?.keyword_match || 0)}%
                   </div>
-                  <div className="text-xs text-gray-600">Từ khóa khớp</div>
+                  <div className="flex items-center justify-center gap-1">
+                    <div className="text-xs text-gray-600">Từ khóa khớp</div>
+                    <div className="mt-0.5">
+                      <InfoTooltip
+                        id="keyword-match-tooltip"
+                        title="Từ khóa khớp"
+                        content="Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) có xuất hiện trong CV của bạn. Điểm cao hơn giúp CV vượt qua hệ thống ATS dễ dàng hơn."
+                        placement="bottom"
+                        icon="info"
+                        dismissible={true}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-green-600">
-                    {scoringResult.analysis?.completeness || 0}%
+                    {Math.round(scoringResult.analysis?.completeness || 0)}%
                   </div>
-                  <div className="text-xs text-gray-600">Hoàn thiện</div>
+                  <div className="flex items-center justify-center gap-1">
+                    <div className="text-xs text-gray-600">Hoàn thiện</div>
+                    <div className="mt-0.5">
+                      <InfoTooltip
+                        id="completeness-tooltip"
+                        title="Độ hoàn thiện"
+                        content="Đánh giá mức độ đầy đủ của CV: có đủ các phần quan trọng (kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể, và độ dài phù hợp."
+                        placement="bottom"
+                        icon="info"
+                        dismissible={true}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-purple-600">
-                    {scoringResult.analysis?.formatting || 0}%
+                    {Math.round(scoringResult.analysis?.formatting || 0)}%
                   </div>
-                  <div className="text-xs text-gray-600">Định dạng</div>
+                  <div className="flex items-center justify-center gap-1">
+                    <div className="text-xs text-gray-600">Định dạng</div>
+                    <div className="mt-0.5">
+                      <InfoTooltip
+                        id="formatting-tooltip"
+                        title="Định dạng"
+                        content="Đánh giá cấu trúc và định dạng CV: các phần được sắp xếp rõ ràng, tiêu đề phù hợp, dễ đọc và thân thiện với hệ thống ATS."
+                        placement="bottom"
+                        icon="info"
+                        dismissible={true}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-orange-600">
-                    {scoringResult.analysis?.relevance || 0}%
+                    {Math.round(scoringResult.analysis?.relevance || 0)}%
                   </div>
-                  <div className="text-xs text-gray-600">Liên quan</div>
+                  <div className="flex items-center justify-center gap-1">
+                    <div className="text-xs text-gray-600">Liên quan</div>
+                    <div className="mt-0.5">
+                      <InfoTooltip
+                        id="relevance-tooltip"
+                        title="Độ liên quan"
+                        content="Đánh giá mức độ phù hợp của kinh nghiệm và kỹ năng trong CV với yêu cầu công việc. Nội dung càng liên quan, cơ hội được chọn càng cao."
+                        placement="bottom"
+                        icon="info"
+                        dismissible={true}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -258,6 +328,15 @@ export default function ReviewStep() {
             </div>
           )}
         </div>
+
+        {/* ATS Optimization Panel - Show only when there are missing keywords */}
+        {scoringResult && scoringResult.missingKeywords && scoringResult.missingKeywords.length > 0 && state.cvData && (
+          <ATSOptimizationPanel
+            missingKeywords={scoringResult.missingKeywords}
+            cvData={state.cvData}
+            onNavigateToSection={handleNavigateToSection}
+          />
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-4">
