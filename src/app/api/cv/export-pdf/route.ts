@@ -405,6 +405,37 @@ const createPDFTemplate = (cvData: CVData): string => {
           color: #374151;
         }
 
+        /* Page break rules for PDF export */
+        .subsection {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .education-item {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .project-item {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .cert-item {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .section-title {
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+
+        .achievement-item {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
         /* Print styles */
         @media print {
           body {
