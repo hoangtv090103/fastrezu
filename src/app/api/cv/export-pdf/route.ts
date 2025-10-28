@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import puppeteer, { Browser } from 'puppeteer';
 import { CVData } from '@/contexts/CVEditorContext';
+import { AppError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
 
 // Create a server-side PDF template component
 const createPDFTemplate = (cvData: CVData): string => {
@@ -562,11 +563,15 @@ const createPDFTemplate = (cvData: CVData): string => {
 
 export async function POST(request: NextRequest) {
   let browser: Browser | null = null;
+  const language = 'vi'; // Default language for error messages
+  
   try {
     const { cvData }: { cvData: CVData } = await request.json();
 
     if (!cvData) {
-      return new Response(JSON.stringify({ error: 'CV data is required' }), {
+      return new Response(JSON.stringify({ 
+        error: ERROR_MESSAGES[language].validation_error 
+      }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -575,6 +580,7 @@ export async function POST(request: NextRequest) {
     // Generate HTML template
     const htmlTemplate = createPDFTemplate(cvData);
 
+    // Try to launch Puppeteer with comprehensive error handling
     try {
       browser = await puppeteer.launch({
         headless: true,
@@ -591,61 +597,120 @@ export async function POST(request: NextRequest) {
         ],
       });
     } catch (puppeteerError) {
-      console.error('Puppeteer launch failed:', puppeteerError);
+      const error = new AppError(
+        'Puppeteer launch failed',
+        'PDF_EXPORT_FAILED',
+        ERROR_MESSAGES[language].pdf_export_failed,
+        false,
+        { error: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown error' }
+      );
+      logError(error);
+      
       return new Response(JSON.stringify({
-        error: 'PDF generation is not available in this environment. Please try using a different export method.',
-        details: puppeteerError instanceof Error ? puppeteerError.message : 'Unknown Puppeteer error'
+        error: error.userMessage,
+        suggestion: language === 'vi' 
+          ? 'Vui lòng thử sao chép nội dung dưới dạng văn bản thay thế.'
+          : 'Please try copying the content as text instead.',
+        fallbackAvailable: true
       }), {
         status: 503,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    const page = await browser.newPage();
-
-    // Set viewport for consistent rendering
-    await page.setViewport({ width: 794, height: 1123 }); // A4 at 96 DPI
-
-    // Set HTML content
-    await page.setContent(htmlTemplate, { waitUntil: 'networkidle0' });
-
-    // Wait a bit for any dynamic content
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20mm',
-        right: '20mm',
-        bottom: '20mm',
-        left: '20mm',
-      },
-      preferCSSPageSize: false,
+    // Set timeout for PDF generation
+    const timeoutMs = 30000; // 30 seconds
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('PDF generation timeout')), timeoutMs);
     });
 
-    if (browser) {
-      await browser.close();
+    try {
+      // Race between PDF generation and timeout
+      const pdfBuffer = await Promise.race([
+        (async () => {
+          const page = await browser.newPage();
+
+          // Set viewport for consistent rendering
+          await page.setViewport({ width: 794, height: 1123 }); // A4 at 96 DPI
+
+          // Set HTML content
+          await page.setContent(htmlTemplate, { waitUntil: 'networkidle0' });
+
+          // Wait a bit for any dynamic content
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          // Generate PDF
+          return await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: {
+              top: '20mm',
+              right: '20mm',
+              bottom: '20mm',
+              left: '20mm',
+            },
+            preferCSSPageSize: false,
+          });
+        })(),
+        timeoutPromise
+      ]);
+
+      // Close browser
+      if (browser) {
+        await browser.close();
+      }
+
+      // Generate filename
+      const sanitizedTitle = (cvData.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
+
+      // Return PDF as response
+      const buffer = Buffer.from(pdfBuffer as Buffer);
+      return new Response(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${fileName}"`,
+          'Content-Length': buffer.length.toString(),
+        },
+      });
+    } catch (pdfError) {
+      // Close browser on error
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (closeError) {
+          console.error('Error closing browser:', closeError);
+        }
+      }
+
+      // Handle timeout specifically
+      if (pdfError instanceof Error && pdfError.message === 'PDF generation timeout') {
+        const error = new AppError(
+          'PDF generation timeout',
+          'PDF_GENERATION_TIMEOUT',
+          ERROR_MESSAGES[language].pdf_generation_timeout,
+          true
+        );
+        logError(error);
+        
+        return new Response(JSON.stringify({
+          error: error.userMessage,
+          suggestion: language === 'vi'
+            ? 'Vui lòng thử lại hoặc sao chép nội dung dưới dạng văn bản.'
+            : 'Please try again or copy the content as text.',
+          fallbackAvailable: true
+        }), {
+          status: 504,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
+      throw pdfError;
     }
 
-    // Generate filename
-    const sanitizedTitle = (cvData.title || 'CV').replace(/[^a-zA-Z0-9\s]/g, '').trim();
-    const fileName = `${sanitizedTitle}_${new Date().toISOString().split('T')[0]}.pdf`;
-
-    // Return PDF as response
-    const buffer = Buffer.from(pdfBuffer);
-    return new Response(buffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${fileName}"`,
-        'Content-Length': buffer.length.toString(),
-      },
-    });
-
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    // Clean up browser if still open
     if (browser) {
       try {
         await browser.close();
@@ -653,9 +718,23 @@ export async function POST(request: NextRequest) {
         console.error('Error closing browser:', closeError);
       }
     }
+
+    // Handle general errors
+    const appError = new AppError(
+      error instanceof Error ? error.message : 'Unknown error',
+      'PDF_EXPORT_FAILED',
+      ERROR_MESSAGES[language].pdf_export_failed,
+      false,
+      { error: error instanceof Error ? error.message : 'Unknown error' }
+    );
+    logError(appError);
+    
     return new Response(JSON.stringify({
-      error: 'Failed to generate PDF',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      error: appError.userMessage,
+      suggestion: language === 'vi'
+        ? 'Vui lòng thử sao chép nội dung dưới dạng văn bản thay thế.'
+        : 'Please try copying the content as text instead.',
+      fallbackAvailable: true
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

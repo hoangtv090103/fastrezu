@@ -8,6 +8,7 @@ import InfoTooltip from "@/components/ui/InfoTooltip";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { getTooltipContent } from "@/lib/tooltip-content";
+import { apiPost, apiDelete } from "@/lib/api-client";
 
 interface SavedJD {
   id: string;
@@ -53,21 +54,9 @@ export default function JDAnalysisStep() {
 
   const handleDeleteJD = async (jdId: string) => {
     try {
-      const response = await fetch('/api/jd/delete', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ jdId }),
-      });
-
-      if (response.ok) {
-        setSavedJDs(prev => prev.filter(jd => jd.id !== jdId));
-        showSuccessToast('Đã xóa JD thành công!');
-      } else {
-        const appError = handleAPIError({ status: response.status }, 'delete JD', 'vi');
-        showErrorToast(appError, 'vi');
-      }
+      await apiDelete('/api/jd/delete', undefined, 'vi');
+      setSavedJDs(prev => prev.filter(jd => jd.id !== jdId));
+      showSuccessToast('Đã xóa JD thành công!');
     } catch (error) {
       console.error('Error deleting JD:', error);
       const appError = handleAPIError(error, 'delete JD', 'vi');
@@ -87,38 +76,30 @@ const handleAnalyzeJD = async () => {
     setIsAnalyzing(true);
     setError(null);
     try {
-      const response = await fetch('/api/ai/analyze-jd', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
+      const analysis = await apiPost<{ ats_keywords: string[] }>(
+        '/api/ai/analyze-jd',
+        { 
           jdText,
           cvId: state.cvData?.id,
           language: state.cvData?.language || 'vi'
-        }),
-      });
+        },
+        undefined,
+        'vi'
+      );
 
-      if (response.ok) {
-        const analysis = await response.json();
-        // Extract keywords from the analysis response
-        const extractedKeywords = analysis.ats_keywords || [];
-        
-        if (!Array.isArray(extractedKeywords)) {
-          throw new Error('Invalid response format from AI service');
-        }
-        
-        setKeywords(extractedKeywords);
-        setJDAnalysis(extractedKeywords, analysis);
-        
-        // Reload saved JDs to show the newly saved one
-        loadSavedJDs();
-        showSuccessToast('Phân tích JD thành công!');
-      } else {
-        const appError = handleAPIError({ status: response.status }, 'analyze JD', 'vi');
-        setError(appError.userMessage);
-        showErrorToast(appError, 'vi');
+      // Extract keywords from the analysis response
+      const extractedKeywords = analysis.ats_keywords || [];
+      
+      if (!Array.isArray(extractedKeywords)) {
+        throw new Error('Invalid response format from AI service');
       }
+      
+      setKeywords(extractedKeywords);
+      setJDAnalysis(extractedKeywords, analysis);
+      
+      // Reload saved JDs to show the newly saved one
+      loadSavedJDs();
+      showSuccessToast('Phân tích JD thành công!');
     } catch (error) {
       console.error('Error analyzing JD:', error);
       const appError = handleAPIError(error, 'analyze JD', 'vi');

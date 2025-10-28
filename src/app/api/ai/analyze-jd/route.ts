@@ -3,22 +3,29 @@ import { callOpenAI } from '@/lib/openai'
 import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/prompts'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { AppError, handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler'
 
 export async function POST(request: NextRequest) {
   try {
     const { jdText, cvId, language = 'vi' } = await request.json()
 
     if (!jdText || typeof jdText !== 'string') {
-      return NextResponse.json({ error: 'Job description text is required' }, { status: 400 })
+      return NextResponse.json({ 
+        error: ERROR_MESSAGES[language as 'vi' | 'en'].validation_error 
+      }, { status: 400 })
     }
 
     if (!cvId || typeof cvId !== 'string') {
-      return NextResponse.json({ error: 'CV ID is required' }, { status: 400 })
+      return NextResponse.json({ 
+        error: ERROR_MESSAGES[language as 'vi' | 'en'].validation_error 
+      }, { status: 400 })
     }
 
     // Validate language parameter
     if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+      return NextResponse.json({ 
+        error: ERROR_MESSAGES.vi.validation_error 
+      }, { status: 400 })
     }
 
     // Get system prompt based on language
@@ -28,15 +35,16 @@ export async function POST(request: NextRequest) {
     const userMessageTemplates = getUserMessageTemplate(language as CVLanguage)
     const userMessage = userMessageTemplates.analyze_jd(jdText)
 
-    // Gọi OpenAI API
+    // Call OpenAI API
     let analysis;
     try {
       analysis = await callOpenAI(systemPrompt, userMessage);
     } catch (openaiError) {
-      console.error('OpenAI API error:', openaiError);
+      const error = handleAPIError(openaiError, 'analyze-jd OpenAI call', language as 'vi' | 'en');
+      logError(error);
       return NextResponse.json({ 
-        error: 'Lỗi kết nối đến dịch vụ AI. Vui lòng thử lại sau.' 
-      }, { status: 502 });
+        error: error.userMessage 
+      }, { status: 503 });
     }
 
     // Lưu JD analysis vào database
@@ -97,17 +105,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(analysis, { status: 200 })
   } catch (error) {
-    console.error('JD Analysis API error:', error)
-    
-    // Handle specific error types
-    if (error instanceof SyntaxError) {
-      return NextResponse.json({ 
-        error: 'Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra lại.' 
-      }, { status: 400 });
-    }
+    const appError = handleAPIError(error, 'analyze-jd API', 'vi');
+    logError(appError);
     
     return NextResponse.json({ 
-      error: 'Có lỗi xảy ra trên server. Vui lòng thử lại sau.' 
-    }, { status: 500 });
+      error: appError.userMessage 
+    }, { status: appError.code.startsWith('HTTP_4') ? 400 : 500 });
   }
 }

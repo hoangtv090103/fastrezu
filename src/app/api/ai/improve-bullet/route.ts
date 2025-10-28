@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/prompts';
+import { AppError, handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,14 +14,16 @@ export async function POST(request: NextRequest) {
 
     if (!bulletPoint || typeof bulletPoint !== "string") {
       return NextResponse.json(
-        { error: "Bullet point text is required" },
+        { error: ERROR_MESSAGES[language as 'vi' | 'en'].validation_error },
         { status: 400 }
       );
     }
 
     // Validate language parameter
     if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+      return NextResponse.json({ 
+        error: ERROR_MESSAGES.vi.validation_error 
+      }, { status: 400 })
     }
 
     // Get system prompt based on language
@@ -31,11 +34,26 @@ export async function POST(request: NextRequest) {
     const userMessage = userMessageTemplates.improve_bullet(bulletPoint, _context, _jdKeywords);
 
     // Call AI API
-    console.log("Improving bullet point...");
-    const result = await callOpenAI(systemPrompt, userMessage);
+    let result;
+    try {
+      result = await callOpenAI(systemPrompt, userMessage);
+    } catch (openaiError) {
+      const error = handleAPIError(openaiError, 'improve-bullet OpenAI call', language as 'vi' | 'en');
+      logError(error);
+      return NextResponse.json({ 
+        error: error.userMessage 
+      }, { status: 503 });
+    }
 
     if (!result.improvedBullet) {
-      throw new Error("AI did not generate improved bullet point");
+      const error = new AppError(
+        'AI did not generate improved bullet point',
+        'AI_GENERATION_FAILED',
+        ERROR_MESSAGES[language as 'vi' | 'en'].ai_generation_failed,
+        true
+      );
+      logError(error);
+      return NextResponse.json({ error: error.userMessage }, { status: 500 });
     }
 
     return NextResponse.json(
@@ -43,9 +61,10 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Improve Bullet API error:", error);
+    const appError = handleAPIError(error, 'improve-bullet API', 'vi');
+    logError(appError);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: appError.userMessage },
       { status: 500 }
     );
   }

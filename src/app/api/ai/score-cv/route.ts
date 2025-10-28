@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
+import { handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     if (!cvData) {
       return NextResponse.json(
-        { error: "CV data is required" },
+        { error: ERROR_MESSAGES.vi.validation_error },
         { status: 400 }
       );
     }
@@ -17,7 +18,9 @@ export async function POST(request: NextRequest) {
 
     // Validate language parameter
     if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+      return NextResponse.json({ 
+        error: ERROR_MESSAGES.vi.validation_error 
+      }, { status: 400 })
     }
 
     // Get system prompt based on language
@@ -51,14 +54,24 @@ ${JSON.stringify(cvSummary, null, 2)}
 
 Trả về JSON theo đúng format đã chỉ định.`;
 
-    // Gọi OpenAI API
-    const result = await callOpenAI(systemPrompt, userMessage);
+    // Call OpenAI API
+    let result;
+    try {
+      result = await callOpenAI(systemPrompt, userMessage);
+    } catch (openaiError) {
+      const error = handleAPIError(openaiError, 'score-cv OpenAI call', language as 'vi' | 'en');
+      logError(error);
+      return NextResponse.json({ 
+        error: error.userMessage 
+      }, { status: 503 });
+    }
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.error("Score CV API error:", error);
+    const appError = handleAPIError(error, 'score-cv API', 'vi');
+    logError(appError);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: appError.userMessage },
       { status: 500 }
     );
   }

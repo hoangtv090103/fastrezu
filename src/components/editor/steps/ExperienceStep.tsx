@@ -9,6 +9,7 @@ import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { getTooltipContent } from "@/lib/tooltip-content";
 import { validateDateRange } from "@/lib/validation";
+import { apiPost } from "@/lib/api-client";
 
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
@@ -152,31 +153,20 @@ export default function ExperienceStep() {
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
     try {
-      const response = await fetch("/api/ai/improve-bullet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const result = await apiPost<{ improvedBullet: string }>(
+        "/api/ai/improve-bullet",
+        {
           bulletPoint: achievement,
           context: experience[expIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
           language: state.cvData?.language || "vi",
-        }),
-      });
+        },
+        undefined,
+        'vi'
+      );
 
-      if (response.ok) {
-        const { improvedBullet } = await response.json();
-        updateAchievement(expIndex, achIndex, improvedBullet);
-        showSuccessToast("Đã cải thiện mô tả thành công!");
-      } else {
-        const appError = handleAPIError(
-          { status: response.status },
-          "improve bullet",
-          "vi"
-        );
-        showErrorToast(appError, "vi");
-      }
+      updateAchievement(expIndex, achIndex, result.improvedBullet);
+      showSuccessToast("Đã cải thiện mô tả thành công!");
     } catch (error) {
       console.error("Error improving achievement:", error);
       const appError = handleAPIError(error, "improve bullet", "vi");
@@ -200,32 +190,21 @@ export default function ExperienceStep() {
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
     try {
-      const response = await fetch("/api/ai/write-experience", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const result = await apiPost<{ achievements: string[] }>(
+        "/api/ai/write-experience",
+        {
           jobTitle,
           company,
           jdKeywords: state.cvData?.jd_analysis?.keywords || [],
           experienceLevel: "Mid-level", // Could be determined from other data
           language: state.cvData?.language || "vi",
-        }),
-      });
+        },
+        undefined,
+        'vi'
+      );
 
-      if (response.ok) {
-        const { achievements } = await response.json();
-        updateExperience(expIndex, "achievements", achievements);
-        showSuccessToast("Đã tạo mô tả kinh nghiệm thành công!");
-      } else {
-        const appError = handleAPIError(
-          { status: response.status },
-          "write experience",
-          "vi"
-        );
-        showErrorToast(appError, "vi");
-      }
+      updateExperience(expIndex, "achievements", result.achievements);
+      showSuccessToast("Đã tạo mô tả kinh nghiệm thành công!");
     } catch (error) {
       console.error("Error writing experience with AI:", error);
       const appError = handleAPIError(error, "write experience", "vi");

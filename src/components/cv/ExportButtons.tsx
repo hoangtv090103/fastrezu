@@ -26,6 +26,31 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        
+        // Check if there's a fallback suggestion
+        if (errorData.fallbackAvailable && errorData.suggestion) {
+          const appError = handleAPIError(
+            { 
+              message: errorData.error || 'PDF export failed',
+              suggestion: errorData.suggestion 
+            }, 
+            'export PDF', 
+            'vi'
+          );
+          
+          // Show error with suggestion
+          showErrorToast(
+            `${appError.userMessage}\n\n${errorData.suggestion}`,
+            'vi'
+          );
+          
+          // Optionally auto-trigger text copy as fallback
+          if (window.confirm('Không thể tạo PDF. Bạn có muốn sao chép nội dung dưới dạng văn bản không?')) {
+            handleCopyAsText();
+          }
+          return;
+        }
+        
         throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 

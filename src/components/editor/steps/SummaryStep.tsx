@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
+import { apiPost } from "@/lib/api-client";
+import { handleAPIError } from "@/lib/error-handler";
+import { showErrorToast } from "@/lib/toast-utils";
 
 export default function SummaryStep() {
   const { state, updateSection } = useCVEditor();
@@ -23,27 +26,23 @@ export default function SummaryStep() {
   const handleGenerateWithAI = async () => {
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/ai/generate-summary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const result = await apiPost<{ summary: string }>(
+        '/api/ai/generate-summary',
+        {
           personalInfo: state.cvData?.sections.personal_info,
           experience: state.cvData?.sections.experience,
           jdKeywords: state.cvData?.jd_analysis?.keywords,
           language: state.cvData?.language || 'vi'
-        }),
-      });
+        },
+        undefined,
+        'vi'
+      );
 
-      if (response.ok) {
-        const { summary: generatedSummary } = await response.json();
-        handleInputChange(generatedSummary);
-      } else {
-        console.error('Failed to generate summary');
-      }
+      handleInputChange(result.summary);
     } catch (error) {
       console.error('Error generating summary:', error);
+      const appError = handleAPIError(error, 'generate summary', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setIsGenerating(false);
     }

@@ -10,6 +10,9 @@ import InfoTooltip from "@/components/ui/InfoTooltip";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 import { parseMarkdown } from "@/lib/markdown";
 import { validateCVLength, type CVData } from "@/lib/validation";
+import { apiPost } from "@/lib/api-client";
+import { handleAPIError } from "@/lib/error-handler";
+import { showErrorToast } from "@/lib/toast-utils";
 
 interface ScoringResult {
   score: number;
@@ -89,69 +92,75 @@ export default function ReviewStep() {
 
     setIsScoring(true);
     try {
-      const response = await fetch('/api/ai/score-cv', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const result = await apiPost<{
+        score: number;
+        analysis: {
+          keyword_match: number;
+          formatting: number;
+          completeness: number;
+          relevance: number;
+        };
+        matchedKeywords: string[];
+        missingKeywords: string[];
+        suggestions: string[];
+      }>(
+        '/api/ai/score-cv',
+        {
           cvData: state.cvData,
           jdKeywords: state.cvData.jd_analysis?.keywords || [],
           language: state.cvData?.language || 'vi'
-        }),
-      });
+        },
+        undefined,
+        'vi'
+      );
 
-      if (response.ok) {
-        const result = await response.json();
-        
-        // Validate and normalize the result
-        const normalizedResult = {
-          score: Math.round(result.score || 0),
-          analysis: {
-            keyword_match: Math.min(100, Math.max(0, Math.round(result.analysis?.keyword_match || 0))),
-            formatting: Math.min(100, Math.max(0, Math.round(result.analysis?.formatting || 0))),
-            completeness: Math.min(100, Math.max(0, Math.round(result.analysis?.completeness || 0))),
-            relevance: Math.min(100, Math.max(0, Math.round(result.analysis?.relevance || 0)))
-          },
-          matchedKeywords: result.matchedKeywords || [],
-          missingKeywords: result.missingKeywords || [],
-          suggestions: result.suggestions || []
+      // Validate and normalize the result
+      const normalizedResult = {
+        score: Math.round(result.score || 0),
+        analysis: {
+          keyword_match: Math.min(100, Math.max(0, Math.round(result.analysis?.keyword_match || 0))),
+          formatting: Math.min(100, Math.max(0, Math.round(result.analysis?.formatting || 0))),
+          completeness: Math.min(100, Math.max(0, Math.round(result.analysis?.completeness || 0))),
+          relevance: Math.min(100, Math.max(0, Math.round(result.analysis?.relevance || 0)))
+        },
+        matchedKeywords: result.matchedKeywords || [],
+        missingKeywords: result.missingKeywords || [],
+        suggestions: result.suggestions || []
+      };
+      
+      console.log('ATS Scoring Result:', normalizedResult);
+      setScoringResult(normalizedResult);
+      
+      // Update CV data with ATS score and analysis
+      if (state.cvData && normalizedResult.score !== undefined) {
+        const updatedCVData = {
+          ...state.cvData,
+          ats_score: normalizedResult.score,
+          ats_analysis: {
+            keyword_match: normalizedResult.analysis.keyword_match,
+            formatting: normalizedResult.analysis.formatting,
+            completeness: normalizedResult.analysis.completeness,
+            relevance: normalizedResult.analysis.relevance,
+            matched_keywords: normalizedResult.matchedKeywords,
+            missing_keywords: normalizedResult.missingKeywords,
+            suggestions: normalizedResult.suggestions
+          }
         };
         
-        console.log('ATS Scoring Result:', normalizedResult);
-        setScoringResult(normalizedResult);
+        // Update context with new data
+        updateCVData(updatedCVData);
         
-        // Update CV data with ATS score and analysis
-        if (state.cvData && normalizedResult.score !== undefined) {
-          const updatedCVData = {
-            ...state.cvData,
-            ats_score: normalizedResult.score,
-            ats_analysis: {
-              keyword_match: normalizedResult.analysis.keyword_match,
-              formatting: normalizedResult.analysis.formatting,
-              completeness: normalizedResult.analysis.completeness,
-              relevance: normalizedResult.analysis.relevance,
-              matched_keywords: normalizedResult.matchedKeywords,
-              missing_keywords: normalizedResult.missingKeywords,
-              suggestions: normalizedResult.suggestions
-            }
-          };
-          
-          // Update context with new data
-          updateCVData(updatedCVData);
-          
-          // Save to database
-          try {
-            await saveCV();
-          } catch (error) {
-            console.error('Failed to save ATS score to database:', error);
-          }
+        // Save to database
+        try {
+          await saveCV();
+        } catch (error) {
+          console.error('Failed to save ATS score to database:', error);
         }
-      } else {
-        console.error('Failed to score CV');
       }
     } catch (error) {
       console.error('Error scoring CV:', error);
+      const appError = handleAPIError(error, 'score CV', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setIsScoring(false);
     }
