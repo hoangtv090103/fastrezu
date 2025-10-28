@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
-import toast from "react-hot-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 
 export default function ProjectsStep() {
   const { state, updateSection } = useCVEditor();
@@ -104,14 +105,15 @@ export default function ProjectsStep() {
       if (response.ok) {
         const { improvedBullet } = await response.json();
         updateAchievement(projIndex, achIndex, improvedBullet);
-        toast.success('Đã cải thiện mô tả thành công!');
+        showSuccessToast('Đã cải thiện mô tả thành công!');
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Có lỗi xảy ra khi cải thiện mô tả');
+        const appError = handleAPIError({ status: response.status }, 'improve bullet', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error improving achievement:', error);
-      toast.error('Không thể kết nối đến server. Vui lòng thử lại.');
+      const appError = handleAPIError(error, 'improve bullet', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
     }

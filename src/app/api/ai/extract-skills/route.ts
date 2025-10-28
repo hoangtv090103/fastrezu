@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
-import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
+import { getSystemPrompt, CVLanguage } from "@/lib/prompts";
 
 export async function POST(request: NextRequest) {
   try {
-    const { jdKeywords, language = 'vi' } =
-      await request.json();
+    const { jdKeywords, language = "vi" } = await request.json();
 
     if (!jdKeywords || !Array.isArray(jdKeywords)) {
       return NextResponse.json(
@@ -15,24 +14,33 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate language parameter
-    if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+    if (!["vi", "en"].includes(language)) {
+      return NextResponse.json(
+        { error: 'Invalid language parameter. Must be "vi" or "en"' },
+        { status: 400 }
+      );
     }
 
     // Get system prompt based on language
-    const systemPrompt = getSystemPrompt('extract_skills', language as CVLanguage);
+    const systemPrompt = getSystemPrompt(
+      "extract_skills",
+      language as CVLanguage
+    );
 
-    const userMessage = language === 'vi' ? `Hãy phân tích danh sách từ khóa JD sau và trích xuất các kỹ năng liên quan:
+    const userMessage =
+      language === "vi"
+        ? `Hãy phân tích danh sách từ khóa JD sau và trích xuất các kỹ năng liên quan:
 
-Từ khóa JD: ${jdKeywords.join(', ')}
+Từ khóa JD: ${jdKeywords.join(", ")}
 
 Yêu cầu:
 - Trích xuất kỹ năng chuyên môn (công nghệ, công cụ, ngôn ngữ lập trình) - viết bằng tiếng Anh
 - Trích xuất kỹ năng mềm (giao tiếp, làm việc nhóm, lãnh đạo) - viết bằng tiếng Việt
 - Chỉ trích xuất kỹ năng thực sự có trong từ khóa, không thêm kỹ năng chung chung
-- Trả về JSON với format: {"technicalSkills": [...], "softSkills": [...]}` : `Please analyze the following JD keywords and extract relevant skills:
+- Trả về JSON với format: {"technicalSkills": [...], "softSkills": [...]}`
+        : `Please analyze the following JD keywords and extract relevant skills:
 
-JD Keywords: ${jdKeywords.join(', ')}
+JD Keywords: ${jdKeywords.join(", ")}
 
 Requirements:
 - Extract technical skills (technologies, tools, programming languages) - write in English

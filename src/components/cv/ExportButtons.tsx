@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { CVData } from "@/contexts/CVEditorContext";
-import toast from "react-hot-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 
 interface ExportButtonsProps {
   cvData: CVData;
@@ -61,11 +62,11 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
       window.URL.revokeObjectURL(url);
 
       // Show success message
-      toast.success('PDF đã được tạo thành công!');
+      showSuccessToast('PDF đã được tạo thành công!');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      toast.error(`Có lỗi xảy ra khi tạo PDF: ${errorMessage}. Vui lòng thử lại.`);
+      const appError = handleAPIError(error, 'export PDF', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setIsExporting(false);
     }
@@ -136,13 +137,15 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
 
       // Copy to clipboard
       navigator.clipboard.writeText(textCV).then(() => {
-        toast.success('Đã sao chép CV vào clipboard!');
-      }).catch(() => {
-        toast.error('Không thể sao chép vào clipboard. Vui lòng thử lại.');
+        showSuccessToast('Đã sao chép CV vào clipboard!');
+      }).catch((err) => {
+        const appError = handleAPIError(err, 'copy to clipboard', 'vi');
+        showErrorToast(appError, 'vi');
       });
     } catch (error) {
       console.error('Error copying text:', error);
-      toast.error('Có lỗi xảy ra khi sao chép văn bản. Vui lòng thử lại.');
+      const appError = handleAPIError(error, 'copy text', 'vi');
+      showErrorToast(appError, 'vi');
     }
   };
 

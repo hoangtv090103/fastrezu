@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import toast from "react-hot-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
 import { parseMarkdown } from "@/lib/markdown";
 
@@ -47,7 +48,9 @@ export default function CheckCVPage() {
 
   const handleFileUpload = async () => {
     if (!file) {
-      setError("Vui lòng chọn file trước");
+      const errorMsg = "Vui lòng chọn file trước";
+      setError(errorMsg);
+      showErrorToast(errorMsg, 'vi');
       return;
     }
 
@@ -71,11 +74,11 @@ export default function CheckCVPage() {
 
       setEditedText(data.extractedText);
       setCurrentStep('review');
-      toast.success("Tải lên file và trích xuất văn bản thành công!");
+      showSuccessToast("Tải lên file và trích xuất văn bản thành công!");
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Upload failed";
-      setError(errorMessage);
-      toast.error(errorMessage);
+      const appError = handleAPIError(err, 'upload CV', 'vi');
+      setError(appError.userMessage);
+      showErrorToast(appError, 'vi');
     } finally {
       setIsLoadingUpload(false);
     }
@@ -83,17 +86,21 @@ export default function CheckCVPage() {
 
   const handleConfirmText = () => {
     if (!editedText.trim()) {
-      setError("Vui lòng xem lại và xác nhận văn bản");
+      const errorMsg = "Vui lòng xem lại và xác nhận văn bản";
+      setError(errorMsg);
+      showErrorToast(errorMsg, 'vi');
       return;
     }
     setIsConfirmingText(true);
     setCurrentStep('jd');
-    toast.success("Văn bản đã được xác nhận! Bây giờ bạn có thể thêm mô tả công việc (tùy chọn).");
+    showSuccessToast("Văn bản đã được xác nhận! Bây giờ bạn có thể thêm mô tả công việc (tùy chọn).");
   };
 
   const handleScoreCV = async () => {
     if (!editedText.trim()) {
-      setError("Vui lòng xác nhận văn bản trước");
+      const errorMsg = "Vui lòng xác nhận văn bản trước";
+      setError(errorMsg);
+      showErrorToast(errorMsg, 'vi');
       return;
     }
 
@@ -121,11 +128,11 @@ export default function CheckCVPage() {
 
       setScoreResult(data);
       setCurrentStep('results');
-      toast.success("Chấm điểm CV thành công!");
+      showSuccessToast("Chấm điểm CV thành công!");
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Scoring failed";
-      setError(errorMessage);
-      toast.error(errorMessage);
+      const appError = handleAPIError(err, 'score CV', 'vi');
+      setError(appError.userMessage);
+      showErrorToast(appError, 'vi');
     } finally {
       setIsLoadingScore(false);
     }

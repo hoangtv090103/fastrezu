@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
-import toast from "react-hot-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 
 interface SavedJD {
   id: string;
@@ -60,14 +61,15 @@ export default function JDAnalysisStep() {
 
       if (response.ok) {
         setSavedJDs(prev => prev.filter(jd => jd.id !== jdId));
-        toast.success('Đã xóa JD thành công!');
+        showSuccessToast('Đã xóa JD thành công!');
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Có lỗi xảy ra khi xóa JD');
+        const appError = handleAPIError({ status: response.status }, 'delete JD', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error deleting JD:', error);
-      toast.error('Không thể kết nối đến server. Vui lòng thử lại.');
+      const appError = handleAPIError(error, 'delete JD', 'vi');
+      showErrorToast(appError, 'vi');
     }
   };
 
@@ -109,18 +111,17 @@ const handleAnalyzeJD = async () => {
         
         // Reload saved JDs to show the newly saved one
         loadSavedJDs();
-        toast.success('Phân tích JD thành công!');
+        showSuccessToast('Phân tích JD thành công!');
       } else {
-        const errorData = await response.json();
-        const errorMessage = errorData.error || 'Có lỗi xảy ra khi phân tích JD';
-        setError(errorMessage);
-        toast.error(errorMessage);
+        const appError = handleAPIError({ status: response.status }, 'analyze JD', 'vi');
+        setError(appError.userMessage);
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error analyzing JD:', error);
-      const errorMessage = 'Không thể kết nối đến server. Vui lòng kiểm tra kết nối internet và thử lại.';
-      setError(errorMessage);
-      toast.error(errorMessage);
+      const appError = handleAPIError(error, 'analyze JD', 'vi');
+      setError(appError.userMessage);
+      showErrorToast(appError, 'vi');
     } finally {
       setIsAnalyzing(false);
     }

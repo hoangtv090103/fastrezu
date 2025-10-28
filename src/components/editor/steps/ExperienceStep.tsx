@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
-import toast from "react-hot-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
@@ -105,14 +106,15 @@ export default function ExperienceStep() {
       if (response.ok) {
         const { improvedBullet } = await response.json();
         updateAchievement(expIndex, achIndex, improvedBullet);
-        toast.success('Đã cải thiện mô tả thành công!');
+        showSuccessToast('Đã cải thiện mô tả thành công!');
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Có lỗi xảy ra khi cải thiện mô tả');
+        const appError = handleAPIError({ status: response.status }, 'improve bullet', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error improving achievement:', error);
-      toast.error('Không thể kết nối đến server. Vui lòng thử lại.');
+      const appError = handleAPIError(error, 'improve bullet', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
     }
@@ -124,7 +126,7 @@ export default function ExperienceStep() {
     const company = getStringValue(exp, 'company');
     
     if (!jobTitle.trim()) {
-      toast.error('Vui lòng nhập chức vụ trước khi sử dụng AI');
+      showErrorToast('Vui lòng nhập chức vụ trước khi sử dụng AI', 'vi');
       return;
     }
 
@@ -149,14 +151,15 @@ export default function ExperienceStep() {
       if (response.ok) {
         const { achievements } = await response.json();
         updateExperience(expIndex, 'achievements', achievements);
-        toast.success('Đã tạo mô tả kinh nghiệm thành công!');
+        showSuccessToast('Đã tạo mô tả kinh nghiệm thành công!');
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Có lỗi xảy ra khi tạo mô tả kinh nghiệm');
+        const appError = handleAPIError({ status: response.status }, 'write experience', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error writing experience with AI:', error);
-      toast.error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối internet và thử lại.');
+      const appError = handleAPIError(error, 'write experience', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
     }

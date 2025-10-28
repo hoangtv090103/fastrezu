@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { showSuccessToast, showErrorToast } from '@/lib/toast-utils';
 import FeedbackImageUpload from './FeedbackImageUpload';
 
 interface Attachment {
@@ -56,7 +56,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
     e.preventDefault();
 
     if (!formData.subject.trim() || !formData.message.trim()) {
-      toast.error('Vui lòng điền đầy đủ thông tin');
+      showErrorToast('Vui lòng điền đầy đủ thông tin', 'vi');
       return;
     }
 
@@ -77,7 +77,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
         throw new Error(result.error || 'Có lỗi xảy ra');
       }
 
-      toast.success('Cảm ơn bạn đã gửi phản hồi! Chúng tôi sẽ xem xét và phản hồi sớm nhất có thể.');
+      showSuccessToast('Cảm ơn bạn đã gửi phản hồi! Chúng tôi sẽ xem xét và phản hồi sớm nhất có thể.');
       onSuccess?.();
 
       // Reset form
@@ -91,7 +91,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
       });
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      toast.error('Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.');
+      showErrorToast('Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.', 'vi');
     } finally {
       setIsSubmitting(false);
     }

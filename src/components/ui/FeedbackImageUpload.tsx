@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
-import toast from 'react-hot-toast';
+import { showSuccessToast, showErrorToast } from '@/lib/toast-utils';
 
 interface Attachment {
   fileName: string;
@@ -97,7 +97,7 @@ export default function FeedbackImageUpload({
     for (const file of filesToProcess) {
       const validationError = validateFile(file);
       if (validationError) {
-        toast.error(validationError);
+        showErrorToast(validationError, 'vi');
         continue;
       }
 
@@ -110,11 +110,11 @@ export default function FeedbackImageUpload({
           const newAttachments = [...attachments, attachment];
           setAttachments(newAttachments);
           onAttachmentsChange(newAttachments);
-          toast.success(`Đã upload ${file.name}`);
+          showSuccessToast(`Đã upload ${file.name}`);
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        toast.error(`Lỗi upload ${file.name}: ${errorMessage}`);
+        showErrorToast(`Lỗi upload ${file.name}: ${errorMessage}`, 'vi');
       } finally {
         setUploading(null);
       }
