@@ -26,13 +26,15 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
           <div key={step} className="flex-1 flex justify-center">
             <button
               onClick={() => onStepChange(step)}
-              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 ${
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                 step === currentStep
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-blue-600 text-white focus:ring-blue-500 shadow-md'
                   : step < currentStep
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  ? 'bg-green-500 text-white focus:ring-green-500 hover:bg-green-600'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300 focus:ring-gray-400'
               }`}
+              aria-label={`${stepTitles[step] || `Bước ${step + 1}`}${step === currentStep ? ' (hiện tại)' : step < currentStep ? ' (đã hoàn thành)' : ''}`}
+              aria-current={step === currentStep ? 'step' : undefined}
             >
               {step + 1}
             </button>

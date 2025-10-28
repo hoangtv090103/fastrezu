@@ -59,7 +59,11 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       // Default error UI
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-          <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+          <div 
+            className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
             {/* Error Icon */}
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
               <svg
@@ -100,13 +104,15 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
                 onClick={this.handleReset}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-white font-medium rounded-lg transition-colors duration-200"
+                aria-label="Thử lại tải trang"
               >
                 Thử lại
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors duration-200"
+                className="px-6 py-3 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-gray-800 font-medium rounded-lg transition-colors duration-200"
+                aria-label="Quay về trang chủ"
               >
                 Về trang chủ
               </button>

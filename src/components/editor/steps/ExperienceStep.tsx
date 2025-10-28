@@ -9,6 +9,7 @@ import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { getTooltipContent } from "@/lib/tooltip-content";
 import { validateDateRange } from "@/lib/validation";
+import { useDebounce } from "@/lib/debounce";
 import { apiPost } from "@/lib/api-client";
 
 export default function ExperienceStep() {
@@ -24,6 +25,11 @@ export default function ExperienceStep() {
     string,
     unknown
   >[];
+
+  // Debounced validation (300ms delay)
+  const debouncedValidateDates = useDebounce((index: number, exp: Record<string, unknown>) => {
+    validateExperienceDates(index, exp);
+  }, 300);
 
   const addExperience = () => {
     const newExperience = {
@@ -56,9 +62,9 @@ export default function ExperienceStep() {
     };
     updateSection("experience", updatedExperience);
     
-    // Validate date range if updating dates
+    // Debounced validation for date range
     if (field === 'start_date' || field === 'end_date') {
-      validateExperienceDates(index, updatedExperience[index]);
+      debouncedValidateDates(index, updatedExperience[index]);
     }
   };
 

@@ -131,7 +131,11 @@ export default function ATSOptimizationPanel({
   }
 
   return (
-    <div className="bg-linear-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 sm:p-6">
+    <div 
+      className="bg-linear-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 sm:p-6"
+      role="region"
+      aria-label="ATS Optimization Suggestions"
+    >
       <div className="mb-4">
         <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
           {getHeaderText()}
@@ -148,11 +152,12 @@ export default function ATSOptimizationPanel({
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-3" role="list" aria-label="Optimization suggestions">
         {suggestions.map((suggestion) => (
           <div
             key={suggestion.id}
             className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+            role="listitem"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -183,14 +188,21 @@ export default function ATSOptimizationPanel({
                   <div className="mt-2">
                     <button
                       onClick={() => toggleExpanded(suggestion.id)}
-                      className="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
+                      className="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-1 rounded"
+                      aria-expanded={expandedSuggestion === suggestion.id}
+                      aria-controls={`example-${suggestion.id}`}
                     >
                       {expandedSuggestion === suggestion.id ? "▼" : "▶"}
                       Xem ví dụ
                     </button>
 
                     {expandedSuggestion === suggestion.id && (
-                      <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 italic">
+                      <div 
+                        id={`example-${suggestion.id}`}
+                        className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 italic"
+                        role="region"
+                        aria-label="Example text"
+                      >
                         &ldquo;{suggestion.exampleText}&rdquo;
                       </div>
                     )}
@@ -200,7 +212,8 @@ export default function ATSOptimizationPanel({
 
               <button
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="shrink-0 px-3 py-2 bg-purple-600 text-white text-xs font-medium rounded-lg hover:bg-purple-700 transition-colors duration-200 whitespace-nowrap"
+                className="shrink-0 px-3 py-2 bg-purple-600 text-white text-xs font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-200 whitespace-nowrap"
+                aria-label={`${suggestion.actionLabel} - ${suggestion.title}`}
               >
                 {suggestion.actionLabel}
               </button>

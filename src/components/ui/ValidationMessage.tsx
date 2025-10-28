@@ -88,7 +88,7 @@ export default function ValidationMessage({
       {dismissible && type !== 'error' && (
         <button
           onClick={handleDismiss}
-          className={`shrink-0 ${currentStyle.icon} hover:opacity-70 transition-opacity`}
+          className={`shrink-0 ${currentStyle.icon} hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-1 rounded transition-opacity`}
           aria-label="Đóng thông báo"
         >
           <svg

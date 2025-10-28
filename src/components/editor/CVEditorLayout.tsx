@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import WizardPanel from "@/components/editor/WizardPanel";
-import CVPreview from "@/components/cv/CVPreview";
 import AutoSaveIndicator from "@/components/editor/AutoSaveIndicator";
 import { useRouter } from "next/navigation";
+
+// Lazy load the preview component as it's heavy
+const CVPreview = lazy(() => import("@/components/cv/CVPreview"));
 
 export default function CVEditorLayout() {
   const { state, updateTitle } = useCVEditor();
@@ -158,7 +160,16 @@ export default function CVEditorLayout() {
 
         {/* Right Panel - Preview */}
         <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto max-h-[50vh] lg:max-h-none">
-          <CVPreview />
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <p className="text-sm text-gray-600">Đang tải xem trước...</p>
+              </div>
+            </div>
+          }>
+            <CVPreview />
+          </Suspense>
         </div>
       </div>
     </div>

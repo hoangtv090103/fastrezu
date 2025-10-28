@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 
 export default function SkillsStep() {
   const { state, updateSection } = useCVEditor();
@@ -88,10 +90,18 @@ export default function SkillsStep() {
             technical: [...skills.technical, ...newTechnicalSkills],
             soft: [...skills.soft, ...newSoftSkills],
           });
+          showSuccessToast('Đã trích xuất kỹ năng từ JD thành công!');
+        } else {
+          showSuccessToast('Không tìm thấy kỹ năng mới để thêm.');
         }
+      } else {
+        const appError = handleAPIError({ status: response.status }, 'extract skills', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error extracting skills:', error);
+      const appError = handleAPIError(error, 'extract skills', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setIsExtracting(false);
     }

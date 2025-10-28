@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useDebounce } from "@/lib/debounce";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 
 export default function EducationStep() {
@@ -11,6 +12,11 @@ export default function EducationStep() {
   const [dateErrors, setDateErrors] = useState<{
     [key: number]: string | null;
   }>({});
+
+  // Debounced validation (300ms delay)
+  const debouncedValidateDate = useDebounce((index: number, graduationDate: string) => {
+    validateGraduationDate(index, graduationDate);
+  }, 300);
 
   const addEducation = () => {
     const newEducation = {
@@ -36,9 +42,9 @@ export default function EducationStep() {
     };
     updateSection('education', updatedEducation);
     
-    // Validate graduation date if updating
+    // Debounced validation for graduation date
     if (field === 'graduation_date') {
-      validateGraduationDate(index, value);
+      debouncedValidateDate(index, value);
     }
   };
 
@@ -201,7 +207,7 @@ export default function EducationStep() {
 }
 
 // Export validation function for use in navigation
-export function validateEducationStep(education: Record<string, unknown>[], language: 'vi' | 'en' = 'vi'): boolean {
+export function validateEducationStep(education: Record<string, unknown>[], _language: 'vi' | 'en' = 'vi'): boolean {
   const currentYear = new Date().getFullYear();
   
   for (const edu of education) {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import { validateEmail, validatePhone } from "@/lib/validation";
+import { useDebounce } from "@/lib/debounce";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 
 export default function PersonalInfoStep() {
@@ -19,6 +20,11 @@ export default function PersonalInfoStep() {
 
   const language = state.cvData?.language || 'vi';
 
+  // Debounced validation (300ms delay)
+  const debouncedValidate = useDebounce((field: string, value: string) => {
+    validateField(field, value);
+  }, 300);
+
   const handleInputChange = (field: string, value: string) => {
     const updatedInfo = {
       ...personalInfo,
@@ -27,9 +33,9 @@ export default function PersonalInfoStep() {
     
     updateSection('personal_info', updatedInfo);
     
-    // Real-time validation for touched fields
+    // Debounced validation for touched fields
     if (touchedFields.has(field)) {
-      validateField(field, value);
+      debouncedValidate(field, value);
     }
   };
 
@@ -72,6 +78,7 @@ export default function PersonalInfoStep() {
       const result = validatePhone(phone, language, false);
       setPhoneError(result.errors.length > 0 ? result.errors[0] : null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
   return (

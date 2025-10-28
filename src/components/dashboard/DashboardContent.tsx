@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import CVPreviewCard from "./CVPreviewCard";
+import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
+import { handleAPIError } from "@/lib/error-handler";
 
 interface CVSection {
   section_type: string;
@@ -47,12 +49,16 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
 
       if (response.ok) {
         const { cvId } = await response.json();
+        showSuccessToast('Đã tạo CV mới thành công!');
         router.push(`/editor/${cvId}`);
       } else {
-        console.error('Failed to create CV');
+        const appError = handleAPIError({ status: response.status }, 'create CV', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error creating CV:', error);
+      const appError = handleAPIError(error, 'create CV', 'vi');
+      showErrorToast(appError, 'vi');
     } finally {
       setIsCreating(false);
       setShowLanguageModal(false);
@@ -73,12 +79,16 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
       });
 
       if (response.ok) {
+        showSuccessToast('Đã xóa CV thành công!');
         router.refresh();
       } else {
-        console.error('Failed to delete CV');
+        const appError = handleAPIError({ status: response.status }, 'delete CV', 'vi');
+        showErrorToast(appError, 'vi');
       }
     } catch (error) {
       console.error('Error deleting CV:', error);
+      const appError = handleAPIError(error, 'delete CV', 'vi');
+      showErrorToast(appError, 'vi');
     }
   };
 

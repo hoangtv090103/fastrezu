@@ -5,19 +5,22 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import { apiPost } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";
-import { showErrorToast } from "@/lib/toast-utils";
+import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 
 export default function SummaryStep() {
   const { state, updateSection } = useCVEditor();
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  const summaryData = (state.cvData?.sections.summary || {}) as Record<string, unknown>;
+
+  const summaryData = (state.cvData?.sections.summary || {}) as Record<
+    string,
+    unknown
+  >;
   const summary = {
-    content: typeof summaryData.content === 'string' ? summaryData.content : ''
+    content: typeof summaryData.content === "string" ? summaryData.content : "",
   };
 
   const handleInputChange = (value: string) => {
-    updateSection('summary', {
+    updateSection("summary", {
       ...summaryData,
       content: value,
     });
@@ -27,22 +30,23 @@ export default function SummaryStep() {
     setIsGenerating(true);
     try {
       const result = await apiPost<{ summary: string }>(
-        '/api/ai/generate-summary',
+        "/api/ai/generate-summary",
         {
           personalInfo: state.cvData?.sections.personal_info,
           experience: state.cvData?.sections.experience,
           jdKeywords: state.cvData?.jd_analysis?.keywords,
-          language: state.cvData?.language || 'vi'
+          language: state.cvData?.language || "vi",
         },
         undefined,
-        'vi'
+        "vi"
       );
 
       handleInputChange(result.summary);
+      showSuccessToast("Đã tạo tóm tắt nghề nghiệp thành công!");
     } catch (error) {
-      console.error('Error generating summary:', error);
-      const appError = handleAPIError(error, 'generate summary', 'vi');
-      showErrorToast(appError, 'vi');
+      console.error("Error generating summary:", error);
+      const appError = handleAPIError(error, "generate summary", "vi");
+      showErrorToast(appError, "vi");
     } finally {
       setIsGenerating(false);
     }
@@ -58,21 +62,31 @@ export default function SummaryStep() {
           Tóm tắt nghề nghiệp
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          Viết 3-5 câu tóm tắt về kinh nghiệm và mục tiêu nghề nghiệp của bạn. Đây là phần quan trọng nhất để thu hút nhà tuyển dụng.
+          Viết 3-5 câu tóm tắt về kinh nghiệm và mục tiêu nghề nghiệp của bạn.
+          Đây là phần quan trọng nhất để thu hút nhà tuyển dụng.
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="summary" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="summary"
+              className="block text-sm font-medium text-gray-700"
+            >
               Tóm tắt nghề nghiệp
             </label>
             <div className="flex items-center space-x-2">
-              <span className={`text-xs ${isOptimalLength ? 'text-green-600' : 'text-gray-500'}`}>
+              <span
+                className={`text-xs ${
+                  isOptimalLength ? "text-green-600" : "text-gray-500"
+                }`}
+              >
                 {characterCount}/500 ký tự
               </span>
-              {isOptimalLength && <span className="text-xs text-green-600">✓</span>}
+              {isOptimalLength && (
+                <span className="text-xs text-green-600">✓</span>
+              )}
             </div>
           </div>
           <textarea

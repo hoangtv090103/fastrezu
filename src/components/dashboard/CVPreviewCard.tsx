@@ -211,7 +211,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
 
   return (
     <div
-      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group relative"
+      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 group relative transform hover:-translate-y-1"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -247,7 +247,8 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
               <button
                 onClick={handleDownloadPDF}
                 disabled={isDownloading}
-                className="bg-white hover:bg-gray-100 disabled:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200 shadow-lg"
+                className="bg-white hover:bg-gray-100 disabled:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
+                aria-label="Tải xuống CV dưới dạng PDF"
               >
                 {isDownloading ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
@@ -273,7 +274,8 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
 
               <button
                 onClick={handleEdit}
-                className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors duration-200 shadow-lg"
+                className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
+                aria-label="Chỉnh sửa CV"
               >
                 <svg
                   className="w-4 h-4"
@@ -298,7 +300,10 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                     e.stopPropagation();
                     setShowDropdown(!showDropdown);
                   }}
-                  className="bg-white hover:bg-gray-100 text-gray-800 w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-200 shadow-lg"
+                  className="bg-white hover:bg-gray-100 text-gray-800 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
+                  aria-label="Thêm tùy chọn"
+                  aria-expanded={showDropdown}
+                  aria-haspopup="true"
                 >
                   <svg
                     className="w-5 h-5"
