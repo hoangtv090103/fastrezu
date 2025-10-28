@@ -169,6 +169,82 @@ export type Database = {
           metadata?: Record<string, unknown>;
         };
       };
+      feedback: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          user_email: string | null;
+          feedback_type: "bug_report" | "feature_request" | "general_feedback" | "praise";
+          subject: string;
+          message: string;
+          priority: "low" | "medium" | "high" | "critical";
+          status: "open" | "in_progress" | "resolved" | "closed";
+          metadata: Record<string, unknown>;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          user_email?: string | null;
+          feedback_type: "bug_report" | "feature_request" | "general_feedback" | "praise";
+          subject: string;
+          message: string;
+          priority?: "low" | "medium" | "high" | "critical";
+          status?: "open" | "in_progress" | "resolved" | "closed";
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          user_email?: string | null;
+          feedback_type?: "bug_report" | "feature_request" | "general_feedback" | "praise";
+          subject?: string;
+          message?: string;
+          priority?: "low" | "medium" | "high" | "critical";
+          status?: "open" | "in_progress" | "resolved" | "closed";
+          metadata?: Record<string, unknown>;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      feedback_attachments: {
+        Row: {
+          id: string;
+          feedback_id: string;
+          file_name: string;
+          file_path: string;
+          file_size: number;
+          file_type: string;
+          original_name: string;
+          uploaded_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          feedback_id: string;
+          file_name: string;
+          file_path: string;
+          file_size: number;
+          file_type: string;
+          original_name: string;
+          uploaded_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          feedback_id?: string;
+          file_name?: string;
+          file_path?: string;
+          file_size?: number;
+          file_type?: string;
+          original_name?: string;
+          uploaded_by?: string | null;
+          created_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;

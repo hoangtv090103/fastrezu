@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import FeedbackButton from "@/components/ui/FeedbackButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +40,7 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         {children}
-        <Toaster 
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 4000,
@@ -63,6 +64,8 @@ export default function RootLayout({
             },
           }}
         />
+        {/* Show feedback button on public pages */}
+        <FeedbackButton />
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && <Analytics />}
       </body>
     </html>

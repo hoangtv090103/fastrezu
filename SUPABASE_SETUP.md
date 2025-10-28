@@ -48,21 +48,37 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 1. Vào **SQL Editor** trong Supabase Dashboard
 2. Copy và chạy nội dung file `supabase-schema.sql`
-3. Kiểm tra bảng `subscribers` đã được tạo
+3. Copy và chạy nội dung file `feedback-migration.sql` (cho tính năng feedback)
+4. Kiểm tra bảng `subscribers` và `feedback` đã được tạo
 
 ## 6. Test API
 
 Sau khi setup xong, bạn có thể test API bằng cách:
 
+### Test Subscribe API:
 ```bash
 curl -X POST http://localhost:3000/api/subscribe \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com"}'
 ```
 
+### Test Feedback API:
+```bash
+curl -X POST http://localhost:3000/api/feedback \
+  -H "Content-Type: application/json" \
+  -d '{"feedback_type":"general_feedback","subject":"Test feedback","message":"This is a test message"}'
+```
+
 ## 7. Kiểm tra dữ liệu
 
-Vào **Table Editor** trong Supabase Dashboard để xem các email đã đăng ký.
+Vào **Table Editor** trong Supabase Dashboard để xem:
+
+### Subscribers table:
+- Xem các email đã đăng ký trong bảng `subscribers`
+
+### Feedback table:
+- Xem phản hồi từ người dùng trong bảng `feedback`
+- Kiểm tra các loại feedback: bug_report, feature_request, general_feedback, praise
 
 ## Cấu trúc bảng subscribers
 
@@ -73,3 +89,17 @@ Vào **Table Editor** trong Supabase Dashboard để xem các email đã đăng 
 - `updated_at`: Thời gian cập nhật
 - `source`: Nguồn đăng ký (landing_page)
 - `metadata`: Dữ liệu bổ sung (JSON)
+
+## Cấu trúc bảng feedback
+
+- `id`: UUID primary key
+- `user_id`: UUID reference to auth.users (nullable)
+- `user_email`: Email của người gửi (nullable)
+- `feedback_type`: Loại phản hồi (bug_report, feature_request, general_feedback, praise)
+- `subject`: Tiêu đề phản hồi
+- `message`: Nội dung phản hồi
+- `priority`: Mức độ ưu tiên (low, medium, high, critical)
+- `status`: Trạng thái (open, in_progress, resolved, closed)
+- `metadata`: Dữ liệu bổ sung (JSON)
+- `created_at`: Thời gian tạo
+- `updated_at`: Thời gian cập nhật

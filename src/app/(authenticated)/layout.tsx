@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import AuthenticatedHeader from "@/components/layout/AuthenticatedHeader";
+import FeedbackButton from "@/components/ui/FeedbackButton";
 
 export default async function AuthenticatedLayout({
   children,
@@ -30,6 +31,7 @@ export default async function AuthenticatedLayout({
       <main className="container mx-auto px-4 py-4">
         {children}
       </main>
+      <FeedbackButton />
     </div>
   );
 }

@@ -269,7 +269,54 @@ FOR DELETE USING (
 -- Allow users to update their own files
 CREATE POLICY "Users can update their own CV files" ON storage.objects
 FOR UPDATE USING (
-  bucket_id = 'cv-uploads' 
+  bucket_id = 'cv-uploads'
+  AND auth.uid()::text = (storage.foldername(name))[1]
+  AND auth.role() = 'authenticated'
+);
+
+-- Create Storage bucket for feedback attachments
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'feedback-attachments',
+  'feedback-attachments',
+  true, -- Public bucket for easy access to attachments
+  5242880, -- 5MB limit
+  ARRAY['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+) ON CONFLICT (id) DO NOTHING;
+
+-- Create RLS policies for feedback-attachments bucket
+-- Allow anyone to upload files (for anonymous feedback)
+CREATE POLICY "Anyone can upload feedback attachment files" ON storage.objects
+FOR INSERT WITH CHECK (
+  bucket_id = 'feedback-attachments'
+  AND auth.role() IN ('authenticated', 'anon')
+);
+
+-- Allow users to read their own files
+CREATE POLICY "Users can read their own feedback attachment files" ON storage.objects
+FOR SELECT USING (
+  bucket_id = 'feedback-attachments'
+  AND (
+    -- Authenticated users can read their own files
+    (auth.role() = 'authenticated' AND auth.uid()::text = (storage.foldername(name))[1])
+    OR
+    -- Anonymous users can read files from anonymous folder
+    (auth.role() = 'anon' AND (storage.foldername(name))[1] = 'anonymous')
+  )
+);
+
+-- Allow users to delete their own files
+CREATE POLICY "Users can delete their own feedback attachment files" ON storage.objects
+FOR DELETE USING (
+  bucket_id = 'feedback-attachments'
+  AND auth.uid()::text = (storage.foldername(name))[1]
+  AND auth.role() = 'authenticated'
+);
+
+-- Allow users to update their own files
+CREATE POLICY "Users can update their own feedback attachment files" ON storage.objects
+FOR UPDATE USING (
+  bucket_id = 'feedback-attachments'
   AND auth.uid()::text = (storage.foldername(name))[1]
   AND auth.role() = 'authenticated'
 );
