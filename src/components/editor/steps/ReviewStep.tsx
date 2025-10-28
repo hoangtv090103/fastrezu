@@ -7,7 +7,9 @@ import KeywordTag from "@/components/ui/KeywordTag";
 import ExportButtons from "@/components/cv/ExportButtons";
 import ATSOptimizationPanel from "@/components/editor/ATSOptimizationPanel";
 import InfoTooltip from "@/components/ui/InfoTooltip";
+import ValidationMessage from "@/components/ui/ValidationMessage";
 import { parseMarkdown } from "@/lib/markdown";
+import { validateCVLength, type CVData } from "@/lib/validation";
 
 interface ScoringResult {
   score: number;
@@ -26,10 +28,43 @@ export default function ReviewStep() {
   const { state, updateCVData, saveCV, setCurrentStep } = useCVEditor();
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(null);
   const [isScoring, setIsScoring] = useState(false);
+  const [lengthWarning, setLengthWarning] = useState<string | null>(null);
 
   const handleNavigateToSection = useCallback((stepIndex: number) => {
     setCurrentStep(stepIndex);
   }, [setCurrentStep]);
+
+  // Validate CV length
+  useEffect(() => {
+    if (state.cvData) {
+      const language = state.cvData.language || 'vi';
+      
+      // Helper to safely convert to string array
+      const toStringArray = (value: unknown): string[] => {
+        if (Array.isArray(value)) {
+          return value.filter(item => typeof item === 'string') as string[];
+        }
+        return [];
+      };
+      
+      const cvData: CVData = {
+        personal_info: state.cvData.sections.personal_info as CVData['personal_info'],
+        summary: (typeof state.cvData.sections.summary === 'string' ? state.cvData.sections.summary : '') as string,
+        experience: (Array.isArray(state.cvData.sections.experience) ? state.cvData.sections.experience : []) as CVData['experience'],
+        education: (Array.isArray(state.cvData.sections.education) ? state.cvData.sections.education : []) as CVData['education'],
+        projects: (Array.isArray(state.cvData.sections.projects) ? state.cvData.sections.projects : []) as CVData['projects'],
+        skills: toStringArray(state.cvData.sections.skills),
+        certifications: (Array.isArray(state.cvData.sections.certifications) ? state.cvData.sections.certifications : []) as CVData['certifications'],
+      };
+      
+      const result = validateCVLength(cvData, language);
+      if (result.warnings && result.warnings.length > 0) {
+        setLengthWarning(result.warnings[0]);
+      } else {
+        setLengthWarning(null);
+      }
+    }
+  }, [state.cvData]);
 
   // Initialize scoring result from existing CV data if available
   useEffect(() => {
@@ -335,6 +370,14 @@ export default function ReviewStep() {
             missingKeywords={scoringResult.missingKeywords}
             cvData={state.cvData}
             onNavigateToSection={handleNavigateToSection}
+          />
+        )}
+
+        {/* CV Length Validation */}
+        {lengthWarning && (
+          <ValidationMessage
+            type="warning"
+            message={lengthWarning}
           />
         )}
 

@@ -1,11 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import ValidationMessage from "@/components/ui/ValidationMessage";
 
 export default function EducationStep() {
   const { state, updateSection } = useCVEditor();
   
   const education = (state.cvData?.sections.education || []) as Record<string, unknown>[];
+  const [dateErrors, setDateErrors] = useState<{
+    [key: number]: string | null;
+  }>({});
 
   const addEducation = () => {
     const newEducation = {
@@ -30,6 +35,45 @@ export default function EducationStep() {
       [field]: value,
     };
     updateSection('education', updatedEducation);
+    
+    // Validate graduation date if updating
+    if (field === 'graduation_date') {
+      validateGraduationDate(index, value);
+    }
+  };
+
+  const validateGraduationDate = (index: number, graduationDate: string) => {
+    const language = state.cvData?.language || 'vi';
+    
+    if (graduationDate) {
+      const year = parseInt(graduationDate, 10);
+      const currentYear = new Date().getFullYear();
+      
+      const messages = {
+        vi: {
+          invalid: 'Năm tốt nghiệp không hợp lệ',
+          future: 'Năm tốt nghiệp không thể quá xa trong tương lai',
+          past: 'Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)',
+        },
+        en: {
+          invalid: 'Invalid graduation year',
+          future: 'Graduation year cannot be too far in the future',
+          past: 'Invalid graduation year (too far in the past)',
+        },
+      };
+      
+      if (isNaN(year)) {
+        setDateErrors(prev => ({ ...prev, [index]: messages[language].invalid }));
+      } else if (year < 1950) {
+        setDateErrors(prev => ({ ...prev, [index]: messages[language].past }));
+      } else if (year > currentYear + 10) {
+        setDateErrors(prev => ({ ...prev, [index]: messages[language].future }));
+      } else {
+        setDateErrors(prev => ({ ...prev, [index]: null }));
+      }
+    } else {
+      setDateErrors(prev => ({ ...prev, [index]: null }));
+    }
   };
 
   const getStringValue = (edu: Record<string, unknown>, key: string): string => {
@@ -114,7 +158,9 @@ export default function EducationStep() {
                   placeholder="2023"
                   min="1950"
                   max="2030"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
+                    dateErrors[index] ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  }`}
                 />
               </div>
 
@@ -131,6 +177,15 @@ export default function EducationStep() {
                 />
               </div>
             </div>
+
+            {dateErrors[index] && (
+              <div className="mt-3">
+                <ValidationMessage
+                  type="error"
+                  message={dateErrors[index]!}
+                />
+              </div>
+            )}
           </div>
         ))}
 
@@ -143,4 +198,23 @@ export default function EducationStep() {
       </div>
     </div>
   );
+}
+
+// Export validation function for use in navigation
+export function validateEducationStep(education: Record<string, unknown>[], language: 'vi' | 'en' = 'vi'): boolean {
+  const currentYear = new Date().getFullYear();
+  
+  for (const edu of education) {
+    const graduationDate = String(edu.graduation_date || '');
+    
+    if (graduationDate) {
+      const year = parseInt(graduationDate, 10);
+      
+      if (isNaN(year) || year < 1950 || year > currentYear + 10) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
 }

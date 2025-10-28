@@ -4,22 +4,27 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import StepNavigation from "@/components/editor/StepNavigation";
 import LanguageSelectionStep from "@/components/editor/steps/LanguageSelectionStep";
 import JDAnalysisStep from "@/components/editor/steps/JDAnalysisStep";
-import PersonalInfoStep from "@/components/editor/steps/PersonalInfoStep";
+import PersonalInfoStep, { validatePersonalInfoStep } from "@/components/editor/steps/PersonalInfoStep";
 import SummaryStep from "@/components/editor/steps/SummaryStep";
-import ExperienceStep from "@/components/editor/steps/ExperienceStep";
-import EducationStep from "@/components/editor/steps/EducationStep";
+import ExperienceStep, { validateExperienceStep } from "@/components/editor/steps/ExperienceStep";
+import EducationStep, { validateEducationStep } from "@/components/editor/steps/EducationStep";
 import ProjectsStep from "@/components/editor/steps/ProjectsStep";
 import SkillsStep from "@/components/editor/steps/SkillsStep";
 import CertificationsStep from "@/components/editor/steps/CertificationsStep";
 import ReviewStep from "@/components/editor/steps/ReviewStep";
+import { showErrorToast } from "@/lib/toast-utils";
+
+type ValidationFunction = 
+  | ((data: Record<string, unknown>, language: 'vi' | 'en') => boolean)
+  | ((data: Record<string, unknown>[], language: 'vi' | 'en') => boolean);
 
 const STEPS = [
   { id: 0, title: "Ngôn ngữ", component: LanguageSelectionStep },
   { id: 1, title: "JD", component: JDAnalysisStep },
-  { id: 2, title: "Thông tin", component: PersonalInfoStep },
+  { id: 2, title: "Thông tin", component: PersonalInfoStep, validate: validatePersonalInfoStep as ValidationFunction },
   { id: 3, title: "Nghề nghiệp", component: SummaryStep },
-  { id: 4, title: "Kinh nghiệm", component: ExperienceStep },
-  { id: 5, title: "Học vấn", component: EducationStep },
+  { id: 4, title: "Kinh nghiệm", component: ExperienceStep, validate: validateExperienceStep as ValidationFunction },
+  { id: 5, title: "Học vấn", component: EducationStep, validate: validateEducationStep as ValidationFunction },
   { id: 6, title: "Dự án", component: ProjectsStep },
   { id: 7, title: "Kỹ năng", component: SkillsStep },
   { id: 8, title: "Chứng chỉ", component: CertificationsStep },
@@ -30,6 +35,37 @@ export default function WizardPanel() {
   const { state, setCurrentStep } = useCVEditor();
 
   const handleStepChange = (step: number) => {
+    // If moving forward, validate current step
+    if (step > state.currentStep) {
+      const currentStepConfig = STEPS[state.currentStep];
+      
+      if (currentStepConfig.validate && state.cvData) {
+        const language = state.cvData.language || 'vi';
+        let isValid = false;
+        
+        // Get the appropriate data for validation
+        if (currentStepConfig.id === 2) { // PersonalInfoStep
+          const personalInfo = (state.cvData.sections.personal_info || {}) as Record<string, unknown>;
+          isValid = (currentStepConfig.validate as (data: Record<string, unknown>, lang: 'vi' | 'en') => boolean)(personalInfo, language);
+        } else if (currentStepConfig.id === 4) { // ExperienceStep
+          const experience = (state.cvData.sections.experience || []) as Record<string, unknown>[];
+          isValid = (currentStepConfig.validate as (data: Record<string, unknown>[], lang: 'vi' | 'en') => boolean)(experience, language);
+        } else if (currentStepConfig.id === 5) { // EducationStep
+          const education = (state.cvData.sections.education || []) as Record<string, unknown>[];
+          isValid = (currentStepConfig.validate as (data: Record<string, unknown>[], lang: 'vi' | 'en') => boolean)(education, language);
+        }
+        
+        if (!isValid) {
+          const errorMessages = {
+            vi: 'Vui lòng sửa các lỗi trước khi tiếp tục',
+            en: 'Please fix the errors before continuing'
+          };
+          showErrorToast(errorMessages[language], language);
+          return;
+        }
+      }
+    }
+    
     setCurrentStep(step);
   };
 

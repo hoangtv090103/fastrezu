@@ -4,14 +4,19 @@ import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import InfoTooltip from "@/components/ui/InfoTooltip";
+import ValidationMessage from "@/components/ui/ValidationMessage";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { getTooltipContent } from "@/lib/tooltip-content";
+import { validateDateRange } from "@/lib/validation";
 
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
+  }>({});
+  const [dateErrors, setDateErrors] = useState<{
+    [key: number]: string | null;
   }>({});
 
   const experience = (state.cvData?.sections.experience || []) as Record<
@@ -49,6 +54,28 @@ export default function ExperienceStep() {
       [field]: value,
     };
     updateSection("experience", updatedExperience);
+    
+    // Validate date range if updating dates
+    if (field === 'start_date' || field === 'end_date') {
+      validateExperienceDates(index, updatedExperience[index]);
+    }
+  };
+
+  const validateExperienceDates = (index: number, exp: Record<string, unknown>) => {
+    const startDate = getStringValue(exp, 'start_date');
+    const endDate = getStringValue(exp, 'end_date');
+    const language = state.cvData?.language || 'vi';
+    
+    if (startDate && endDate) {
+      const result = validateDateRange(startDate, endDate, language);
+      if (result.errors.length > 0) {
+        setDateErrors(prev => ({ ...prev, [index]: result.errors[0] }));
+      } else {
+        setDateErrors(prev => ({ ...prev, [index]: null }));
+      }
+    } else {
+      setDateErrors(prev => ({ ...prev, [index]: null }));
+    }
   };
 
   const getStringValue = (
@@ -290,7 +317,9 @@ export default function ExperienceStep() {
                   onChange={(e) =>
                     updateExperience(expIndex, "start_date", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${
+                    dateErrors[expIndex] ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  }`}
                 />
               </div>
 
@@ -305,7 +334,35 @@ export default function ExperienceStep() {
                     updateExperience(expIndex, "end_date", e.target.value)
                   }
                   placeholder="Hiện tại"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${
+                    dateErrors[expIndex] ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+                  }`}
+                />
+              </div>
+            </div>
+
+            {dateErrors[expIndex] && (
+              <div className="mb-4">
+                <ValidationMessage
+                  type="error"
+                  message={dateErrors[expIndex]!}
+                />
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
+              <div className="sm:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Địa điểm
+                </label>
+                <input
+                  type="text"
+                  value={getStringValue(exp, "location")}
+                  onChange={(e) =>
+                    updateExperience(expIndex, "location", e.target.value)
+                  }
+                  placeholder="Hà Nội, Việt Nam"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
@@ -391,4 +448,21 @@ export default function ExperienceStep() {
       </div>
     </div>
   );
+}
+
+// Export validation function for use in navigation
+export function validateExperienceStep(experience: Record<string, unknown>[], language: 'vi' | 'en' = 'vi'): boolean {
+  for (const exp of experience) {
+    const startDate = String(exp.start_date || '');
+    const endDate = String(exp.end_date || '');
+    
+    if (startDate && endDate) {
+      const result = validateDateRange(startDate, endDate, language);
+      if (result.errors.length > 0) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
 }

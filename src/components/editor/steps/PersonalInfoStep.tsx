@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
-import { validatePersonalInfo } from "@/lib/validation";
+import { validateEmail, validatePhone } from "@/lib/validation";
+import ValidationMessage from "@/components/ui/ValidationMessage";
 
 export default function PersonalInfoStep() {
   const { state, updateSection } = useCVEditor();
@@ -11,7 +12,12 @@ export default function PersonalInfoStep() {
     (state.cvData?.sections.personal_info || {}) as Record<string, unknown>, 
     [state.cvData?.sections.personal_info]
   );
-  const [errors, setErrors] = useState<string[]>([]);
+  
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+
+  const language = state.cvData?.language || 'vi';
 
   const handleInputChange = (field: string, value: string) => {
     const updatedInfo = {
@@ -21,9 +27,30 @@ export default function PersonalInfoStep() {
     
     updateSection('personal_info', updatedInfo);
     
-    // Validate on change
-    const validation = validatePersonalInfo(updatedInfo);
-    setErrors(validation.errors);
+    // Real-time validation for touched fields
+    if (touchedFields.has(field)) {
+      validateField(field, value);
+    }
+  };
+
+  const handleBlur = (field: string, value: string) => {
+    setTouchedFields(prev => new Set(prev).add(field));
+    validateField(field, value);
+  };
+
+  const validateField = (field: string, value: string) => {
+    if (field === 'email') {
+      const result = validateEmail(value, language, false);
+      setEmailError(result.errors.length > 0 ? result.errors[0] : null);
+    } else if (field === 'phone') {
+      // Phone is optional, only validate if provided
+      if (value.trim()) {
+        const result = validatePhone(value, language, false);
+        setPhoneError(result.errors.length > 0 ? result.errors[0] : null);
+      } else {
+        setPhoneError(null);
+      }
+    }
   };
 
   const getStringValue = (key: string): string => {
@@ -31,11 +58,21 @@ export default function PersonalInfoStep() {
     return typeof value === 'string' ? value : '';
   };
 
-  // Validate on mount
+  // Validate on mount for existing data
   useEffect(() => {
-    const validation = validatePersonalInfo(personalInfo);
-    setErrors(validation.errors);
-  }, [personalInfo]);
+    const email = getStringValue('email');
+    const phone = getStringValue('phone');
+    
+    if (email) {
+      const result = validateEmail(email, language, false);
+      setEmailError(result.errors.length > 0 ? result.errors[0] : null);
+    }
+    
+    if (phone) {
+      const result = validatePhone(phone, language, false);
+      setPhoneError(result.errors.length > 0 ? result.errors[0] : null);
+    }
+  }, [language]);
 
   return (
     <div className="p-4 sm:p-6">
@@ -73,10 +110,19 @@ export default function PersonalInfoStep() {
             id="email"
             value={getStringValue('email')}
             onChange={(e) => handleInputChange('email', e.target.value)}
+            onBlur={(e) => handleBlur('email', e.target.value)}
             placeholder="nguyenvana@email.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
+              emailError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+            }`}
             required
           />
+          {emailError && (
+            <ValidationMessage
+              type="error"
+              message={emailError}
+            />
+          )}
         </div>
 
         <div>
@@ -88,9 +134,18 @@ export default function PersonalInfoStep() {
             id="phone"
             value={getStringValue('phone')}
             onChange={(e) => handleInputChange('phone', e.target.value)}
+            onBlur={(e) => handleBlur('phone', e.target.value)}
             placeholder="0123 456 789"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
+              phoneError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
+            }`}
           />
+          {phoneError && (
+            <ValidationMessage
+              type="error"
+              message={phoneError}
+            />
+          )}
         </div>
 
         <div>
@@ -136,26 +191,28 @@ export default function PersonalInfoStep() {
         </div>
       </div>
 
-      {/* Validation Errors */}
-      {errors.length > 0 && (
-        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-start">
-            <div className="shrink-0">
-              <span className="text-red-600 text-base sm:text-lg">⚠️</span>
-            </div>
-            <div className="ml-3">
-              <h4 className="text-xs sm:text-sm font-medium text-red-700 mb-2">
-                Vui lòng sửa các lỗi sau:
-              </h4>
-              <ul className="text-xs sm:text-sm text-red-600 space-y-1">
-                {errors.map((error, index) => (
-                  <li key={index}>• {error}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
+}
+
+// Export validation function for use in navigation
+export function validatePersonalInfoStep(personalInfo: Record<string, unknown>, language: 'vi' | 'en' = 'vi'): boolean {
+  const email = String(personalInfo.email || '');
+  const phone = String(personalInfo.phone || '');
+  
+  // Email validation
+  const emailResult = validateEmail(email, language, false);
+  if (emailResult.errors.length > 0) {
+    return false;
+  }
+  
+  // Phone validation (only if provided)
+  if (phone.trim()) {
+    const phoneResult = validatePhone(phone, language, false);
+    if (phoneResult.errors.length > 0) {
+      return false;
+    }
+  }
+  
+  return true;
 }
