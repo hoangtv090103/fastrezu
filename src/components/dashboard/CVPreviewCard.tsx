@@ -6,7 +6,6 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import CVTemplate from "@/components/cv/CVTemplate";
 import {
-  showSuccessToast,
   showErrorToast,
   showLoadingToast,
   updateToast,

@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
+import InfoTooltip from "@/components/ui/InfoTooltip";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
+import { getTooltipContent } from "@/lib/tooltip-content";
 
 interface SavedJD {
   id: string;
@@ -127,12 +129,26 @@ const handleAnalyzeJD = async () => {
     }
   };
 
+  // Always use Vietnamese for tooltips
+  const tooltipContent = getTooltipContent('jd_analysis_importance', 'vi');
+
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
-        <h3 className="heading-feature text-base sm:text-lg text-gray-900 mb-2">
-          Phân tích Mô tả công việc (JD)
-        </h3>
+        <div className="flex items-start gap-2 mb-2">
+          <h3 className="heading-feature text-base sm:text-lg text-gray-900">
+            Phân tích Mô tả công việc (JD)
+          </h3>
+          <div className="mt-0.5">
+            <InfoTooltip
+              id="jd-analysis-importance"
+              title={tooltipContent.title}
+              content={tooltipContent.content}
+              placement="bottom"
+              icon="info"
+            />
+          </div>
+        </div>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
           Dán mô tả công việc bạn muốn ứng tuyển để AI phân tích và trích xuất từ khóa quan trọng.
         </p>

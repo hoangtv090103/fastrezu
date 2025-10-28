@@ -1,10 +1,15 @@
 "use client";
 
+import InfoTooltip from "@/components/ui/InfoTooltip";
+import { getTooltipContent } from "@/lib/tooltip-content";
+
 interface ATSScoreWidgetProps {
   score: number;
 }
 
 export default function ATSScoreWidget({ score }: ATSScoreWidgetProps) {
+  const tooltipContent = getTooltipContent('ats_score_meaning', 'vi');
+
   const getScoreColor = () => {
     if (score >= 80) return "text-green-600 bg-green-100";
     if (score >= 60) return "text-yellow-600 bg-yellow-100";
@@ -22,9 +27,20 @@ export default function ATSScoreWidget({ score }: ATSScoreWidgetProps) {
       <div className={`px-3 py-1 rounded-full text-sm font-medium ${getScoreColor()}`}>
         {score}/100
       </div>
-      <div className="text-right">
-        <p className="text-xs text-gray-500">Điểm ATS</p>
-        <p className="text-xs font-medium text-gray-700">{getScoreLabel()}</p>
+      <div className="flex items-start gap-1">
+        <div className="text-right">
+          <p className="text-xs text-gray-500">Điểm ATS</p>
+          <p className="text-xs font-medium text-gray-700">{getScoreLabel()}</p>
+        </div>
+        <div className="mt-0.5">
+          <InfoTooltip
+            id="ats-score-widget"
+            title={tooltipContent.title}
+            content={tooltipContent.content}
+            placement="bottom"
+            icon="info"
+          />
+        </div>
       </div>
     </div>
   );

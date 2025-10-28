@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useCVEditor, CVLanguage } from "@/contexts/CVEditorContext";
+import InfoTooltip from "@/components/ui/InfoTooltip";
+import { getTooltipContent } from "@/lib/tooltip-content";
 
 export default function LanguageSelectionStep() {
   const { state, setLanguage, setCurrentStep } = useCVEditor();
@@ -26,12 +28,26 @@ export default function LanguageSelectionStep() {
     }
   };
 
+  // Always use Vietnamese for tooltips
+  const tooltipContent = getTooltipContent('language_selection', 'vi');
+
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          Chọn ngôn ngữ cho CV
-        </h3>
+        <div className="flex items-start gap-2 mb-2">
+          <h3 className="heading-feature text-lg text-gray-900">
+            Chọn ngôn ngữ cho CV
+          </h3>
+          <div className="mt-0.5">
+            <InfoTooltip
+              id="language-selection"
+              title={tooltipContent.title}
+              content={tooltipContent.content}
+              placement="bottom"
+              icon="info"
+            />
+          </div>
+        </div>
         <p className="body-text text-gray-600 mb-4">
           Chọn ngôn ngữ mà bạn muốn tạo CV. Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.
         </p>

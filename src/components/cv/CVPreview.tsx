@@ -44,7 +44,6 @@ export default function CVPreview() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
