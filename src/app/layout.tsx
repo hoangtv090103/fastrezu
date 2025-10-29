@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import FeedbackButton from "@/components/ui/FeedbackButton";
@@ -70,6 +71,8 @@ export default function RootLayout({
         {/* Show feedback button on public pages */}
         <FeedbackButton />
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && <Analytics />}
+        {process.env.NODE_ENV === 'production' && process.env.VERCEL && <SpeedInsights />}
+
       </body>
     </html>
   );
