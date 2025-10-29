@@ -54,7 +54,7 @@ export default function JDAnalysisStep() {
 
   const handleDeleteJD = async (jdId: string) => {
     try {
-      await apiDelete('/api/jd/delete', undefined, 'vi');
+      await apiDelete(`/api/jd/delete?jdId=${jdId}`, undefined, 'vi');
       setSavedJDs(prev => prev.filter(jd => jd.id !== jdId));
       showSuccessToast('Đã xóa JD thành công!');
     } catch (error) {

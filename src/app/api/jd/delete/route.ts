@@ -4,7 +4,8 @@ import { cookies } from 'next/headers'
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { jdId } = await request.json()
+    const { searchParams } = new URL(request.url)
+    const jdId = searchParams.get('jdId')
 
     if (!jdId) {
       return NextResponse.json({ error: 'JD ID is required' }, { status: 400 })
