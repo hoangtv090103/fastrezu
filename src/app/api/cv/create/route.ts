@@ -46,6 +46,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Ensure user profile exists
+    const { data: existingProfile } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single()
+
+    if (!existingProfile) {
+      // Create user profile if it doesn't exist
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .insert({
+          id: user.id,
+          email: user.email!,
+          full_name: user.user_metadata?.full_name || null,
+          subscription_tier: 'beta_free'
+        })
+
+      if (profileError) {
+        console.error('Error creating user profile:', profileError)
+        return NextResponse.json({ error: 'Failed to create user profile' }, { status: 500 })
+      }
+    }
+
     // Generate default title if not provided
     const defaultTitle = language === 'vi' ? 'CV mới' : 'New CV'
     const finalTitle = title.trim() || defaultTitle

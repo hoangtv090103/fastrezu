@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS cvs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE NOT NULL,
   title VARCHAR(255) NOT NULL DEFAULT 'My CV',
+  language VARCHAR(5) DEFAULT 'vi' CHECK (language IN ('vi', 'en')),
   is_active BOOLEAN DEFAULT true,
   ats_score INTEGER DEFAULT 0 CHECK (ats_score >= 0 AND ats_score <= 100),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
