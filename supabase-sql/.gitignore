@@ -1,0 +1,12 @@
+# Ignore backup files
+*.backup
+*.bak
+backup-*.sql
+
+# Ignore local test files
+test-*.sql
+scratch-*.sql
+
+# Ignore dumps
+dump-*.sql
+*.dump

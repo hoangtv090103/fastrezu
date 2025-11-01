@@ -14,64 +14,86 @@ export async function callOpenAI(
   userMessage: string,
   options: { 
     responseFormat?: 'json_object' | 'text',
-    temperature?: number 
+    temperature?: number,
+    timeout?: number // Timeout in milliseconds
   } = {}
 ) {
   try {
-    const { responseFormat = 'json_object', temperature = 0.3 } = options;
+    const { responseFormat = 'json_object', temperature = 0.3, timeout = 120000 } = options; // Default 120s timeout
     
-    const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4o',
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userMessage }
-      ],
-      temperature,
-      ...(responseFormat === 'json_object' && { response_format: { type: "json_object" } })
-    });
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+      const response = await openai.chat.completions.create(
+        {
+          model: process.env.OPENAI_MODEL || 'gpt-4o',
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage }
+          ],
+          temperature,
+          ...(responseFormat === 'json_object' && { response_format: { type: "json_object" } })
+        },
+        {
+          signal: controller.signal
+        }
+      );
+      clearTimeout(timeoutId);
 
-    const content = response.choices[0]?.message?.content;
-    if (!content) {
-      throw new Error(`No response from AI service`);
-    }
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error(`No response from AI service`);
+      }
 
-    // If using json_object format, parse directly
-    if (responseFormat === 'json_object') {
+      // If using json_object format, parse directly
+      if (responseFormat === 'json_object') {
+        try {
+          return JSON.parse(content);
+        } catch (parseError) {
+          console.error('JSON parse error for json_object format:', parseError);
+          console.error('Raw content:', content);
+          throw new Error(`Invalid JSON response from AI: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+        }
+      }
+
+      // For text format, clean and parse as before
+      let cleanedContent = content.trim();
+      
+      // Remove markdown code blocks
+      if (cleanedContent.startsWith('```json')) {
+        cleanedContent = cleanedContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (cleanedContent.startsWith('```')) {
+        cleanedContent = cleanedContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+
+      // Try to find JSON object in the content
+      const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleanedContent = jsonMatch[0];
+      }
+
       try {
-        return JSON.parse(content);
+        return JSON.parse(cleanedContent);
       } catch (parseError) {
-        console.error('JSON parse error for json_object format:', parseError);
+        console.error('JSON parse error for text format:', parseError);
         console.error('Raw content:', content);
+        console.error('Cleaned content:', cleanedContent);
         throw new Error(`Invalid JSON response from AI: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
       }
-    }
-
-    // For text format, clean and parse as before
-    let cleanedContent = content.trim();
-    
-    // Remove markdown code blocks
-    if (cleanedContent.startsWith('```json')) {
-      cleanedContent = cleanedContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-    } else if (cleanedContent.startsWith('```')) {
-      cleanedContent = cleanedContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
-    }
-
-    // Try to find JSON object in the content
-    const jsonMatch = cleanedContent.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      cleanedContent = jsonMatch[0];
-    }
-
-    try {
-      return JSON.parse(cleanedContent);
-    } catch (parseError) {
-      console.error('JSON parse error for text format:', parseError);
-      console.error('Raw content:', content);
-      console.error('Cleaned content:', cleanedContent);
-      throw new Error(`Invalid JSON response from AI: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
+    } catch (abortError) {
+      clearTimeout(timeoutId);
+      if (abortError instanceof Error && (abortError.name === 'AbortError' || abortError.message.includes('aborted'))) {
+        throw new Error('AI request timeout - response took too long');
+      }
+      throw abortError;
     }
   } catch (error) {
     console.error('AI API error:', error);
+    if (error instanceof Error && error.message.includes('timeout')) {
+      throw error;
+    }
     throw new Error('Failed to get AI response');
   }
 }

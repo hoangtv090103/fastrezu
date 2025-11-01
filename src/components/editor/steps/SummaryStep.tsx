@@ -27,12 +27,31 @@ export default function SummaryStep() {
   };
 
   const handleGenerateWithAI = async () => {
+    // Validate personal info exists and has full_name
+    const personalInfo = state.cvData?.sections.personal_info;
+    // Type guard: ensure personalInfo is an object (not an array) and has full_name
+    if (!personalInfo || Array.isArray(personalInfo)) {
+      showErrorToast(
+        'Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân trước khi tạo tóm tắt.',
+        "vi"
+      );
+      return;
+    }
+    const personalInfoObj = personalInfo as Record<string, unknown>;
+    if (!personalInfoObj.full_name || typeof personalInfoObj.full_name !== 'string' || personalInfoObj.full_name.trim() === '') {
+      showErrorToast(
+        'Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân trước khi tạo tóm tắt.',
+        "vi"
+      );
+      return;
+    }
+
     setIsGenerating(true);
     try {
       const result = await apiPost<{ summary: string }>(
         "/api/ai/generate-summary",
         {
-          personalInfo: state.cvData?.sections.personal_info,
+          personalInfo: personalInfoObj,
           experience: state.cvData?.sections.experience,
           jdKeywords: state.cvData?.jd_analysis?.keywords,
           language: state.cvData?.language || "vi",
