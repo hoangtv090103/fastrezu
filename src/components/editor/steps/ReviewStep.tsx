@@ -8,16 +8,26 @@ import ExportButtons from "@/components/cv/ExportButtons";
 import ATSOptimizationPanel from "@/components/editor/ATSOptimizationPanel";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import ValidationMessage from "@/components/ui/ValidationMessage";
-import { parseMarkdown } from "@/lib/markdown";
 import { validateCVLength, type CVData } from "@/lib/validation";
-import { apiPost } from "@/lib/api-client";
+import { apiPost, type RetryConfig } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";
 import { showErrorToast } from "@/lib/toast-utils";
 import { getTooltipContent } from "@/lib/tooltip-content";
 
+interface StructuredSuggestion {
+  suggestion_text: string;
+  suggestion_type: string;
+  target_section: string;
+  target_index?: number | null;
+  keyword?: string | null;
+  priority: "high" | "medium" | "low";
+  original_content: unknown;
+  suggested_content: unknown;
+}
+
 interface ScoringResult {
   score: number;
-  suggestions: string[];
+  suggestions: StructuredSuggestion[];
   analysis: {
     keyword_match: number;
     formatting: number;
@@ -35,6 +45,7 @@ export default function ReviewStep() {
   );
   const [isScoring, setIsScoring] = useState(false);
   const [lengthWarning, setLengthWarning] = useState<string | null>(null);
+  const [suggestionsReloadTrigger, setSuggestionsReloadTrigger] = useState(0);
 
   const handleNavigateToSection = useCallback(
     (stepIndex: number) => {
@@ -93,9 +104,24 @@ export default function ReviewStep() {
       state.cvData?.ats_analysis &&
       !scoringResult
     ) {
+      // Convert string[] suggestions to StructuredSuggestion[] if needed
+      const suggestions = state.cvData.ats_analysis.suggestions || [];
+      const structuredSuggestions: StructuredSuggestion[] = Array.isArray(suggestions) && suggestions.length > 0 && typeof suggestions[0] === 'string'
+        ? (suggestions as string[]).map((s: string) => ({
+            suggestion_text: s,
+            suggestion_type: 'improve_content',
+            target_section: 'experience',
+            target_index: null,
+            keyword: null,
+            priority: 'medium' as const,
+            original_content: null,
+            suggested_content: null,
+          }))
+        : (suggestions as unknown as StructuredSuggestion[]);
+
       setScoringResult({
         score: state.cvData.ats_score,
-        suggestions: state.cvData.ats_analysis.suggestions || [],
+        suggestions: structuredSuggestions,
         analysis: {
           keyword_match: state.cvData.ats_analysis.keyword_match || 0,
           formatting: state.cvData.ats_analysis.formatting || 0,
@@ -113,6 +139,26 @@ export default function ReviewStep() {
 
     setIsScoring(true);
     try {
+      // Deactivate old suggestions before scoring
+      if (state.cvData.id) {
+        try {
+          await fetch(`/api/cv/deactivate-suggestions/${state.cvData.id}`, {
+            method: "POST",
+          });
+        } catch (error) {
+          console.error("Failed to deactivate old suggestions:", error);
+          // Continue with scoring even if deactivation fails
+        }
+      }
+
+      // Custom retry config with extended timeout for AI scoring (can take up to 2 minutes)
+      const scoreRetryConfig: RetryConfig = {
+        maxRetries: 2,
+        backoffMs: 1000,
+        timeoutMs: 120000, // 120 seconds (2 minutes) for AI processing
+        retryableStatuses: [429, 500, 502, 503, 504],
+      };
+
       const result = await apiPost<{
         score: number;
         analysis: {
@@ -123,7 +169,16 @@ export default function ReviewStep() {
         };
         matchedKeywords: string[];
         missingKeywords: string[];
-        suggestions: string[];
+        suggestions: Array<{
+          suggestion_text: string;
+          suggestion_type: string;
+          target_section: string;
+          target_index?: number | null;
+          keyword?: string | null;
+          priority: "high" | "medium" | "low";
+          original_content: unknown;
+          suggested_content: unknown;
+        }>;
       }>(
         "/api/ai/score-cv",
         {
@@ -131,7 +186,7 @@ export default function ReviewStep() {
           jdKeywords: state.cvData.jd_analysis?.keywords || [],
           language: state.cvData?.language || "vi",
         },
-        undefined,
+        scoreRetryConfig,
         "vi"
       );
 
@@ -176,7 +231,9 @@ export default function ReviewStep() {
             relevance: normalizedResult.analysis.relevance,
             matched_keywords: normalizedResult.matchedKeywords,
             missing_keywords: normalizedResult.missingKeywords,
-            suggestions: normalizedResult.suggestions,
+            suggestions: normalizedResult.suggestions.map(
+              (s) => s.suggestion_text
+            ),
           },
         };
 
@@ -188,6 +245,49 @@ export default function ReviewStep() {
           await saveCV();
         } catch (error) {
           console.error("Failed to save ATS score to database:", error);
+        }
+
+        // Save structured suggestions to database
+        if (
+          state.cvData.id &&
+          normalizedResult.suggestions &&
+          normalizedResult.suggestions.length > 0
+        ) {
+          try {
+            console.log("Saving suggestions to DB:", {
+              cvId: state.cvData.id,
+              suggestionsCount: normalizedResult.suggestions.length,
+              suggestions: normalizedResult.suggestions.map((s, i) => ({
+                index: i,
+                suggestion_id: `suggestion-${i}`,
+                suggestion_text: s.suggestion_text,
+                target_section: s.target_section,
+              })),
+            });
+
+            const saveResponse = await fetch("/api/cv/save-suggestions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                cvId: state.cvData.id,
+                suggestions: normalizedResult.suggestions,
+              }),
+            });
+
+            if (!saveResponse.ok) {
+              const error = await saveResponse.json();
+              console.error("Failed to save suggestions:", error);
+            } else {
+              console.log("Suggestions saved successfully");
+              // Trigger reload of suggestions in ATSOptimizationPanel
+              setSuggestionsReloadTrigger((prev) => prev + 1);
+            }
+          } catch (error) {
+            console.error("Failed to save suggestions to database:", error);
+            // Don't fail the whole flow if saving suggestions fails
+          }
         }
       }
     } catch (error) {
@@ -336,7 +436,7 @@ export default function ReviewStep() {
                   </div>
                 </div>
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-purple-600">
+                  <div className="text-lg sm:text-2xl font-bold text-yellow-600">
                     {Math.round(scoringResult.analysis?.formatting || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
@@ -414,24 +514,7 @@ export default function ReviewStep() {
                   </div>
                 )}
 
-              {/* Suggestions */}
-              {scoringResult.suggestions &&
-                scoringResult.suggestions.length > 0 && (
-                  <div>
-                    <h5 className="text-sm font-medium text-gray-700 mb-2">
-                      💡 Gợi ý cải thiện:
-                    </h5>
-                    <div className="space-y-1">
-                      {scoringResult.suggestions.map(
-                        (suggestion: string, index: number) => (
-                          <div key={index} className="text-sm text-gray-600">
-                            {parseMarkdown(suggestion)}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
+              {/* Suggestions - Hidden, shown in ATSOptimizationPanel instead */}
             </div>
           ) : (
             <div className="text-center py-8">
@@ -445,17 +528,13 @@ export default function ReviewStep() {
           )}
         </div>
 
-        {/* ATS Optimization Panel - Show only when there are missing keywords */}
-        {scoringResult &&
-          scoringResult.missingKeywords &&
-          scoringResult.missingKeywords.length > 0 &&
-          state.cvData && (
-            <ATSOptimizationPanel
-              missingKeywords={scoringResult.missingKeywords}
-              cvData={state.cvData}
-              onNavigateToSection={handleNavigateToSection}
-            />
-          )}
+        {/* ATS Optimization Panel - Show when there are suggestions */}
+        {scoringResult && state.cvData && (
+          <ATSOptimizationPanel 
+            cvData={state.cvData} 
+            reloadTrigger={suggestionsReloadTrigger}
+          />
+        )}
 
         {/* CV Length Validation */}
         {lengthWarning && (

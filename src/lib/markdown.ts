@@ -5,8 +5,11 @@ import React from 'react';
  * Handles basic markdown syntax like **bold**, *italic*, bullet points, and line breaks
  */
 
-export function parseMarkdown(text: string): React.ReactNode {
-  if (!text) return text;
+export function parseMarkdown(text: string | null | undefined | unknown): React.ReactNode {
+  // Type guard: ensure text is a string
+  if (!text || typeof text !== 'string') {
+    return String(text ?? '');
+  }
 
   // Handle line breaks first
   const lines = text.split('\n');

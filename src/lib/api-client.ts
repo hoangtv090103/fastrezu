@@ -9,6 +9,7 @@ export interface RetryConfig {
   maxRetries: number;
   backoffMs: number;
   retryableStatuses?: number[];
+  timeoutMs?: number; // Request timeout in milliseconds (default: 30000)
 }
 
 /**
@@ -57,11 +58,13 @@ export async function apiCall<T>(
   let lastError: Error | AppError | null = null;
   const maxAttempts = retryConfig.maxRetries + 1; // Initial attempt + retries
   
+  const timeoutMs = retryConfig.timeoutMs || 30000; // Default 30s timeout
+  
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       // Add timeout to fetch if not already present
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
       
       const fetchOptions: RequestInit = {
         ...options,

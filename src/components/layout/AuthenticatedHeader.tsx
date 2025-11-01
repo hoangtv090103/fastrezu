@@ -4,9 +4,7 @@ import { User } from "@supabase/supabase-js";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Database } from "@/types/database";
-
-type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
+import type { UserProfile } from "@/types";
 
 interface AuthenticatedHeaderProps {
   user: User;
@@ -62,7 +60,7 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
                 href="/dashboard" 
                 className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
               >
-                Dashboard
+                Quản lý CV
               </Link>
               <Link 
                 href="/check-cv" 
@@ -78,7 +76,7 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             >
-              <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-white font-semibold text-sm">
                   {getUserInitials(user.email || '')}
                 </span>

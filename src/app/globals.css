@@ -4,6 +4,37 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Color Palette - Tuân theo design system */
+  /* Primary - Xanh lam đậm (blue-600) */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #3b82f6;
+  
+  /* Accent - Xanh lục (green-500) */
+  --color-accent: #22c55e;
+  --color-accent-hover: #16a34a;
+  --color-accent-light: #10b981;
+  
+  /* Text Colors */
+  --color-text-primary: #111827; /* gray-900 */
+  --color-text-body: #374151; /* gray-700 */
+  --color-text-secondary: #6b7280; /* gray-500 */
+  
+  /* Background Colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb; /* gray-50 */
+  --color-bg-panel: #f3f4f6; /* gray-100 */
+  
+  /* System Colors */
+  --color-error: #ef4444; /* red-500 */
+  --color-warning: #eab308; /* yellow-500 */
+  --color-success: #22c55e; /* green-500 */
+  
+  /* Border Colors */
+  --color-border-light: #e5e7eb; /* gray-200 */
+  --color-border-default: #d1d5db; /* gray-300 */
+  --color-border-dark: #9ca3af; /* gray-400 */
 }
 
 @theme inline {
@@ -156,7 +187,7 @@ body {
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

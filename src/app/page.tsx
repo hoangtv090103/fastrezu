@@ -173,7 +173,7 @@ export default function Home() {
             </div>
              {/* === Tối ưu Box 3: Scoring - Nhấn mạnh sự tự tin === */}
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg sm:col-span-2 lg:col-span-1">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                 <span className="text-xl sm:text-2xl">📊✅</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
