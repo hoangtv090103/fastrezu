@@ -107,8 +107,14 @@ export default function ATSOptimizationPanel({
         await saveCV();
       }
 
-      // Reload suggestions to update applied status
-      await loadSuggestions();
+      // Update only the applied suggestion in local state instead of reloading all
+      setSuggestions(prevSuggestions => 
+        prevSuggestions.map(s => 
+          s.suggestion_id === suggestionId 
+            ? { ...s, is_applied: true, applied_at: new Date().toISOString() }
+            : s
+        )
+      );
 
       showSuccessToast("Gợi ý đã được áp dụng thành công!");
     } catch (error) {
@@ -148,10 +154,17 @@ export default function ATSOptimizationPanel({
 
       const result = await response.json();
 
-      // Reload CV data and suggestions
-      await loadSuggestions();
-      // Note: CV sections are already updated in DB, we need to reload CV
-      // For now, we'll just show success message
+      // Update all applied suggestions in local state instead of reloading
+      const appliedSuggestionIds = result.appliedSuggestionIds || 
+        unappliedSuggestions.map(s => s.suggestion_id);
+      
+      setSuggestions(prevSuggestions => 
+        prevSuggestions.map(s => 
+          appliedSuggestionIds.includes(s.suggestion_id)
+            ? { ...s, is_applied: true, applied_at: new Date().toISOString() }
+            : s
+        )
+      );
 
       showSuccessToast(
         `Đã áp dụng thành công ${result.appliedCount} gợi ý!`

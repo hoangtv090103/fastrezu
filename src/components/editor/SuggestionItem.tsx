@@ -34,7 +34,12 @@ export default function SuggestionItem({
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: string, isApplied: boolean = false) => {
+    if (isApplied) {
+      // Grayscale theme for applied suggestions
+      return "bg-gray-100 text-gray-600 border-gray-300";
+    }
+
     switch (priority) {
       case "high":
         return "bg-red-100 text-red-800 border-red-300";
@@ -59,26 +64,33 @@ export default function SuggestionItem({
   const isDisabled = isLocalApplying || isApplying || suggestion.is_applied;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+    <div
+      className={`border rounded-lg p-4 transition-all duration-200 ${
+        suggestion.is_applied
+          ? "bg-gray-50 border-gray-200 hover:shadow-sm"
+          : "bg-white border-gray-200 hover:shadow-md"
+      }`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span
               className={`px-2 py-1 text-xs font-medium rounded-full border ${getPriorityColor(
-                suggestion.priority
+                suggestion.priority,
+                suggestion.is_applied
               )}`}
             >
               {getPriorityLabel(suggestion.priority)}
             </span>
-            {suggestion.is_applied && (
-              <span className="px-2 py-1 text-xs font-medium rounded-full border bg-green-100 text-green-800 border-green-300 flex items-center gap-1">
-                <span className="text-green-600">✓</span>
-                Applied
-              </span>
-            )}
           </div>
 
-          <p className="text-sm text-gray-700">{suggestion.suggestion_text}</p>
+          <p
+            className={`text-sm ${
+              suggestion.is_applied ? "text-gray-500" : "text-gray-700"
+            }`}
+          >
+            {suggestion.suggestion_text}
+          </p>
         </div>
 
         {!suggestion.is_applied && (
@@ -93,10 +105,11 @@ export default function SuggestionItem({
         )}
 
         {suggestion.is_applied && (
-          <div className="shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-bold">✓</span>
-          </div>
-        )}
+              <span className="px-2 py-1 text-xs font-medium rounded-full border bg-green-100 text-green-800 border-green-300 flex items-center gap-1">
+                <span className="text-green-600">✓</span>
+                Applied
+              </span>
+            )}
       </div>
     </div>
   );
