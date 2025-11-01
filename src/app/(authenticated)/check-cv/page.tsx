@@ -16,7 +16,16 @@ interface ScoreResult {
   };
   matchedKeywords: string[];
   missingKeywords: string[];
-  suggestions: string[];
+  suggestions: Array<{
+    suggestion_text: string;
+    suggestion_type: "add_keyword" | "improve_bullet" | "add_section" | "enhance_content";
+    target_section: string;
+    target_index: number | null;
+    keyword: string | null;
+    priority: "high" | "medium" | "low";
+    original_content: unknown;
+    applied_content: unknown;
+  }>;
   metadata: {
     hasJobDescription: boolean;
     textLength: number;
@@ -404,17 +413,64 @@ export default function CheckCVPage() {
             )}
 
             {/* Suggestions */}
-            {scoreResult.suggestions.length > 0 && (
+            {scoreResult.suggestions && scoreResult.suggestions.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
                   Gợi ý cải thiện
                 </h3>
-                <div className="space-y-2">
-                  {scoreResult.suggestions.map((suggestion, index) => (
-                    <div key={index} className="text-gray-700">
-                      {parseMarkdown(suggestion)}
-                    </div>
-                  ))}
+                <div className="space-y-3">
+                  {scoreResult.suggestions.map((suggestion, index) => {
+                    const getPriorityColor = (priority: string) => {
+                      switch (priority) {
+                        case "high":
+                          return "bg-red-100 text-red-800 border-red-300";
+                        case "medium":
+                          return "bg-yellow-100 text-yellow-800 border-yellow-300";
+                        case "low":
+                          return "bg-blue-100 text-blue-800 border-blue-300";
+                        default:
+                          return "bg-gray-100 text-gray-800 border-gray-300";
+                      }
+                    };
+
+                    const getPriorityLabel = (priority: string) => {
+                      const labels = {
+                        high: "Ưu tiên cao",
+                        medium: "Ưu tiên trung bình",
+                        low: "Ưu tiên thấp",
+                      };
+                      return labels[priority as keyof typeof labels] || priority;
+                    };
+
+                    return (
+                      <div
+                        key={index}
+                        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span
+                                className={`px-2 py-1 text-xs font-medium rounded-full border ${getPriorityColor(
+                                  suggestion.priority
+                                )}`}
+                              >
+                                {getPriorityLabel(suggestion.priority)}
+                              </span>
+                              {suggestion.keyword && (
+                                <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                  🎯 {suggestion.keyword}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-700">
+                              {suggestion.suggestion_text}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
