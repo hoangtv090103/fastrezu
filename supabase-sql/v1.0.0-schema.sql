@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS cvs (
 CREATE TABLE IF NOT EXISTS cv_sections (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   cv_id UUID REFERENCES cvs(id) ON DELETE CASCADE NOT NULL,
-  section_type VARCHAR(50) NOT NULL CHECK (section_type IN ('personal_info', 'summary', 'experience', 'education', 'projects', 'skills', 'certifications')),
+  section_type VARCHAR(50) NOT NULL CHECK (section_type IN ('personal_info', 'summary', 'experience', 'education', 'projects', 'skills', 'certifications', 'ats_analysis')),
   order_index INTEGER NOT NULL DEFAULT 0,
   data JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
