@@ -157,15 +157,15 @@ export default function CheckCVPage() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+      <div className="w-full max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
         <div className="mb-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 Kiểm tra CV
               </h1>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-sm sm:text-base text-gray-700">
                 Tải lên CV hiện tại của bạn để nhận điểm ATS và gợi ý cải thiện.
               </p>
             </div>
@@ -184,8 +184,8 @@ export default function CheckCVPage() {
                       currentStep === step.key
                         ? 'bg-blue-600 text-white shadow-lg'
                         : ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
-                        ? 'bg-green-600 text-white shadow-md'
-                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                        ? 'bg-green-500 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                     }`}
                   >
                     {['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index ? '✓' : step.icon}
@@ -201,8 +201,8 @@ export default function CheckCVPage() {
                   {index < 3 && (
                     <div className={`absolute top-1/2 left-full w-2 sm:w-4 h-0.5 transform -translate-y-1/2 ${
                       ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
-                        ? 'bg-green-600'
-                        : 'bg-gray-200'
+                        ? 'bg-green-500'
+                        : 'bg-gray-100'
                     }`} />
                   )}
                 </div>
@@ -212,8 +212,8 @@ export default function CheckCVPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
+          <div className="mb-6 p-4 bg-red-50 border border-red-500 rounded-lg">
+            <p className="text-red-500">{error}</p>
           </div>
         )}
 
@@ -239,7 +239,7 @@ export default function CheckCVPage() {
                   <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <span className="text-lg font-medium text-gray-700">
+                  <span className="text-lg font-medium text-gray-900">
                     {file ? file.name : "Nhấp để tải lên PDF hoặc DOCX"}
                   </span>
                   <span className="text-sm text-gray-500 mt-1">
@@ -284,7 +284,7 @@ export default function CheckCVPage() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setCurrentStep('upload')}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 text-sm sm:text-base"
               >
                 Quay lại
               </button>
@@ -306,7 +306,7 @@ export default function CheckCVPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Mô tả công việc (Tùy chọn)
               </label>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-700 mb-4">
                 Dán mô tả công việc để nhận điểm ATS chính xác hơn dựa trên việc khớp từ khóa.
               </p>
               <textarea
@@ -320,14 +320,14 @@ export default function CheckCVPage() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => setCurrentStep('review')}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm sm:text-base"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 text-sm sm:text-base"
               >
                 Quay lại
               </button>
               <button
                 onClick={handleScoreCV}
                 disabled={isLoadingScore}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-sm sm:text-base"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 text-sm sm:text-base"
               >
                 {isLoadingScore ? "Đang phân tích CV..." : "Kiểm tra điểm ATS"}
               </button>
@@ -353,25 +353,25 @@ export default function CheckCVPage() {
                 <div className="text-xl sm:text-2xl font-bold text-blue-600">
                   {scoreResult.analysis.keyword_match}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">Khớp từ khóa</div>
+                <div className="text-xs sm:text-sm text-gray-700">Khớp từ khóa</div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
-                <div className="text-xl sm:text-2xl font-bold text-green-600">
+                <div className="text-xl sm:text-2xl font-bold text-green-500">
                   {scoreResult.analysis.formatting}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">Định dạng</div>
+                <div className="text-xs sm:text-sm text-gray-700">Định dạng</div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
-                <div className="text-xl sm:text-2xl font-bold text-yellow-600">
+                <div className="text-xl sm:text-2xl font-bold text-yellow-500">
                   {scoreResult.analysis.completeness}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">Đầy đủ</div>
+                <div className="text-xs sm:text-sm text-gray-700">Đầy đủ</div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
-                <div className="text-xl sm:text-2xl font-bold text-orange-600">
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">
                   {scoreResult.analysis.relevance}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-600">Liên quan</div>
+                <div className="text-xs sm:text-sm text-gray-700">Liên quan</div>
               </div>
             </div>
 
@@ -385,7 +385,7 @@ export default function CheckCVPage() {
                   {scoreResult.matchedKeywords.map((keyword, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+                      className="px-3 py-1 bg-green-100 text-green-500 rounded-full text-sm"
                     >
                       {keyword}
                     </span>
@@ -403,7 +403,7 @@ export default function CheckCVPage() {
                   {scoreResult.missingKeywords.map((keyword, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
+                      className="px-3 py-1 bg-red-100 text-red-500 rounded-full text-sm"
                     >
                       {keyword}
                     </span>
@@ -423,11 +423,11 @@ export default function CheckCVPage() {
                     const getPriorityColor = (priority: string) => {
                       switch (priority) {
                         case "high":
-                          return "bg-red-100 text-red-800 border-red-300";
+                          return "bg-red-100 text-red-500 border-red-500";
                         case "medium":
-                          return "bg-yellow-100 text-yellow-800 border-yellow-300";
+                          return "bg-yellow-100 text-yellow-500 border-yellow-500";
                         case "low":
-                          return "bg-blue-100 text-blue-800 border-blue-300";
+                          return "bg-blue-100 text-blue-600 border-blue-600";
                         default:
                           return "bg-gray-100 text-gray-800 border-gray-300";
                       }
@@ -458,7 +458,7 @@ export default function CheckCVPage() {
                                 {getPriorityLabel(suggestion.priority)}
                               </span>
                               {suggestion.keyword && (
-                                <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-500 border border-green-500">
                                   🎯 {suggestion.keyword}
                                 </span>
                               )}
@@ -476,8 +476,8 @@ export default function CheckCVPage() {
             )}
 
             {/* Disclaimer */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="text-sm text-yellow-800">
+            <div className="bg-yellow-50 border border-yellow-500 rounded-lg p-4">
+              <p className="text-sm text-yellow-500">
                 <strong>Lưu ý:</strong> Điểm ATS này dựa trên văn bản đã trích xuất từ file bạn tải lên. 
                 Độ chính xác của điểm số phụ thuộc vào chất lượng trích xuất văn bản, có thể thay đổi tùy theo bố cục phức tạp 
                 hoặc file có định dạng nặng. Để có kết quả tốt nhất, hãy đảm bảo CV của bạn ở định dạng đơn giản, thân thiện với ATS.

@@ -13,7 +13,7 @@ export default function FeedbackPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-green-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full text-center">
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fade-in-up">
             {/* Success Icon */}
@@ -53,7 +53,7 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-green-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 py-4">
@@ -112,7 +112,7 @@ export default function FeedbackPage() {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <div className="bg-blue-50 rounded-lg p-4">
               <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
