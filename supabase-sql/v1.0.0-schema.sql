@@ -66,7 +66,6 @@ CREATE TABLE IF NOT EXISTS jd_analyses (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ATS suggestions table (stores suggestions from AI scoring)
 CREATE TABLE IF NOT EXISTS ats_suggestions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   cv_id UUID REFERENCES cvs(id) ON DELETE CASCADE NOT NULL,
@@ -86,22 +85,6 @@ CREATE TABLE IF NOT EXISTS ats_suggestions (
   UNIQUE(cv_id, suggestion_id)
 );
 
--- Applied suggestions table (tracks applied suggestions)
-CREATE TABLE IF NOT EXISTS applied_suggestions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  cv_id UUID REFERENCES cvs(id) ON DELETE CASCADE NOT NULL,
-  suggestion_type VARCHAR(50) NOT NULL,
-  keyword VARCHAR(255),
-  target_section VARCHAR(50) NOT NULL,
-  target_index INTEGER,
-  priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('high', 'medium', 'low')),
-  original_content JSONB,
-  suggested_content JSONB NOT NULL,
-  is_active BOOLEAN DEFAULT true NOT NULL,
-  is_applied BOOLEAN DEFAULT false NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  applied_at TIMESTAMP WITH TIME ZONE,
-);
 
 -- ============================================================================
 -- INDEXES
@@ -121,16 +104,10 @@ CREATE INDEX IF NOT EXISTS idx_cv_sections_type ON cv_sections(section_type);
 -- JD analyses indexes
 CREATE INDEX IF NOT EXISTS idx_jd_analyses_cv_id ON jd_analyses(cv_id);
 
--- ATS suggestions indexes
 CREATE INDEX IF NOT EXISTS idx_ats_suggestions_cv_id ON ats_suggestions(cv_id);
 CREATE INDEX IF NOT EXISTS idx_ats_suggestions_is_active ON ats_suggestions(cv_id, is_active);
 CREATE INDEX IF NOT EXISTS idx_ats_suggestions_is_applied ON ats_suggestions(cv_id, is_applied, is_active);
 
--- Applied suggestions indexes
-CREATE INDEX IF NOT EXISTS idx_applied_suggestions_cv_id ON applied_suggestions(cv_id);
-CREATE INDEX IF NOT EXISTS idx_applied_suggestions_applied_at ON applied_suggestions(applied_at);
-CREATE INDEX IF NOT EXISTS idx_applied_suggestions_is_active ON applied_suggestions(cv_id, is_active);
-CREATE INDEX IF NOT EXISTS idx_applied_suggestions_is_applied ON applied_suggestions(cv_id, is_applied, is_active);
 
 -- ============================================================================
 -- TRIGGERS
@@ -161,7 +138,6 @@ ALTER TABLE cvs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cv_sections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE jd_analyses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ats_suggestions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE applied_suggestions ENABLE ROW LEVEL SECURITY;
 
 -- User profiles policies
 CREATE POLICY "Users can view own profile" ON user_profiles
@@ -260,7 +236,6 @@ CREATE POLICY "Users can delete own JD analyses" ON jd_analyses
         )
     );
 
--- ATS suggestions policies
 CREATE POLICY "Users can view own suggestions" ON ats_suggestions
     FOR SELECT USING (
         EXISTS (
@@ -288,24 +263,6 @@ CREATE POLICY "Users can update own suggestions" ON ats_suggestions
         )
     );
 
--- Applied suggestions policies
-CREATE POLICY "Users can view own applied suggestions" ON applied_suggestions
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM cvs 
-            WHERE cvs.id = applied_suggestions.cv_id 
-            AND cvs.user_id = auth.uid()
-        )
-    );
-
-CREATE POLICY "Users can insert own applied suggestions" ON applied_suggestions
-    FOR INSERT WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM cvs 
-            WHERE cvs.id = applied_suggestions.cv_id 
-            AND cvs.user_id = auth.uid()
-        )
-    );
 
 -- ============================================================================
 -- PERMISSIONS
@@ -328,19 +285,14 @@ GRANT ALL ON cv_sections TO service_role;
 GRANT ALL ON jd_analyses TO authenticated;
 GRANT ALL ON jd_analyses TO service_role;
 
--- ATS suggestions permissions
 GRANT SELECT, INSERT, UPDATE ON ats_suggestions TO authenticated;
 GRANT ALL ON ats_suggestions TO service_role;
 
--- Applied suggestions permissions
-GRANT SELECT, INSERT ON applied_suggestions TO authenticated;
-GRANT ALL ON applied_suggestions TO service_role;
 
 -- ============================================================================
 -- COMMENTS (Documentation)
 -- ============================================================================
 
--- ATS suggestions comments
 COMMENT ON TABLE ats_suggestions IS 'Stores ATS optimization suggestions generated from CV scoring';
 COMMENT ON COLUMN ats_suggestions.cv_id IS 'Reference to the CV';
 COMMENT ON COLUMN ats_suggestions.suggestion_id IS 'Unique identifier for the suggestion (e.g., suggestion-0, suggestion-1)';
@@ -356,16 +308,3 @@ COMMENT ON COLUMN ats_suggestions.is_active IS 'Whether this suggestion is from 
 COMMENT ON COLUMN ats_suggestions.is_applied IS 'Whether this suggestion has been applied to the CV';
 COMMENT ON COLUMN ats_suggestions.applied_at IS 'Timestamp when suggestion was applied';
 
--- Applied suggestions comments
-COMMENT ON TABLE applied_suggestions IS 'Tracks CV suggestions that have been applied by users';
-COMMENT ON COLUMN applied_suggestions.cv_id IS 'Reference to the CV that the suggestion was applied to';
-COMMENT ON COLUMN applied_suggestions.suggestion_id IS 'Unique identifier for the suggestion';
-COMMENT ON COLUMN applied_suggestions.suggestion_type IS 'Type of suggestion (e.g., missing_keyword, improve_bullet)';
-COMMENT ON COLUMN applied_suggestions.keyword IS 'The keyword or content that was suggested';
-COMMENT ON COLUMN applied_suggestions.target_section IS 'CV section where suggestion was applied (e.g., skills, experience, summary)';
-COMMENT ON COLUMN applied_suggestions.target_index IS 'Index within the section if applicable (e.g., which experience entry)';
-COMMENT ON COLUMN applied_suggestions.original_content IS 'Original content before applying suggestion';
-COMMENT ON COLUMN applied_suggestions.suggested_content IS 'Content after applying suggestion';
-COMMENT ON COLUMN applied_suggestions.is_active IS 'Whether this suggestion is still active (true) or has been superseded by a new scoring (false)';
-COMMENT ON COLUMN applied_suggestions.is_applied IS 'Whether this suggestion has been applied to the CV (true) or is still pending (false)';
-COMMENT ON COLUMN applied_suggestions.applied_at IS 'Timestamp when suggestion was applied';
