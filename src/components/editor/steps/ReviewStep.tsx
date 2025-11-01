@@ -540,19 +540,6 @@ export default function ReviewStep() {
         {lengthWarning && (
           <ValidationMessage type="warning" message={lengthWarning} />
         )}
-
-        {/* Action Buttons */}
-        <div className="space-y-4">
-          <button
-            onClick={() => window.history.back()}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-          >
-            ← Quay lại
-          </button>
-
-          {/* Export Buttons */}
-          {state.cvData && <ExportButtons cvData={state.cvData} />}
-        </div>
       </div>
     </div>
   );
