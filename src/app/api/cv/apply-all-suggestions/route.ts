@@ -149,24 +149,24 @@ export async function POST(request: NextRequest) {
           const currentData = ((sectionData?.data || []) as unknown[]) || [];
           const newData = [...currentData];
           newData[validatedSuggestion.target_index] =
-            validatedSuggestion.applied_content;
+            validatedSuggestion.suggested_content;
           // We expect updatedData to be a Record for upsert, but this is an array -> wrap in an object (e.g., { items: [...] }) or assign to a more appropriate type.
           // Here, we wrap the array under a key "items" to ensure type correctness.
           updatedData = { items: newData };
         } else {
           // Make sure section content is an object
           if (
-            typeof validatedSuggestion.applied_content === "object" &&
-            validatedSuggestion.applied_content !== null &&
-            !Array.isArray(validatedSuggestion.applied_content)
+            typeof validatedSuggestion.suggested_content === "object" &&
+            validatedSuggestion.suggested_content !== null &&
+            !Array.isArray(validatedSuggestion.suggested_content)
           ) {
-            updatedData = validatedSuggestion.applied_content as Record<
+            updatedData = validatedSuggestion.suggested_content as Record<
               string,
               unknown
             >;
           } else {
             // If it's an array or primitive, wrap it similarly
-            updatedData = { content: validatedSuggestion.applied_content };
+            updatedData = { content: validatedSuggestion.suggested_content };
           }
         }
 

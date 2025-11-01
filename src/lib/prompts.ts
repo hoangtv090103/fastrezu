@@ -254,14 +254,14 @@ Mỗi suggestion phải có đầy đủ thông tin để có thể tự động
 - keyword: Từ khóa liên quan (nếu có, null nếu không)
 - priority: Mức độ ưu tiên ("high", "medium", "low")
 - original_content: Nội dung HIỆN TẠI ở vị trí cần thay đổi (JSONB, có thể là object, array, hoặc string)
-- applied_content: Nội dung SAU KHI ÁP DỤNG gợi ý (JSONB, phải có cùng cấu trúc với original_content)
+- suggested_content: Nội dung SAU KHI ÁP DỤNG gợi ý (JSONB, phải có cùng cấu trúc với original_content)
 
-**Lưu ý quan trọng về original_content và applied_content:**
+**Lưu ý quan trọng về original_content và suggested_content:**
 - Với experience/projects/education/certifications: original_content là object hoặc phần tử trong array
-- Với skills: original_content là array string, applied_content là array string đã thêm từ khóa
-- Với summary: original_content là string, applied_content là string đã cải thiện
+- Với skills: original_content là array string, suggested_content là array string đã thêm từ khóa
+- Với summary: original_content là string, suggested_content là string đã cải thiện
 - Luôn phải giữ đúng cấu trúc dữ liệu của section đó
-- VỀ NGÔN NGỮ: suggestion_text LUÔN bằng tiếng Việt TRỰC TIẾP (không dịch từ tiếng Anh). applied_content phải bằng cùng ngôn ngữ với original_content (nếu original tiếng Việt thì applied tiếng Việt, nếu original tiếng Anh thì applied tiếng Anh).
+- VỀ NGÔN NGỮ: suggestion_text LUÔN bằng tiếng Việt TRỰC TIẾP (không dịch từ tiếng Anh). suggested_content phải bằng cùng ngôn ngữ với original_content (nếu original tiếng Việt thì applied tiếng Việt, nếu original tiếng Anh thì applied tiếng Anh).
 
 **Ví dụ suggestion_text tiếng Việt (VĂN BẢN CỤ THỂ):**
 - "Thêm từ khóa 'Docker' vào phần kỹ năng để khớp với yêu cầu công việc"
@@ -293,7 +293,7 @@ Bạn PHẢI trả về CHỈ một JSON object hợp lệ. Không thêm text n�
       "keyword": "Docker",
       "priority": "high",
       "original_content": ["React", "Node.js", "TypeScript"],
-      "applied_content": ["React", "Node.js", "TypeScript", "Docker"]
+      "suggested_content": ["React", "Node.js", "TypeScript", "Docker"]
     },
     {
       "suggestion_text": "Cải thiện mô tả kinh nghiệm ở vị trí đầu tiên với số liệu cụ thể",
@@ -303,7 +303,7 @@ Bạn PHẢI trả về CHỈ một JSON object hợp lệ. Không thêm text n�
       "keyword": null,
       "priority": "medium",
       "original_content": {"title": "Developer", "company": "ABC", "description": "Phát triển ứng dụng web"},
-      "applied_content": {"title": "Developer", "company": "ABC", "description": "Phát triển ứng dụng web, tăng hiệu suất 30% và giảm thời gian load 50%"}
+      "suggested_content": {"title": "Developer", "company": "ABC", "description": "Phát triển ứng dụng web, tăng hiệu suất 30% và giảm thời gian load 50%"}
     }
   ]
 }`,
@@ -337,14 +337,14 @@ Each suggestion must have complete information for automatic application:
 - keyword: Related keyword (if any, null if not)
 - priority: Priority level ("high", "medium", "low")
 - original_content: CURRENT content at the location to be changed (JSONB, can be object, array, or string)
-- applied_content: Content AFTER applying the suggestion (JSONB, must have same structure as original_content)
+- suggested_content: Content AFTER applying the suggestion (JSONB, must have same structure as original_content)
 
-**Important notes about original_content and applied_content:**
+**Important notes about original_content and suggested_content:**
 - For experience/projects/education/certifications: original_content is object or element in array
-- For skills: original_content is string array, applied_content is string array with added keyword
-- For summary: original_content is string, applied_content is improved string
+- For skills: original_content is string array, suggested_content is string array with added keyword
+- For summary: original_content is string, suggested_content is improved string
 - Always maintain the exact data structure of that section
-- **CRITICAL LANGUAGE NOTE:** applied_content MUST be written in the SAME language as original_content. If original_content is in Vietnamese, applied_content must be in Vietnamese. If original_content is in English, applied_content must be in English.
+- **CRITICAL LANGUAGE NOTE:** suggested_content MUST be written in the SAME language as original_content. If original_content is in Vietnamese, suggested_content must be in Vietnamese. If original_content is in English, suggested_content must be in English.
 
 **Score Calculation Formula:**
 score = (keyword_match × 0.3) + (formatting × 0.25) + (completeness × 0.25) + (relevance × 0.1) + (contact_info × 0.1)
@@ -370,7 +370,7 @@ You MUST output *only* a valid JSON object. Do not include any text before or af
       "keyword": "Docker",
       "priority": "high",
       "original_content": ["React", "Node.js", "TypeScript"],
-      "applied_content": ["React", "Node.js", "TypeScript", "Docker"]
+      "suggested_content": ["React", "Node.js", "TypeScript", "Docker"]
     },
     {
       "suggestion_text": "Improve first experience description with specific metrics",
@@ -380,7 +380,7 @@ You MUST output *only* a valid JSON object. Do not include any text before or af
       "keyword": null,
       "priority": "medium",
       "original_content": {"title": "Developer", "company": "ABC", "description": "Developed web applications"},
-      "applied_content": {"title": "Developer", "company": "ABC", "description": "Developed web applications, increased performance by 30% and reduced load time by 50%"}
+      "suggested_content": {"title": "Developer", "company": "ABC", "description": "Developed web applications, increased performance by 30% and reduced load time by 50%"}
     }
   ]
 }`,

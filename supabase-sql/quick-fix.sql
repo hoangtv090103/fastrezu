@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS applied_suggestions (
   target_section VARCHAR(50) NOT NULL,
   target_index INTEGER,
   original_content JSONB,
-  applied_content JSONB NOT NULL,
+  suggested_content JSONB NOT NULL,
   is_active BOOLEAN DEFAULT true NOT NULL,
   is_applied BOOLEAN DEFAULT false NOT NULL,
   applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

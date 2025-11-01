@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       target_section: string;
       target_index: number | null;
       is_applied: boolean;
-      applied_content: unknown;
+      suggested_content: unknown;
       [key: string]: unknown;
     };
 
@@ -187,11 +187,11 @@ export async function POST(request: NextRequest) {
       const currentData = (sectionData?.data as unknown[]) || [];
       const newData = [...currentData];
       newData[validatedSuggestion.target_index] =
-        validatedSuggestion.applied_content;
+        validatedSuggestion.suggested_content;
       updatedData = newData;
     } else {
       // Replace entire section
-      updatedData = validatedSuggestion.applied_content;
+      updatedData = validatedSuggestion.suggested_content;
     }
 
     console.log("Updating section:", {

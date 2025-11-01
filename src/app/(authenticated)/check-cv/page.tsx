@@ -24,7 +24,7 @@ interface ScoreResult {
     keyword: string | null;
     priority: "high" | "medium" | "low";
     original_content: unknown;
-    applied_content: unknown;
+    suggested_content: unknown;
   }>;
   metadata: {
     hasJobDescription: boolean;

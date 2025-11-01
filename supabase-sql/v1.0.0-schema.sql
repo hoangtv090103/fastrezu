@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS ats_suggestions (
   keyword VARCHAR(255),
   priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('high', 'medium', 'low')),
   original_content JSONB,
-  applied_content JSONB,
+  suggested_content JSONB,
   is_active BOOLEAN DEFAULT true NOT NULL,
   is_applied BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS applied_suggestions (
   target_index INTEGER,
   priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('high', 'medium', 'low')),
   original_content JSONB,
-  applied_content JSONB NOT NULL,
+  suggested_content JSONB NOT NULL,
   is_active BOOLEAN DEFAULT true NOT NULL,
   is_applied BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -351,7 +351,7 @@ COMMENT ON COLUMN ats_suggestions.target_index IS 'Index of element in array sec
 COMMENT ON COLUMN ats_suggestions.keyword IS 'Related keyword for the suggestion (if applicable)';
 COMMENT ON COLUMN ats_suggestions.priority IS 'Priority level: high, medium, or low';
 COMMENT ON COLUMN ats_suggestions.original_content IS 'Current content at the location to be changed (JSONB)';
-COMMENT ON COLUMN ats_suggestions.applied_content IS 'Content after applying the suggestion (JSONB)';
+COMMENT ON COLUMN ats_suggestions.suggested_content IS 'Content after applying the suggestion (JSONB)';
 COMMENT ON COLUMN ats_suggestions.is_active IS 'Whether this suggestion is from the latest scoring (true) or superseded (false)';
 COMMENT ON COLUMN ats_suggestions.is_applied IS 'Whether this suggestion has been applied to the CV';
 COMMENT ON COLUMN ats_suggestions.applied_at IS 'Timestamp when suggestion was applied';
@@ -365,7 +365,7 @@ COMMENT ON COLUMN applied_suggestions.keyword IS 'The keyword or content that wa
 COMMENT ON COLUMN applied_suggestions.target_section IS 'CV section where suggestion was applied (e.g., skills, experience, summary)';
 COMMENT ON COLUMN applied_suggestions.target_index IS 'Index within the section if applicable (e.g., which experience entry)';
 COMMENT ON COLUMN applied_suggestions.original_content IS 'Original content before applying suggestion';
-COMMENT ON COLUMN applied_suggestions.applied_content IS 'Content after applying suggestion';
+COMMENT ON COLUMN applied_suggestions.suggested_content IS 'Content after applying suggestion';
 COMMENT ON COLUMN applied_suggestions.is_active IS 'Whether this suggestion is still active (true) or has been superseded by a new scoring (false)';
 COMMENT ON COLUMN applied_suggestions.is_applied IS 'Whether this suggestion has been applied to the CV (true) or is still pending (false)';
 COMMENT ON COLUMN applied_suggestions.applied_at IS 'Timestamp when suggestion was applied';

@@ -269,7 +269,7 @@ export type Database = {
           keyword: string | null;
           priority: string;
           original_content: unknown;
-          applied_content: unknown;
+          suggested_content: unknown;
           is_active: boolean;
           is_applied: boolean;
           created_at: string;
@@ -286,7 +286,7 @@ export type Database = {
           keyword?: string | null;
           priority?: string;
           original_content?: unknown;
-          applied_content?: unknown;
+          suggested_content?: unknown;
           is_active?: boolean;
           is_applied?: boolean;
           created_at?: string;
@@ -303,7 +303,7 @@ export type Database = {
           keyword?: string | null;
           priority?: string;
           original_content?: unknown;
-          applied_content?: unknown;
+          suggested_content?: unknown;
           is_active?: boolean;
           is_applied?: boolean;
           created_at?: string;

@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS applied_suggestions (
   target_section VARCHAR(50) NOT NULL,
   target_index INTEGER,
   original_content JSONB,
-  applied_content JSONB NOT NULL,
+  suggested_content JSONB NOT NULL,
   applied_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(cv_id, suggestion_id)
 );
@@ -30,7 +30,7 @@ COMMENT ON COLUMN applied_suggestions.keyword IS 'The keyword or content that wa
 COMMENT ON COLUMN applied_suggestions.target_section IS 'CV section where suggestion was applied (e.g., skills, experience, summary)';
 COMMENT ON COLUMN applied_suggestions.target_index IS 'Index within the section if applicable (e.g., which experience entry)';
 COMMENT ON COLUMN applied_suggestions.original_content IS 'Original content before applying suggestion';
-COMMENT ON COLUMN applied_suggestions.applied_content IS 'Content after applying suggestion';
+COMMENT ON COLUMN applied_suggestions.suggested_content IS 'Content after applying suggestion';
 COMMENT ON COLUMN applied_suggestions.applied_at IS 'Timestamp when suggestion was applied';
 
 -- Enable Row Level Security

@@ -59,9 +59,9 @@ ${JSON.stringify(cvSummary, null, 2)}
 
 **LƯU Ý QUAN TRỌNG VỀ NGÔN NGỮ:**
 - CV này được viết bằng TIẾNG VIỆT
-- Tất cả applied_content trong suggestions PHẢI được viết bằng TIẾNG VIỆT
+- Tất cả suggested_content trong suggestions PHẢI được viết bằng TIẾNG VIỆT
 - suggestion_text cũng phải bằng TIẾNG VIỆT
-- Đảm bảo applied_content giữ nguyên ngôn ngữ với original_content
+- Đảm bảo suggested_content giữ nguyên ngôn ngữ với original_content
 
 Trả về JSON theo đúng format đã chỉ định.`
       : `Please evaluate the following CV based on the JD keywords and provided criteria.
@@ -83,9 +83,9 @@ ${JSON.stringify(cvSummary, null, 2)}
 
 **IMPORTANT LANGUAGE NOTE:**
 - This CV is written in ENGLISH
-- All applied_content in suggestions MUST be written in ENGLISH
+- All suggested_content in suggestions MUST be written in ENGLISH
 - suggestion_text should also be in ENGLISH
-- Ensure applied_content maintains the same language as original_content
+- Ensure suggested_content maintains the same language as original_content
 
 Return JSON in the exact specified format.`;
 

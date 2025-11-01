@@ -10,7 +10,7 @@ interface SuggestionInput {
   keyword?: string | null;
   priority: "high" | "medium" | "low";
   original_content: unknown;
-  applied_content: unknown;
+  suggested_content: unknown;
 }
 
 export async function POST(request: NextRequest) {
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
           keyword: suggestion.keyword ?? null,
           priority: suggestion.priority,
           original_content: suggestion.original_content,
-          applied_content: suggestion.applied_content,
+          suggested_content: suggestion.suggested_content,
           is_active: true,
           is_applied: false,
         };

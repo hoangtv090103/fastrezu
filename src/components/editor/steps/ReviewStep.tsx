@@ -22,7 +22,7 @@ interface StructuredSuggestion {
   keyword?: string | null;
   priority: "high" | "medium" | "low";
   original_content: unknown;
-  applied_content: unknown;
+  suggested_content: unknown;
 }
 
 interface ScoringResult {
@@ -115,7 +115,7 @@ export default function ReviewStep() {
             keyword: null,
             priority: 'medium' as const,
             original_content: null,
-            applied_content: null,
+            suggested_content: null,
           }))
         : (suggestions as unknown as StructuredSuggestion[]);
 
@@ -177,7 +177,7 @@ export default function ReviewStep() {
           keyword?: string | null;
           priority: "high" | "medium" | "low";
           original_content: unknown;
-          applied_content: unknown;
+          suggested_content: unknown;
         }>;
       }>(
         "/api/ai/score-cv",
