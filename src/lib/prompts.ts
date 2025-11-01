@@ -247,7 +247,7 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 
 **Về suggestions (3-5 gợi ý):**
 Mỗi suggestion phải có đầy đủ thông tin để có thể tự động áp dụng:
-- suggestion_text: LUÔN viết bằng tiếng Việt (mô tả cho người dùng), không phụ thuộc vào ngôn ngữ của CV
+- suggestion_text: **KHÔNG ĐƯỢC dịch** - LUÔN viết TRỰC TIẾP bằng tiếng Việt (mô tả cho người dùng Việt Nam). TUYỆT ĐỐI KHÔNG viết tiếng Anh rồi dịch. Hãy sáng tác trực tiếp bằng tiếng Việt tự nhiên.
 - suggestion_type: Loại gợi ý ("add_keyword", "improve_bullet", "add_section", "enhance_content")
 - target_section: Phần CV cần áp dụng - CHỈ được dùng một trong các giá trị sau: "experience", "skills", "summary", "projects", "education", "certifications", "personal_info". KHÔNG được dùng giá trị nào khác.
 - target_index: Chỉ số phần tử trong mảng (nếu target_section là mảng, bắt đầu từ 0, null nếu không áp dụng)
@@ -261,7 +261,13 @@ Mỗi suggestion phải có đầy đủ thông tin để có thể tự động
 - Với skills: original_content là array string, applied_content là array string đã thêm từ khóa
 - Với summary: original_content là string, applied_content là string đã cải thiện
 - Luôn phải giữ đúng cấu trúc dữ liệu của section đó
-- VỀ NGÔN NGỮ: suggestion_text LUÔN bằng tiếng Việt (để hiển thị cho user). applied_content phải bằng cùng ngôn ngữ với original_content (nếu original tiếng Việt thì applied tiếng Việt, nếu original tiếng Anh thì applied tiếng Anh).
+- VỀ NGÔN NGỮ: suggestion_text LUÔN bằng tiếng Việt TRỰC TIẾP (không dịch từ tiếng Anh). applied_content phải bằng cùng ngôn ngữ với original_content (nếu original tiếng Việt thì applied tiếng Việt, nếu original tiếng Anh thì applied tiếng Anh).
+
+**Ví dụ suggestion_text tiếng Việt (VĂN BẢN CỤ THỂ):**
+- "Thêm từ khóa 'Docker' vào phần kỹ năng để khớp với yêu cầu công việc"
+- "Cải thiện phần summary bằng cách thêm số liệu cụ thể về thành tích"
+- "Mở rộng phần Projects để bao gồm các dự án AI/ML liên quan"
+- "Nâng cao mức độ chi tiết trong các bullet points về kinh nghiệm"
 
 **Công thức tính điểm tổng:**
 score = (keyword_match × 0.3) + (formatting × 0.25) + (completeness × 0.25) + (relevance × 0.1) + (contact_info × 0.1)
