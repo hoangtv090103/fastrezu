@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { CVData } from "@/contexts/CVEditorContext";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import SuggestionItem from "./SuggestionItem";
-import { apiPost } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";
 import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 
@@ -186,7 +185,7 @@ export default function ATSOptimizationPanel({
   const activeUnappliedSuggestions = suggestions.filter(
     (s) => s.is_active && !s.is_applied
   );
-  const appliedSuggestions = suggestions.filter((s) => s.is_applied);
+  // const appliedSuggestions = suggestions.filter((s) => s.is_applied);
 
   return (
     <div

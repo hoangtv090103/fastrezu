@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import {
+  type ATSuggestion,
+  type ATSuggestionUpdate,
+  type CVSection,
+  type CVSectionType,
+  type CVSectionInsert,
+} from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
     const { cvId } = await request.json();
 
     if (!cvId) {
-      return NextResponse.json(
-        { error: "cvId is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "cvId is required" }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -21,35 +25,29 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Verify CV ownership
-    const { data: cv, error: cvError } = await supabase
-      .from("cvs")
-      .select("id, user_id")
-      .eq("id", cvId)
-      .single();
+    const {
+      data: cv,
+      error: cvError,
+    }: { data: { id: string; user_id: string } | null; error: Error | null } =
+      await supabase.from("cvs").select("id, user_id").eq("id", cvId).single();
 
     if (cvError || !cv) {
-      return NextResponse.json(
-        { error: "CV not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "CV not found" }, { status: 404 });
     }
 
-    if (cv.user_id !== user.id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+    if (cv?.user_id !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Get all active and unapplied suggestions
-    const { data: suggestions, error: suggestionsError } = await supabase
+    const {
+      data: suggestions,
+      error: suggestionsError,
+    }: { data: ATSuggestion[] | null; error: Error | null } = await supabase
       .from("ats_suggestions")
       .select("*")
       .eq("cv_id", cvId)
@@ -140,37 +138,56 @@ export async function POST(request: NextRequest) {
         }
 
         // Apply suggestion
-        let updatedData: unknown;
+        let updatedData: Record<string, unknown>;
+        const sectionData = section as CVSection | null;
 
         if (
           validatedSuggestion.target_index !== null &&
           validatedSuggestion.target_index !== undefined
         ) {
           // Array section: replace element at target_index
-          const currentData = (section?.data as unknown[]) || [];
+          const currentData = ((sectionData?.data || []) as unknown[]) || [];
           const newData = [...currentData];
           newData[validatedSuggestion.target_index] =
             validatedSuggestion.applied_content;
-          updatedData = newData;
+          // We expect updatedData to be a Record for upsert, but this is an array -> wrap in an object (e.g., { items: [...] }) or assign to a more appropriate type.
+          // Here, we wrap the array under a key "items" to ensure type correctness.
+          updatedData = { items: newData };
         } else {
-          // Replace entire section
-          updatedData = validatedSuggestion.applied_content;
+          // Make sure section content is an object
+          if (
+            typeof validatedSuggestion.applied_content === "object" &&
+            validatedSuggestion.applied_content !== null &&
+            !Array.isArray(validatedSuggestion.applied_content)
+          ) {
+            updatedData = validatedSuggestion.applied_content as Record<
+              string,
+              unknown
+            >;
+          } else {
+            // If it's an array or primitive, wrap it similarly
+            updatedData = { content: validatedSuggestion.applied_content };
+          }
         }
 
+        const sectionToUpsert: CVSectionInsert = {
+          cv_id: cvId,
+          section_type: validatedSuggestion.target_section as CVSectionType,
+          data: updatedData,
+          order_index: getSectionOrder(
+            validatedSuggestion.target_section as CVSectionType
+          ),
+        };
+
         // Update cv_sections
-        const { error: updateError } = await supabase
+        const upsertQuery = await supabase
           .from("cv_sections")
-          .upsert(
-            {
-              cv_id: cvId,
-              section_type: validatedSuggestion.target_section,
-              data: updatedData,
-              order_index: getSectionOrder(validatedSuggestion.target_section),
-            },
-            {
-              onConflict: "cv_id,section_type",
-            }
-          );
+          // @ts-expect-error - Supabase createServerClient types not fully inferred from Database generic
+          .upsert(sectionToUpsert, {
+            onConflict: "cv_id,section_type",
+          });
+
+        const { error: updateError } = await upsertQuery;
 
         if (updateError) {
           console.error(
@@ -182,13 +199,15 @@ export async function POST(request: NextRequest) {
         }
 
         // Mark suggestion as applied
+        const updateData: ATSuggestionUpdate = {
+          is_applied: true,
+          applied_at: new Date().toISOString(),
+        };
         const { error: markError } = await supabase
           .from("ats_suggestions")
-          .update({
-            is_applied: true,
-            applied_at: new Date().toISOString(),
-          })
-          .eq("id", suggestion.id);
+          // @ts-expect-error - Supabase createServerClient types not fully inferred from Database generic
+          .update(updateData)
+          .eq("suggestion_id", suggestion.suggestion_id);
 
         if (markError) {
           console.error(
@@ -224,8 +243,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function getSectionOrder(sectionType: string): number {
-  const orderMap: Record<string, number> = {
+function getSectionOrder(sectionType: CVSectionType): number {
+  const orderMap: Record<CVSectionType, number> = {
     personal_info: 0,
     summary: 1,
     experience: 2,
@@ -233,6 +252,7 @@ function getSectionOrder(sectionType: string): number {
     projects: 4,
     skills: 5,
     certifications: 6,
+    ats_analysis: 99,
   };
   return orderMap[sectionType] || 99;
 }

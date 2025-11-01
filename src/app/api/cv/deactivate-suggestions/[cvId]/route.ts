@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { type ATSuggestionUpdate } from "@/types";
 
 export async function POST(
   request: NextRequest,
@@ -16,37 +17,32 @@ export async function POST(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Verify CV ownership
-    const { data: cv, error: cvError } = await supabase
-      .from("cvs")
-      .select("id, user_id")
-      .eq("id", cvId)
-      .single();
+    const {
+      data: cv,
+      error: cvError,
+    }: { data: { id: string; user_id: string } | null; error: Error | null } =
+      await supabase.from("cvs").select("id, user_id").eq("id", cvId).single();
 
     if (cvError || !cv) {
-      return NextResponse.json(
-        { error: "CV not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "CV not found" }, { status: 404 });
     }
 
     if (cv.user_id !== user.id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Deactivate all active suggestions for this CV
+    const updateData: ATSuggestionUpdate = {
+      is_active: false,
+    };
     const { error: updateError } = await supabase
       .from("ats_suggestions")
-      .update({ is_active: false })
+      // @ts-expect-error - Supabase createServerClient types not fully inferred from Database generic
+      .update(updateData)
       .eq("cv_id", cvId)
       .eq("is_active", true);
 

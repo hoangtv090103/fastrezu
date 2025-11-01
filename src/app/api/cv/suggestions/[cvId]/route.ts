@@ -23,11 +23,11 @@ export async function GET(
     }
 
     // Verify CV ownership
-    const { data: cv, error: cvError } = await supabase
-      .from("cvs")
-      .select("id, user_id")
-      .eq("id", cvId)
-      .single();
+    const {
+      data: cv,
+      error: cvError,
+    }: { data: { id: string; user_id: string } | null; error: Error | null } =
+      await supabase.from("cvs").select("id, user_id").eq("id", cvId).single();
 
     if (cvError || !cv) {
       return NextResponse.json(

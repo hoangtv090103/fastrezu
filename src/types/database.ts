@@ -12,7 +12,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          id: string;
+          id?: string;
           email: string;
           full_name?: string | null;
           phone?: string | null;
@@ -174,7 +174,11 @@ export type Database = {
           id: string;
           user_id: string | null;
           user_email: string | null;
-          feedback_type: "bug_report" | "feature_request" | "general_feedback" | "praise";
+          feedback_type:
+            | "bug_report"
+            | "feature_request"
+            | "general_feedback"
+            | "praise";
           subject: string;
           message: string;
           priority: "low" | "medium" | "high" | "critical";
@@ -187,7 +191,11 @@ export type Database = {
           id?: string;
           user_id?: string | null;
           user_email?: string | null;
-          feedback_type: "bug_report" | "feature_request" | "general_feedback" | "praise";
+          feedback_type:
+            | "bug_report"
+            | "feature_request"
+            | "general_feedback"
+            | "praise";
           subject: string;
           message: string;
           priority?: "low" | "medium" | "high" | "critical";
@@ -200,7 +208,11 @@ export type Database = {
           id?: string;
           user_id?: string | null;
           user_email?: string | null;
-          feedback_type?: "bug_report" | "feature_request" | "general_feedback" | "praise";
+          feedback_type?:
+            | "bug_report"
+            | "feature_request"
+            | "general_feedback"
+            | "praise";
           subject?: string;
           message?: string;
           priority?: "low" | "medium" | "high" | "critical";
@@ -243,6 +255,59 @@ export type Database = {
           original_name?: string;
           uploaded_by?: string | null;
           created_at?: string;
+        };
+      };
+      ats_suggestions: {
+        Row: {
+          id: string;
+          cv_id: string;
+          suggestion_id: string;
+          suggestion_text: string;
+          suggestion_type: string;
+          target_section: string;
+          target_index: number | null;
+          keyword: string | null;
+          priority: string;
+          original_content: unknown;
+          applied_content: unknown;
+          is_active: boolean;
+          is_applied: boolean;
+          created_at: string;
+          applied_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          cv_id: string;
+          suggestion_id: string;
+          suggestion_text: string;
+          suggestion_type: string;
+          target_section: string;
+          target_index?: number | null;
+          keyword?: string | null;
+          priority?: string;
+          original_content?: unknown;
+          applied_content?: unknown;
+          is_active?: boolean;
+          is_applied?: boolean;
+          created_at?: string;
+          applied_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          cv_id?: string;
+          suggestion_id?: string;
+          suggestion_text?: string;
+          suggestion_type?: string;
+          target_section?: string;
+          target_index?: number | null;
+          keyword?: string | null;
+          priority?: string;
+          original_content?: unknown;
+          applied_content?: unknown;
+          is_active?: boolean;
+          is_applied?: boolean;
+          created_at?: string;
+          applied_at?: string | null;
         };
       };
     };

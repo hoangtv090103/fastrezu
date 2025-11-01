@@ -8,7 +8,6 @@ import ExportButtons from "@/components/cv/ExportButtons";
 import ATSOptimizationPanel from "@/components/editor/ATSOptimizationPanel";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import ValidationMessage from "@/components/ui/ValidationMessage";
-import { parseMarkdown } from "@/lib/markdown";
 import { validateCVLength, type CVData } from "@/lib/validation";
 import { apiPost, type RetryConfig } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";

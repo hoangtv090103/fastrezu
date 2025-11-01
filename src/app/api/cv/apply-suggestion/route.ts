@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import {
+  type CVSectionType,
+  type CVSectionInsert,
+  type ATSuggestionUpdate,
+} from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,10 +26,7 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Verify CV ownership
@@ -35,18 +37,12 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (cvError || !cv) {
-      return NextResponse.json(
-        { error: "CV not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "CV not found" }, { status: 404 });
     }
 
     const cvData = cv as { user_id: string };
     if (cvData.user_id !== user.id) {
-      return NextResponse.json(
-        { error: "Forbidden" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Get suggestion
@@ -61,7 +57,7 @@ export async function POST(request: NextRequest) {
     if (suggestionError) {
       console.error("Error fetching suggestion:", suggestionError);
       console.error("Query params:", { cvId, suggestionId });
-      
+
       // Check if suggestion exists but is not active
       const { data: inactiveSuggestion } = await supabase
         .from("ats_suggestions")
@@ -69,15 +65,20 @@ export async function POST(request: NextRequest) {
         .eq("cv_id", cvId)
         .eq("suggestion_id", suggestionId)
         .single();
-        
+
       if (inactiveSuggestion) {
-        const inactive = inactiveSuggestion as { is_active: boolean; is_applied: boolean };
+        const inactive = inactiveSuggestion as {
+          is_active: boolean;
+          is_applied: boolean;
+        };
         return NextResponse.json(
-          { error: `Suggestion is not active (is_active: ${inactive.is_active}, is_applied: ${inactive.is_applied})` },
+          {
+            error: `Suggestion is not active (is_active: ${inactive.is_active}, is_applied: ${inactive.is_applied})`,
+          },
           { status: 400 }
         );
       }
-      
+
       return NextResponse.json(
         { error: "Suggestion not found or not active" },
         { status: 404 }
@@ -108,40 +109,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("Applying suggestion:", {
-      suggestion_id: suggestionData.suggestion_id,
-      target_section: suggestionData.target_section,
-      target_index: suggestionData.target_index,
-    });
-
     // Normalize target_section function
-    const normalizeTargetSection = (section: string): string | null => {
+    const normalizeTargetSection = (section: string): CVSectionType | null => {
       // Convert camelCase to snake_case
       const normalized = section
         .replace(/([A-Z])/g, "_$1")
         .toLowerCase()
         .replace(/^_/, ""); // Remove leading underscore
 
-      const allowedSections = [
-        "personal_info",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-        "skills",
-        "certifications",
-        "ats_analysis",
-      ];
+        const allowedSections = new Set([
+          "personal_info",
+          "summary",
+          "experience",
+          "education",
+          "projects",
+          "skills",
+          "certifications",
+          "ats_analysis",
+        ] as const satisfies readonly CVSectionType[]);
 
-      // Check if normalized value is in allowed list
-      if (allowedSections.includes(normalized)) return normalized;
-      if (allowedSections.includes(section)) return section;
+        // Type guard: if it's in the set, it's a valid CVSectionType
+      if (allowedSections.has(normalized as CVSectionType))
+        return normalized as CVSectionType;
+      if (allowedSections.has(section as CVSectionType))
+        return section as CVSectionType;
 
       return null;
     };
 
     // Normalize and validate target_section
-    const normalizedSection = normalizeTargetSection(suggestionData.target_section);
+    const normalizedSection = normalizeTargetSection(
+      suggestionData.target_section
+    );
     if (!normalizedSection) {
       console.error("Invalid target_section:", suggestionData.target_section);
       return NextResponse.json(
@@ -203,19 +202,17 @@ export async function POST(request: NextRequest) {
     });
 
     // Update cv_sections
-    const { error: updateError } = await supabase
-      .from("cv_sections")
-      .upsert(
-        {
-          cv_id: cvId,
-          section_type: validatedSuggestion.target_section,
-          data: updatedData,
-          order_index: getSectionOrder(validatedSuggestion.target_section),
-        } as any,
-        {
-          onConflict: "cv_id,section_type",
-        }
-      );
+    const sectionToUpsert: CVSectionInsert = {
+      cv_id: cvId,
+      section_type: validatedSuggestion.target_section,
+      data: updatedData as Record<string, unknown>,
+      order_index: getSectionOrder(validatedSuggestion.target_section),
+    };
+    const { error: updateError } = await supabase.from("cv_sections")
+      // @ts-expect-error - Supabase createServerClient types not fully inferred from Database generic
+      .upsert(sectionToUpsert, {
+        onConflict: "cv_id,section_type",
+      });
 
     if (updateError) {
       console.error("Error updating section:", updateError);
@@ -226,13 +223,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Mark suggestion as applied
+    const updateData: ATSuggestionUpdate = {
+      is_applied: true,
+      applied_at: new Date().toISOString(),
+    };
     const { error: markError } = await supabase
       .from("ats_suggestions")
-      // @ts-ignore - Supabase types not generated for ats_suggestions
-      .update({
-        is_applied: true,
-        applied_at: new Date().toISOString(),
-      })
+      // @ts-expect-error - Supabase createServerClient types not fully inferred from Database generic
+      .update(updateData)
       .eq("id", suggestionData.id);
 
     if (markError) {

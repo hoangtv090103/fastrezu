@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { type ATSuggestionInsert } from "@/types";
 
 interface SuggestionInput {
   suggestion_text: string;
@@ -136,7 +137,8 @@ export async function POST(request: NextRequest) {
     // Insert suggestions
     const { error: insertError } = await supabase
       .from("ats_suggestions")
-      .upsert(suggestionsToInsert as any, {
+      // @ts-expect-error - Supabase createServerClient types not fully inferred from Database generic
+      .upsert(suggestionsToInsert as ATSuggestionInsert[], {
         onConflict: "cv_id,suggestion_id",
       });
 

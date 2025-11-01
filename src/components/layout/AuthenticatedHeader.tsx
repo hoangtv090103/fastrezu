@@ -4,9 +4,7 @@ import { User } from "@supabase/supabase-js";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { Database } from "@/types/database";
-
-type UserProfile = Database['public']['Tables']['user_profiles']['Row'];
+import type { UserProfile } from "@/types";
 
 interface AuthenticatedHeaderProps {
   user: User;
