@@ -167,10 +167,10 @@ export default function ATSOptimizationPanel({
 
   if (isLoading) {
     return (
-      <div className="bg-linear-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 sm:p-6">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6">
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2 text-sm text-gray-600">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
             Đang tải gợi ý...
           </div>
         </div>
@@ -189,7 +189,7 @@ export default function ATSOptimizationPanel({
 
   return (
     <div
-      className="bg-linear-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4 sm:p-6"
+      className="bg-green-50 border border-green-200 rounded-lg p-4 sm:p-6"
       role="region"
       aria-label="ATS Optimization Suggestions"
     >
@@ -210,7 +210,7 @@ export default function ATSOptimizationPanel({
           <button
             onClick={handleApplyAll}
             disabled={isApplyingAll}
-            className="w-full px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isApplyingAll
               ? "Applying..."

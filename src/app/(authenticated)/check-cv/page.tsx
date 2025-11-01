@@ -353,7 +353,7 @@ export default function CheckCVPage() {
                 <div className="text-xs sm:text-sm text-gray-600">Định dạng</div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
-                <div className="text-xl sm:text-2xl font-bold text-purple-600">
+                <div className="text-xl sm:text-2xl font-bold text-yellow-600">
                   {scoreResult.analysis.completeness}
                 </div>
                 <div className="text-xs sm:text-sm text-gray-600">Đầy đủ</div>

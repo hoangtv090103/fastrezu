@@ -97,7 +97,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="heading-main text-3xl text-gray-900 mb-2">
-          Dashboard
+          Quản lý CV
         </h1>
         <p className="body-text text-gray-600">
           Quản lý và tạo CV của bạn với sự hỗ trợ của AI

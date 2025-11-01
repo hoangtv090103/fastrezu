@@ -436,7 +436,7 @@ export default function ReviewStep() {
                   </div>
                 </div>
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-purple-600">
+                  <div className="text-lg sm:text-2xl font-bold text-yellow-600">
                     {Math.round(scoringResult.analysis?.formatting || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">

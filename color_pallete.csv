@@ -1,0 +1,10 @@
+Vai trò	Màu sắc	Tên Tailwind (Ví dụ)	Mục đích sử dụng
+Primary (Chính),🔵 Xanh lam Đậm	blue-600	Nút bấm chính (CTA), links, tiêu đề quan trọng, icons.
+Accent (Nhấn),🟢 Xanh lục	green-500	Trạng thái "Thành công", Điểm ATS cao, tags "Matched", nút "AI Assist" (để nổi bật).
+Text (Chữ),⚫️ Đen/Xám Đậm	gray-900	Tiêu đề chính.
+Text (Nội dung),GRAY Xám Vừa	gray-700	Nội dung văn bản (body text).
+Text (Phụ),🌫️ Xám Nhạt	gray-500	Chữ phụ, mô tả, placeholders.
+Background (Nền),⚪️ Trắng	white	Nền chính của nội dung, cards.
+Background (Panel),F9 Xám Rất Nhạt	gray-50 / gray-100	Nền của trang (body), nền của các panel (như Wizard).
+System (Hệ thống),🔴 Đỏ (Lỗi)	red-500	Thông báo lỗi, điểm ATS thấp, keywords "Missing".
+System (Hệ thống),🟡 Vàng (Cảnh báo)	yellow-500	Cảnh báo, điểm ATS trung bình.

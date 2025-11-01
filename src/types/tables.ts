@@ -72,3 +72,4 @@ export type FeedbackAttachment = TableRow<'feedback_attachments'>;
 export type FeedbackAttachmentInsert = TableInsert<'feedback_attachments'>;
 export type FeedbackAttachmentUpdate = TableUpdate<'feedback_attachments'>;
 
+
