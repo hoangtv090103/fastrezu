@@ -15,6 +15,19 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@blocknote/react', '@blocknote/core', 'react-pdf', 'pdfjs-dist'],
   },
+  webpack: (config, { isServer }) => {
+    // Chỉ áp dụng cho server-side (API routes và Server Components)
+    if (isServer) {
+      config.externals = [
+        ...config.externals,
+        '@sparticuz/chromium',
+        'puppeteer-core',
+        'unpdf', // Cho /upload-check
+        'mammoth' // Cho /upload-check
+      ];
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
