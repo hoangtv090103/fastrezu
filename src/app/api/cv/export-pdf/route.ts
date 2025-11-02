@@ -615,12 +615,18 @@ export async function POST(request: NextRequest) {
     // Try to launch Puppeteer with comprehensive error handling
     try {
       // Check if running in production (Vercel/serverless)
-      const isProduction = process.env.NODE_ENV === 'production';
+      const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
       
       // Get executable path
       let executablePath: string | undefined;
       if (isProduction) {
-        executablePath = await chromium.executablePath();
+        // For Vercel/serverless, use @sparticuz/chromium with correct path
+        try {
+          executablePath = await chromium.executablePath('/tmp/chromium');
+        } catch (chromiumError) {
+          console.error('Chromium executable path error:', chromiumError);
+          throw new Error('Failed to locate Chromium executable in serverless environment');
+        }
       } else {
         // For local development, try to find Chrome
         const possiblePaths = [
@@ -646,7 +652,11 @@ export async function POST(request: NextRequest) {
       
       browser = await puppeteer.launch({
         args: isProduction 
-          ? chromium.args
+          ? [
+              ...chromium.args,
+              '--disable-web-security',
+              '--disable-features=IsolateOrigins,site-per-process',
+            ]
           : [
               '--no-sandbox',
               '--disable-setuid-sandbox',
