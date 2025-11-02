@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import puppeteer, { Browser } from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { CVData } from '@/contexts/CVEditorContext';
 import { AppError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
 
@@ -613,19 +614,51 @@ export async function POST(request: NextRequest) {
 
     // Try to launch Puppeteer with comprehensive error handling
     try {
+      // Check if running in production (Vercel/serverless)
+      const isProduction = process.env.NODE_ENV === 'production';
+      
+      // Get executable path
+      let executablePath: string | undefined;
+      if (isProduction) {
+        executablePath = await chromium.executablePath();
+      } else {
+        // For local development, try to find Chrome
+        const possiblePaths = [
+          '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // macOS
+          'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', // Windows
+          'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', // Windows 32-bit
+          '/usr/bin/google-chrome', // Linux
+          '/usr/bin/chromium-browser', // Linux Chromium
+        ];
+        
+        for (const path of possiblePaths) {
+          try {
+            const fs = await import('fs');
+            if (fs.existsSync(path)) {
+              executablePath = path;
+              break;
+            }
+          } catch {
+            // Continue to next path
+          }
+        }
+      }
+      
       browser = await puppeteer.launch({
+        args: isProduction 
+          ? chromium.args
+          : [
+              '--no-sandbox',
+              '--disable-setuid-sandbox',
+              '--disable-dev-shm-usage',
+              '--disable-gpu',
+            ],
+        defaultViewport: {
+          width: 1920,
+          height: 1080,
+        },
+        executablePath,
         headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--no-first-run',
-          '--no-zygote',
-          '--single-process',
-          '--disable-web-security',
-          '--disable-features=VizDisplayCompositor',
-        ],
       });
     } catch (puppeteerError) {
       const error = new AppError(
