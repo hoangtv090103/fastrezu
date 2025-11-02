@@ -2,7 +2,8 @@
   "functions": {
     "src/app/api/cv/export-pdf/route.ts": {
       "memory": 3008,
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/bin/**"
     }
   }
 }
