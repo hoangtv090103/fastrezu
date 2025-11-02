@@ -4,9 +4,9 @@ import { CVEditorProvider } from "@/contexts/CVEditorContext";
 import CVEditorLayout from "@/components/editor/CVEditorLayout";
 
 interface EditorPageProps {
-  params: {
+  params: Promise<{
     cvId: string;
-  };
+  }>;
 }
 
 export default async function EditorPage({ params }: EditorPageProps) {
