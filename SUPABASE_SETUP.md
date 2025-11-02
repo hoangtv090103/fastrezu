@@ -55,13 +55,6 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 Sau khi setup xong, bạn có thể test API bằng cách:
 
-### Test Subscribe API:
-```bash
-curl -X POST http://localhost:3000/api/subscribe \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com"}'
-```
-
 ### Test Feedback API:
 ```bash
 curl -X POST http://localhost:3000/api/feedback \

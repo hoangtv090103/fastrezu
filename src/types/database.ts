@@ -140,35 +140,6 @@ export type Database = {
           created_at?: string;
         };
       };
-      subscribers: {
-        Row: {
-          id: string;
-          email: string;
-          status: "pending" | "confirmed" | "unsubscribed";
-          created_at: string;
-          updated_at: string;
-          source: string;
-          metadata: Record<string, unknown>;
-        };
-        Insert: {
-          id?: string;
-          email: string;
-          status?: "pending" | "confirmed" | "unsubscribed";
-          created_at?: string;
-          updated_at?: string;
-          source?: string;
-          metadata?: Record<string, unknown>;
-        };
-        Update: {
-          id?: string;
-          email?: string;
-          status?: "pending" | "confirmed" | "unsubscribed";
-          created_at?: string;
-          updated_at?: string;
-          source?: string;
-          metadata?: Record<string, unknown>;
-        };
-      };
       feedback: {
         Row: {
           id: string;

@@ -48,13 +48,6 @@ export type ATSuggestionInsert = TableInsert<'ats_suggestions'>;
 export type ATSuggestionUpdate = TableUpdate<'ats_suggestions'>;
 
 // ========================================
-// Subscribers
-// ========================================
-export type Subscriber = TableRow<'subscribers'>;
-export type SubscriberInsert = TableInsert<'subscribers'>;
-export type SubscriberUpdate = TableUpdate<'subscribers'>;
-
-// ========================================
 // Feedback
 // ========================================
 export type Feedback = TableRow<'feedback'>;

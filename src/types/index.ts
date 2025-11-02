@@ -32,10 +32,6 @@ export type {
   ATSuggestion,
   ATSuggestionInsert,
   ATSuggestionUpdate,
-  // Subscribers
-  Subscriber,
-  SubscriberInsert,
-  SubscriberUpdate,
   // Feedback
   Feedback,
   FeedbackInsert,
