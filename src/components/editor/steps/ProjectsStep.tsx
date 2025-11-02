@@ -5,6 +5,7 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
+import { apiPost } from "@/lib/api-client";
 
 export default function ProjectsStep() {
   const { state, updateSection } = useCVEditor();
@@ -89,27 +90,19 @@ export default function ProjectsStep() {
     setLoadingStates(prev => ({ ...prev, [loadingKey]: true }));
 
     try {
-      const response = await fetch('/api/ai/improve-bullet', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { improvedBullet } = await apiPost<{ improvedBullet: string }>(
+        '/api/ai/improve-bullet',
+        {
           bulletPoint: achievement,
           context: projects[projIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
-          language: state.cvData?.language || 'vi'
-        }),
-      });
-
-      if (response.ok) {
-        const { improvedBullet } = await response.json();
-        updateAchievement(projIndex, achIndex, improvedBullet);
-        showSuccessToast('Đã cải thiện mô tả thành công!');
-      } else {
-        const appError = handleAPIError({ status: response.status }, 'improve bullet', 'vi');
-        showErrorToast(appError, 'vi');
-      }
+          language: state.cvData?.language || 'vi',
+        },
+        undefined,
+        'vi'
+      );
+      updateAchievement(projIndex, achIndex, improvedBullet);
+      showSuccessToast('Đã cải thiện mô tả thành công!');
     } catch (error) {
       console.error('Error improving achievement:', error);
       const appError = handleAPIError(error, 'improve bullet', 'vi');

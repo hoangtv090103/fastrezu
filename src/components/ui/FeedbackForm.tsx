@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { showSuccessToast, showErrorToast } from '@/lib/toast-utils';
 import FeedbackImageUpload from './FeedbackImageUpload';
+import { apiPost } from '@/lib/api-client';
 
 interface Attachment {
   fileName: string;
@@ -63,19 +64,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Có lỗi xảy ra');
-      }
+      await apiPost('/api/feedback', formData, undefined, 'vi');
 
       showSuccessToast('Cảm ơn bạn đã gửi phản hồi! Chúng tôi sẽ xem xét và phản hồi sớm nhất có thể.');
       onSuccess?.();

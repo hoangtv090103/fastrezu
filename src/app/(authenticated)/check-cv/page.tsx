@@ -4,7 +4,8 @@ import { useState } from "react";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
-import { parseMarkdown } from "@/lib/markdown";
+// import { parseMarkdown } from "@/lib/markdown"; // no longer used here
+import { apiPost, apiPostFormData } from "@/lib/api-client";
 
 interface ScoreResult {
   score: number;
@@ -70,17 +71,14 @@ export default function CheckCVPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/cv/upload-check", {
-        method: "POST",
-        body: formData,
-      });
+      const data = await apiPostFormData<{ extractedText: string }>(
+        "/api/cv/upload-check",
+        formData,
+        undefined,
+        "vi"
+      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Upload failed");
-      }
-
+      // Keep the extracted text as-is; BlockNoteEditor will emit Markdown on edits
       setEditedText(data.extractedText);
       setCurrentStep('review');
       showSuccessToast("Tải lên file và trích xuất văn bản thành công!");
@@ -117,23 +115,17 @@ export default function CheckCVPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/ai/score-uploaded-cv", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const data = await apiPost<ScoreResult>(
+        "/api/ai/score-uploaded-cv",
+        {
+          // editedText is Markdown emitted by the editor
           confirmedText: editedText,
           jdText: jdText.trim() || undefined,
-          language: 'vi', // Default to Vietnamese, could be made configurable
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Scoring failed");
-      }
+          language: 'vi',
+        },
+        { maxRetries: 2, backoffMs: 1000, timeoutMs: 120000, retryableStatuses: [429,500,502,503,504] },
+        'vi'
+      );
 
       setScoreResult(data);
       setCurrentStep('results');

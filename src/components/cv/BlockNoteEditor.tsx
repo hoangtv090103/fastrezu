@@ -9,8 +9,10 @@ import "@blocknote/core/fonts/inter.css";
 import "./BlockNoteEditor.css";
 
 interface BlockNoteEditorProps {
+  // Markdown string representing the editor content
   value: string;
-  onChange: (text: string) => void;
+  // onChange will receive Markdown (lossy) to preserve structure like headings and lists
+  onChange: (markdown: string) => void;
   placeholder?: string;
   className?: string;
 }
@@ -22,25 +24,8 @@ export default function BlockNoteEditor({
 }: BlockNoteEditorProps) {
   const isUpdatingFromProps = useRef(false);
 
-  // Create editor instance
-  const editor = useCreateBlockNote({
-    initialContent: value ? [{ type: "paragraph", content: [{ type: "text", text: value, styles: {} }] }] : undefined,
-  });
-
-  // Convert blocks to plain text
-  const blocksToPlainText = useCallback((blocks: unknown[]) => {
-    return (blocks as Block[])
-      .map((block) => {
-        if (block.type === "paragraph" && block.content) {
-          return block.content
-            .map((item) => (item.type === "text" ? (item as { type: "text"; text: string; styles: Record<string, unknown> }).text : ""))
-            .join("");
-        }
-        return "";
-      })
-      .join("\n")
-      .trim();
-  }, []);
+  // Create editor instance (content will be set after mount to support Markdown parsing)
+  const editor = useCreateBlockNote();
 
   // Handle editor changes
   useEditorChange(
@@ -50,40 +35,46 @@ export default function BlockNoteEditor({
           return;
         }
 
-        // Get the current content as plain text
-        const blocks = editor.document;
-        const plainText = blocksToPlainText(blocks);
-        onChange(plainText);
+        // Convert current document to Markdown (lossy) to preserve structure
+        const markdown = editor.blocksToMarkdownLossy(editor.document);
+        onChange(markdown);
       },
-      [onChange, blocksToPlainText]
+      [onChange]
     ),
     editor
   );
 
   // Update editor content when value prop changes
   useEffect(() => {
-    if (value !== undefined) {
-      const currentBlocks = editor.document;
-      const currentText = blocksToPlainText(currentBlocks);
+    if (value === undefined) return;
+    // Convert incoming Markdown to blocks; if parsing fails, fallback to plain paragraph
+    const incomingMarkdown = value || "";
 
-      // Only update if the text is different to avoid infinite loops
-      if (currentText !== value) {
-        isUpdatingFromProps.current = true;
-        
-        editor.replaceBlocks(editor.document, [
-          {
-            type: "paragraph",
-            content: value ? [{ type: "text", text: value, styles: {} }] : [],
-          },
-        ]);
+    const currentMarkdown = editor.blocksToMarkdownLossy(editor.document);
+    if (currentMarkdown.trim() === incomingMarkdown.trim()) return;
 
-        // Reset the flag after a short delay
-        setTimeout(() => {
-          isUpdatingFromProps.current = false;
-        }, 100);
-      }
+    isUpdatingFromProps.current = true;
+    try {
+      const parsed = editor.tryParseMarkdownToBlocks(incomingMarkdown);
+      const newBlocks: Block[] = (parsed && Array.isArray(parsed) && parsed.length > 0)
+        ? (parsed as Block[])
+        : [
+            {
+              type: "paragraph",
+              content: incomingMarkdown
+                ? [{ type: "text", text: incomingMarkdown, styles: {} }]
+                : [],
+            } as unknown as Block,
+          ];
+
+      editor.replaceBlocks(editor.document, newBlocks);
+    } finally {
+      // Reset the flag after a short delay to allow BlockNote to process updates
+      setTimeout(() => {
+        isUpdatingFromProps.current = false;
+      }, 100);
     }
-  }, [value, editor, blocksToPlainText]);
+  }, [value, editor]);
 
   return (
     <div className={`blocknote-editor-container h-full flex flex-col ${className}`}>

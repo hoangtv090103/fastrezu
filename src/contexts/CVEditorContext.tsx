@@ -8,6 +8,7 @@ import React, {
   useCallback,
 } from "react";
 import { createClient } from "@/lib/supabase-client";
+import { apiPut } from "@/lib/api-client";
 
 // Types
 export type CVLanguage = "vi" | "en";
@@ -487,22 +488,12 @@ export function CVEditorProvider({
         }
 
         // Update CV title via API
-        const response = await fetch(`/api/cv/${cvId}/update`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: title.trim(),
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to update CV title");
-        }
-
-        const { cv: updatedCv } = await response.json();
+        const { cv: updatedCv } = await apiPut<{ cv: { title: string; ats_score: number } }>(
+          `/api/cv/${cvId}/update`,
+          { title: title.trim() },
+          undefined,
+          'vi'
+        );
 
         // Update the full CV data in state
         if (state.cvData) {

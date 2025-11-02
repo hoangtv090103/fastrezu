@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import CVPreviewCard from "./CVPreviewCard";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
+import { apiPost, apiDelete } from "@/lib/api-client";
 
 interface CVSection {
   section_type: string;
@@ -36,25 +37,17 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
   const handleCreateCV = async () => {
     setIsCreating(true);
     try {
-      const response = await fetch('/api/cv/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { cvId } = await apiPost<{ cvId: string }>(
+        '/api/cv/create',
+        {
           title: cvTitle.trim() || `CV ${selectedLanguage.toUpperCase()}`,
-          language: selectedLanguage
-        }),
-      });
-
-      if (response.ok) {
-        const { cvId } = await response.json();
-        showSuccessToast('Đã tạo CV mới thành công!');
-        router.push(`/editor/${cvId}`);
-      } else {
-        const appError = handleAPIError({ status: response.status }, 'create CV', 'vi');
-        showErrorToast(appError, 'vi');
-      }
+          language: selectedLanguage,
+        },
+        undefined,
+        'vi'
+      );
+      showSuccessToast('Đã tạo CV mới thành công!');
+      router.push(`/editor/${cvId}`);
     } catch (error) {
       console.error('Error creating CV:', error);
       const appError = handleAPIError(error, 'create CV', 'vi');
@@ -74,17 +67,9 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
     if (!confirm('Bạn có chắc chắn muốn xóa CV này?')) return;
 
     try {
-      const response = await fetch(`/api/cv/${cvId}/delete`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        showSuccessToast('Đã xóa CV thành công!');
-        router.refresh();
-      } else {
-        const appError = handleAPIError({ status: response.status }, 'delete CV', 'vi');
-        showErrorToast(appError, 'vi');
-      }
+      await apiDelete(`/api/cv/${cvId}/delete`, undefined, 'vi');
+      showSuccessToast('Đã xóa CV thành công!');
+      router.refresh();
     } catch (error) {
       console.error('Error deleting CV:', error);
       const appError = handleAPIError(error, 'delete CV', 'vi');

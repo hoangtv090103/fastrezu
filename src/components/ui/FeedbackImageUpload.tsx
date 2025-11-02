@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { showSuccessToast, showErrorToast } from '@/lib/toast-utils';
+import { apiPostFormData } from '@/lib/api-client';
 
 interface Attachment {
   fileName: string;
@@ -64,16 +65,12 @@ export default function FeedbackImageUpload({
     formData.append('file', file);
 
     try {
-      const response = await fetch('/api/feedback/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Upload failed');
-      }
+      const result = await apiPostFormData<Attachment & { originalName: string }>(
+        '/api/feedback/upload',
+        formData,
+        undefined,
+        'vi'
+      );
 
       return {
         fileName: result.fileName,

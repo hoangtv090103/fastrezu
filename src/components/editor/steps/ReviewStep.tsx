@@ -142,9 +142,7 @@ export default function ReviewStep() {
       // Deactivate old suggestions before scoring
       if (state.cvData.id) {
         try {
-          await fetch(`/api/cv/deactivate-suggestions/${state.cvData.id}`, {
-            method: "POST",
-          });
+          await apiPost(`/api/cv/deactivate-suggestions/${state.cvData.id}`, {}, undefined, 'vi');
         } catch (error) {
           console.error("Failed to deactivate old suggestions:", error);
           // Continue with scoring even if deactivation fails
@@ -265,24 +263,20 @@ export default function ReviewStep() {
               })),
             });
 
-            const saveResponse = await fetch("/api/cv/save-suggestions", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                cvId: state.cvData.id,
-                suggestions: normalizedResult.suggestions,
-              }),
-            });
-
-            if (!saveResponse.ok) {
-              const error = await saveResponse.json();
-              console.error("Failed to save suggestions:", error);
-            } else {
+            try {
+              await apiPost(
+                "/api/cv/save-suggestions",
+                {
+                  cvId: state.cvData.id,
+                  suggestions: normalizedResult.suggestions,
+                },
+                undefined,
+                'vi'
+              );
               console.log("Suggestions saved successfully");
-              // Trigger reload of suggestions in ATSOptimizationPanel
               setSuggestionsReloadTrigger((prev) => prev + 1);
+            } catch (error) {
+              console.error("Failed to save suggestions:", error);
             }
           } catch (error) {
             console.error("Failed to save suggestions to database:", error);

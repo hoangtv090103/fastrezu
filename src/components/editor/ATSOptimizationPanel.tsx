@@ -6,6 +6,7 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import SuggestionItem from "./SuggestionItem";
 import { handleAPIError } from "@/lib/error-handler";
 import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
+import { apiGet, apiPost } from "@/lib/api-client";
 
 interface ATSOptimizationPanelProps {
   cvData: CVData;
@@ -46,13 +47,8 @@ export default function ATSOptimizationPanel({
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/cv/suggestions/${cvData.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestions(data.suggestions || []);
-      } else {
-        console.error("Failed to load suggestions");
-      }
+      const data = await apiGet<{ suggestions: DBSuggestion[] }>(`/api/cv/suggestions/${cvData.id}`);
+      setSuggestions(data.suggestions || []);
     } catch (error) {
       console.error("Error loading suggestions:", error);
     } finally {
@@ -72,31 +68,19 @@ export default function ATSOptimizationPanel({
 
     setIsApplying(suggestionId);
     try {
-      const response = await fetch("/api/cv/apply-suggestion", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cvId: cvData.id,
-          suggestionId,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        console.error("Apply suggestion error:", error);
-        throw new Error(error.error || "Failed to apply suggestion");
-      }
-
-      const result = await response.json();
+      const result = await apiPost<{ updatedSection?: { section_type: string; data: unknown } }>(
+        "/api/cv/apply-suggestion",
+        { cvId: cvData.id, suggestionId },
+        undefined,
+        'vi'
+      );
 
       // Update CV data in context
       if (result.updatedSection) {
         const updatedSections = {
           ...cvData.sections,
-          [result.updatedSection.section_type]: result.updatedSection.data,
-        };
+          [result.updatedSection.section_type]: (result.updatedSection.data as Record<string, unknown> | Record<string, unknown>[]),
+        } as CVData['sections'];
 
         updateCVData({
           ...cvData,
@@ -137,22 +121,12 @@ export default function ATSOptimizationPanel({
 
     setIsApplyingAll(true);
     try {
-      const response = await fetch("/api/cv/apply-all-suggestions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cvId: cvData.id,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to apply all suggestions");
-      }
-
-      const result = await response.json();
+      const result = await apiPost<{ appliedCount: number; appliedSuggestionIds?: string[] }>(
+        "/api/cv/apply-all-suggestions",
+        { cvId: cvData.id },
+        undefined,
+        'vi'
+      );
 
       // Update all applied suggestions in local state instead of reloading
       const appliedSuggestionIds = result.appliedSuggestionIds || 

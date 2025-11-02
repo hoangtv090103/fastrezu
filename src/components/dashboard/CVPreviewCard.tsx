@@ -11,6 +11,7 @@ import {
   updateToast,
 } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
+import { apiPostRaw } from "@/lib/api-client";
 
 interface CVSection {
   section_type: string;
@@ -137,20 +138,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
       const cvData = convertSectionsToCVData(cv);
 
       // Call the server-side PDF export API
-      const response = await fetch("/api/cv/export-pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cvData }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: ${response.statusText}`
-        );
-      }
+      const response = await apiPostRaw("/api/cv/export-pdf", { cvData });
 
       // Get the PDF blob
       const pdfBlob = await response.blob();
@@ -317,7 +305,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                 {/* Dropdown menu */}
                 {showDropdown && (
                   <div
-                    className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[160px]"
+                    className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-40"
                     style={{ zIndex: 9999 }}
                   >
                     {/* <button

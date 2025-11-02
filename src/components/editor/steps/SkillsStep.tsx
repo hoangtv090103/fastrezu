@@ -5,6 +5,7 @@ import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
+import { apiPost } from "@/lib/api-client";
 
 export default function SkillsStep() {
   const { state, updateSection } = useCVEditor();
@@ -57,20 +58,16 @@ export default function SkillsStep() {
 
     setIsExtracting(true);
     try {
-      const response = await fetch('/api/ai/extract-skills', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { technicalSkills, softSkills } = await apiPost<{ technicalSkills: string[]; softSkills: string[] }>(
+        '/api/ai/extract-skills',
+        {
           jdKeywords: state.cvData.jd_analysis.keywords,
           existingSkills: skills,
-          language: state.cvData?.language || 'vi'
-        }),
-      });
-
-      if (response.ok) {
-        const { technicalSkills, softSkills } = await response.json();
+          language: state.cvData?.language || 'vi',
+        },
+        undefined,
+        'vi'
+      );
         
         
         // Filter out skills that already exist
@@ -94,10 +91,7 @@ export default function SkillsStep() {
         } else {
           showSuccessToast('Không tìm thấy kỹ năng mới để thêm.');
         }
-      } else {
-        const appError = handleAPIError({ status: response.status }, 'extract skills', 'vi');
-        showErrorToast(appError, 'vi');
-      }
+      
     } catch (error) {
       console.error('Error extracting skills:', error);
       const appError = handleAPIError(error, 'extract skills', 'vi');

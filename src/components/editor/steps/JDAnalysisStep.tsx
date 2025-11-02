@@ -8,7 +8,7 @@ import InfoTooltip from "@/components/ui/InfoTooltip";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { getTooltipContent } from "@/lib/tooltip-content";
-import { apiPost, apiDelete } from "@/lib/api-client";
+import { apiPost, apiDelete, apiGet } from "@/lib/api-client";
 
 interface SavedJD {
   id: string;
@@ -33,11 +33,8 @@ export default function JDAnalysisStep() {
     
     setIsLoadingJDs(true);
     try {
-      const response = await fetch(`/api/jd/list?cvId=${state.cvData.id}`);
-      if (response.ok) {
-        const { jdAnalyses } = await response.json();
-        setSavedJDs(jdAnalyses);
-      }
+      const { jdAnalyses } = await apiGet<{ jdAnalyses: SavedJD[] }>(`/api/jd/list?cvId=${state.cvData.id}`);
+      setSavedJDs(jdAnalyses);
     } catch (error) {
       console.error('Error loading saved JDs:', error);
     } finally {

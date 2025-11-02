@@ -199,3 +199,114 @@ export async function apiDelete<T>(
 ): Promise<T> {
   return apiCall<T>(url, { method: 'DELETE' }, retryConfig, language);
 }
+
+/**
+ * POST helper for FormData bodies (e.g., file uploads). Do not set Content-Type explicitly.
+ */
+export async function apiPostFormData<T>(
+  url: string,
+  formData: FormData,
+  retryConfig?: RetryConfig,
+  language?: 'vi' | 'en'
+): Promise<T> {
+  return apiCall<T>(
+    url,
+    {
+      method: 'POST',
+      body: formData,
+    },
+    retryConfig,
+    language
+  );
+}
+
+/**
+ * Low-level POST that returns the raw Response (useful for blobs/headers)
+ */
+export async function apiPostRaw(
+  url: string,
+  body: unknown,
+  retryConfig: RetryConfig = DEFAULT_RETRY_CONFIG,
+  language: 'vi' | 'en' = 'vi'
+): Promise<Response> {
+  let lastError: Error | AppError | null = null;
+  const maxAttempts = retryConfig.maxRetries + 1;
+  const timeoutMs = retryConfig.timeoutMs || 30000;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
+        body: isFormData ? (body as FormData) : JSON.stringify(body ?? {}),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        // Try to parse error JSON, else plain text
+        let errorPayload: unknown = {};
+        try {
+          errorPayload = await response.clone().json();
+        } catch {
+          try {
+            errorPayload = { message: await response.clone().text() };
+          } catch {
+            errorPayload = {};
+          }
+        }
+
+        let serverMessage: string | undefined;
+        if (typeof errorPayload === 'object' && errorPayload !== null) {
+          const ep = errorPayload as { error?: unknown; message?: unknown };
+          serverMessage = typeof ep.error === 'string'
+            ? ep.error
+            : (typeof ep.message === 'string' ? ep.message : undefined);
+        }
+
+        throw new AppError(
+          `HTTP ${response.status}: ${response.statusText}`,
+          `HTTP_${response.status}`,
+          serverMessage || response.statusText,
+          isRetryableStatus(response.status),
+          { status: response.status, url, attempt }
+        );
+      }
+
+      return response;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        lastError = new AppError(
+          'Request timeout',
+          'TIMEOUT_ERROR',
+          language === 'vi'
+            ? 'Yêu cầu mất quá nhiều thời gian. Vui lòng thử lại.'
+            : 'Request took too long. Please try again.',
+          true,
+          { url, attempt }
+        );
+      } else {
+        lastError = handleAPIError(error, `API call to ${url}`, language);
+      }
+
+      logError(lastError, { attempt, url });
+
+      const shouldRetry = attempt < retryConfig.maxRetries &&
+        (isRetryableError(lastError) || (lastError instanceof AppError && lastError.retryable));
+
+      if (shouldRetry) {
+        const delayMs = retryConfig.backoffMs * Math.pow(2, attempt);
+        console.log(`[API Client] Retrying in ${delayMs}ms (attempt ${attempt + 1}/${retryConfig.maxRetries})`);
+        await (new Promise(res => setTimeout(res, delayMs)));
+        continue;
+      }
+      break;
+    }
+  }
+
+  throw lastError;
+}

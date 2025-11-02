@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CVData } from "@/contexts/CVEditorContext";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
+import { apiPostRaw } from "@/lib/api-client";
 
 interface ExportButtonsProps {
   cvData: CVData;
@@ -16,43 +17,7 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
     setIsExporting(true);
     try {
       // Call the server-side PDF export API
-      const response = await fetch('/api/cv/export-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ cvData }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        // Check if there's a fallback suggestion
-        if (errorData.fallbackAvailable && errorData.suggestion) {
-          const appError = handleAPIError(
-            { 
-              message: errorData.error || 'PDF export failed',
-              suggestion: errorData.suggestion 
-            }, 
-            'export PDF', 
-            'vi'
-          );
-          
-          // Show error with suggestion
-          showErrorToast(
-            `${appError.userMessage}\n\n${errorData.suggestion}`,
-            'vi'
-          );
-          
-          // Optionally auto-trigger text copy as fallback
-          if (window.confirm('Không thể tạo PDF. Bạn có muốn sao chép nội dung dưới dạng văn bản không?')) {
-            handleCopyAsText();
-          }
-          return;
-        }
-        
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
-      }
+      const response = await apiPostRaw('/api/cv/export-pdf', { cvData });
 
       // Get the PDF blob
       const pdfBlob = await response.blob();

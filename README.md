@@ -16,6 +16,7 @@ FastRezu is a Next.js web application for building AI-optimized CVs with ATS (Ap
 - **Real-time Preview**: Instant CV preview while editing
 - **Auto-save**: Automatic progress saving
 - **Export Options**: Export CV as PDF
+ - **Structured Editing**: The in-app editor preserves structure (headings, lists) and emits Markdown to ensure accurate ATS “Formatting” analysis
 
 ### 📊 Dashboard & Management
 - **CV Dashboard**: Manage multiple CVs in one account
@@ -181,6 +182,9 @@ The system evaluates:
 - Format compatibility
 - Content relevance
 - Overall ATS friendliness
+
+### Content Format (Editor ↔️ AI)
+- The BlockNote-based editor emits Markdown on every change. When scoring uploaded or edited CV content (e.g., `/api/ai/score-uploaded-cv`), the frontend sends Markdown instead of plain text so AI can better evaluate structure and formatting.
 
 ## 🔐 Authentication
 
