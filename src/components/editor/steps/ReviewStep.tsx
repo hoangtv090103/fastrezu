@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
-import ExportButtons from "@/components/cv/ExportButtons";
 import ATSOptimizationPanel from "@/components/editor/ATSOptimizationPanel";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import ValidationMessage from "@/components/ui/ValidationMessage";
@@ -39,20 +38,13 @@ interface ScoringResult {
 }
 
 export default function ReviewStep() {
-  const { state, updateCVData, saveCV, setCurrentStep } = useCVEditor();
+  const { state, updateCVData, saveCV } = useCVEditor();
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(
     null
   );
   const [isScoring, setIsScoring] = useState(false);
   const [lengthWarning, setLengthWarning] = useState<string | null>(null);
   const [suggestionsReloadTrigger, setSuggestionsReloadTrigger] = useState(0);
-
-  const handleNavigateToSection = useCallback(
-    (stepIndex: number) => {
-      setCurrentStep(stepIndex);
-    },
-    [setCurrentStep]
-  );
 
   // Validate CV length
   useEffect(() => {

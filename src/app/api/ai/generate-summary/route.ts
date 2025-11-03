@@ -2,10 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { callOpenAI } from '@/lib/openai'
 import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/prompts'
 import { AppError, handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler'
+import { logAIOperation } from '@/lib/logger'
+import { createClient } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
   try {
-    const { personalInfo, experience, jdKeywords, language = 'vi' } = await request.json()
+    // Get user for tracking
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const { personalInfo, experience, jdKeywords, language = 'vi', cvId } = await request.json()
 
     // Validate personalInfo exists
     if (!personalInfo) {
@@ -39,17 +45,25 @@ export async function POST(request: NextRequest) {
     const userMessageTemplates = getUserMessageTemplate(language as CVLanguage)
     const userMessage = userMessageTemplates.generate_summary(personalInfo, experience, jdKeywords)
 
-    // Call AI API
-    let result;
-    try {
-      result = await callOpenAI(systemPrompt, userMessage);
-    } catch (openaiError) {
-      const error = handleAPIError(openaiError, 'generate-summary OpenAI call', language as 'vi' | 'en');
-      logError(error);
-      return NextResponse.json({ 
-        error: error.userMessage 
-      }, { status: 503 });
-    }
+    // Call AI API with tracking
+    const result = await logAIOperation(
+      'generate_summary',
+      async () => {
+        try {
+          return await callOpenAI(systemPrompt, userMessage);
+        } catch (openaiError) {
+          const error = handleAPIError(openaiError, 'generate-summary OpenAI call', language as 'vi' | 'en');
+          logError(error);
+          throw error;
+        }
+      },
+      {
+        userId: user?.id,
+        cvId: cvId,
+        language: language,
+        featureName: 'generate_summary',
+      }
+    );
 
     if (!result.summary) {
       const error = new AppError(

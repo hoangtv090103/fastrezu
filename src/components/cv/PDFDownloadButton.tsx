@@ -17,7 +17,7 @@ export default function PDFDownloadButton({ cvData, fileName }: PDFDownloadButto
       className="relative bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors duration-200 flex items-center justify-center group"
       title="Tải xuống PDF"
     >
-      {({ blob, url, loading, error }) => {
+      {({ loading, error }) => {
         if (loading) {
           return (
             <>

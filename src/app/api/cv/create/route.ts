@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { track } from '@vercel/analytics/server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -115,6 +116,18 @@ export async function POST(request: NextRequest) {
     if (sectionsError) {
       console.error('Error creating CV sections:', sectionsError)
       // Don't fail the request, sections can be created later
+    }
+
+    // Track CV creation event
+    try {
+      await track('CV_Created', {
+        user_id: user.id,
+        cv_id: cv.id,
+        language: language,
+      });
+    } catch (trackError) {
+      // Don't fail the request if tracking fails
+      console.error('Failed to track CV creation:', trackError);
     }
 
     return NextResponse.json({ cvId: cv.id }, { status: 201 })

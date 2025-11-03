@@ -4,13 +4,14 @@
  * Các ví dụ thực tế về cách tích hợp tracking vào components và API routes
  */
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import { logger, measurePerformance, logAIOperation } from '@/lib/logger';
 import { track } from '@vercel/analytics/server';
 import {
   trackWizardStepCompleted,
-  trackCVCreated,
   trackWizardCompleted,
   trackAIFeatureUsed,
   trackAISuggestionApplied,
@@ -28,13 +29,11 @@ import {
 // EXAMPLE 1: Wizard Component - Track Step Completion
 // ============================================================================
 
-'use client';
-
 export function CVWizard({ userId, cvId }: { userId: string; cvId: string }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepStartTime, setStepStartTime] = useState(Date.now());
   const [wizardStartTime] = useState(Date.now());
-  const [aiUsageCount, setAiUsageCount] = useState(0);
+  const [aiUsageCount] = useState(0);
 
   const steps = [
     'LanguageSelection',
@@ -58,7 +57,7 @@ export function CVWizard({ userId, cvId }: { userId: string; cvId: string }) {
       userId,
       cvId,
       stepIndex: currentStep,
-      stepName: steps[currentStep] as any,
+      stepName: steps[currentStep] as 'LanguageSelection' | 'JDAnalysis' | 'PersonalInfo' | 'Summary' | 'Experience' | 'Education' | 'Skills' | 'Projects' | 'Certifications' | 'Review',
       timeSpentSeconds: timeSpent,
     });
 
@@ -91,8 +90,6 @@ export function CVWizard({ userId, cvId }: { userId: string; cvId: string }) {
 // ============================================================================
 // EXAMPLE 2: AI Feature Integration
 // ============================================================================
-
-'use client';
 
 export function AIGenerateSummary({ userId, cvId }: { userId: string; cvId: string }) {
   const [loading, setLoading] = useState(false);
@@ -149,8 +146,6 @@ export function AIGenerateSummary({ userId, cvId }: { userId: string; cvId: stri
 // ============================================================================
 // EXAMPLE 3: ATS Optimization Panel - Track Suggestion Actions
 // ============================================================================
-
-'use client';
 
 interface Suggestion {
   id: string;
@@ -213,8 +208,6 @@ export function ATSOptimizationPanel({
 // ============================================================================
 // EXAMPLE 4: Checker Flow - File Upload & Score Generation
 // ============================================================================
-
-'use client';
 
 export function CVChecker({ userId }: { userId: string }) {
   useEffect(() => {
@@ -353,11 +346,6 @@ export async function POST(req: NextRequest) {
 // EXAMPLE 6: Error Boundary Integration
 // ============================================================================
 
-'use client';
-
-import React from 'react';
-import { trackFrontendError } from '@/lib/analytics';
-
 interface Props {
   children: React.ReactNode;
   userId?: string;
@@ -385,7 +373,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     trackFrontendError({
       userId: this.props.userId,
       errorMessage: error.message,
-      componentStack: errorInfo.componentStack,
+      componentStack: errorInfo.componentStack || undefined,
       errorBoundary: 'AppErrorBoundary',
     });
   }
@@ -410,10 +398,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
 // ============================================================================
 // EXAMPLE 7: Export Button with Conversion Tracking
 // ============================================================================
-
-'use client';
-
-import { trackCVExported } from '@/lib/analytics';
 
 export function ExportButtons({ userId, cvId }: { userId: string; cvId: string }) {
   const handleExportPDF = async () => {
@@ -460,10 +444,9 @@ export function ExportButtons({ userId, cvId }: { userId: string; cvId: string }
 // EXAMPLE 8: Feedback Form
 // ============================================================================
 
-'use client';
-
-import { useState } from 'react';
-import { trackFeedbackSubmitted } from '@/lib/analytics';
+// ============================================================================
+// EXAMPLE 8: Feedback Form
+// ============================================================================
 
 export function FeedbackForm({ userId }: { userId?: string }) {
   const [feedbackType, setFeedbackType] = useState<'bug' | 'suggestion' | 'feature_request'>('suggestion');
@@ -492,7 +475,7 @@ export function FeedbackForm({ userId }: { userId?: string }) {
 
   return (
     <div>
-      <select value={feedbackType} onChange={(e) => setFeedbackType(e.target.value as any)}>
+      <select value={feedbackType} onChange={(e) => setFeedbackType(e.target.value as typeof feedbackType)}>
         <option value="bug">Báo lỗi</option>
         <option value="suggestion">Góp ý</option>
         <option value="feature_request">Đề xuất tính năng</option>
@@ -508,7 +491,7 @@ export function FeedbackForm({ userId }: { userId?: string }) {
 // HELPER FUNCTIONS (implement these based on your actual code)
 // ============================================================================
 
-async function applySuggestion(suggestion: any) {
+async function applySuggestion(suggestion: unknown) {
   // Implementation
 }
 
@@ -525,6 +508,6 @@ async function copyToClipboard(cvId: string) {
   // Implementation
 }
 
-async function submitFeedback(data: any) {
+async function submitFeedback(data: unknown) {
   // Implementation
 }

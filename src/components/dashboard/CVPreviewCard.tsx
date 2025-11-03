@@ -9,7 +9,6 @@ import CVTemplate from "@/components/cv/CVTemplate";
 import CVTemplatePDF from "@/components/cv/CVTemplatePDF";
 import {
   showErrorToast,
-  showSuccessToast,
 } from "@/lib/toast-utils";
 
 interface CVSection {

@@ -13,26 +13,77 @@ import SkillsStep from "@/components/editor/steps/SkillsStep";
 import CertificationsStep from "@/components/editor/steps/CertificationsStep";
 import ReviewStep from "@/components/editor/steps/ReviewStep";
 import { showErrorToast } from "@/lib/toast-utils";
+import { trackWizardStepCompleted } from "@/lib/analytics";
+import { useEffect, useRef, useState } from "react";
+import { createClient } from "@/lib/supabase-client";
 
 type ValidationFunction = 
   | ((data: Record<string, unknown>, language: 'vi' | 'en') => boolean)
   | ((data: Record<string, unknown>[], language: 'vi' | 'en') => boolean);
 
 const STEPS = [
-  { id: 0, title: "Ngôn ngữ", component: LanguageSelectionStep },
-  { id: 1, title: "JD", component: JDAnalysisStep },
-  { id: 2, title: "Thông tin", component: PersonalInfoStep, validate: validatePersonalInfoStep as ValidationFunction },
-  { id: 3, title: "Nghề nghiệp", component: SummaryStep },
-  { id: 4, title: "Kinh nghiệm", component: ExperienceStep, validate: validateExperienceStep as ValidationFunction },
-  { id: 5, title: "Học vấn", component: EducationStep, validate: validateEducationStep as ValidationFunction },
-  { id: 6, title: "Dự án", component: ProjectsStep },
-  { id: 7, title: "Kỹ năng", component: SkillsStep },
-  { id: 8, title: "Chứng chỉ", component: CertificationsStep },
-  { id: 9, title: "Review", component: ReviewStep },
+  { id: 0, title: "Ngôn ngữ", component: LanguageSelectionStep, name: 'LanguageSelection' as const },
+  { id: 1, title: "JD", component: JDAnalysisStep, name: 'JDAnalysis' as const },
+  { id: 2, title: "Thông tin", component: PersonalInfoStep, validate: validatePersonalInfoStep as ValidationFunction, name: 'PersonalInfo' as const },
+  { id: 3, title: "Nghề nghiệp", component: SummaryStep, name: 'Summary' as const },
+  { id: 4, title: "Kinh nghiệm", component: ExperienceStep, validate: validateExperienceStep as ValidationFunction, name: 'Experience' as const },
+  { id: 5, title: "Học vấn", component: EducationStep, validate: validateEducationStep as ValidationFunction, name: 'Education' as const },
+  { id: 6, title: "Dự án", component: ProjectsStep, name: 'Projects' as const },
+  { id: 7, title: "Kỹ năng", component: SkillsStep, name: 'Skills' as const },
+  { id: 8, title: "Chứng chỉ", component: CertificationsStep, name: 'Certifications' as const },
+  { id: 9, title: "Review", component: ReviewStep, name: 'Review' as const },
 ];
 
 export default function WizardPanel() {
   const { state, setCurrentStep } = useCVEditor();
+  const stepStartTimeRef = useRef<number>(Date.now());
+  const previousStepRef = useRef<number>(state.currentStep);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get user ID on mount
+  useEffect(() => {
+    const getUserId = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    getUserId();
+  }, []);
+
+  // Track step changes
+  useEffect(() => {
+    const currentStep = state.currentStep;
+    const previousStep = previousStepRef.current;
+
+    // Only track if we moved to a new step (not initial load) and have required data
+    if (previousStep !== currentStep && state.cvData?.id && userId) {
+      const timeSpent = Math.floor((Date.now() - stepStartTimeRef.current) / 1000);
+      const previousStepConfig = STEPS[previousStep];
+
+      // Track completion of previous step
+      if (previousStepConfig) {
+        try {
+          trackWizardStepCompleted({
+            userId: userId,
+            cvId: state.cvData.id,
+            stepIndex: previousStep,
+            stepName: previousStepConfig.name,
+            timeSpentSeconds: timeSpent,
+          });
+        } catch (error) {
+          // Don't break the app if tracking fails
+          console.error('Failed to track wizard step:', error);
+        }
+      }
+
+      // Reset timer for new step
+      stepStartTimeRef.current = Date.now();
+    }
+
+    previousStepRef.current = currentStep;
+  }, [state.currentStep, state.cvData?.id, userId]);
 
   const handleStepChange = (step: number) => {
     // If moving forward, validate current step

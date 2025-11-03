@@ -1,4 +1,4 @@
-import { CVData, CVLanguage } from "@/contexts/CVEditorContext";
+import type { CVData } from '@/contexts/CVEditorContext';
 
 export type SuggestionType = 'add_keyword' | 'improve_section' | 'add_quantification';
 export type SuggestionPriority = 'high' | 'medium' | 'low';
@@ -72,8 +72,7 @@ function getKeywordPriority(
  */
 function determineBestSection(
   keyword: string,
-  cvData: CVData,
-  _jdAnalysis: JDAnalysis
+  cvData: CVData
 ): { section: TargetSection; index?: number } {
   const keywordLower = keyword.toLowerCase();
   
@@ -114,9 +113,7 @@ function determineBestSection(
  */
 function generateSuggestionText(
   keyword: string,
-  targetSection: TargetSection,
-  _priority: SuggestionPriority,
-  _language: CVLanguage
+  targetSection: TargetSection
 ): { title: string; description: string; actionLabel: string } {
   // Always use Vietnamese for suggestions in the Review step
   const texts = {
@@ -183,14 +180,13 @@ export function generateSuggestions(
     return [];
   }
 
-  const language = cvData.language || 'vi';
   const currentScore = cvData.ats_score || 0;
 
   // Create suggestions for each missing keyword
   const allSuggestions: Suggestion[] = missingKeywords.map((keyword, index) => {
     const priority = getKeywordPriority(keyword, jdAnalysis);
-    const { section, index: targetIndex } = determineBestSection(keyword, cvData, jdAnalysis);
-    const { title, description, actionLabel } = generateSuggestionText(keyword, section, priority, language);
+    const { section, index: targetIndex } = determineBestSection(keyword, cvData);
+    const { title, description, actionLabel } = generateSuggestionText(keyword, section);
     const estimatedImpact = calculateEstimatedImpact(priority, currentScore);
 
     return {

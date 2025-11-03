@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
-import AIAssistButton from "@/components/ui/AIAssistButton";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { apiPost } from "@/lib/api-client";

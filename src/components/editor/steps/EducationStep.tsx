@@ -49,31 +49,22 @@ export default function EducationStep() {
   };
 
   const validateGraduationDate = (index: number, graduationDate: string) => {
-    const language = state.cvData?.language || 'vi';
-    
     if (graduationDate) {
       const year = parseInt(graduationDate, 10);
       const currentYear = new Date().getFullYear();
       
       const messages = {
-        vi: {
-          invalid: 'Năm tốt nghiệp không hợp lệ',
-          future: 'Năm tốt nghiệp không thể quá xa trong tương lai',
-          past: 'Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)',
-        },
-        en: {
-          invalid: 'Invalid graduation year',
-          future: 'Graduation year cannot be too far in the future',
-          past: 'Invalid graduation year (too far in the past)',
-        },
+        invalid: 'Năm tốt nghiệp không hợp lệ',
+        future: 'Năm tốt nghiệp không thể quá xa trong tương lai',
+        past: 'Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)',
       };
       
       if (isNaN(year)) {
-        setDateErrors(prev => ({ ...prev, [index]: messages[language].invalid }));
+        setDateErrors(prev => ({ ...prev, [index]: messages.invalid }));
       } else if (year < 1950) {
-        setDateErrors(prev => ({ ...prev, [index]: messages[language].past }));
+        setDateErrors(prev => ({ ...prev, [index]: messages.past }));
       } else if (year > currentYear + 10) {
-        setDateErrors(prev => ({ ...prev, [index]: messages[language].future }));
+        setDateErrors(prev => ({ ...prev, [index]: messages.future }));
       } else {
         setDateErrors(prev => ({ ...prev, [index]: null }));
       }

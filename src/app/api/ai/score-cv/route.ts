@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
 import { handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
+import { logger, logAIOperation } from '@/lib/logger';
+import { createClient } from "@/lib/supabase-server";
 
 // Increase timeout for AI scoring (can take up to 2 minutes)
 export const maxDuration = 120; // 2 minutes
 
 export async function POST(request: NextRequest) {
+  const requestLogger = logger.child({
+    path: '/api/ai/score-cv',
+    method: 'POST',
+  });
+
   try {
+    // Get user ID for tracking
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
     const { cvData, jdKeywords, language = 'vi' } = await request.json();
 
     if (!cvData) {
@@ -89,22 +100,37 @@ ${JSON.stringify(cvSummary, null, 2)}
 
 Return JSON in the exact specified format.`;
 
-    // Call OpenAI API
-    let result;
-    try {
-      result = await callOpenAI(systemPrompt, userMessage);
-    } catch (openaiError) {
-      const error = handleAPIError(openaiError, 'score-cv OpenAI call', language as 'vi' | 'en');
-      logError(error);
-      return NextResponse.json({ 
-        error: error.userMessage 
-      }, { status: 503 });
-    }
+    // Call OpenAI API with tracking
+    const result = await logAIOperation(
+      'score_cv_wizard',
+      async () => {
+        try {
+          return await callOpenAI(systemPrompt, userMessage);
+        } catch (openaiError) {
+          const error = handleAPIError(openaiError, 'score-cv OpenAI call', language as 'vi' | 'en');
+          logError(error);
+          throw error;
+        }
+      },
+      {
+        userId: user?.id,
+        cvId: cvData.id,
+        language: cvLanguage,
+        featureName: 'score_cv_wizard',
+      }
+    );
+
+    requestLogger.info('CV scoring completed successfully', {
+      userId: user?.id,
+      cvId: cvData.id,
+      hasJDKeywords: !!jdKeywords,
+    });
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
     const appError = handleAPIError(error, 'score-cv API', 'vi');
     logError(appError);
+    requestLogger.error('CV scoring failed', error);
     return NextResponse.json(
       { error: appError.userMessage },
       { status: 500 }

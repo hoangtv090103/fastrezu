@@ -38,10 +38,6 @@ export default function ATSOptimizationPanel({
   const [isApplying, setIsApplying] = useState<string | null>(null);
   const [isApplyingAll, setIsApplyingAll] = useState(false);
 
-  useEffect(() => {
-    loadSuggestions();
-  }, [cvData.id, reloadTrigger]);
-
   const loadSuggestions = async () => {
     if (!cvData?.id) return;
 
@@ -55,6 +51,10 @@ export default function ATSOptimizationPanel({
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadSuggestions();
+  }, [cvData.id, reloadTrigger]);
 
   const handleApplySuggestion = async (suggestionId: string) => {
     if (!cvData?.id) return;

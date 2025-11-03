@@ -114,14 +114,14 @@ class Logger {
 
     // Track error in Vercel Analytics (if in production)
     if (process.env.NODE_ENV === 'production') {
-      this.trackServerError(message, error, data);
+      this.trackServerError(message, error);
     }
   }
 
   /**
    * Track server-side error in Vercel Analytics
    */
-  private async trackServerError(message: string, error?: Error | unknown, data?: Record<string, unknown>) {
+  private async trackServerError(message: string, error?: Error | unknown) {
     try {
       const eventData: Record<string, string | number | boolean> = {
         error_message: message,

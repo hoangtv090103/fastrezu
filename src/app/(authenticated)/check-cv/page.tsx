@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
 // import { parseMarkdown } from "@/lib/markdown"; // no longer used here
 import { apiPost, apiPostFormData } from "@/lib/api-client";
+import { 
+  trackCheckerFlowStarted, 
+  trackCheckerFileUploaded, 
+  trackCheckerTextCorrected,
+  trackCheckerScoreGenerated 
+} from "@/lib/analytics";
+import { createClient } from "@/lib/supabase-client";
 
 interface ScoreResult {
   score: number;
@@ -39,12 +46,32 @@ export default function CheckCVPage() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
   const [editedText, setEditedText] = useState("");
+  const [originalText, setOriginalText] = useState(""); // Track original for analytics
   const [isConfirmingText, setIsConfirmingText] = useState(false);
   const [jdText, setJdText] = useState("");
   const [isLoadingScore, setIsLoadingScore] = useState(false);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState<'upload' | 'review' | 'jd' | 'results'>('upload');
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Track checker flow start and get user ID
+  useEffect(() => {
+    const init = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        // Track checker flow started
+        try {
+          trackCheckerFlowStarted({ userId: user.id });
+        } catch (error) {
+          console.error('Failed to track checker flow:', error);
+        }
+      }
+    };
+    init();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -80,8 +107,22 @@ export default function CheckCVPage() {
 
       // Keep the extracted text as-is; BlockNoteEditor will emit Markdown on edits
       setEditedText(data.extractedText);
+      setOriginalText(data.extractedText); // Store original for tracking
       setCurrentStep('review');
       showSuccessToast("Tải lên file và trích xuất văn bản thành công!");
+      
+      // Track file upload
+      if (userId) {
+        try {
+          trackCheckerFileUploaded({
+            userId: userId,
+            fileType: file.name.endsWith('.pdf') ? 'pdf' : 'docx',
+            fileSizeKb: Math.round(file.size / 1024),
+          });
+        } catch (error) {
+          console.error('Failed to track file upload:', error);
+        }
+      }
     } catch (err) {
       const appError = handleAPIError(err, 'upload CV', 'vi');
       setError(appError.userMessage);
@@ -101,6 +142,19 @@ export default function CheckCVPage() {
     setIsConfirmingText(true);
     setCurrentStep('jd');
     showSuccessToast("Văn bản đã được xác nhận! Bây giờ bạn có thể thêm mô tả công việc (tùy chọn).");
+    
+    // Track text confirmation
+    if (userId) {
+      try {
+        trackCheckerTextCorrected({
+          userId: userId,
+          textLengthOriginal: originalText.length,
+          textLengthCorrected: editedText.length,
+        });
+      } catch (error) {
+        console.error('Failed to track text correction:', error);
+      }
+    }
   };
 
   const handleScoreCV = async () => {
@@ -130,6 +184,19 @@ export default function CheckCVPage() {
       setScoreResult(data);
       setCurrentStep('results');
       showSuccessToast("Chấm điểm CV thành công!");
+      
+      // Track score generation
+      if (userId) {
+        try {
+          trackCheckerScoreGenerated({
+            userId: userId,
+            finalScore: data.score,
+            withJD: !!jdText.trim(),
+          });
+        } catch (error) {
+          console.error('Failed to track score generation:', error);
+        }
+      }
     } catch (err) {
       const appError = handleAPIError(err, 'score CV', 'vi');
       setError(appError.userMessage);

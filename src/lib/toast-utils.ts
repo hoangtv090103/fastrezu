@@ -103,8 +103,7 @@ export function showPromiseToast<T>(
     loading: string;
     success: string | ((data: T) => string);
     error: string | ((error: unknown) => string);
-  },
-  _language: 'vi' | 'en' = 'vi'
+  }
 ) {
   return toast.promise(
     promise,
