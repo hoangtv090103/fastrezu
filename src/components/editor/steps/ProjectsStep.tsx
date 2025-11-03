@@ -196,34 +196,54 @@ export default function ProjectsStep() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Thành tích và đóng góp
                 </label>
-                {getArrayValue(project, 'achievements').map((achievement: string, achIndex: number) => (
-                  <div key={achIndex} className="flex items-start space-x-2 mb-2">
-                    <input
-                      type="text"
-                      value={achievement}
-                      onChange={(e) => updateAchievement(projIndex, achIndex, e.target.value)}
-                      placeholder="Ví dụ: Tăng 40% tốc độ tải trang..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
-                    />
-                    <AIAssistButton
-                      onClick={() => handleImproveAchievement(projIndex, achIndex)}
-                      loading={loadingStates[`improve-${projIndex}-${achIndex}`] || false}
-                      label="AI"
-                      disabled={!achievement.trim()}
-                    />
-                    <button
-                      onClick={() => removeAchievement(projIndex, achIndex)}
-                      className="text-red-600 hover:text-red-800 p-2"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+                <div className="space-y-3">
+                  {getArrayValue(project, 'achievements').map((achievement: string, achIndex: number) => (
+                    <div key={achIndex} className="flex flex-col sm:flex-row items-stretch gap-2">
+                      <textarea
+                        value={achievement}
+                        onChange={(e) => updateAchievement(projIndex, achIndex, e.target.value)}
+                        placeholder="Ví dụ: Tăng 40% tốc độ tải trang..."
+                        rows={2}
+                        className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
+                      />
+                      <div className="flex items-start gap-2 sm:flex-col sm:justify-start">
+                        <button
+                          onClick={() => handleImproveAchievement(projIndex, achIndex)}
+                          disabled={!achievement.trim() || loadingStates[`improve-${projIndex}-${achIndex}`]}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-xs font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap"
+                          title="Cải thiện với AI"
+                        >
+                          {loadingStates[`improve-${projIndex}-${achIndex}`] ? (
+                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
+                          ) : (
+                            <>
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                              </svg>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => removeAchievement(projIndex, achIndex)}
+                          className="inline-flex items-center justify-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                          title="Xóa"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 <button
                   onClick={() => addAchievement(projIndex)}
-                  className="text-blue-600 hover:text-blue-800 text-sm"
+                  className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all duration-200"
                 >
-                  + Thêm thành tích
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  <span>Thêm thành tích</span>
                 </button>
               </div>
             </div>

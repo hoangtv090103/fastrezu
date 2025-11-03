@@ -182,20 +182,17 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             <div key={index} className="mb-6 pb-4 border-b border-gray-100 last:border-b-0">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-bold text-gray-900" style={{ fontSize: '12pt', fontWeight: '700' }}>
-                  {renderValue(exp.job_title) || labels.jobTitle}
+                  {renderValue(exp.job_title)}, {renderValue(exp.company) || labels.company}
                 </h3>
                 <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded" style={{ fontSize: '10pt' }}>
-                  {exp.start_date && exp.end_date ? `${renderValue(exp.start_date)} - ${renderValue(exp.end_date)}` : labels.timePeriod}
+                  {exp.start_date && exp.end_date ? `${renderValue(exp.start_date)} - ${renderValue(exp.end_date)}` : renderValue(exp.start_date) || renderValue(exp.end_date) || ''}
                 </span>
               </div>
-              <div className="flex justify-between items-start mb-3">
-                <p className="font-semibold text-blue-600" style={{ fontSize: '11pt', fontWeight: '600' }}>
-                  {renderValue(exp.company) || labels.company}
+              {renderValue(exp.location) && (
+                <p className="text-sm text-gray-500 mb-3" style={{ fontSize: '10pt' }}>
+                  {renderValue(exp.location)}
                 </p>
-                <span className="text-sm text-gray-500" style={{ fontSize: '10pt' }}>
-                  {renderValue(exp.location) || labels.location}
-                </span>
-              </div>
+              )}
               {Array.isArray(exp.achievements) && exp.achievements.length > 0 && (
                 <ul className="space-y-2" style={{ fontSize: '10pt' }}>
                   {exp.achievements.map((achievement: string, achIndex: number) => (
@@ -225,26 +222,32 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
           </h2>
           {education.map((edu: Record<string, unknown>, index: number) => (
             <div key={index} className="mb-4 pb-3 border-b border-gray-100 last:border-b-0">
+              <p className="font-bold text-blue-600 mb-2" style={{ fontSize: '11pt', fontWeight: '600' }}>
+                {renderValue(edu.school) || labels.school}
+              </p>
               <div className="flex justify-between items-start mb-2">
-                <h3 className="font-bold text-gray-900" style={{ fontSize: '12pt', fontWeight: '700' }}>
-                  {renderValue(edu.degree) || labels.degree}
+                <h3 className="font-semibold text-gray-900" style={{ fontSize: '12pt', fontWeight: '700' }}>
+                  {renderValue(edu.degree)}
                 </h3>
                 <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded" style={{ fontSize: '10pt' }}>
                   {renderValue(edu.graduation_date) || labels.graduationDate}
                 </span>
               </div>
-              <p className="font-semibold text-blue-600 mb-1" style={{ fontSize: '11pt', fontWeight: '600' }}>
-                {renderValue(edu.school) || labels.school}
-              </p>
-              {renderValue(edu.field_of_study) && (
-                <p className="text-sm text-gray-600 mb-1" style={{ fontSize: '10pt' }}>
-                  {labels.fieldOfStudy}: {renderValue(edu.field_of_study)}
-                </p>
-              )}
-              {renderValue(edu.gpa) && (
-                <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  GPA: {renderValue(edu.gpa)}
-                </p>
+              {(renderValue(edu.field_of_study) || renderValue(edu.gpa)) && (
+                <ul className="space-y-1 mt-2" style={{ fontSize: '10pt' }}>
+                  {renderValue(edu.field_of_study) && (
+                    <li className="flex items-start">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                      <span className="text-gray-700">{labels.fieldOfStudy}: {renderValue(edu.field_of_study)}</span>
+                    </li>
+                  )}
+                  {renderValue(edu.gpa) && (
+                    <li className="flex items-start">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                      <span className="text-gray-700">GPA: {renderValue(edu.gpa)}</span>
+                    </li>
+                  )}
+                </ul>
               )}
             </div>
           ))}
@@ -275,25 +278,26 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                   </a>
                 )}
               </div>
-              {renderValue(project.description) && (
-                <div className="text-sm mb-2" style={{ fontSize: '10pt' }}>
-                  {parseMarkdown(String(renderValue(project.description)))}
-                </div>
-              )}
-              {renderValue(project.technologies) && (
-                <p className="text-sm text-gray-600" style={{ fontSize: '10pt' }}>
-                  {labels.technologies}: {renderValue(project.technologies)}
-                </p>
-              )}
-              {Array.isArray(project.achievements) && project.achievements.length > 0 && (
-                <ul className="list-disc list-inside text-sm ml-4 mt-2" style={{ fontSize: '10pt' }}>
-                  {project.achievements.map((achievement: string, achIndex: number) => (
-                    <li key={achIndex} className="mb-1">
-                      {parseMarkdown(achievement)}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul className="space-y-2 mt-2" style={{ fontSize: '10pt' }}>
+                {renderValue(project.description) && (
+                  <li className="flex items-start">
+                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                    <span className="text-gray-700 leading-relaxed">{parseMarkdown(String(renderValue(project.description)))}</span>
+                  </li>
+                )}
+                {renderValue(project.technologies) && (
+                  <li className="flex items-start">
+                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                    <span className="text-gray-700 leading-relaxed">{labels.technologies}: {renderValue(project.technologies)}</span>
+                  </li>
+                )}
+                {Array.isArray(project.achievements) && project.achievements.map((achievement: string, achIndex: number) => (
+                  <li key={achIndex} className="flex items-start">
+                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                    <span className="text-gray-700 leading-relaxed">{parseMarkdown(achievement)}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
-import AIAssistButton from "@/components/ui/AIAssistButton";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
@@ -350,75 +349,91 @@ export default function ExperienceStep() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Địa điểm
-                </label>
-                <input
-                  type="text"
-                  value={getStringValue(exp, "location")}
-                  onChange={(e) =>
-                    updateExperience(expIndex, "location", e.target.value)
-                  }
-                  placeholder="Hà Nội, Việt Nam"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
-                />
-              </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <label className="block text-sm font-medium text-gray-700">
                   Thành tích và trách nhiệm
                 </label>
-                <AIAssistButton
+                <button
                   onClick={() => handleAIWriteExperience(expIndex)}
-                  loading={loadingStates[`write-${expIndex}`] || false}
-                  label="Để AI viết giúp bạn ✍️"
-                  disabled={!getStringValue(exp, "job_title").trim()}
-                />
+                  disabled={!getStringValue(exp, "job_title").trim() || loadingStates[`write-${expIndex}`]}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap self-start sm:self-auto"
+                  title="Để AI viết giúp bạn"
+                >
+                  {loadingStates[`write-${expIndex}`] ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Đang tạo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      <span>Để AI viết giúp bạn</span>
+                    </>
+                  )}
+                </button>
               </div>
-              {getArrayValue(exp, "achievements").map(
-                (achievement: string, achIndex: number) => (
-                  <div
-                    key={achIndex}
-                    className="flex items-start space-x-2 mb-2"
-                  >
-                    <input
-                      type="text"
-                      value={achievement}
-                      onChange={(e) =>
-                        updateAchievement(expIndex, achIndex, e.target.value)
-                      }
-                      placeholder="Ví dụ: Phát triển ứng dụng web tăng 30% hiệu suất..."
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
-                    />
-                    <AIAssistButton
-                      onClick={() =>
-                        handleImproveAchievement(expIndex, achIndex)
-                      }
-                      loading={
-                        loadingStates[`improve-${expIndex}-${achIndex}`] ||
-                        false
-                      }
-                      label="AI"
-                      disabled={!achievement.trim()}
-                    />
-                    <button
-                      onClick={() => removeAchievement(expIndex, achIndex)}
-                      className="text-red-600 hover:text-red-800 p-2"
+              <div className="space-y-3">
+                {getArrayValue(exp, "achievements").map(
+                  (achievement: string, achIndex: number) => (
+                    <div
+                      key={achIndex}
+                      className="flex flex-col sm:flex-row items-stretch gap-2"
                     >
-                      ×
-                    </button>
-                  </div>
-                )
-              )}
+                      <textarea
+                        value={achievement}
+                        onChange={(e) =>
+                          updateAchievement(expIndex, achIndex, e.target.value)
+                        }
+                        placeholder="Ví dụ: Phát triển ứng dụng web sử dụng React và Node.js, giúp tăng 30% hiệu suất xử lý và giảm 25% thời gian tải trang..."
+                        rows={2}
+                        className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
+                      />
+                      <div className="flex items-start gap-2 sm:flex-col sm:justify-start">
+                        <button
+                          onClick={() =>
+                            handleImproveAchievement(expIndex, achIndex)
+                          }
+                          disabled={!achievement.trim() || loadingStates[`improve-${expIndex}-${achIndex}`]}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-xs font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap"
+                          title="Cải thiện với AI"
+                        >
+                          {loadingStates[`improve-${expIndex}-${achIndex}`] ? (
+                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
+                          ) : (
+                            <>
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                              </svg>
+                            </>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => removeAchievement(expIndex, achIndex)}
+                          className="inline-flex items-center justify-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                          title="Xóa"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
               <button
                 onClick={() => addAchievement(expIndex)}
-                className="text-blue-600 hover:text-blue-800 text-sm"
+                className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all duration-200"
               >
-                + Thêm thành tích
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>Thêm thành tích</span>
               </button>
             </div>
           </div>

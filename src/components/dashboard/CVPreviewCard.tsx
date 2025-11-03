@@ -4,14 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import CVTemplate from "@/components/cv/CVTemplate";
+import CVTemplatePDF from "@/components/cv/CVTemplatePDF";
 import {
   showErrorToast,
-  showLoadingToast,
-  updateToast,
+  showSuccessToast,
 } from "@/lib/toast-utils";
-import { handleAPIError } from "@/lib/error-handler";
-import { apiPostRaw } from "@/lib/api-client";
 
 interface CVSection {
   section_type: string;
@@ -36,7 +35,6 @@ interface CVPreviewCardProps {
 
 export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -121,72 +119,6 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
     return "text-red-600 bg-red-100";
   };
 
-  const handleDownloadPDF = async () => {
-    if (!hasContent(cv)) {
-      showErrorToast(
-        "CV chưa có nội dung để tải xuống. Vui lòng chỉnh sửa CV trước.",
-        "vi"
-      );
-      return;
-    }
-
-    setIsDownloading(true);
-    const toastId = showLoadingToast("Đang tạo PDF...");
-
-    try {
-      // Convert CV data to the format expected by the PDF API
-      const cvData = convertSectionsToCVData(cv);
-
-      // Call the server-side PDF export API
-      const response = await apiPostRaw("/api/cv/export-pdf", { cvData });
-
-      // Get the PDF blob
-      const pdfBlob = await response.blob();
-
-      // Create download link
-      const url = window.URL.createObjectURL(pdfBlob);
-      const link = document.createElement("a");
-      link.href = url;
-
-      // Generate filename from response headers or fallback
-      const contentDisposition = response.headers.get("content-disposition");
-      let filename = "cv.pdf";
-
-      if (contentDisposition) {
-        const filenameMatch =
-          contentDisposition.match(/filename="([^"]*)"/) ||
-          contentDisposition.match(/filename=([^;]*)/);
-        if (filenameMatch) {
-          filename = filenameMatch[1].trim();
-        }
-      } else {
-        // Fallback filename generation
-        const sanitizedTitle = (cv.title || "CV")
-          .replace(/[^a-zA-Z0-9\s]/g, "")
-          .trim();
-        filename = `${sanitizedTitle}_${
-          new Date().toISOString().split("T")[0]
-        }.pdf`;
-      }
-
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Clean up the URL object
-      window.URL.revokeObjectURL(url);
-
-      updateToast(toastId, "PDF đã được tải xuống thành công!", "success");
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      const appError = handleAPIError(error, "generate PDF", "vi");
-      updateToast(toastId, appError.userMessage, "error");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
   const handleEdit = () => {
     router.push(`/editor/${cv.id}`);
   };
@@ -232,15 +164,49 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
         {isHovered && (
           <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center z-10">
             <div className="flex items-center space-x-3">
-              <button
-                onClick={handleDownloadPDF}
-                disabled={isDownloading}
-                className="bg-white hover:bg-gray-100 disabled:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
-                aria-label="Tải xuống CV dưới dạng PDF"
-              >
-                {isDownloading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
-                ) : (
+              {hasContent(cv) ? (
+                <PDFDownloadLink
+                  document={<CVTemplatePDF cvData={convertSectionsToCVData(cv)} />}
+                  fileName={`${(cv.title || "CV").replace(/[^a-zA-Z0-9\s]/g, "").trim()}_${new Date().toISOString().split("T")[0]}.pdf`}
+                  className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
+                  aria-label="Tải xuống CV dưới dạng PDF"
+                >
+                  {({ loading, error }) => {
+                    if (error) {
+                      showErrorToast("Lỗi tạo PDF", "vi");
+                    }
+                    return (
+                      <>
+                        {loading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                        ) : (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        )}
+                        <span className="text-sm font-medium">
+                          {loading ? "Đang tải..." : "Tải về"}
+                        </span>
+                      </>
+                    );
+                  }}
+                </PDFDownloadLink>
+              ) : (
+                <button
+                  onClick={() => showErrorToast("CV chưa có nội dung để tải xuống. Vui lòng chỉnh sửa CV trước.", "vi")}
+                  className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 opacity-50 cursor-not-allowed"
+                  aria-label="CV chưa có nội dung"
+                >
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -254,11 +220,9 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                )}
-                <span className="text-sm font-medium">
-                  {isDownloading ? "Đang tải..." : "Tải về"}
-                </span>
-              </button>
+                  <span className="text-sm font-medium">Tải về</span>
+                </button>
+              )}
 
               <button
                 onClick={handleEdit}
