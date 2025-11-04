@@ -258,7 +258,11 @@ Mỗi suggestion phải có đầy đủ thông tin để có thể tự động
 
 **Lưu ý quan trọng về original_content và suggested_content:**
 - Với experience/projects/education/certifications: original_content là object hoặc phần tử trong array
-- Với skills: original_content là array string, suggested_content là array string đã thêm từ khóa
+- Với skills: 
+  * original_content PHẢI là object có dạng: { "technical": ["skill1", "skill2"], "soft": ["skill3", "skill4"] }
+  * suggested_content PHẢI có CÙNG cấu trúc object với cả "technical" VÀ "soft" arrays
+  * KHÔNG được để một trong hai là undefined hoặc null
+  * Ví dụ đúng: {"technical": ["React", "Node.js", "Docker"], "soft": ["Teamwork", "Communication"]}
 - Với summary: original_content là string, suggested_content là string đã cải thiện
 - Luôn phải giữ đúng cấu trúc dữ liệu của section đó
 - VỀ NGÔN NGỮ: suggestion_text LUÔN bằng tiếng Việt TRỰC TIẾP (không dịch từ tiếng Anh). suggested_content phải bằng cùng ngôn ngữ với original_content (nếu original tiếng Việt thì applied tiếng Việt, nếu original tiếng Anh thì applied tiếng Anh).
@@ -286,14 +290,20 @@ Bạn PHẢI trả về CHỈ một JSON object hợp lệ. Không thêm text n�
   "missingKeywords": ["Docker", "AWS", "CI/CD"],
   "suggestions": [
     {
-      "suggestion_text": "Thêm từ khóa 'Docker' vào phần kỹ năng",
+      "suggestion_text": "Thêm từ khóa 'Docker' vào phần kỹ năng chuyên môn",
       "suggestion_type": "add_keyword",
       "target_section": "skills",
       "target_index": null,
       "keyword": "Docker",
       "priority": "high",
-      "original_content": ["React", "Node.js", "TypeScript"],
-      "suggested_content": ["React", "Node.js", "TypeScript", "Docker"]
+      "original_content": {
+        "technical": ["React", "Node.js", "TypeScript"],
+        "soft": ["Teamwork", "Communication"]
+      },
+      "suggested_content": {
+        "technical": ["React", "Node.js", "TypeScript", "Docker"],
+        "soft": ["Teamwork", "Communication"]
+      }
     },
     {
       "suggestion_text": "Cải thiện mô tả kinh nghiệm ở vị trí đầu tiên với số liệu cụ thể",
@@ -341,7 +351,11 @@ Each suggestion must have complete information for automatic application:
 
 **Important notes about original_content and suggested_content:**
 - For experience/projects/education/certifications: original_content is object or element in array
-- For skills: original_content is string array, suggested_content is string array with added keyword
+- For skills: 
+  * original_content MUST be an object with format: { "technical": ["skill1", "skill2"], "soft": ["skill3", "skill4"] }
+  * suggested_content MUST have the SAME object structure with BOTH "technical" AND "soft" arrays
+  * DO NOT set either one as undefined or null
+  * Correct example: {"technical": ["React", "Node.js", "Docker"], "soft": ["Teamwork", "Communication"]}
 - For summary: original_content is string, suggested_content is improved string
 - Always maintain the exact data structure of that section
 - **CRITICAL LANGUAGE NOTE:** suggested_content MUST be written in the SAME language as original_content. If original_content is in Vietnamese, suggested_content must be in Vietnamese. If original_content is in English, suggested_content must be in English.
@@ -363,14 +377,20 @@ You MUST output *only* a valid JSON object. Do not include any text before or af
   "missingKeywords": ["Docker", "AWS", "CI/CD"],
   "suggestions": [
     {
-      "suggestion_text": "Add 'Docker' keyword to skills section",
+      "suggestion_text": "Add 'Docker' keyword to technical skills",
       "suggestion_type": "add_keyword",
       "target_section": "skills",
       "target_index": null,
       "keyword": "Docker",
       "priority": "high",
-      "original_content": ["React", "Node.js", "TypeScript"],
-      "suggested_content": ["React", "Node.js", "TypeScript", "Docker"]
+      "original_content": {
+        "technical": ["React", "Node.js", "TypeScript"],
+        "soft": ["Teamwork", "Communication"]
+      },
+      "suggested_content": {
+        "technical": ["React", "Node.js", "TypeScript", "Docker"],
+        "soft": ["Teamwork", "Communication"]
+      }
     },
     {
       "suggestion_text": "Improve first experience description with specific metrics",

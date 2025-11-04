@@ -88,9 +88,9 @@ export default function CVEditorLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="bg-white border-b border-gray-200 px-6 py-4 shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             {/* <button
@@ -152,14 +152,14 @@ export default function CVEditorLayout() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col lg:flex-row h-[calc(100vh-80px)]">
+      <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
         {/* Left Panel - Wizard */}
-        <div className="w-full lg:w-2/5 bg-white border-r-0 lg:border-r border-gray-200 overflow-y-auto max-h-[50vh] lg:max-h-none">
+        <div className="w-full lg:w-2/5 bg-white border-r-0 lg:border-r border-gray-200 overflow-y-auto min-h-0">
           <WizardPanel />
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto max-h-[50vh] lg:max-h-none">
+        <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto min-h-0">
           <Suspense fallback={
             <div className="flex items-center justify-center h-full">
               <div className="text-center">

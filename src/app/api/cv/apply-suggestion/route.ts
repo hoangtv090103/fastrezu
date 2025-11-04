@@ -190,8 +190,24 @@ export async function POST(request: NextRequest) {
         validatedSuggestion.suggested_content;
       updatedData = newData;
     } else {
-      // Replace entire section
-      updatedData = validatedSuggestion.suggested_content;
+      // For skills section, merge with existing data to preserve both technical and soft skills
+      if (validatedSuggestion.target_section === 'skills' && sectionData?.data) {
+        const currentSkills = sectionData.data as Record<string, unknown>;
+        const suggestedSkills = validatedSuggestion.suggested_content as Record<string, unknown>;
+        
+        // Merge skills, preserving existing data
+        updatedData = {
+          technical: suggestedSkills.technical !== undefined 
+            ? suggestedSkills.technical 
+            : currentSkills.technical || [],
+          soft: suggestedSkills.soft !== undefined 
+            ? suggestedSkills.soft 
+            : currentSkills.soft || [],
+        };
+      } else {
+        // Replace entire section for other section types
+        updatedData = validatedSuggestion.suggested_content;
+      }
     }
 
     console.log("Updating section:", {
@@ -199,6 +215,9 @@ export async function POST(request: NextRequest) {
       section_type: validatedSuggestion.target_section,
       target_index: validatedSuggestion.target_index,
       hasSection: !!sectionData,
+      currentData: sectionData?.data,
+      suggestedContent: validatedSuggestion.suggested_content,
+      updatedData,
     });
 
     // Update cv_sections

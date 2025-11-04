@@ -3,7 +3,23 @@
 import { CVData } from "@/contexts/CVEditorContext";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
-import PDFDownloadButton from "@/components/cv/PDFDownloadButton";
+import dynamic from "next/dynamic";
+
+// Dynamic import to avoid SSR issues with @react-pdf/renderer and React 19
+const PDFDownloadButton = dynamic(
+  () => import("@/components/cv/PDFDownloadButton"),
+  { 
+    ssr: false,
+    loading: () => (
+      <button
+        className="relative bg-blue-600 text-white p-2 rounded-lg flex items-center justify-center"
+        disabled
+      >
+        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+      </button>
+    )
+  }
+);
 
 interface ExportButtonsProps {
   cvData: CVData;

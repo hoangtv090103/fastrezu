@@ -26,9 +26,9 @@ export default async function AuthenticatedLayout({
     .single();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50">
       <AuthenticatedHeader user={user} userProfile={userProfile} />
-      <main className="container mx-auto px-4 py-4">
+      <main className="flex-1 overflow-auto container mx-auto px-4 py-4">
         {children}
       </main>
       <FeedbackButton />
