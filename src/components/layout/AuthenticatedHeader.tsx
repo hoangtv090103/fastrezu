@@ -3,6 +3,7 @@
 import { User } from "@supabase/supabase-js";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import type { UserProfile } from "@/types";
 
@@ -49,9 +50,13 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/dashboard" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">F</span>
-              </div>
+              <Image
+                src="/fastrezu-logo/black_on_trans.png"
+                alt="FastRezu Logo"
+                width={32}
+                height={32}
+                className="object-contain"
+              />
               <span className="heading-feature text-xl text-gray-900">FastRezu</span>
             </Link>
             
