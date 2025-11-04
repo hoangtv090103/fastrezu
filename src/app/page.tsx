@@ -1,3 +1,5 @@
+import CompanyCarousel from "@/components/ui/CompanyCarousel";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
@@ -24,29 +26,25 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div className="text-center lg:text-left order-2 lg:order-1">
-              {/* === Tối ưu H1: Thêm yếu tố thời gian & kết quả === */}
+              
+              {/* === Tối ưu H1: Đánh thẳng vào đối thủ === */}
               <h1 className="heading-main text-3xl sm:text-4xl lg:text-6xl text-gray-900 mb-4 sm:mb-6">
-                Tạo CV Chuẩn ATS{" "}
-                <span className="text-blue-600">trong 5 phút</span>,
-                <br className="hidden lg:block" /> Nhận phản hồi{" "}
-                <span className="text-green-500">nhanh hơn</span>.
+                CV TopCV, Canva <span className="text-red-600">vẫn bị loại?</span>
+                <br className="hidden lg:block" />
+                <span className="text-blue-600">Đã đến lúc</span> tối ưu nội dung.
               </h1>
 
-              {/* === Tối ưu H2: Nhấn mạnh AI viết hộ === */}
+              {/* === Tối ưu H2: Nhấn mạnh 41% công ty dùng AI === */}
               <h2 className="heading-sub text-lg sm:text-xl lg:text-2xl text-gray-700 mb-4 sm:mb-6">
-                Đừng để CV &quot;trống&quot; hay mô tả mờ nhạt cản bước bạn. AI
-                của FastRezu <span className="font-semibold">viết hộ bạn</span>{" "}
-                những thành tích ấn tượng nhất.
+                Hơn 41% công ty Việt Nam đã dùng AI để sàng lọc CV. Template đẹp là chưa đủ.
+                FastRezu giúp bạn <span className="font-semibold">viết nội dung thành tích</span> (VI/EN) đánh bại cả Máy (ATS) và Người.
               </h2>
 
-              {/* === Tối ưu P: Rõ ràng về VI/EN và kết quả === */}
+              {/* === Tối ưu P: Khẳng định sự khác biệt (Viết hộ) === */}
               <p className="body-text text-base sm:text-lg text-gray-700 mb-6 sm:mb-8">
-                FastRezu là trợ lý AI{" "}
-                <span className="font-semibold">duy nhất</span> bạn cần để tạo
-                CV chuyên nghiệp (Tiếng Việt & Tiếng Anh). Chúng tôi giúp bạn{" "}
-                <span className="font-semibold">viết nội dung chất lượng</span>,
-                tối ưu từ khóa ATS, và tăng tốc hành trình đến buổi phỏng vấn mơ
-                ước.
+                Các công cụ khác giúp bạn &quot;check&quot; CV. FastRezu <span className="font-semibold">hướng dẫn bạn viết CV từ đầu</span>.
+                Chúng tôi biến kinh nghiệm của bạn thành <span className="font-semibold">thành tích có số liệu</span>,
+                tối ưu từ khóa JD, và giúp bạn nhận được lời mời phỏng vấn.
               </p>
 
               {/* Nút CTA giữ nguyên */}
@@ -73,7 +71,7 @@ export default function Home() {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl sm:text-3xl font-bold text-green-500 mb-2 animate-pulse-slow">
-                    95/100 {/* Tăng điểm lên chút để hấp dẫn hơn */}
+                    95/100
                   </div>
                   <div className="text-xs sm:text-sm text-gray-700">
                     Điểm Tương thích ATS
@@ -85,21 +83,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pain Points Section - Giữ nguyên v4 vì đã rất tốt */}
+      {/* Company Carousel Section */}
+      <section className="bg-white py-8 sm:py-12">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-8">
+            <p className="body-text text-gray-600 text-sm sm:text-base">
+              Một số công ty đã và đang ứng dụng AI trong quy trình tuyển dụng
+            </p>
+          </div>
+          <CompanyCarousel />
+        </div>
+      </section>
+
+      {/* Pain Points Section (Giờ là "Bằng chứng Thị trường") */}
       <section className="bg-white py-12 sm:py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              Viết CV: Cuộc chiến với &ldquo;Trang giấy trắng&rdquo; và
-              &ldquo;Thành tích mờ nhạt&rdquo;?
+              Bạn đang đối đầu với AI. <br className="hidden sm:block" />
+              CV của bạn đã sẵn sàng chưa?
             </h2>
             <p className="body-text text-gray-700 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Khảo sát cho thấy, khó khăn lớn nhất là mô tả thành tích ấn tượng
-              và việc tùy chỉnh CV tốn quá nhiều thời gian.
+              Theo khảo sát 2024, <span className="font-semibold text-blue-600">41% doanh nghiệp Việt Nam</span> đã dùng AI để tuyển dụng.
+              Các hệ thống ATS (như Base, MISA, Talent Solution) đang tự động <span className="font-semibold text-red-600">đọc, chấm điểm, và xếp hạng</span> hồ sơ của bạn.
             </p>
           </div>
-          {/* ... (Giữ nguyên 3 cột nỗi đau: Thành tích, Thời gian, ATS) ... */}
+          {/* === Cập nhật 3 cột nỗi đau === */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+            {/* === Tối ưu Cột 1: Tập trung vào Nỗi đau chính === */}
             <div className="text-center p-4 sm:p-6">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <span className="text-xl sm:text-2xl">🏆</span>
@@ -108,37 +119,33 @@ export default function Home() {
                 Khó diễn tả thành tích?
               </h3>
               <p className="body-text text-gray-700 text-sm sm:text-base">
-                Bạn biết mình làm được việc, nhưng không biết viết sao cho
-                &ldquo;kêu&rdquo;, biến trách nhiệm thành kết quả đo lường được
-                (số liệu, %) để thuyết phục nhà tuyển dụng.
+                Khó khăn lớn nhất là biến &quot;nhiệm vụ&quot; thành &quot;thành tích có số liệu&quot;. AI của đối thủ có thể check, nhưng <span className="font-semibold">AI của FastRezu sẽ viết hộ bạn</span>.
               </p>
             </div>
-            {/* ... (Giữ nguyên cột Thời gian) ... */}
+            
+            {/* === Tối ưu Cột 2: Tối ưu Từ khóa === */}
             <div className="text-center p-4 sm:p-6">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-xl sm:text-2xl">⏳</span>
-              </div>
-              <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Tốn giờ tùy chỉnh CV?
-              </h3>
-              <p className="body-text text-gray-700 text-sm sm:text-base">
-                Mỗi công việc yêu cầu một CV khác nhau. Việc viết lại, chỉnh sửa
-                lặp đi lặp lại khiến bạn mệt mỏi và tốn quá nhiều thời gian quý
-                báu.
-              </p>
-            </div>
-            {/* ... (Giữ nguyên cột ATS) ... */}
-            <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <span className="text-xl sm:text-2xl">🤖</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Và &ldquo;cuộc chiến ngầm&rdquo; ATS?
+                Bị lọc vì thiếu từ khóa
               </h3>
               <p className="body-text text-gray-700 text-sm sm:text-base">
-                Bạn có biết gần 70% CV bị máy lọc (ATS) loại trước khi đến tay
-                người? Thiếu từ khóa phù hợp khiến CV của bạn &ldquo;vô
-                hình&rdquo; dù rất tiềm năng.
+                CV của bạn (dù đẹp) bị loại vì thiếu từ khóa khớp với JD. FastRezu <span className="font-semibold">tự động quét JD</span> và tích hợp từ khóa vào nội dung CV cho bạn.
+              </p>
+            </div>
+            
+            {/* === Tối ưu Cột 3: Vấn đề Template (Đánh vào Canva/TopCV) === */}
+            <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-xl sm:text-2xl">🎨</span>
+              </div>
+              <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
+                Template đẹp nhưng ATS không đọc được
+              </h3>
+              <p className="body-text text-gray-700 text-sm sm:text-base">
+                Nhiều CV đẹp (từ Canva, TopCV) sử dụng cột, bảng, icon khiến máy ATS <span className="font-semibold">không thể đọc đúng nội dung</span>. FastRezu đảm bảo CV vừa đẹp vừa chuẩn ATS.
               </p>
             </div>
           </div>
@@ -148,72 +155,55 @@ export default function Home() {
       {/* Solution Features Section */}
       <section className="bg-linear-to-br from-blue-50 to-indigo-100 py-12 sm:py-16 lg:py-24">
         <div className="container mx-auto px-4">
-          {/* === Tối ưu H2: Nhấn mạnh sự dẫn dắt, khác biệt với "checker" === */}
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
+            {/* === Tối ưu H2: Nhấn mạnh sự khác biệt === */}
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              FastRezu không chỉ <span className="italic">kiểm tra</span>, mà{" "}
-              <span className="font-bold text-blue-600">cùng bạn viết</span> CV
-              hoàn hảo
+              CakeResume, JobsGO giúp bạn <span className="italic">Check</span>.
+              <br className="hidden sm:block" />
+              FastRezu <span className="font-bold text-blue-600">giúp bạn viết và tối ưu</span>.
             </h2>
             <p className="body-text text-gray-700 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Với hướng dẫn thông minh và AI tạo sinh nội dung (VI/EN), FastRezu
-              dẫn dắt bạn từng bước, giải quyết mọi khó khăn từ &quot;bí
-              từ&quot; đến tối ưu ATS.
+              Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để <span className="font-semibold">tạo lập</span> CV (VI/EN) vượt trội, giải quyết nỗi đau &quot;bí từ&quot; và &quot;viết thành tích&quot;.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
-            {/* === Tối ưu Box 1: AI Soạn thảo - Nhấn mạnh viết hộ === */}
+            {/* Box 1: AI Viết Hộ (Cốt lõi) */}
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                 <span className="text-xl sm:text-2xl">✍️✨</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI <span className="font-semibold">Viết Hộ</span> Thành Tích
+                AI <span className="font-semibold">làm nổi bật</span> thành Tích
               </h3>
               <p className="body-text text-gray-700 text-center text-sm sm:text-base">
-                Chỉ cần nhập vị trí, AI tự động{" "}
-                <span className="font-semibold">
-                  soạn thảo các bullet point thành tích
-                </span>{" "}
-                (VI/EN) ấn tượng, sử dụng số liệu và động từ mạnh, tích hợp từ
-                khóa JD.
+                Giải quyết nỗi đau lớn nhất: Chỉ cần nhập vị trí, AI tự động <span className="font-semibold">soạn thảo các bullet point thành tích</span> (VI/EN) ấn tượng, sử dụng số liệu và động từ mạnh.
               </p>
             </div>
-            {/* === Tối ưu Box 2: JD Analysis - Nhấn mạnh tiết kiệm thời gian === */}
+            
+            {/* Box 2: JD Analysis */}
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                 <span className="text-xl sm:text-2xl">🔍🎯</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI Phân Tích JD{" "}
-                <span className="font-semibold">Trong Giây Lát</span>
+                AI phân tích JD <span className="font-semibold">sâu</span>
               </h3>
               <p className="body-text text-gray-700 text-center text-sm sm:text-base">
-                Dán JD vào, AI quét và{" "}
-                <span className="font-semibold">
-                  chỉ ra ngay các từ khóa quan trọng
-                </span>
-                . Tiết kiệm hàng giờ nghiên cứu, giúp bạn tập trung vào nội dung
-                CV.
+                Tự động &quot;quét&quot; JD, chỉ ra <span className="font-semibold">từ khóa quan trọng</span>. Giúp bạn tùy chỉnh CV đúng trọng tâm công việc chỉ trong vài giây.
               </p>
             </div>
-            {/* === Tối ưu Box 3: Scoring - Nhấn mạnh sự tự tin === */}
+
+            {/* Box 3: Checker (Upload & Check) */}
             <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg sm:col-span-2 lg:col-span-1">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                 <span className="text-xl sm:text-2xl">📊✅</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                Chấm Điểm ATS &{" "}
-                <span className="font-semibold">Tự Tin Nộp Đơn</span>
+                Check CV & <span className="font-semibold">Chấm điểm ATS</span>
               </h3>
               <p className="body-text text-gray-700 text-center text-sm sm:text-base">
-                Xem điểm CV tăng lên khi tối ưu. Nhận gợi ý cụ thể để đạt điểm
-                cao,{" "}
-                <span className="font-semibold">
-                  biết chắc CV của bạn sẵn sàng
-                </span>{" "}
-                trước khi gửi đi.
+                <span className="font-semibold">Tải CV có sẵn</span> (từ TopCV, Canva) để AI chấm điểm, phát hiện lỗi ATS, và gợi ý cải thiện cụ thể.
               </p>
             </div>
           </div>
