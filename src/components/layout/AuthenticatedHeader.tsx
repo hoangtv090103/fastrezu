@@ -51,7 +51,7 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
           <div className="flex items-center space-x-8">
             <Link href="/dashboard" className="flex items-center space-x-2">
               <Image
-                src="/fastrezu-logo/black_on_trans.png"
+                src="/fastrezu-logo/trans_bg.png"
                 alt="FastRezu Logo"
                 width={32}
                 height={32}

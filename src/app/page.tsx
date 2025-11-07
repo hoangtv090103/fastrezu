@@ -9,7 +9,7 @@ export default function Home() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
               <img 
-                src="/fastrezu-logo/black_on_trans.png"
+                src="/fastrezu-logo/trans_bg.png"
                 alt="FastRezu Logo"
                 className="w-8 h-8 object-contain"
               />

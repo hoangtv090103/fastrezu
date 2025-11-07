@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Disabled for BlockNote compatibility
   images: {
-    domains: ['*.supabase.co'],
+    domains: ['*.supabase.co', 'vietnamworks.com', 'www.vietnamworks.com'],
   },
   // Performance optimizations
   compiler: {

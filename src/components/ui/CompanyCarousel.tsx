@@ -15,6 +15,7 @@ const companies: Company[] = [
   { name: 'CakeResume', logo: '/logos/cake-logo.png' },
   { name: 'CareerViet', logo: '/logos/careerviet-logo.png' },
   { name: "MISA AMIS", logo: 'https://amis.misa.vn/wp-content/uploads/2020/12/logo.svg' },
+  { name: "VietnamWorks", logo: 'https://www.vietnamworks.com/assets-page-container/images/vnw_empower_growth_logo.png'}
 ];
 
 export default function CompanyCarousel() {
