@@ -13,6 +13,8 @@ import {
   trackCheckerScoreGenerated 
 } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase-client";
+import InfoTooltip from "@/components/ui/InfoTooltip";
+import { getTooltipContent } from "@/lib/tooltip-content";
 
 interface ScoreResult {
   score: number;
@@ -401,9 +403,19 @@ export default function CheckCVPage() {
               <div className="text-6xl font-bold text-blue-600 mb-2">
                 {scoreResult.score}/100
               </div>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                Điểm ATS
-              </h2>
+              <div className="flex items-center justify-center gap-2">
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Điểm ATS
+                </h2>
+                <InfoTooltip
+                  id="ats-score-check-cv"
+                  title={getTooltipContent("ats_score_meaning", "vi").title}
+                  content={getTooltipContent("ats_score_meaning", "vi").content}
+                  placement="bottom"
+                  icon="info"
+                  dismissible={true}
+                />
+              </div>
             </div>
 
             {/* Score Breakdown */}
@@ -412,25 +424,65 @@ export default function CheckCVPage() {
                 <div className="text-xl sm:text-2xl font-bold text-blue-600">
                   {scoreResult.analysis.keyword_match}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-700">Khớp từ khóa</div>
+                <div className="flex items-center justify-center gap-1">
+                  <div className="text-xs sm:text-sm text-gray-700">Khớp từ khóa</div>
+                  <InfoTooltip
+                    id="keyword-match-check-cv"
+                    title={getTooltipContent("keyword_match_meaning", "vi").title}
+                    content={getTooltipContent("keyword_match_meaning", "vi").content}
+                    placement="bottom"
+                    icon="info"
+                    dismissible={true}
+                  />
+                </div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
                 <div className="text-xl sm:text-2xl font-bold text-green-500">
                   {scoreResult.analysis.formatting}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-700">Định dạng</div>
+                <div className="flex items-center justify-center gap-1">
+                  <div className="text-xs sm:text-sm text-gray-700">Định dạng</div>
+                  <InfoTooltip
+                    id="formatting-check-cv"
+                    title={getTooltipContent("formatting_meaning", "vi").title}
+                    content={getTooltipContent("formatting_meaning", "vi").content}
+                    placement="bottom"
+                    icon="info"
+                    dismissible={true}
+                  />
+                </div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
                 <div className="text-xl sm:text-2xl font-bold text-yellow-500">
                   {scoreResult.analysis.completeness}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-700">Đầy đủ</div>
+                <div className="flex items-center justify-center gap-1">
+                  <div className="text-xs sm:text-sm text-gray-700">Đầy đủ</div>
+                  <InfoTooltip
+                    id="completeness-check-cv"
+                    title={getTooltipContent("completeness_meaning", "vi").title}
+                    content={getTooltipContent("completeness_meaning", "vi").content}
+                    placement="bottom"
+                    icon="info"
+                    dismissible={true}
+                  />
+                </div>
               </div>
               <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-center">
                 <div className="text-xl sm:text-2xl font-bold text-blue-600">
                   {scoreResult.analysis.relevance}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-700">Liên quan</div>
+                <div className="flex items-center justify-center gap-1">
+                  <div className="text-xs sm:text-sm text-gray-700">Liên quan</div>
+                  <InfoTooltip
+                    id="relevance-check-cv"
+                    title={getTooltipContent("relevance_meaning", "vi").title}
+                    content={getTooltipContent("relevance_meaning", "vi").content}
+                    placement="bottom"
+                    icon="info"
+                    dismissible={true}
+                  />
+                </div>
               </div>
             </div>
 

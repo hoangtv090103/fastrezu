@@ -15,6 +15,10 @@ export interface TooltipContentMap {
   ats_score_meaning: TooltipContent;
   ai_experience_benefits: TooltipContent;
   language_selection: TooltipContent;
+  keyword_match_meaning: TooltipContent;
+  formatting_meaning: TooltipContent;
+  completeness_meaning: TooltipContent;
+  relevance_meaning: TooltipContent;
 }
 
 /**
@@ -42,6 +46,26 @@ export const TOOLTIP_CONTENT: Record<Language, TooltipContentMap> = {
       content:
         'Ngôn ngữ bạn chọn sẽ được sử dụng cho toàn bộ nội dung AI tạo ra (tóm tắt, kinh nghiệm, gợi ý) và nhãn trong CV. Hãy chọn ngôn ngữ phù hợp với công việc bạn ứng tuyển. Bạn có thể thay đổi ngôn ngữ sau, nhưng nội dung đã tạo sẽ không tự động dịch.',
     },
+    keyword_match_meaning: {
+      title: 'Khớp từ khóa',
+      content:
+        'Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) có xuất hiện trong CV của bạn. Điểm cao hơn (trên 80) cho thấy CV có nhiều từ khóa liên quan, giúp vượt qua hệ thống ATS dễ dàng hơn. Nếu điểm thấp, hãy bổ sung các từ khóa còn thiếu vào CV.',
+    },
+    formatting_meaning: {
+      title: 'Định dạng',
+      content:
+        'Đánh giá cấu trúc và định dạng CV: các phần được sắp xếp rõ ràng, tiêu đề phù hợp, dễ đọc và thân thiện với hệ thống ATS. CV có định dạng tốt giúp cả con người và máy móc đều dễ dàng đọc và hiểu nội dung.',
+    },
+    completeness_meaning: {
+      title: 'Đầy đủ',
+      content:
+        'Đánh giá mức độ hoàn thiện của CV: có đủ các phần quan trọng (thông tin liên hệ, kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể, và độ dài phù hợp. CV đầy đủ giúp nhà tuyển dụng có cái nhìn toàn diện về bạn.',
+    },
+    relevance_meaning: {
+      title: 'Liên quan',
+      content:
+        'Đánh giá mức độ phù hợp của kinh nghiệm và kỹ năng trong CV với yêu cầu công việc. Nội dung càng liên quan và đáp ứng yêu cầu JD, cơ hội được chọn phỏng vấn càng cao. Tập trung vào kinh nghiệm phù hợp nhất với vị trí ứng tuyển.',
+    },
   },
   en: {
     jd_analysis_importance: {
@@ -63,6 +87,26 @@ export const TOOLTIP_CONTENT: Record<Language, TooltipContentMap> = {
       title: 'Choose language for your CV',
       content:
         'The language you select will be used for all AI-generated content (summary, experience, suggestions) and labels in your CV. Choose the language that matches the job you\'re applying for. You can change the language later, but existing content won\'t be automatically translated.',
+    },
+    keyword_match_meaning: {
+      title: 'Keyword Match',
+      content:
+        'Percentage of keywords from the job description (JD) that appear in your CV. Higher scores (above 80) show your CV contains many relevant keywords, making it easier to pass ATS systems. If the score is low, add missing keywords to your CV.',
+    },
+    formatting_meaning: {
+      title: 'Formatting',
+      content:
+        'Evaluates CV structure and formatting: clearly organized sections, appropriate headings, easy to read, and ATS-friendly. Well-formatted CVs make it easy for both humans and machines to read and understand the content.',
+    },
+    completeness_meaning: {
+      title: 'Completeness',
+      content:
+        'Evaluates how complete your CV is: includes all important sections (contact info, experience, education, skills), detailed content with specific metrics, and appropriate length. A complete CV gives recruiters a comprehensive view of you.',
+    },
+    relevance_meaning: {
+      title: 'Relevance',
+      content:
+        'Evaluates how well your experience and skills match the job requirements. The more relevant your content is to the JD requirements, the higher your chances of getting an interview. Focus on experience most relevant to the position.',
     },
   },
 };
