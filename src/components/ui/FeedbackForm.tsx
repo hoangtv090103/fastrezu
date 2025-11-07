@@ -66,7 +66,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
     try {
       await apiPost('/api/feedback', formData, undefined, 'vi');
 
-      showSuccessToast('Cảm ơn bạn đã gửi phản hồi! Chúng tôi sẽ xem xét và phản hồi sớm nhất có thể.');
+      showSuccessToast('Cảm ơn! Phản hồi đã được gửi');
       onSuccess?.();
 
       // Reset form
