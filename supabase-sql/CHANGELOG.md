@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **cv_sections** table with JSONB structure
 - **jd_analyses** table for job description analysis
 - **ats_suggestions** table for AI-generated suggestions
-- **applied_suggestions** table for tracking applied suggestions
+- **subscribers** table for landing page email collection
+- **feedback** table for user feedback system
+- **feedback_attachments** table for feedback screenshots/images
 - Row Level Security (RLS) policies for all tables
 - Optimized indexes for performance
 - Auto-update timestamp triggers
@@ -25,14 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 - Suggestion tracking system with `is_active` and `is_applied` flags
 - Version control for suggestions (old suggestions marked inactive on re-score)
-- Applied history tracking
 - Multi-language support (vi/en)
 - Priority levels for suggestions (high/medium/low)
+- Email subscription system for landing page
+- Feedback collection system with attachments
+- Support for anonymous feedback submission
 
 ### Security
 - RLS enabled on all tables
 - User-scoped policies for data access
 - Service role permissions for admin operations
+- Public insert policy for subscribers and feedback (for anonymous users)
 
 ### Performance
 - Composite indexes on frequently queried columns
@@ -54,7 +59,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### v1.0.0 (2025-10-29)
 - Initial release with complete schema
+- 8 core tables:
+  - user_profiles
+  - cvs
+  - cv_sections
+  - jd_analyses
+  - ats_suggestions
+  - subscribers
+  - feedback
+  - feedback_attachments
 - Full ATS suggestion tracking system
+- Landing page subscriber management
+- User feedback collection system
 - RLS and security policies
 - Performance optimizations
 
