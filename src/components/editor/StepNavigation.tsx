@@ -20,10 +20,11 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
         />
       </div>
 
-      {/* Step Indicators */}
+      {/* Step Indicators and Labels Combined */}
       <div className="flex">
         {steps.map((step) => (
-          <div key={step} className="flex-1 flex justify-center">
+          <div key={step} className="flex-1 flex flex-col items-center gap-1.5 sm:gap-2">
+            {/* Step Button */}
             <button
               onClick={() => onStepChange(step)}
               className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
@@ -38,16 +39,10 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
             >
               {step + 1}
             </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Step Labels */}
-      <div className="flex text-xs text-gray-500">
-        {steps.map((step) => (
-          <div key={step} className="flex-1 flex justify-center">
+            
+            {/* Step Label */}
             <span
-              className={`text-center hidden sm:block ${
+              className={`text-center text-xs text-gray-500 hidden sm:block ${
                 step === currentStep ? 'text-blue-600 font-medium' : ''
               }`}
             >
