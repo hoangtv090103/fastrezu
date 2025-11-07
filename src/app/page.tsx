@@ -163,7 +163,7 @@ export default function Home() {
               FastRezu <span className="font-bold text-blue-600">giúp bạn viết và tối ưu</span>.
             </h2>
             <p className="body-text text-gray-700 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để <span className="font-semibold">tạo lập</span> CV (VI/EN) vượt trội, giải quyết nỗi đau &quot;bí từ&quot; và &quot;viết thành tích&quot;.
+              Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để <span className="font-semibold">tạo lập</span> CV (VI/EN) vượt trội, giải quyết nỗi đau &quot;bí từ&quot; và &quot;thể hiện thành tích&quot;.
             </p>
           </div>
 

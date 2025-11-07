@@ -139,7 +139,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
           value={formData.subject}
           onChange={(e) => handleInputChange('subject', e.target.value)}
           placeholder="Tóm tắt ngắn gọn về phản hồi của bạn..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
           maxLength={255}
         />
       </div>
@@ -155,7 +155,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
           onChange={(e) => handleInputChange('message', e.target.value)}
           placeholder="Mô tả chi tiết về phản hồi, góp ý của bạn..."
           rows={5}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none placeholder:text-gray-400"
           maxLength={2000}
         />
         <div className="text-xs text-gray-500 mt-1 text-right">
@@ -174,7 +174,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
           value={formData.user_email}
           onChange={(e) => handleInputChange('user_email', e.target.value)}
           placeholder="email@example.com"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
         />
         <div className="text-xs text-gray-500 mt-1">
           Để chúng tôi có thể liên hệ với bạn nếu cần thêm thông tin
