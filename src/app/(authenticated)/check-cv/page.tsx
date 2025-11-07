@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
+import FileUploadZone from "@/components/cv/FileUploadZone";
 // import { parseMarkdown } from "@/lib/markdown"; // no longer used here
 import { apiPost, apiPostFormData } from "@/lib/api-client";
 import { 
@@ -75,14 +76,11 @@ export default function CheckCVPage() {
     init();
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setError("");
-      setScoreResult(null);
-      setCurrentStep('upload');
-    }
+  const handleFileChange = (selectedFile: File) => {
+    setFile(selectedFile);
+    setError("");
+    setScoreResult(null);
+    setCurrentStep('upload');
   };
 
   const handleFileUpload = async () => {
@@ -285,29 +283,13 @@ export default function CheckCVPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tải lên file CV
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer flex flex-col items-center"
-                >
-                  <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <span className="text-lg font-medium text-gray-900">
-                    {file ? file.name : "Nhấp để tải lên PDF hoặc DOCX"}
-                  </span>
-                  <span className="text-sm text-gray-500 mt-1">
-                    Kích thước file tối đa: 10MB
-                  </span>
-                </label>
-              </div>
+              <FileUploadZone
+                file={file}
+                onFileSelect={handleFileChange}
+                accept=".pdf,.docx"
+                maxSizeMB={10}
+                disabled={isLoadingUpload}
+              />
             </div>
 
             <button
