@@ -22,9 +22,18 @@ export async function middleware(req: NextRequest) {
           supabaseResponse = NextResponse.next({
             request: req,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Enhanced cookie options for incognito mode compatibility
+            const cookieOptions = {
+              ...options,
+              path: '/',
+              sameSite: 'lax' as const,
+              secure: process.env.NODE_ENV === 'production',
+              // Ensure cookies work in incognito by not setting overly restrictive options
+              httpOnly: false, // Allow JavaScript access for better compatibility
+            }
+            supabaseResponse.cookies.set(name, value, cookieOptions)
+          })
         },
       },
     }

@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
     const redirectUrl = new URL(next, request.url)
     const response = NextResponse.redirect(redirectUrl)
     
-    // Explicitly set the session cookies in the response
+    // Explicitly set the session cookies in the response with incognito-compatible options
     const sessionCookies = [
       {
         name: 'sb-access-token',
@@ -110,6 +110,7 @@ export async function GET(request: NextRequest) {
           maxAge: 60 * 60 * 24 * 7, // 7 days
           sameSite: 'lax' as const,
           secure: process.env.NODE_ENV === 'production',
+          httpOnly: false, // Allow JavaScript access for better incognito compatibility
         }
       },
       {
@@ -120,6 +121,7 @@ export async function GET(request: NextRequest) {
           maxAge: 60 * 60 * 24 * 30, // 30 days
           sameSite: 'lax' as const,
           secure: process.env.NODE_ENV === 'production',
+          httpOnly: false, // Allow JavaScript access for better incognito compatibility
         }
       }
     ]
