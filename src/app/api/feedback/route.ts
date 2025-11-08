@@ -24,9 +24,11 @@ async function sendFeedbackNotificationEmail(
       original_name: string;
       file_type: string;
       file_size: number;
+      file_path: string;
     }>;
   },
-  user?: { id: string; email?: string } | null
+  user?: { id: string; email?: string } | null,
+  supabaseClient?: any
 ) {
   // Skip if Resend API key is not configured
   if (!process.env.RESEND_API_KEY) {
@@ -181,6 +183,43 @@ Xem chi tiết: ${process.env.NEXT_PUBLIC_SUPABASE_URL}/project/_/editor/feedbac
 Feedback ID: ${feedbackData.id}
   `.trim();
 
+  // Prepare email attachments by downloading from Supabase Storage
+  const emailAttachments: Array<{
+    content: Buffer;
+    filename: string;
+  }> = [];
+
+  if (hasAttachments && supabaseClient) {
+    for (const attachment of feedbackData.feedback_attachments!) {
+      try {
+        console.log(`Downloading attachment: ${attachment.file_name}`);
+        
+        // Download file from Supabase Storage
+        const { data: fileData, error: downloadError } = await supabaseClient.storage
+          .from('feedback-attachments')
+          .download(attachment.file_name);
+
+        if (downloadError) {
+          console.error(`Failed to download ${attachment.file_name}:`, downloadError);
+          continue;
+        }
+
+        // Convert Blob to Buffer
+        const arrayBuffer = await fileData.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        emailAttachments.push({
+          content: buffer,
+          filename: attachment.original_name,
+        });
+
+        console.log(`✓ Successfully prepared attachment: ${attachment.original_name}`);
+      } catch (error) {
+        console.error(`Error processing attachment ${attachment.file_name}:`, error);
+      }
+    }
+  }
+
   // Send email using Resend
   try {
     console.log('📧 Attempting to send feedback notification email...');
@@ -195,9 +234,13 @@ Feedback ID: ${feedbackData.id}
       html: emailHtml,
       text: emailText,
       replyTo: feedbackData.user_email || undefined,
+      attachments: emailAttachments.length > 0 ? emailAttachments : undefined,
     });
     
     console.log('✅ Email sent successfully:', result);
+    if (emailAttachments.length > 0) {
+      console.log(`✅ Sent with ${emailAttachments.length} attachment(s)`);
+    }
   } catch (error) {
     console.error('❌ Failed to send email:', error);
     throw error;
@@ -312,6 +355,7 @@ export async function POST(request: NextRequest) {
         feedback_attachments (
           id,
           file_name,
+          file_path,
           original_name,
           file_type,
           file_size,
@@ -331,7 +375,7 @@ export async function POST(request: NextRequest) {
 
     // Send email notification to team (non-blocking)
     try {
-      await sendFeedbackNotificationEmail(data, user);
+      await sendFeedbackNotificationEmail(data, user, supabase);
     } catch (emailError) {
       // Log email error but don't fail the request
       console.error('Failed to send notification email:', emailError);
@@ -392,6 +436,7 @@ export async function GET() {
         feedback_attachments (
           id,
           file_name,
+          file_path,
           original_name,
           file_type,
           file_size,

@@ -224,10 +224,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
               <span>Đang gửi...</span>
             </>
           ) : (
-            <>
-              <span>📤</span>
-              <span>Gửi phản hồi</span>
-            </>
+            <span>📤 Gửi phản hồi</span>
           )}
         </button>
 
