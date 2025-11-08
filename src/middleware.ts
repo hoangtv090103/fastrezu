@@ -42,20 +42,28 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
-  // Protected routes
-  if (req.nextUrl.pathname.startsWith('/dashboard') || 
-      req.nextUrl.pathname.startsWith('/editor') ||
-      req.nextUrl.pathname.startsWith('/check-cv')) {
-    if (!session) {
-      return NextResponse.redirect(new URL('/login', req.url))
-    }
+  // Skip middleware for auth callback and error routes to prevent loops
+  const isAuthRoute = req.nextUrl.pathname.startsWith('/auth/')
+  if (isAuthRoute) {
+    return res
   }
 
-  // Redirect authenticated users away from login
-  if (req.nextUrl.pathname === '/login' && session) {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+  // Check for authenticated routes (routes inside (authenticated) folder)
+  const isProtectedRoute = 
+    req.nextUrl.pathname.startsWith('/dashboard') || 
+    req.nextUrl.pathname.startsWith('/editor') ||
+    req.nextUrl.pathname.startsWith('/check-cv')
+  
+  if (isProtectedRoute && !session) {
+    const loginUrl = new URL('/login', req.url)
+    // Store the original URL to redirect back after login
+    loginUrl.searchParams.set('next', req.nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
+  // Don't redirect from login page in middleware - let the page handle it client-side
+  // This prevents redirect loops where middleware and page both try to redirect
+  
   return res
 }
 
