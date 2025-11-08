@@ -14,16 +14,25 @@ export default function LoginPage() {
     setMessage("");
 
     try {
+      // Detect if user is on mobile device
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
       // Use environment variable for production, fallback to window.location.origin for development
       // Configure NEXT_PUBLIC_SITE_URL in .env.local for your environment:
       // - Development: http://localhost:3000
       // - Production: https://yourdomain.com
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
       
+      // For mobile, use the callback URL that will handle deep link
+      // For desktop/web, use the standard callback URL
+      const redirectUrl = `${siteUrl}/auth/callback`;
+      
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${siteUrl}/auth/callback`,
+          emailRedirectTo: redirectUrl,
+          // Add shouldCreateUser option to handle new users
+          shouldCreateUser: true,
         },
       });
 
@@ -32,7 +41,9 @@ export default function LoginPage() {
         console.error("Magic link error:", error);
       } else {
         setMessage(
-          "Chúng tôi đã gửi link đăng nhập đến email của bạn. Vui lòng kiểm tra hộp thư."
+          isMobile 
+            ? "Chúng tôi đã gửi link đăng nhập đến email của bạn. Nhấp vào link trong email để đăng nhập trên thiết bị di động của bạn."
+            : "Chúng tôi đã gửi link đăng nhập đến email của bạn. Vui lòng kiểm tra hộp thư."
         );
       }
     } catch (error) {
