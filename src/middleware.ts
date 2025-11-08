@@ -20,8 +20,15 @@ export async function middleware(req: NextRequest) {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
+              // Set cookies with options compatible with mobile browsers
+              const cookieOptions = {
+                ...options,
+                sameSite: 'lax' as const,
+                secure: process.env.NODE_ENV === 'production',
+                path: '/',
+              }
               req.cookies.set(name, value)
-              res.cookies.set(name, value, options)
+              res.cookies.set(name, value, cookieOptions)
             })
           } catch (error) {
             console.error('Error setting cookies in middleware:', error)

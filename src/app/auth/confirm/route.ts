@@ -1,25 +1,22 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import type { EmailOtpType } from '@supabase/supabase-js'
 import type { UserProfileInsert } from '@/types'
 
 export async function GET(request: NextRequest) {
-  const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get('code')
-  const error = requestUrl.searchParams.get('error')
-  const errorDescription = requestUrl.searchParams.get('error_description')
-  const next = requestUrl.searchParams.get('next') || '/dashboard'
+  const { searchParams } = new URL(request.url)
+  const token_hash = searchParams.get('token_hash')
+  const type = searchParams.get('type') as EmailOtpType | null
+  const next = searchParams.get('next') ?? '/dashboard'
+  const redirectTo = request.nextUrl.clone()
+  redirectTo.pathname = next
+  redirectTo.searchParams.delete('token_hash')
+  redirectTo.searchParams.delete('type')
 
-  // Handle OAuth errors
-  if (error) {
-    console.error('OAuth error:', error, errorDescription)
-    const errorMessage = errorDescription || error
-    return NextResponse.redirect(new URL(`/auth/error?message=${encodeURIComponent(errorMessage)}`, request.url))
-  }
-
-  if (code) {
+  if (token_hash && type) {
     const cookieStore = await cookies()
-    
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -33,7 +30,6 @@ export async function GET(request: NextRequest) {
               cookiesToSet.forEach(({ name, value, options }) => {
                 cookieStore.set(name, value, {
                   ...options,
-                  // Ensure cookies work on mobile browsers
                   sameSite: 'lax',
                   secure: process.env.NODE_ENV === 'production',
                 })
@@ -45,13 +41,18 @@ export async function GET(request: NextRequest) {
         },
       }
     )
-    
+
     try {
-      const { error } = await supabase.auth.exchangeCodeForSession(code)
-      
+      const { error } = await supabase.auth.verifyOtp({
+        type,
+        token_hash,
+      })
+
       if (error) {
-        console.error('Auth callback error:', error)
-        return NextResponse.redirect(new URL('/auth/error?message=Authentication failed', request.url))
+        console.error('Token verification error:', error)
+        redirectTo.pathname = '/auth/error'
+        redirectTo.searchParams.set('message', 'Invalid or expired magic link')
+        return NextResponse.redirect(redirectTo)
       }
 
       // Get user data and create profile if needed
@@ -84,13 +85,17 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Use the next parameter or default to dashboard
-      return NextResponse.redirect(new URL(next, request.url))
+      return NextResponse.redirect(redirectTo)
     } catch (error) {
-      console.error('Auth callback error:', error)
-      return NextResponse.redirect(new URL('/auth/error?message=Authentication failed', request.url))
+      console.error('Confirm error:', error)
+      redirectTo.pathname = '/auth/error'
+      redirectTo.searchParams.set('message', 'Authentication failed')
+      return NextResponse.redirect(redirectTo)
     }
   }
 
-  return NextResponse.redirect(new URL('/auth/error?message=No authorization code', request.url))
+  // Return the user to an error page with some instructions
+  redirectTo.pathname = '/auth/error'
+  redirectTo.searchParams.set('message', 'Missing token or type parameter')
+  return NextResponse.redirect(redirectTo)
 }
