@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
 import MagicLinkForm from "@/components/auth/MagicLinkForm";
@@ -12,9 +12,17 @@ function LoginContent() {
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const hasCheckedAuth = useRef(false);
 
-  // Check if user is already authenticated
+  // Check if user is already authenticated - only run once on mount
   useEffect(() => {
+    // Prevent multiple checks
+    if (hasCheckedAuth.current) {
+      return;
+    }
+    
+    hasCheckedAuth.current = true;
+
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -23,16 +31,19 @@ function LoginContent() {
           // User is already logged in, redirect to dashboard or next page
           const next = searchParams.get('next') || '/dashboard';
           router.replace(next);
+        } else {
+          // No session, show login form
+          setIsCheckingAuth(false);
         }
       } catch (error) {
         console.error('Error checking auth:', error);
-      } finally {
         setIsCheckingAuth(false);
       }
     };
 
     checkAuth();
-  }, [supabase, router, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount
 
   const handleMagicLink = async (email: string) => {
     setIsLoading(true);
