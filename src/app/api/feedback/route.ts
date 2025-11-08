@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { FeedbackInsert } from '@/types';
+import type { Database } from '@/types/database';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
 // Initialize Resend client
@@ -28,7 +30,7 @@ async function sendFeedbackNotificationEmail(
     }>;
   },
   user?: { id: string; email?: string } | null,
-  supabaseClient?: any
+  supabaseClient?: SupabaseClient<Database>
 ) {
   // Skip if Resend API key is not configured
   if (!process.env.RESEND_API_KEY) {
