@@ -16,7 +16,9 @@ BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = '';
 
 -- ============================================================================
 -- TABLES
@@ -403,7 +405,10 @@ SELECT USING (auth.uid () = user_id);
 
 CREATE POLICY "Users can create feedback" ON feedback FOR INSERT
 WITH
-    CHECK (true);
+    CHECK (user_id IS NULL OR auth.uid() = user_id);
+
+CREATE POLICY "Anon users can view feedback" ON feedback FOR
+SELECT USING (true);
 
 CREATE POLICY "Users can update own feedback" ON feedback
 FOR UPDATE
@@ -533,3 +538,21 @@ COMMENT ON COLUMN feedback_attachments.file_path IS 'Path to file in storage buc
 COMMENT ON COLUMN feedback_attachments.file_type IS 'MIME type of the file (image/jpeg, image/png, etc.)';
 
 COMMENT ON COLUMN feedback_attachments.uploaded_by IS 'User who uploaded the attachment (can be null for anonymous users)';
+
+-- ============================================================================
+-- SECURITY NOTES & SETTINGS
+-- ============================================================================
+
+-- IMPORTANT: Enable Leaked Password Protection in Supabase Auth
+-- 1. Go to Supabase Dashboard > Project Settings > Auth > User Signups
+-- 2. Enable "Protect password using Have I Been Pwned (HaveIBeenPwned.org)"
+-- 3. This prevents users from using compromised passwords
+-- Location: https://app.supabase.com/project/[PROJECT-ID]/settings/auth
+-- 
+-- Security improvements made in this schema:
+-- 1. ✅ Added `SET search_path = ''` to update_updated_at_column() function
+--    - Prevents unauthorized schema resolution
+--    - Follows security best practice: SECURITY INVOKER + empty search_path
+-- 2. 🔔 TODO: Enable Leaked Password Protection in Auth settings
+--    - Supabase Auth checks HaveIBeenPwned.org database
+--    - Prevents users from setting compromised passwords

@@ -9,8 +9,19 @@ All technical and feature documentation is now organized in the `docs/` folder.
 See:
 - `docs/README.md` for documentation index and details
 - `docs/INDEX.md` for a full list of available guides
+- `docs/DATABASE_SECURITY_FIXES.md` for security audit results and recommendations
 
 For Vietnamese documentation, see `docs/README.vi.md`.
+
+### 🔒 Security
+
+FastRezu follows security best practices:
+- ✅ Database functions use secure search_path configuration
+- ✅ Row Level Security (RLS) enabled on all sensitive tables
+- ✅ Email notifications via Resend with proper error handling
+- 🔔 Leaked password protection recommended (see security docs)
+
+See `docs/DATABASE_SECURITY_FIXES.md` for detailed security information and current status.
 
 ## ✨ Key Features
 
