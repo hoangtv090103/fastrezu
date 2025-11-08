@@ -37,17 +37,37 @@ function LoginContent() {
       });
 
       if (error) {
-        setMessage("Có lỗi xảy ra khi gửi email. Vui lòng thử lại.");
+        // Enhanced error messages for better UX
+        let errorMessage = "Có lỗi xảy ra khi gửi email. Vui lòng thử lại.";
+        
+        // Rate limit error (429)
+        if (error.message.includes("security purposes") || error.message.includes("second")) {
+          errorMessage = "⏳ Bạn đang gửi yêu cầu quá nhanh. Vui lòng đợi 60 giây rồi thử lại.";
+        } 
+        // Invalid email format
+        else if (error.message.includes("invalid") || error.message.includes("email")) {
+          errorMessage = "❌ Email không hợp lệ. Vui lòng kiểm tra lại địa chỉ email.";
+        }
+        // Network errors
+        else if (error.message.includes("network") || error.message.includes("fetch")) {
+          errorMessage = "🌐 Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.";
+        }
+        // Server errors
+        else if (error.message.includes("500") || error.message.includes("server")) {
+          errorMessage = "⚠️ Lỗi máy chủ. Vui lòng thử lại sau ít phút.";
+        }
+        
+        setMessage(errorMessage);
         console.error("Magic link error:", error);
       } else {
         setMessage(
           isMobile 
-            ? "Chúng tôi đã gửi link đăng nhập đến email của bạn. Nhấp vào link trong email để đăng nhập trên thiết bị di động của bạn."
-            : "Chúng tôi đã gửi link đăng nhập đến email của bạn. Vui lòng kiểm tra hộp thư."
+            ? "✅ Chúng tôi đã gửi link đăng nhập đến email của bạn. Nhấp vào link trong email để đăng nhập trên thiết bị di động của bạn."
+            : "✅ Chúng tôi đã gửi link đăng nhập đến email của bạn. Vui lòng kiểm tra hộp thư (và cả thư mục spam)."
         );
       }
     } catch (error) {
-      setMessage("Có lỗi xảy ra. Vui lòng thử lại.");
+      setMessage("❌ Có lỗi không mong muốn xảy ra. Vui lòng thử lại sau.");
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
