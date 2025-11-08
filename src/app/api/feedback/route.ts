@@ -182,14 +182,26 @@ Feedback ID: ${feedbackData.id}
   `.trim();
 
   // Send email using Resend
-  await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || 'FastRezu <onboarding@resend.dev>',
-    to: process.env.TEAM_EMAIL!,
-    subject: `🔔 ${feedbackTypeLabel} từ ${userInfo} - ${feedbackData.subject}`,
-    html: emailHtml,
-    text: emailText,
-    replyTo: feedbackData.user_email || undefined,
-  });
+  try {
+    console.log('📧 Attempting to send feedback notification email...');
+    console.log('From:', process.env.RESEND_FROM_EMAIL);
+    console.log('To:', process.env.TEAM_EMAIL);
+    console.log('Subject:', `🔔 ${feedbackTypeLabel} từ ${userInfo} - ${feedbackData.subject}`);
+    
+    const result = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'FastRezu <onboarding@resend.dev>',
+      to: process.env.TEAM_EMAIL!,
+      subject: `🔔 ${feedbackTypeLabel} từ ${userInfo} - ${feedbackData.subject}`,
+      html: emailHtml,
+      text: emailText,
+      replyTo: feedbackData.user_email || undefined,
+    });
+    
+    console.log('✅ Email sent successfully:', result);
+  } catch (error) {
+    console.error('❌ Failed to send email:', error);
+    throw error;
+  }
 }
 
 interface AttachmentData {
