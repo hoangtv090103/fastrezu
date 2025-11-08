@@ -2,6 +2,16 @@
 
 FastRezu is a Next.js web application for building AI-optimized CVs with ATS (Applicant Tracking System) scoring capabilities.
 
+## 📚 Documentation
+
+All technical and feature documentation is now organized in the `docs/` folder.
+
+See:
+- `docs/README.md` for documentation index and details
+- `docs/INDEX.md` for a full list of available guides
+
+For Vietnamese documentation, see `docs/README.vi.md`.
+
 ## ✨ Key Features
 
 ### 🤖 AI-Powered Features
