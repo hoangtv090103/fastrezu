@@ -198,7 +198,7 @@ export default function EducationStep() {
 }
 
 // Export validation function for use in navigation
-export function validateEducationStep(education: Record<string, unknown>[], _language: 'vi' | 'en' = 'vi'): boolean {
+export function validateEducationStep(education: Record<string, unknown>[]): boolean {
   const currentYear = new Date().getFullYear();
   
   for (const edu of education) {

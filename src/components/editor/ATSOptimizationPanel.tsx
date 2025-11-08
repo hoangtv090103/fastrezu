@@ -38,21 +38,21 @@ export default function ATSOptimizationPanel({
   const [isApplying, setIsApplying] = useState<string | null>(null);
   const [isApplyingAll, setIsApplyingAll] = useState(false);
 
-  const loadSuggestions = async () => {
-    if (!cvData?.id) return;
-
-    setIsLoading(true);
-    try {
-      const data = await apiGet<{ suggestions: DBSuggestion[] }>(`/api/cv/suggestions/${cvData.id}`);
-      setSuggestions(data.suggestions || []);
-    } catch (error) {
-      console.error("Error loading suggestions:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadSuggestions = async () => {
+      if (!cvData?.id) return;
+
+      setIsLoading(true);
+      try {
+        const data = await apiGet<{ suggestions: DBSuggestion[] }>(`/api/cv/suggestions/${cvData.id}`);
+        setSuggestions(data.suggestions || []);
+      } catch (error) {
+        console.error("Error loading suggestions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadSuggestions();
   }, [cvData.id, reloadTrigger]);
 

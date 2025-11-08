@@ -3,7 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false, // Disabled for BlockNote compatibility
   images: {
-    domains: ['*.supabase.co', 'vietnamworks.com', 'www.vietnamworks.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vietnamworks.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.vietnamworks.com',
+      },
+    ],
   },
   // Performance optimizations
   compiler: {

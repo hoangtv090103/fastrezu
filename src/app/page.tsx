@@ -1,4 +1,5 @@
 import CompanyCarousel from "@/components/ui/CompanyCarousel";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -8,10 +9,14 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
-              <img 
+              {/* Sử dụng Next.js Image để tối ưu hình ảnh */}
+              <Image
                 src="/fastrezu-logo/trans_bg.png"
                 alt="FastRezu Logo"
+                width={32}
+                height={32}
                 className="w-8 h-8 object-contain"
+                priority
               />
               <span className="heading-feature text-xl text-gray-900">
                 FastRezu
