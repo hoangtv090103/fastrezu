@@ -2,36 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/prompts';
 import { AppError, handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
+import { improveBulletSchema, validateSchema } from '@/lib/validation-schemas';
 
 export async function POST(request: NextRequest) {
   try {
-    const {
-      bulletPoint,
-      context: _context,
-      jdKeywords: _jdKeywords,
-      language = 'vi'
-    } = await request.json();
-
-    if (!bulletPoint || typeof bulletPoint !== "string") {
+    const body = await request.json();
+    
+    // Validate request body with Zod
+    const validation = validateSchema(improveBulletSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: ERROR_MESSAGES[language as 'vi' | 'en'].validation_error },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
-
-    // Validate language parameter
-    if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ 
-        error: ERROR_MESSAGES.vi.validation_error 
-      }, { status: 400 })
-    }
+    
+    const { bulletPoint, context: _context, jdKeywords: _jdKeywords, language } = validation.data;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('improve_bullet', language as CVLanguage);
 
     // Get user message template based on language
     const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
-    const userMessage = userMessageTemplates.improve_bullet(bulletPoint, _context, _jdKeywords);
+    const userMessage = userMessageTemplates.improve_bullet(bulletPoint, _context || {}, _jdKeywords || []);
 
     // Call AI API
     let result;

@@ -5,17 +5,23 @@ import {
   type CVSectionInsert,
   type ATSuggestionUpdate,
 } from "@/types";
+import { applySuggestionSchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvId, suggestionId } = await request.json();
-
-    if (!cvId || !suggestionId) {
+    const body = await request.json();
+    
+    // Validate request body with Zod
+    const validation = validateSchema(applySuggestionSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "cvId and suggestionId are required" },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
+    
+    const { cvId, suggestionId } = validation.data;
 
     const supabase = await createClient();
 

@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { jdListQuerySchema, validateSchema } from '@/lib/validation-schemas'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const cvId = searchParams.get('cvId')
 
-    if (!cvId) {
-      return NextResponse.json({ error: 'CV ID is required' }, { status: 400 })
+    // Validate query parameters
+    const validation = validateSchema(jdListQuerySchema, { cvId });
+    
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError },
+        { status: 400 }
+      );
     }
 
     const cookieStore = await cookies()

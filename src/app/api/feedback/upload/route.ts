@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { validateFeedbackImageUpload } from '@/lib/validation-schemas';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,54 +34,26 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = (formData as unknown as { get: (key: string) => File | null }).get('file');
 
-    if (!file) {
+    // Validate file using helper function
+    const fileValidation = validateFeedbackImageUpload(file);
+    if (!fileValidation.success) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: fileValidation.error },
         { status: 400 }
       );
     }
 
-    // Type assertion to ensure we have the correct File type
-    const fileObj = file;
-
-    // Validate file type (images only)
-    const allowedTypes = [
-      'image/jpeg',
-      'image/jpg',
-      'image/png',
-      'image/gif',
-      'image/webp'
-    ];
-
-    if (!allowedTypes.includes(fileObj.type)) {
-      return NextResponse.json(
-        {
-          error: 'Only image files are allowed (JPEG, PNG, GIF, WebP). Maximum size: 5MB'
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size (5MB limit for images)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (fileObj.size > maxSize) {
-      return NextResponse.json(
-        {
-          error: 'File size must be less than 5MB'
-        },
-        { status: 400 }
-      );
-    }
+    const validatedFile = fileValidation.file;
 
     // Generate unique filename
-    const fileExt = fileObj.name.split('.').pop();
+    const fileExt = validatedFile.name.split('.').pop();
     const fileName = `${user?.id || 'anonymous'}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
     // Upload to Supabase Storage
     const { error: uploadError } = await supabase.storage
       .from('feedback-attachments')
-      .upload(fileName, fileObj, {
-        contentType: fileObj.type,
+      .upload(fileName, validatedFile, {
+        contentType: validatedFile.type,
         upsert: false,
       });
 
@@ -100,9 +73,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       fileName,
-      fileSize: fileObj.size,
-      fileType: fileObj.type,
-      originalName: fileObj.name,
+      fileSize: validatedFile.size,
+      fileType: validatedFile.type,
+      originalName: validatedFile.name,
       publicUrl,
       message: 'Image uploaded successfully'
     });

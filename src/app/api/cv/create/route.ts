@@ -2,20 +2,23 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { track } from '@vercel/analytics/server'
+import { createCVSchema, validateSchema } from '@/lib/validation-schemas'
 
 export async function POST(request: NextRequest) {
   try {
-    const { title = '', language = 'vi' } = await request.json()
-
-    // Validate language parameter
-    if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ error: 'Invalid language parameter. Must be "vi" or "en"' }, { status: 400 })
+    const body = await request.json()
+    
+    // Validate request body with Zod
+    const validation = validateSchema(createCVSchema, body)
+    
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError, details: validation.errors },
+        { status: 400 }
+      )
     }
-
-    // Validate title parameter
-    if (typeof title !== 'string' || title.length > 100) {
-      return NextResponse.json({ error: 'Title must be a string and less than 100 characters' }, { status: 400 })
-    }
+    
+    const { title = '', language } = validation.data
 
     const cookieStore = await cookies()
     const supabase = createServerClient(

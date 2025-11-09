@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { callOpenAI } from '@/lib/openai';
 import { CVLanguage } from '@/contexts/CVEditorContext';
 import { Suggestion } from '@/lib/suggestion-generator';
+import { suggestImprovementsSchema, validateSchema } from '@/lib/validation-schemas';
 
 interface RequestBody {
   suggestions: Suggestion[];
@@ -63,20 +64,25 @@ Return JSON with structure:
 export async function POST(request: NextRequest) {
   try {
     const body: RequestBody = await request.json();
-    const { suggestions, cvData } = body;
-
-    if (!suggestions || !Array.isArray(suggestions) || suggestions.length === 0) {
+    
+    // Validate with Zod
+    const validation = validateSchema(suggestImprovementsSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Suggestions array is required' },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
+    
+    const { suggestions, cvData } = validation.data;
 
     const language = 'vi';
 
     // Build context from CV data
-    const experienceContext = cvData?.sections?.experience 
-      ? cvData.sections.experience.slice(0, 2).map((exp: { title?: string; company?: string }) => 
+    const experience = cvData?.sections?.experience;
+    const experienceContext = Array.isArray(experience) && experience.length > 0
+      ? experience.slice(0, 2).map((exp: { title?: string; company?: string }) => 
           `${exp.title || 'Position'} at ${exp.company || 'Company'}`
         ).join(', ')
       : 'No experience provided';

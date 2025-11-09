@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { jdDeleteQuerySchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function DELETE(request: NextRequest) {
   try {
     const jdId = request.nextUrl.searchParams.get("jdId");
 
-    if (!jdId) {
-      console.error("JD ID missing from request. URL:", request.url);
-      return NextResponse.json({ error: "JD ID is required" }, { status: 400 });
+    // Validate query parameters
+    const validation = validateSchema(jdDeleteQuerySchema, { jdId });
+    
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError },
+        { status: 400 }
+      );
     }
 
     const cookieStore = await cookies();

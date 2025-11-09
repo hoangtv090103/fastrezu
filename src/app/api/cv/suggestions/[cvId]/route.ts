@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { cvIdSchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function GET(
   request: NextRequest,
@@ -7,6 +8,17 @@ export async function GET(
 ) {
   try {
     const { cvId } = await params;
+    
+    // Validate cvId
+    const validation = validateSchema(cvIdSchema, cvId);
+    
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError, details: validation.errors },
+        { status: 400 }
+      );
+    }
+    
     const supabase = await createClient();
 
     // Get current user

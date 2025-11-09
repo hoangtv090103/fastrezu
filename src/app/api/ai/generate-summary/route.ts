@@ -4,6 +4,7 @@ import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/promp
 import { AppError, handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler'
 import { logAIOperation } from '@/lib/logger'
 import { createClient } from '@/lib/supabase-server'
+import { validateSchema, generateSummarySchema } from '@/lib/validation-schemas'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,39 +12,29 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    const { personalInfo, experience, jdKeywords, language = 'vi', cvId } = await request.json()
-
-    // Validate personalInfo exists
-    if (!personalInfo) {
-      return NextResponse.json({ 
-        error: language === 'vi' 
-          ? 'Thông tin cá nhân không được để trống. Vui lòng điền phần thông tin cá nhân trước.'
-          : 'Personal information is required. Please fill in the personal information section first.'
-      }, { status: 400 })
+    const body = await request.json();
+    
+    // Validate request body with Zod
+    const validation = validateSchema(generateSummarySchema, body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError, details: validation.errors },
+        { status: 400 }
+      );
     }
 
-    // Validate full_name exists
-    if (!personalInfo.full_name || typeof personalInfo.full_name !== 'string' || personalInfo.full_name.trim() === '') {
-      return NextResponse.json({ 
-        error: language === 'vi' 
-          ? 'Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân.'
-          : 'Full name is required. Please fill in your full name in the personal information section.'
-      }, { status: 400 })
-    }
-
-    // Validate language parameter
-    if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json({ 
-        error: ERROR_MESSAGES.vi.validation_error 
-      }, { status: 400 })
-    }
+    const { personalInfo, experience, jdKeywords, language, cvId } = validation.data;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('generate_summary', language as CVLanguage)
 
     // Get user message template based on language
     const userMessageTemplates = getUserMessageTemplate(language as CVLanguage)
-    const userMessage = userMessageTemplates.generate_summary(personalInfo, experience, jdKeywords)
+    const userMessage = userMessageTemplates.generate_summary(
+      personalInfo, 
+      (experience || []) as Record<string, unknown>[], 
+      jdKeywords || []
+    )
 
     // Call AI API with tracking
     const result = await logAIOperation(

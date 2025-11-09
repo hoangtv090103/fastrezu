@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { validateSchema, deleteCVSchema } from '@/lib/validation-schemas'
 
 export async function DELETE(
   request: NextRequest,
@@ -38,6 +39,15 @@ export async function DELETE(
     }
 
     const { cvId } = await params
+
+    // Validate cvId
+    const validation = validateSchema(deleteCVSchema, { cvId });
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError, details: validation.errors },
+        { status: 400 }
+      );
+    }
 
     // Verify CV ownership
     const { data: cv, error: cvError } = await supabase

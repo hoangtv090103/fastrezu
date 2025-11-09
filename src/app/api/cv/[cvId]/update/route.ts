@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { updateCVSchema, validateSchema } from '@/lib/validation-schemas'
 
 export async function PUT(
   request: NextRequest,
@@ -40,6 +41,16 @@ export async function PUT(
     const { cvId } = await params
     const body = await request.json()
 
+    // Validate request body with Zod
+    const validation = validateSchema(updateCVSchema, body)
+    
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError, details: validation.errors },
+        { status: 400 }
+      )
+    }
+
     // Verify CV ownership
     const { data: cv, error: cvError } = await supabase
       .from('cvs')
@@ -52,13 +63,21 @@ export async function PUT(
     }
 
     // Update CV
+    const updateData: { title?: string; ats_score?: number; updated_at: string } = {
+      updated_at: new Date().toISOString(),
+    }
+    
+    if (validation.data.title !== undefined) {
+      updateData.title = validation.data.title
+    }
+    
+    if (validation.data.ats_score !== undefined) {
+      updateData.ats_score = validation.data.ats_score
+    }
+    
     const { data: updatedCv, error } = await supabase
       .from('cvs')
-      .update({
-        title: body.title,
-        ats_score: body.ats_score,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq('id', cvId)
       .select()
       .single()

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { extractText, getDocumentProxy } from "unpdf";
 import mammoth from "mammoth";
+import { validateCVFileUpload } from "@/lib/validation-schemas";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,43 +23,25 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = (formData as unknown as { get: (key: string) => File | null }).get("file");
 
-    if (!file) {
+    // Validate file using helper function
+    const fileValidation = validateCVFileUpload(file);
+    if (!fileValidation.success) {
       return NextResponse.json(
-        { error: "No file provided" },
+        { error: fileValidation.error },
         { status: 400 }
       );
     }
 
-    // Validate file type
-    const allowedTypes = [
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Only PDF and DOCX files are allowed" },
-        { status: 400 }
-      );
-    }
-
-    // Validate file size (10MB limit)
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      return NextResponse.json(
-        { error: "File size must be less than 10MB" },
-        { status: 400 }
-      );
-    }
+    const validatedFile = fileValidation.file;
 
     // Upload original file to Supabase Storage
-    const fileExt = file.name.split('.').pop();
+    const fileExt = validatedFile.name.split('.').pop();
     const fileName = `${user.id}/${Date.now()}.${fileExt}`;
     
     const { error: uploadError } = await supabase.storage
       .from("cv-uploads")
-      .upload(fileName, file, {
-        contentType: file.type,
+      .upload(fileName, validatedFile, {
+        contentType: validatedFile.type,
         upsert: false,
       });
 
@@ -74,13 +57,13 @@ export async function POST(request: NextRequest) {
     let extractedText = "";
 
     try {
-      if (file.type === "application/pdf") {
-        const arrayBuffer = await file.arrayBuffer();
+      if (validatedFile.type === "application/pdf") {
+        const arrayBuffer = await validatedFile.arrayBuffer();
         const pdf = await getDocumentProxy(new Uint8Array(arrayBuffer));
         const { text } = await extractText(pdf, { mergePages: true });
         extractedText = text;
-      } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-        const arrayBuffer = await file.arrayBuffer();
+      } else if (validatedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+        const arrayBuffer = await validatedFile.arrayBuffer();
         const result = await mammoth.extractRawText({ buffer: Buffer.from(arrayBuffer) });
         extractedText = result.value;
       }
@@ -101,8 +84,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         extractedText,
         fileName,
-        fileSize: file.size,
-        fileType: file.type,
+        fileSize: validatedFile.size,
+        fileType: validatedFile.type,
       });
 
     } catch (extractionError) {

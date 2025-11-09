@@ -7,39 +7,24 @@ import {
 } from "@/lib/prompts";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { handleAPIError, logError, ERROR_MESSAGES } from "@/lib/error-handler";
+import { handleAPIError, logError } from "@/lib/error-handler";
+import { analyzeJDSchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function POST(request: NextRequest) {
   try {
-    const { jdText, cvId, language = "vi" } = await request.json();
-
-    if (!jdText || typeof jdText !== "string") {
+    const body = await request.json();
+    
+    // Validate request body with Zod
+    const validation = validateSchema(analyzeJDSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        {
-          error: ERROR_MESSAGES[language as "vi" | "en"].validation_error,
-        },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
-
-    if (!cvId || typeof cvId !== "string") {
-      return NextResponse.json(
-        {
-          error: ERROR_MESSAGES[language as "vi" | "en"].validation_error,
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate language parameter
-    if (!["vi", "en"].includes(language)) {
-      return NextResponse.json(
-        {
-          error: ERROR_MESSAGES.vi.validation_error,
-        },
-        { status: 400 }
-      );
-    }
+    
+    const { jdText, cvId, language } = validation.data;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt("analyze_jd", language as CVLanguage);

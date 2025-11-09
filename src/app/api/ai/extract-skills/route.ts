@@ -1,25 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, CVLanguage } from "@/lib/prompts";
+import { z } from "zod";
+import { languageSchema, validateSchema } from "@/lib/validation-schemas";
+
+// Schema for extract-skills endpoint
+const extractSkillsInternalSchema = z.object({
+  jdKeywords: z.array(z.string()).min(1, 'At least one JD keyword is required'),
+  language: languageSchema,
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { jdKeywords, language = "vi" } = await request.json();
-
-    if (!jdKeywords || !Array.isArray(jdKeywords)) {
+    const body = await request.json();
+    
+    // Validate with Zod
+    const validation = validateSchema(extractSkillsInternalSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "JD keywords are required" },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
-
-    // Validate language parameter
-    if (!["vi", "en"].includes(language)) {
-      return NextResponse.json(
-        { error: 'Invalid language parameter. Must be "vi" or "en"' },
-        { status: 400 }
-      );
-    }
+    
+    const { jdKeywords, language } = validation.data;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt(

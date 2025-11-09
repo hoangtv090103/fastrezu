@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
-import { handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler';
+import { handleAPIError, logError } from '@/lib/error-handler';
 import { logger, logAIOperation } from '@/lib/logger';
 import { createClient } from "@/lib/supabase-server";
+import { scoreCVWithDataSchema, validateSchema } from "@/lib/validation-schemas";
 
 // Increase timeout for AI scoring (can take up to 2 minutes)
 export const maxDuration = 120; // 2 minutes
@@ -19,22 +20,20 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    const { cvData, jdKeywords, language = 'vi' } = await request.json();
-
-    if (!cvData) {
+    const body = await request.json();
+    
+    // Validate with Zod
+    const validation = validateSchema(scoreCVWithDataSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: ERROR_MESSAGES.vi.validation_error },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
-
-    // Validate language parameter
-    const cvLanguage = (language === 'en' ? 'en' : 'vi') as CVLanguage;
-    if (!['vi', 'en'].includes(cvLanguage)) {
-      return NextResponse.json({ 
-        error: ERROR_MESSAGES.vi.validation_error 
-      }, { status: 400 })
-    }
+    
+    const { cvData, jdKeywords, language } = validation.data;
+    const cvLanguage = language as CVLanguage;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('score_cv', cvLanguage);

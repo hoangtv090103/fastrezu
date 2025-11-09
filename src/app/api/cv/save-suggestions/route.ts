@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { type ATSuggestionInsert } from "@/types";
+import { cvIdSchema, validateSchema } from "@/lib/validation-schemas";
+import { z } from "zod";
+
+// Schema specific for this endpoint's suggestion format
+const saveSuggestionsInternalSchema = z.object({
+  cvId: cvIdSchema,
+  suggestions: z.array(z.object({
+    suggestion_text: z.string(),
+    suggestion_type: z.string(),
+    target_section: z.string(),
+    target_index: z.number().nullable().optional(),
+    keyword: z.string().nullable().optional(),
+    priority: z.enum(['high', 'medium', 'low']),
+    original_content: z.unknown(),
+    suggested_content: z.unknown(),
+  })),
+});
 
 interface SuggestionInput {
   suggestion_text: string;
@@ -15,14 +32,19 @@ interface SuggestionInput {
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvId, suggestions } = await request.json();
-
-    if (!cvId || !Array.isArray(suggestions)) {
+    const body = await request.json();
+    
+    // Validate with Zod
+    const validation = validateSchema(saveSuggestionsInternalSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "cvId and suggestions array are required" },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
+    
+    const { cvId, suggestions } = validation.data;
 
     const supabase = await createClient();
 

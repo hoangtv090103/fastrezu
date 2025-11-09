@@ -5,6 +5,7 @@ import type { FeedbackInsert } from '@/types';
 import type { Database } from '@/types/database';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { submitFeedbackSchema, validateSchema } from '@/lib/validation-schemas';
 
 // Initialize Resend client
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -249,32 +250,21 @@ Feedback ID: ${feedbackData.id}
   }
 }
 
-interface AttachmentData {
-  fileName: string;
-  fileSize: number;
-  fileType: string;
-  originalName: string;
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { feedback_type, subject, message, user_email, priority, metadata } = body;
-
-    // Validation
-    if (!feedback_type || !subject || !message) {
+    
+    // Validate request body with Zod
+    const validation = validateSchema(submitFeedbackSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: feedback_type, subject, message' },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
-
-    if (!['bug_report', 'feature_request', 'general_feedback', 'praise'].includes(feedback_type)) {
-      return NextResponse.json(
-        { error: 'Invalid feedback_type' },
-        { status: 400 }
-      );
-    }
+    
+    const { feedback_type, subject, message, user_email, priority, attachments } = validation.data;
 
     const cookieStore = await cookies();
     const supabase = createServerClient(
@@ -309,7 +299,7 @@ export async function POST(request: NextRequest) {
       message,
       priority: priority || 'medium',
       status: 'open',
-      metadata: metadata || {},
+      metadata: {},
     };
 
     // Insert feedback first
@@ -328,15 +318,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle attachments if provided
-    const attachments = body.attachments;
-    if (attachments && Array.isArray(attachments) && attachments.length > 0) {
-      const attachmentRecords = attachments.map((attachment: AttachmentData) => ({
+    if (attachments && attachments.length > 0) {
+      const attachmentRecords = attachments.map((attachment) => ({
         feedback_id: feedbackRecord.id,
-        file_name: attachment.fileName,
-        file_path: attachment.fileName, // This should be the full path in storage
-        file_size: attachment.fileSize,
-        file_type: attachment.fileType,
-        original_name: attachment.originalName,
+        file_name: attachment.file_name,
+        file_path: attachment.file_path,
+        file_size: attachment.file_size,
+        file_type: attachment.file_type,
+        original_name: attachment.original_name,
         uploaded_by: user?.id || null,
       }));
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
+import { scoreUploadedCVSchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,22 +19,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { confirmedText, jdText, language = 'vi' } = await request.json();
-
-    if (!confirmedText || confirmedText.trim().length < 10) {
+    const body = await request.json();
+    
+    // Validate with Zod
+    const validation = validateSchema(scoreUploadedCVSchema, body);
+    
+    if (!validation.success) {
       return NextResponse.json(
-        { error: "Confirmed text is required and must be at least 10 characters" },
+        { error: validation.firstError, details: validation.errors },
         { status: 400 }
       );
     }
-
-    // Validate language parameter
-    if (!['vi', 'en'].includes(language)) {
-      return NextResponse.json(
-        { error: 'Invalid language parameter. Must be "vi" or "en"' },
-        { status: 400 }
-      );
-    }
+    
+    const { confirmedText, jdText, language } = validation.data;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt('score_cv', language as CVLanguage);
