@@ -1,4 +1,5 @@
 import CompanyCarousel from "@/components/ui/CompanyCarousel";
+import CTAButton from "@/components/ui/CTAButton";
 import Image from "next/image";
 
 export default function Home() {
@@ -54,15 +55,7 @@ export default function Home() {
 
               {/* Nút CTA giữ nguyên */}
               <div className="max-w-md mx-auto lg:mx-0">
-                <a
-                  href="/login"
-                  className="btn-primary btn-text w-full sm:w-auto inline-block text-center whitespace-nowrap px-6 py-3"
-                >
-                  BẮT ĐẦU TẠO CV MIỄN PHÍ
-                </a>
-                <p className="small-text text-gray-500 text-center lg:text-left mt-3">
-                  Đăng nhập hoặc đăng ký nhanh chóng bằng email.
-                </p>
+                <CTAButton />
               </div>
             </div>
 
@@ -229,15 +222,7 @@ export default function Home() {
             </p>
             {/* Nút CTA giữ nguyên */}
             <div className="max-w-md mx-auto">
-              <a
-                href="/login"
-                className="btn-secondary btn-text w-full sm:w-auto inline-block text-center whitespace-nowrap px-6 py-3"
-              >
-                BẮT ĐẦU TẠO CV MIỄN PHÍ
-              </a>
-              <p className="small-text text-gray-500 mt-3">
-                Đăng nhập hoặc đăng ký nhanh chóng bằng email.
-              </p>
+              <CTAButton variant="secondary" />
             </div>
           </div>
         </div>
