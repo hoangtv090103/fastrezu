@@ -4,7 +4,14 @@ Comprehensive documentation for the FastRezu project.
 
 ## 🎯 Quick Links
 
-### 🆕 New: Code Quality & Validation
+### 🚀 New: Auto-Save System
+- [Auto-Save Improvements](./AUTO_SAVE_IMPROVEMENTS.md) - **⭐ NEW!** Complete technical guide
+- [Auto-Save Quick Reference](./AUTO_SAVE_QUICK_REFERENCE.md) - **⭐ NEW!** Developer quick guide
+- [Auto-Save Examples](./AUTO_SAVE_EXAMPLES.tsx) - **⭐ NEW!** Code examples
+- [Auto-Save Summary](./AUTO_SAVE_SUMMARY.md) - **⭐ NEW!** Implementation summary
+- [Auto-Save Checklist](./AUTO_SAVE_CHECKLIST.md) - **⭐ NEW!** Testing checklist
+
+### 🆕 Code Quality & Validation
 - [Zod Validation Status](./ZOD_VALIDATION_STATUS.md) - **⭐ STATUS!** Overall progress (48% complete)
 - [Zod Validation Implementation](./ZOD_VALIDATION_IMPLEMENTATION.md) - **⭐ NEW!** Complete guide
 - [Zod Quick Start](./ZOD_QUICK_START.md) - **⭐ NEW!** Quick reference

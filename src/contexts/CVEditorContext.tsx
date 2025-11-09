@@ -44,6 +44,7 @@ export interface CVEditorState {
   saveStatus: "saved" | "saving" | "error";
   error: string | null;
   selectedLanguage: CVLanguage | null;
+  isDirty: boolean;
 }
 
 type CVEditorAction =
@@ -75,6 +76,7 @@ const initialState: CVEditorState = {
   saveStatus: "saved",
   error: null,
   selectedLanguage: null,
+  isDirty: false,
 };
 
 function cvEditorReducer(
@@ -85,7 +87,12 @@ function cvEditorReducer(
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
     case "SET_CV_DATA":
-      return { ...state, cvData: action.payload, isLoading: false };
+      return {
+        ...state,
+        cvData: action.payload,
+        isLoading: false,
+        isDirty: false,
+      };
     case "UPDATE_SECTION":
       if (!state.cvData) return state;
       return {
@@ -97,6 +104,7 @@ function cvEditorReducer(
             [action.payload.sectionType]: action.payload.data,
           },
         },
+        isDirty: true,
       };
     case "SET_CURRENT_STEP":
       return { ...state, currentStep: action.payload };
@@ -105,6 +113,8 @@ function cvEditorReducer(
         ...state,
         saveStatus: action.payload,
         isSaving: action.payload === "saving",
+        // Nếu đã lưu thành công, reset dirty về false
+        isDirty: action.payload === "saved" ? false : state.isDirty,
       };
     case "SET_ERROR":
       return { ...state, error: action.payload };
@@ -116,11 +126,12 @@ function cvEditorReducer(
           ...state.cvData,
           jd_analysis: action.payload,
         },
+        isDirty: true,
       };
     case "SET_LANGUAGE":
-      return { ...state, selectedLanguage: action.payload };
+      return { ...state, selectedLanguage: action.payload, isDirty: true };
     case "UPDATE_CV_DATA":
-      return { ...state, cvData: action.payload };
+      return { ...state, cvData: action.payload, isDirty: true };
     case "UPDATE_TITLE":
       if (!state.cvData) return state;
       return {
@@ -129,6 +140,7 @@ function cvEditorReducer(
           ...state.cvData,
           title: action.payload,
         },
+        isDirty: true,
       };
     default:
       return state;
@@ -150,6 +162,7 @@ interface CVEditorContextType {
   updateCVData: (cvData: CVData) => void;
   updateTitle: (title: string) => void;
   saveCV: () => Promise<void>;
+  saveNow: () => Promise<void>;
 }
 
 const CVEditorContext = createContext<CVEditorContextType | undefined>(
@@ -167,6 +180,9 @@ export function CVEditorProvider({
 }) {
   const [state, dispatch] = useReducer(cvEditorReducer, initialState);
   const supabase = createClient();
+  
+  // Ref để giữ timeout ID, giúp clear dễ dàng hơn
+  const autoSaveTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load CV data
   useEffect(() => {
@@ -431,14 +447,45 @@ export function CVEditorProvider({
 
   // Auto-save with debouncing
   useEffect(() => {
-    if (!state.cvData || state.isLoading) return;
+    // Chỉ kích hoạt auto-save nếu dirty và không đang loading
+    if (!state.isDirty || state.isLoading || !state.cvData) return;
 
-    const timeoutId = setTimeout(() => {
+    // Clear timeout cũ nếu có (debounce)
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set timeout mới - đợi 2s sau lần thay đổi cuối cùng
+    autoSaveTimeoutRef.current = setTimeout(() => {
       saveCV();
-    }, 2000); // 2 second debounce
+    }, 2000);
 
-    return () => clearTimeout(timeoutId);
-  }, [state.cvData, saveCV, state.isLoading]);
+    // Cleanup khi unmount hoặc dependency đổi
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [state.cvData, state.isDirty, state.isLoading, saveCV]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (state.isSaving || state.isDirty) {
+        // Kích hoạt cảnh báo của trình duyệt
+        e.preventDefault();
+        e.returnValue = ''; // Chrome yêu cầu cái này
+      }
+    };
+
+    // Chỉ gắn event listener nếu cần thiết
+    if (state.isSaving || state.isDirty) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
+  }, [state.isSaving, state.isDirty]);
 
   const updateSection = (
     sectionType: string,
@@ -488,12 +535,9 @@ export function CVEditorProvider({
         }
 
         // Update CV title via API
-        const { cv: updatedCv } = await apiPut<{ cv: { title: string; ats_score: number } }>(
-          `/api/cv/${cvId}/update`,
-          { title: title.trim() },
-          undefined,
-          'vi'
-        );
+        const { cv: updatedCv } = await apiPut<{
+          cv: { title: string; ats_score: number };
+        }>(`/api/cv/${cvId}/update`, { title: title.trim() }, undefined, "vi");
 
         // Update the full CV data in state
         if (state.cvData) {
@@ -519,6 +563,17 @@ export function CVEditorProvider({
     [state.cvData, cvId, supabase]
   );
 
+  // Hàm lưu ngay lập tức mà không đợi debounce
+  const saveNow = useCallback(async () => {
+    // Nếu có timeout đang chờ, clear nó đi để tránh lưu 2 lần
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+      autoSaveTimeoutRef.current = null;
+    }
+    // Gọi lưu ngay lập tức
+    return await saveCV();
+  }, [saveCV]);
+
   return (
     <CVEditorContext.Provider
       value={{
@@ -530,6 +585,7 @@ export function CVEditorProvider({
         updateCVData,
         updateTitle,
         saveCV,
+        saveNow,
       }}
     >
       {children}
