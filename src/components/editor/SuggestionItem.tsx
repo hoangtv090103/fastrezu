@@ -100,14 +100,14 @@ export default function SuggestionItem({
             className="shrink-0 px-4 py-2 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={`Apply suggestion: ${suggestion.suggestion_text}`}
           >
-            {isLocalApplying ? "Applying..." : "Apply"}
+            {isLocalApplying ? "Đang áp dụng..." : "Áp dụng"}
           </button>
         )}
 
         {suggestion.is_applied && (
               <span className="px-2 py-1 text-xs font-medium rounded-full border bg-green-100 text-green-800 border-green-300 flex items-center gap-1">
                 <span className="text-green-600">✓</span>
-                Applied
+                Đã cập nhật
               </span>
             )}
       </div>

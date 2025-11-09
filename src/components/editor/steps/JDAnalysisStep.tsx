@@ -254,7 +254,7 @@ const handleAnalyzeJD = async () => {
                   Các từ khóa này sẽ được sử dụng để tối ưu hóa CV của bạn. Bạn có thể tiếp tục với bước tiếp theo.
                 </p>
                 <button
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => setCurrentStep(2)}
                   className="mt-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors duration-200"
                 >
                   Tiếp theo: Thông tin cá nhân →

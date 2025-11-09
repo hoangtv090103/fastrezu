@@ -123,9 +123,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
   };
 
   const handleDelete = () => {
-    if (confirm("Bạn có chắc chắn muốn xóa CV này?")) {
-      onDelete(cv.id);
-    }
+    onDelete(cv.id);
   };
 
   return (

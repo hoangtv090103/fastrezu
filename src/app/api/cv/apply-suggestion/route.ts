@@ -210,6 +210,23 @@ export async function POST(request: NextRequest) {
             ? suggestedSkills.soft 
             : currentSkills.soft || [],
         };
+      } else if (validatedSuggestion.target_section === 'summary') {
+        // For summary section, ensure data is wrapped in { content: "..." } structure
+        const suggestedContent = validatedSuggestion.suggested_content;
+        
+        // If suggested_content is a string, wrap it in the expected structure
+        if (typeof suggestedContent === 'string') {
+          updatedData = { content: suggestedContent };
+        } else if (typeof suggestedContent === 'object' && suggestedContent !== null) {
+          // If it's already an object, ensure it has 'content' field
+          const contentObj = suggestedContent as Record<string, unknown>;
+          updatedData = {
+            content: contentObj.content || contentObj.text || ''
+          };
+        } else {
+          // Fallback: preserve existing data or use empty
+          updatedData = sectionData?.data || { content: '' };
+        }
       } else {
         // Replace entire section for other section types
         updatedData = validatedSuggestion.suggested_content;

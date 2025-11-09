@@ -121,15 +121,56 @@ export default function ATSOptimizationPanel({
 
     setIsApplyingAll(true);
     try {
-      const result = await apiPost<{ appliedCount: number; appliedSuggestionIds?: string[] }>(
+      const result = await apiPost<{ 
+        appliedCount: number; 
+        appliedSuggestions?: string[];
+        failedCount?: number;
+        failedSuggestions?: string[];
+      }>(
         "/api/cv/apply-all-suggestions",
         { cvId: cvData.id },
         undefined,
         'vi'
       );
 
-      // Update all applied suggestions in local state instead of reloading
-      const appliedSuggestionIds = result.appliedSuggestionIds || 
+      console.log("Apply all result:", result);
+
+      // Reload CV data from database to get updated sections
+      if (result.appliedCount > 0) {
+        try {
+          const supabase = (await import("@/lib/supabase-client")).createClient();
+          
+          // Get CV sections
+          const { data: sections, error: sectionsError } = await supabase
+            .from("cv_sections")
+            .select("*")
+            .eq("cv_id", cvData.id)
+            .order("order_index");
+
+          if (sectionsError) {
+            console.error("Error reloading CV sections:", sectionsError);
+          } else if (sections) {
+            // Transform sections into object
+            const sectionsData: { [key: string]: Record<string, unknown> | Record<string, unknown>[] } = {};
+            sections.forEach((section: { section_type: string; data: unknown }) => {
+              sectionsData[section.section_type] = section.data as Record<string, unknown> | Record<string, unknown>[];
+            });
+
+            // Update CV data in context with new sections
+            updateCVData({
+              ...cvData,
+              sections: sectionsData,
+            });
+
+            console.log("CV sections reloaded successfully after applying all suggestions");
+          }
+        } catch (reloadError) {
+          console.error("Error reloading CV data:", reloadError);
+        }
+      }
+
+      // Update applied suggestions in local state
+      const appliedSuggestionIds = result.appliedSuggestions || 
         unappliedSuggestions.map(s => s.suggestion_id);
       
       setSuggestions(prevSuggestions => 
@@ -140,9 +181,16 @@ export default function ATSOptimizationPanel({
         )
       );
 
-      showSuccessToast(
-        `Đã áp dụng thành công ${result.appliedCount} gợi ý!`
-      );
+      const failedCount = result.failedCount || 0;
+      if (failedCount > 0) {
+        showSuccessToast(
+          `Đã áp dụng thành công ${result.appliedCount}/${result.appliedCount + failedCount} gợi ý`
+        );
+      } else {
+        showSuccessToast(
+          `Đã áp dụng thành công ${result.appliedCount} gợi ý!`
+        );
+      }
     } catch (error) {
       console.error("Error applying all suggestions:", error);
       const appError = handleAPIError(error, "apply all suggestions", "vi");
@@ -200,8 +248,8 @@ export default function ATSOptimizationPanel({
             className="w-full px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isApplyingAll
-              ? "Applying..."
-              : `Apply All (${activeUnappliedSuggestions.length})`}
+              ? "Đang áp dụng..."
+              : `Áp dụng tất cả (${activeUnappliedSuggestions.length})`}
           </button>
         </div>
       )}

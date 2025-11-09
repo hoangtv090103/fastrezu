@@ -7,14 +7,23 @@ import {
   type CVSectionType,
   type CVSectionInsert,
 } from "@/types";
+import { applyAllSuggestionsSchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function POST(request: NextRequest) {
   try {
-    const { cvId } = await request.json();
-
-    if (!cvId) {
-      return NextResponse.json({ error: "cvId is required" }, { status: 400 });
+    const body = await request.json();
+    
+    // Validate with Zod
+    const validation = validateSchema(applyAllSuggestionsSchema, body);
+    
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.firstError, details: validation.errors },
+        { status: 400 }
+      );
     }
+    
+    const { cvId } = validation.data;
 
     const supabase = await createClient();
 
@@ -138,7 +147,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Apply suggestion
-        let updatedData: Record<string, unknown>;
+        let updatedData: unknown;
         const sectionData = section as CVSection | null;
 
         if (
@@ -150,30 +159,61 @@ export async function POST(request: NextRequest) {
           const newData = [...currentData];
           newData[validatedSuggestion.target_index] =
             validatedSuggestion.suggested_content;
-          // We expect updatedData to be a Record for upsert, but this is an array -> wrap in an object (e.g., { items: [...] }) or assign to a more appropriate type.
-          // Here, we wrap the array under a key "items" to ensure type correctness.
-          updatedData = { items: newData };
+          // Keep as array, not wrapped in object
+          updatedData = newData;
         } else {
-          // Make sure section content is an object
-          if (
-            typeof validatedSuggestion.suggested_content === "object" &&
-            validatedSuggestion.suggested_content !== null &&
-            !Array.isArray(validatedSuggestion.suggested_content)
-          ) {
-            updatedData = validatedSuggestion.suggested_content as Record<
-              string,
-              unknown
-            >;
+          // For skills section, merge with existing data to preserve both technical and soft skills
+          if (validatedSuggestion.target_section === 'skills' && sectionData?.data) {
+            const currentSkills = sectionData.data as Record<string, unknown>;
+            const suggestedSkills = validatedSuggestion.suggested_content as Record<string, unknown>;
+            
+            // Merge skills, preserving existing data
+            updatedData = {
+              technical: suggestedSkills.technical !== undefined 
+                ? suggestedSkills.technical 
+                : currentSkills.technical || [],
+              soft: suggestedSkills.soft !== undefined 
+                ? suggestedSkills.soft 
+                : currentSkills.soft || [],
+            };
+          } else if (validatedSuggestion.target_section === 'summary') {
+            // For summary section, ensure data is wrapped in { content: "..." } structure
+            const suggestedContent = validatedSuggestion.suggested_content;
+            
+            // If suggested_content is a string, wrap it in the expected structure
+            if (typeof suggestedContent === 'string') {
+              updatedData = { content: suggestedContent };
+            } else if (typeof suggestedContent === 'object' && suggestedContent !== null) {
+              // If it's already an object, ensure it has 'content' field
+              const contentObj = suggestedContent as Record<string, unknown>;
+              updatedData = {
+                content: contentObj.content || contentObj.text || ''
+              };
+            } else {
+              // Fallback: preserve existing data or use empty
+              updatedData = sectionData?.data || { content: '' };
+            }
           } else {
-            // If it's an array or primitive, wrap it similarly
-            updatedData = { content: validatedSuggestion.suggested_content };
+            // Replace entire section for other section types
+            updatedData = validatedSuggestion.suggested_content;
           }
         }
+
+        console.log("Applying suggestion in apply-all:", {
+          suggestion_id: suggestion.suggestion_id,
+          cv_id: cvId,
+          section_type: validatedSuggestion.target_section,
+          target_index: validatedSuggestion.target_index,
+          hasSection: !!sectionData,
+          currentData: sectionData?.data,
+          suggestedContent: validatedSuggestion.suggested_content,
+          updatedData,
+        });
 
         const sectionToUpsert: CVSectionInsert = {
           cv_id: cvId,
           section_type: validatedSuggestion.target_section as CVSectionType,
-          data: updatedData,
+          data: updatedData as Record<string, unknown>,
           order_index: getSectionOrder(
             validatedSuggestion.target_section as CVSectionType
           ),
