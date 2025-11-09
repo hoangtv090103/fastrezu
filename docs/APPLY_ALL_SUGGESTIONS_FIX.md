@@ -190,3 +190,9 @@ bun run build
 - `/src/app/api/cv/apply-suggestion/route.ts` - Single suggestion apply logic (reference)
 - `/src/contexts/CVEditorContext.tsx` - CV state management
 - `/src/components/editor/SuggestionItem.tsx` - Individual suggestion UI
+
+## Related Issues & Fixes
+
+- **Summary Section Fix**: See [SUMMARY_SECTION_FIX.md](./SUMMARY_SECTION_FIX.md) - Fix for summary disappearing after apply
+  - Summary requires special handling to preserve `{content: "..."}` structure
+  - Added logic to wrap string suggestions in proper object format
