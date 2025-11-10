@@ -1,18 +1,34 @@
 import OpenAI from 'openai';
 
 /**
+ * API Error with status code
+ */
+interface APIError extends Error {
+  status?: number;
+  statusCode?: number;
+  type?: string;
+  code?: string;
+}
+
+/**
  * OpenAI API Client Configuration
  * 
  * Features:
- * - Automatic retry with exponential backoff for transient errors (503, 429, network issues)
+ * - Automatic retry with exponential backoff + jitter for transient errors (503, 429, 500, network issues)
  * - Configurable timeout and retry attempts
  * - JSON response parsing with error handling
  * - Support for both JSON and text responses
+ * - Enhanced error messages for better debugging
  * 
  * Default retry behavior:
- * - Max retries: 3 attempts
- * - Base delay: 1000ms (exponential backoff: 1s, 2s, 4s)
- * - Default timeout: 120 seconds
+ * - Max retries: 5 attempts (increased for Google Gemini API stability)
+ * - Base delay: 1000ms with jitter (exponential backoff: ~1s, ~2s, ~4s, ~8s, ~16s)
+ * - Default timeout: 180 seconds (3 minutes)
+ * 
+ * Compatible with:
+ * - OpenAI API (https://api.openai.com/v1)
+ * - Google Gemini API (https://generativelanguage.googleapis.com/v1beta/openai)
+ * - Other OpenAI-compatible APIs
  */
 
 // Cấu hình OpenAI client
@@ -37,24 +53,47 @@ async function retryWithBackoff<T>(
     } catch (error) {
       lastError = error as Error;
       
-      // Check if error is retryable (503, 429, network errors)
+      // Extract status code from error if available
+      const errorObj = error as APIError;
+      const statusCode = errorObj?.status || errorObj?.statusCode;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      // Check if error is retryable (503, 429, 500, network errors)
       const isRetryable = 
-        error instanceof Error && (
-          error.message.includes('503') ||
-          error.message.includes('429') ||
-          error.message.includes('ECONNRESET') ||
-          error.message.includes('ETIMEDOUT') ||
-          error.message.includes('network')
-        );
+        statusCode === 503 ||
+        statusCode === 429 ||
+        statusCode === 500 ||
+        errorMessage.includes('503') ||
+        errorMessage.includes('429') ||
+        errorMessage.includes('500') ||
+        errorMessage.includes('ECONNRESET') ||
+        errorMessage.includes('ETIMEDOUT') ||
+        errorMessage.includes('ECONNREFUSED') ||
+        errorMessage.includes('network') ||
+        errorMessage.includes('timeout') ||
+        errorMessage.includes('Service Unavailable') ||
+        errorMessage.includes('Internal Server Error');
       
       // Don't retry on last attempt or if not retryable
       if (attempt === maxRetries || !isRetryable) {
+        console.error(`[OpenAI] Failed after ${attempt + 1} attempts. Error:`, {
+          message: errorMessage,
+          status: statusCode,
+          isRetryable
+        });
         throw error;
       }
       
-      // Exponential backoff: 1s, 2s, 4s
-      const delay = baseDelay * Math.pow(2, attempt);
-      console.log(`[OpenAI] Retry attempt ${attempt + 1}/${maxRetries} after ${delay}ms due to:`, error instanceof Error ? error.message : error);
+      // Exponential backoff with jitter: 1s, 2s, 4s (+ random 0-500ms)
+      const baseBackoff = baseDelay * Math.pow(2, attempt);
+      const jitter = Math.random() * 500;
+      const delay = baseBackoff + jitter;
+      
+      console.log(`[OpenAI] Retry attempt ${attempt + 1}/${maxRetries} after ${Math.round(delay)}ms due to:`, {
+        message: errorMessage,
+        status: statusCode
+      });
+      
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -73,7 +112,7 @@ export async function callOpenAI(
     maxRetries?: number // Max retry attempts for transient errors
   } = {}
 ) {
-  const { responseFormat = 'json_object', temperature = 0.3, timeout = 120000, maxRetries = 3 } = options;
+  const { responseFormat = 'json_object', temperature = 0.3, timeout = 180000, maxRetries = 5 } = options;
   
   return retryWithBackoff(async () => {
     try {
@@ -146,11 +185,28 @@ export async function callOpenAI(
         throw abortError;
       }
     } catch (error) {
-      console.error('AI API error:', error);
-      if (error instanceof Error && error.message.includes('timeout')) {
+      const errorObj = error as APIError;
+      const statusCode = errorObj?.status || errorObj?.statusCode;
+      
+      console.error('AI API error:', {
+        message: error instanceof Error ? error.message : String(error),
+        status: statusCode,
+        type: errorObj?.type,
+        code: errorObj?.code
+      });
+      
+      // Provide more specific error messages
+      if (statusCode === 503) {
+        throw new Error('AI service temporarily unavailable (503). Please try again in a moment.');
+      } else if (statusCode === 429) {
+        throw new Error('Too many requests. Please wait a moment before trying again.');
+      } else if (statusCode === 500) {
+        throw new Error('AI service internal error. Please try again.');
+      } else if (error instanceof Error && error.message.includes('timeout')) {
         throw error;
       }
-      throw new Error('Failed to get AI response');
+      
+      throw new Error('Failed to get AI response. Please try again.');
     }
   }, maxRetries);
 }
@@ -161,31 +217,69 @@ export async function callOpenAIText(
   userMessage: string,
   options: {
     temperature?: number,
-    maxRetries?: number
+    maxRetries?: number,
+    timeout?: number
   } = {}
 ) {
-  const { temperature = 0.3, maxRetries = 3 } = options;
+  const { temperature = 0.3, maxRetries = 5, timeout = 180000 } = options;
   
   return retryWithBackoff(async () => {
     try {
-      const response = await openai.chat.completions.create({
-        model: process.env.OPENAI_MODEL || 'gpt-4o',
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessage }
-        ],
-        temperature,
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      try {
+        const response = await openai.chat.completions.create(
+          {
+            model: process.env.OPENAI_MODEL || 'gpt-4o',
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userMessage }
+            ],
+            temperature,
+          },
+          {
+            signal: controller.signal
+          }
+        );
+        clearTimeout(timeoutId);
 
-      const content = response.choices[0]?.message?.content;
-      if (!content) {
-        throw new Error(`No response from AI service`);
+        const content = response.choices[0]?.message?.content;
+        if (!content) {
+          throw new Error(`No response from AI service`);
+        }
+
+        return content.trim();
+      } catch (abortError) {
+        clearTimeout(timeoutId);
+        if (abortError instanceof Error && (abortError.name === 'AbortError' || abortError.message.includes('aborted'))) {
+          throw new Error('AI request timeout - response took too long');
+        }
+        throw abortError;
       }
-
-      return content.trim();
     } catch (error) {
-      console.error('AI API error:', error);
-      throw new Error('Failed to get AI response');
+      const errorObj = error as APIError;
+      const statusCode = errorObj?.status || errorObj?.statusCode;
+      
+      console.error('AI API error:', {
+        message: error instanceof Error ? error.message : String(error),
+        status: statusCode,
+        type: errorObj?.type,
+        code: errorObj?.code
+      });
+      
+      // Provide more specific error messages
+      if (statusCode === 503) {
+        throw new Error('AI service temporarily unavailable (503). Please try again in a moment.');
+      } else if (statusCode === 429) {
+        throw new Error('Too many requests. Please wait a moment before trying again.');
+      } else if (statusCode === 500) {
+        throw new Error('AI service internal error. Please try again.');
+      } else if (error instanceof Error && error.message.includes('timeout')) {
+        throw error;
+      }
+      
+      throw new Error('Failed to get AI response. Please try again.');
     }
   }, maxRetries);
 }

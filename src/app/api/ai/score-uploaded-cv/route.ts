@@ -71,9 +71,20 @@ ${confirmedText}`;
 
   } catch (error) {
     console.error("Score uploaded CV API error:", error);
+    
+    // Return specific error message if available
+    const errorMessage = error instanceof Error ? error.message : "Internal server error";
+    const isAIError = errorMessage.includes('AI service') || 
+                     errorMessage.includes('503') || 
+                     errorMessage.includes('429') ||
+                     errorMessage.includes('timeout');
+    
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        error: isAIError ? errorMessage : "Internal server error",
+        details: isAIError ? "The AI service is experiencing high load. Please try again in a few moments." : undefined
+      },
+      { status: isAIError ? 503 : 500 }
     );
   }
 }

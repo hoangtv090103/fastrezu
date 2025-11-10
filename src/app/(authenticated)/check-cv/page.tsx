@@ -177,7 +177,7 @@ export default function CheckCVPage() {
           jdText: jdText.trim() || undefined,
           language: 'vi',
         },
-        { maxRetries: 2, backoffMs: 1000, timeoutMs: 120000, retryableStatuses: [429,500,502,503,504] },
+        { maxRetries: 3, backoffMs: 2000, timeoutMs: 180000, retryableStatuses: [429,500,502,503,504] },
         'vi'
       );
 
@@ -199,8 +199,19 @@ export default function CheckCVPage() {
       }
     } catch (err) {
       const appError = handleAPIError(err, 'score CV', 'vi');
-      setError(appError.userMessage);
-      showErrorToast(appError, 'vi');
+      
+      // Check if it's a service unavailable error
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      const is503Error = errorMessage.includes('503') || errorMessage.includes('temporarily unavailable');
+      
+      if (is503Error) {
+        const friendlyMessage = "Dịch vụ AI đang quá tải. Vui lòng thử lại sau vài giây. Hệ thống đang tự động thử lại...";
+        setError(friendlyMessage);
+        showErrorToast(friendlyMessage, 'vi');
+      } else {
+        setError(appError.userMessage);
+        showErrorToast(appError, 'vi');
+      }
     } finally {
       setIsLoadingScore(false);
     }
