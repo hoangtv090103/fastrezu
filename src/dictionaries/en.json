@@ -50,6 +50,20 @@
     "invalidCredentials": "Invalid credentials",
     "accountNotFound": "Account not found"
   },
+  "cvCard": {
+    "noContent": "No CV content",
+    "editHint": "Click \"Edit\" to add information",
+    "loading": "Loading...",
+    "download": "Download",
+    "downloadPDFError": "Error creating PDF",
+    "noContentToDownload": "CV has no content to download. Please edit the CV first.",
+    "noContentLabel": "No CV content",
+    "edit": "Edit",
+    "moreOptions": "More options",
+    "delete": "Delete",
+    "incomplete": "Incomplete",
+    "updated": "Updated:"
+  },
   "dashboard": {
     "title": "Manage CVs",
     "subtitle": "Create and manage your CVs with AI assistance",

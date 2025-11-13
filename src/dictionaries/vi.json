@@ -50,6 +50,20 @@
     "invalidCredentials": "Thông tin đăng nhập không hợp lệ",
     "accountNotFound": "Tài khoản không tồn tại"
   },
+  "cvCard": {
+    "noContent": "CV chưa có nội dung",
+    "editHint": "Nhấn \"Chỉnh sửa\" để thêm thông tin",
+    "loading": "Đang tải...",
+    "download": "Tải về",
+    "downloadPDFError": "Lỗi tạo PDF",
+    "noContentToDownload": "CV chưa có nội dung để tải xuống. Vui lòng chỉnh sửa CV trước.",
+    "noContentLabel": "CV chưa có nội dung",
+    "edit": "Chỉnh sửa",
+    "moreOptions": "Thêm tùy chọn",
+    "delete": "Xóa",
+    "incomplete": "Chưa hoàn thiện",
+    "updated": "Cập nhật:"
+  },
   "dashboard": {
     "title": "Quản lý CV",
     "subtitle": "Tạo và quản lý CV của bạn với sự hỗ trợ của AI",

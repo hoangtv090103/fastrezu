@@ -7,6 +7,7 @@ import { vi } from "date-fns/locale";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CVTemplate from "@/components/cv/CVTemplate";
 import CVTemplatePDF from "@/components/cv/CVTemplatePDF";
+import { useTranslation } from "@/hooks/useTranslation";
 import {
   showErrorToast,
 } from "@/lib/toast-utils";
@@ -33,6 +34,7 @@ interface CVPreviewCardProps {
 }
 
 export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -166,11 +168,11 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                   document={<CVTemplatePDF cvData={convertSectionsToCVData(cv)} />}
                   fileName={`${(cv.title || "CV").replace(/[^a-zA-Z0-9\s]/g, "").trim()}_${new Date().toISOString().split("T")[0]}.pdf`}
                   className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
-                  aria-label="Tải xuống CV dưới dạng PDF"
+                  aria-label={t('cvCard.download')}
                 >
                   {({ loading, error }) => {
                     if (error) {
-                      showErrorToast("Lỗi tạo PDF", "vi");
+                      showErrorToast(t('cvCard.downloadPDFError'), "vi");
                     }
                     return (
                       <>
@@ -192,7 +194,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                           </svg>
                         )}
                         <span className="text-sm font-medium">
-                          {loading ? "Đang tải..." : "Tải về"}
+                          {loading ? t('cvCard.loading') : t('cvCard.download')}
                         </span>
                       </>
                     );
@@ -200,9 +202,9 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                 </PDFDownloadLink>
               ) : (
                 <button
-                  onClick={() => showErrorToast("CV chưa có nội dung để tải xuống. Vui lòng chỉnh sửa CV trước.", "vi")}
+                  onClick={() => showErrorToast(t('cvCard.noContentToDownload'), "vi")}
                   className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 opacity-50 cursor-not-allowed"
-                  aria-label="CV chưa có nội dung"
+                  aria-label={t('cvCard.noContentLabel')}
                 >
                   <svg
                     className="w-4 h-4"
@@ -217,14 +219,14 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                  <span className="text-sm font-medium">Tải về</span>
+                  <span className="text-sm font-medium">{t('cvCard.download')}</span>
                 </button>
               )}
 
               <button
                 onClick={handleEdit}
                 className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
-                aria-label="Chỉnh sửa CV"
+                aria-label={t('cvCard.edit')}
               >
                 <svg
                   className="w-4 h-4"
@@ -239,7 +241,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
-                <span className="text-sm font-medium">Chỉnh sửa</span>
+                <span className="text-sm font-medium">{t('cvCard.edit')}</span>
               </button>
 
               {/* Three-dot menu button */}
@@ -250,7 +252,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                     setShowDropdown(!showDropdown);
                   }}
                   className="bg-white hover:bg-gray-100 text-gray-800 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105"
-                  aria-label="Thêm tùy chọn"
+                  aria-label={t('cvCard.moreOptions')}
                   aria-expanded={showDropdown}
                   aria-haspopup="true"
                 >
@@ -340,7 +342,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         />
                       </svg>
-                      <span>Xóa</span>
+                      <span>{t('cvCard.delete')}</span>
                     </button>
                   </div>
                 )}
@@ -361,7 +363,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
               <div className="flex items-center mt-1">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
                 <span className="text-xs text-yellow-600 font-medium">
-                  Chưa hoàn thiện
+                  {t('cvCard.incomplete')}
                 </span>
               </div>
             )}
@@ -377,7 +379,7 @@ export default function CVPreviewCard({ cv, onDelete }: CVPreviewCardProps) {
 
         <div className="flex items-center justify-between">
           <p className="small-text text-gray-500">
-            Cập nhật:{" "}
+            {t('cvCard.updated')}{" "}
             {format(new Date(cv.updated_at), "dd/MM/yyyy", { locale: vi })}
           </p>
           <span
