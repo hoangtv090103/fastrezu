@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 interface StepNavigationProps {
   currentStep: number;
   totalSteps: number;
@@ -8,6 +10,7 @@ interface StepNavigationProps {
 }
 
 export default function StepNavigation({ currentStep, totalSteps, onStepChange, stepTitles }: StepNavigationProps) {
+  const { t } = useTranslation();
   const steps = Array.from({ length: totalSteps }, (_, i) => i);
 
   return (
@@ -34,7 +37,7 @@ export default function StepNavigation({ currentStep, totalSteps, onStepChange, 
                   ? 'bg-green-500 text-white focus:ring-green-500 hover:bg-green-600'
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300 focus:ring-gray-400'
               }`}
-              aria-label={`${stepTitles[step] || `Bước ${step + 1}`}${step === currentStep ? ' (hiện tại)' : step < currentStep ? ' (đã hoàn thành)' : ''}`}
+              aria-label={`${stepTitles[step] || `${t('editor.wizard.stepLabel')} ${step + 1}`}${step === currentStep ? ` (${t('editor.wizard.currentStep')})` : step < currentStep ? ` (${t('editor.wizard.completedStep')})` : ''}`}
               aria-current={step === currentStep ? 'step' : undefined}
             >
               {step + 1}

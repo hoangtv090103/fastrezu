@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useDebounce } from "@/lib/debounce";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 
 export default function EducationStep() {
   const { state, updateSection } = useCVEditor();
+  const { t } = useTranslation();
   
   const education = (state.cvData?.sections.education || []) as Record<string, unknown>[];
   const [dateErrors, setDateErrors] = useState<{
@@ -82,10 +84,10 @@ export default function EducationStep() {
     <div className="p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          Học vấn
+          {t('editor.education.title')}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          Liệt kê trình độ học vấn của bạn, bắt đầu từ trình độ cao nhất.
+          {t('editor.education.description')}
         </p>
       </div>
 
@@ -94,59 +96,59 @@ export default function EducationStep() {
           <div key={index} className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium text-gray-900">
-                Học vấn {index + 1}
+                {t('editor.education.title')} {index + 1}
               </h4>
               <button
                 onClick={() => removeEducation(index)}
                 className="text-red-600 hover:text-red-800 text-sm"
               >
-                Xóa
+                {t('editor.education.remove')}
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên trường *
+                  {t('editor.education.school')} *
                 </label>
                 <input
                   type="text"
                   value={getStringValue(edu, 'school')}
                   onChange={(e) => updateEducation(index, 'school', e.target.value)}
-                  placeholder="Đại học Bách Khoa Hà Nội"
+                  placeholder={t('editor.education.schoolPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Bằng cấp *
+                  {t('editor.education.degree')} *
                 </label>
                 <input
                   type="text"
                   value={getStringValue(edu, 'degree')}
                   onChange={(e) => updateEducation(index, 'degree', e.target.value)}
-                  placeholder="Cử nhân"
+                  placeholder={t('editor.education.degreePlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Chuyên ngành
+                  {t('editor.education.fieldOfStudy')}
                 </label>
                 <input
                   type="text"
                   value={getStringValue(edu, 'field_of_study')}
                   onChange={(e) => updateEducation(index, 'field_of_study', e.target.value)}
-                  placeholder="Công nghệ thông tin"
+                  placeholder={t('editor.education.fieldPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Năm tốt nghiệp
+                  {t('editor.education.endDate')}
                 </label>
                 <input
                   type="number"
@@ -163,13 +165,13 @@ export default function EducationStep() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  GPA (tùy chọn)
+                  {t('editor.education.gpa')}
                 </label>
                 <input
                   type="text"
                   value={getStringValue(edu, 'gpa')}
                   onChange={(e) => updateEducation(index, 'gpa', e.target.value)}
-                  placeholder="3.5/4.0"
+                  placeholder={t('editor.education.gpaPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
@@ -190,7 +192,7 @@ export default function EducationStep() {
           onClick={addEducation}
           className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors duration-200"
         >
-          + Thêm học vấn
+          + {t('editor.education.addEducation')}
         </button>
       </div>
     </div>

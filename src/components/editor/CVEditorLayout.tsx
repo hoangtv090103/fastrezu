@@ -2,6 +2,7 @@
 
 import { useState, lazy, Suspense } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import WizardPanel from "@/components/editor/WizardPanel";
 import AutoSaveIndicator from "@/components/editor/AutoSaveIndicator";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ const CVPreview = lazy(() => import("@/components/cv/CVPreview"));
 
 export default function CVEditorLayout() {
   const { state, updateTitle } = useCVEditor();
+  const { t } = useTranslation();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState("");
   const router = useRouter();
@@ -51,7 +53,7 @@ export default function CVEditorLayout() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center" suppressHydrationWarning>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="body-text text-gray-600">Đang tải CV...</p>
+          <p className="body-text text-gray-600">{t('editor.layout.loadingCV')}</p>
         </div>
       </div>
     );
@@ -71,7 +73,7 @@ export default function CVEditorLayout() {
             <span className="text-2xl text-red-600">⚠️</span>
           </div>
           <h2 className="heading-feature text-xl text-gray-900 mb-4">
-            Lỗi tải CV
+            {t('editor.layout.errorLoadingCV')}
           </h2>
           <p className="body-text text-gray-600 mb-6">
             {state.error}
@@ -80,7 +82,7 @@ export default function CVEditorLayout() {
             onClick={() => router.push("/dashboard")}
             className="btn-primary btn-text"
           >
-            Về Dashboard
+            {t('editor.layout.backToDashboard')}
           </button>
         </div>
       </div>
@@ -108,13 +110,13 @@ export default function CVEditorLayout() {
                   onChange={(e) => setTempTitle(e.target.value)}
                   onKeyDown={handleTitleKeyDown}
                   className="heading-feature text-lg text-gray-900 bg-white border border-gray-300 rounded px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors duration-200"
-                  placeholder="Nhập tên CV..."
+                  placeholder={t('editor.layout.titlePlaceholder')}
                   autoFocus
                 />
                 <button
                   onClick={handleTitleSave}
                   className="text-green-600 hover:text-green-800 p-1"
-                  title="Lưu"
+                  title={t('editor.layout.saveTitle')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -123,7 +125,7 @@ export default function CVEditorLayout() {
                 <button
                   onClick={handleTitleCancel}
                   className="text-red-600 hover:text-red-800 p-1"
-                  title="Hủy"
+                  title={t('editor.layout.cancelTitle')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -138,7 +140,7 @@ export default function CVEditorLayout() {
                 <button
                   onClick={handleTitleEdit}
                   className="text-gray-400 hover:text-gray-600 p-1"
-                  title="Chỉnh sửa tên CV"
+                  title={t('editor.layout.editTitle')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -164,7 +166,7 @@ export default function CVEditorLayout() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">Đang tải xem trước...</p>
+                <p className="text-sm text-gray-600">{t('editor.layout.loadingPreview')}</p>
               </div>
             </div>
           }>

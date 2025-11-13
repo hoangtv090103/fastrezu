@@ -1,9 +1,11 @@
 "use client";
 
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function AutoSaveIndicator() {
   const { state } = useCVEditor();
+  const { t } = useTranslation();
 
   const getStatusColor = () => {
     switch (state.saveStatus) {
@@ -21,11 +23,11 @@ export default function AutoSaveIndicator() {
   const getStatusText = () => {
     switch (state.saveStatus) {
       case 'saving':
-        return 'Đang lưu...';
+        return t('editor.autoSave.saving');
       case 'saved':
-        return 'Đã lưu';
+        return t('editor.autoSave.saved');
       case 'error':
-        return 'Lỗi lưu';
+        return t('editor.autoSave.error');
       default:
         return '';
     }

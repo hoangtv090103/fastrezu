@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { apiPost } from "@/lib/api-client";
 
 export default function ProjectsStep() {
   const { state, updateSection } = useCVEditor();
+  const { t } = useTranslation();
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>({});
@@ -115,10 +117,10 @@ export default function ProjectsStep() {
     <div className="p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          Dự án
+          {t('editor.projects.title')}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          Liệt kê các dự án quan trọng mà bạn đã tham gia. Bao gồm cả dự án cá nhân và dự án công việc.
+          {t('editor.projects.description')}
         </p>
       </div>
 
@@ -127,38 +129,38 @@ export default function ProjectsStep() {
           <div key={projIndex} className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium text-gray-900">
-                Dự án {projIndex + 1}
+                {t('editor.projects.title')} {projIndex + 1}
               </h4>
               <button
                 onClick={() => removeProject(projIndex)}
                 className="text-red-600 hover:text-red-800 text-sm"
               >
-                Xóa
+                {t('editor.projects.remove')}
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên dự án *
+                  {t('editor.projects.name')} *
                 </label>
                 <input
                   type="text"
                   value={getStringValue(project, 'name')}
                   onChange={(e) => updateProject(projIndex, 'name', e.target.value)}
-                  placeholder="Website bán hàng trực tuyến"
+                  placeholder={t('editor.projects.namePlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mô tả dự án
+                  {t('editor.projects.projectDescription')}
                 </label>
                 <textarea
                   value={getStringValue(project, 'description')}
                   onChange={(e) => updateProject(projIndex, 'description', e.target.value)}
-                  placeholder="Mô tả ngắn gọn về dự án, mục đích và phạm vi..."
+                  placeholder={t('editor.projects.descriptionPlaceholder')}
                   className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
                 />
               </div>
@@ -166,26 +168,26 @@ export default function ProjectsStep() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Công nghệ sử dụng
+                    {t('editor.projects.technologies')}
                   </label>
                   <input
                     type="text"
                     value={getStringValue(project, 'technologies')}
                     onChange={(e) => updateProject(projIndex, 'technologies', e.target.value)}
-                    placeholder="React, Node.js, MongoDB"
+                    placeholder={t('editor.projects.technologiesPlaceholder')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Link dự án
+                    {t('editor.projects.url')}
                   </label>
                   <input
                     type="url"
                     value={getStringValue(project, 'link')}
                     onChange={(e) => updateProject(projIndex, 'link', e.target.value)}
-                    placeholder="https://github.com/username/project"
+                    placeholder={t('editor.projects.urlPlaceholder')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
@@ -193,7 +195,7 @@ export default function ProjectsStep() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Thành tích và đóng góp
+                  {t('editor.education.achievements')}
                 </label>
                 <div className="space-y-3">
                   {getArrayValue(project, 'achievements').map((achievement: string, achIndex: number) => (
@@ -201,7 +203,7 @@ export default function ProjectsStep() {
                       <textarea
                         value={achievement}
                         onChange={(e) => updateAchievement(projIndex, achIndex, e.target.value)}
-                        placeholder="Ví dụ: Tăng 40% tốc độ tải trang..."
+                        placeholder={t('editor.experience.achievementPlaceholder')}
                         rows={2}
                         className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
                       />
@@ -242,7 +244,7 @@ export default function ProjectsStep() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
-                  <span>Thêm thành tích</span>
+                  <span>{t('editor.experience.addAchievement')}</span>
                 </button>
               </div>
             </div>
@@ -253,7 +255,7 @@ export default function ProjectsStep() {
           onClick={addProject}
           className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors duration-200"
         >
-          + Thêm dự án
+          + {t('editor.projects.addProject')}
         </button>
       </div>
     </div>

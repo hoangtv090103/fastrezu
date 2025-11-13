@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
 import ATSOptimizationPanel from "@/components/editor/ATSOptimizationPanel";
@@ -39,6 +40,7 @@ interface ScoringResult {
 
 export default function ReviewStep() {
   const { state, updateCVData, saveCV } = useCVEditor();
+  const { t } = useTranslation();
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(
     null
   );
@@ -317,10 +319,10 @@ export default function ReviewStep() {
     <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
         <h3 className="heading-feature text-base sm:text-lg text-gray-900 mb-2">
-          Xem lại & Chấm điểm CV
+          {t('editor.review.title')}
         </h3>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
-          Kiểm tra điểm ATS và nhận gợi ý cải thiện CV của bạn.
+          {t('editor.review.description')}
         </p>
       </div>
 
@@ -329,7 +331,7 @@ export default function ReviewStep() {
         {state.cvData?.jd_analysis && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="text-sm font-medium text-blue-900 mb-2">
-              Từ khóa JD đã phân tích:
+              {t('editor.review.analyzedKeywords')}
             </h4>
             <div className="flex flex-wrap gap-2">
               {state.cvData.jd_analysis.keywords.map(
@@ -344,11 +346,11 @@ export default function ReviewStep() {
         {/* Scoring Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-medium text-gray-900">Điểm ATS</h4>
+            <h4 className="text-lg font-medium text-gray-900">{t('editor.review.atsScore')}</h4>
             <AIAssistButton
               onClick={handleScoreCV}
               loading={isScoring}
-              label="Chấm điểm CV"
+              label={t('editor.review.scoreCV')}
               disabled={!state.cvData}
             />
           </div>
@@ -371,7 +373,7 @@ export default function ReviewStep() {
                   </span>
                 </div>
                 <div className="flex items-center justify-center gap-1 mt-2">
-                  <p className="text-sm text-gray-600">Điểm ATS / 100</p>
+                  <p className="text-sm text-gray-600">{t('editor.review.scoreOf100')}</p>
                   <div className="flex items-center">
                     <InfoTooltip
                       id="ats-score-review"
@@ -394,10 +396,10 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.keyword_match || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">Từ khóa khớp</div>
+                    <div className="text-xs text-gray-600">{t('editor.review.keywordMatch')}</div>
                     <InfoTooltip
                       id="keyword-match-tooltip"
-                      title="Từ khóa khớp"
+                      title={t('editor.review.keywordMatch')}
                       content="Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) có xuất hiện trong CV của bạn. Điểm cao hơn giúp CV vượt qua hệ thống ATS dễ dàng hơn."
                       placement="bottom"
                       icon="info"
@@ -410,10 +412,10 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.completeness || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">Hoàn thiện</div>
+                    <div className="text-xs text-gray-600">{t('editor.review.completeness')}</div>
                     <InfoTooltip
                       id="completeness-tooltip"
-                      title="Độ hoàn thiện"
+                      title={t('editor.review.completeness')}
                       content="Đánh giá mức độ đầy đủ của CV: có đủ các phần quan trọng (kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể, và độ dài phù hợp."
                       placement="bottom"
                       icon="info"
@@ -426,10 +428,10 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.formatting || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">Định dạng</div>
+                    <div className="text-xs text-gray-600">{t('editor.review.formatting')}</div>
                     <InfoTooltip
                       id="formatting-tooltip"
-                      title="Định dạng"
+                      title={t('editor.review.formatting')}
                       content="Đánh giá cấu trúc và định dạng CV: các phần được sắp xếp rõ ràng, tiêu đề phù hợp, dễ đọc và thân thiện với hệ thống ATS."
                       placement="bottom"
                       icon="info"
@@ -442,10 +444,10 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.relevance || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">Liên quan</div>
+                    <div className="text-xs text-gray-600">{t('editor.review.relevance')}</div>
                     <InfoTooltip
                       id="relevance-tooltip"
-                      title="Độ liên quan"
+                      title={t('editor.review.relevance')}
                       content="Đánh giá mức độ phù hợp của kinh nghiệm và kỹ năng trong CV với yêu cầu công việc. Nội dung càng liên quan, cơ hội được chọn càng cao."
                       placement="bottom"
                       icon="info"
@@ -460,7 +462,7 @@ export default function ReviewStep() {
                 scoringResult.matchedKeywords.length > 0 && (
                   <div>
                     <h5 className="text-sm font-medium text-green-700 mb-2">
-                      ✓ Từ khóa đã khớp (
+                      ✓ {t('editor.review.matchedKeywords')} (
                       {scoringResult.matchedKeywords.length || 0}):
                     </h5>
                     <div className="flex flex-wrap gap-2">
@@ -482,7 +484,7 @@ export default function ReviewStep() {
                 scoringResult.missingKeywords.length > 0 && (
                   <div>
                     <h5 className="text-sm font-medium text-red-700 mb-2">
-                      ⚠️ Từ khóa còn thiếu (
+                      ⚠️ {t('editor.review.missingKeywords')} (
                       {scoringResult.missingKeywords.length}):
                     </h5>
                     <div className="flex flex-wrap gap-2">
@@ -507,8 +509,8 @@ export default function ReviewStep() {
               <div className="text-gray-400 mb-2">📊</div>
               <p className="text-gray-600">
                 {state.cvData?.jd_analysis
-                  ? "Đang chấm điểm CV..."
-                  : "Hãy phân tích JD trước để chấm điểm CV"}
+                  ? t('editor.review.scoring')
+                  : t('editor.review.analyzeJDFirst')}
               </p>
             </div>
           )}

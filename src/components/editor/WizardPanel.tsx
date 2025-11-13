@@ -1,6 +1,7 @@
 "use client";
 
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import StepNavigation from "@/components/editor/StepNavigation";
 import LanguageSelectionStep from "@/components/editor/steps/LanguageSelectionStep";
 import JDAnalysisStep from "@/components/editor/steps/JDAnalysisStep";
@@ -14,31 +15,32 @@ import CertificationsStep from "@/components/editor/steps/CertificationsStep";
 import ReviewStep from "@/components/editor/steps/ReviewStep";
 import { showErrorToast } from "@/lib/toast-utils";
 import { trackWizardStepCompleted } from "@/lib/analytics";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase-client";
 
 type ValidationFunction = 
   | ((data: Record<string, unknown>, language: 'vi' | 'en') => boolean)
   | ((data: Record<string, unknown>[], language: 'vi' | 'en') => boolean);
 
-const STEPS = [
-  { id: 0, title: "Ngôn ngữ", component: LanguageSelectionStep, name: 'LanguageSelection' as const },
-  { id: 1, title: "JD", component: JDAnalysisStep, name: 'JDAnalysis' as const },
-  { id: 2, title: "Thông tin", component: PersonalInfoStep, validate: validatePersonalInfoStep as ValidationFunction, name: 'PersonalInfo' as const },
-  { id: 3, title: "Nghề nghiệp", component: SummaryStep, name: 'Summary' as const },
-  { id: 4, title: "Kinh nghiệm", component: ExperienceStep, validate: validateExperienceStep as ValidationFunction, name: 'Experience' as const },
-  { id: 5, title: "Học vấn", component: EducationStep, validate: validateEducationStep as ValidationFunction, name: 'Education' as const },
-  { id: 6, title: "Dự án", component: ProjectsStep, name: 'Projects' as const },
-  { id: 7, title: "Kỹ năng", component: SkillsStep, name: 'Skills' as const },
-  { id: 8, title: "Chứng chỉ", component: CertificationsStep, name: 'Certifications' as const },
-  { id: 9, title: "Review", component: ReviewStep, name: 'Review' as const },
-];
-
 export default function WizardPanel() {
   const { state, setCurrentStep } = useCVEditor();
+  const { t } = useTranslation();
   const stepStartTimeRef = useRef<number>(Date.now());
   const previousStepRef = useRef<number>(state.currentStep);
   const [userId, setUserId] = useState<string | null>(null);
+
+  const STEPS = useMemo(() => [
+    { id: 0, title: t('editor.wizard.steps.language'), component: LanguageSelectionStep, name: 'LanguageSelection' as const },
+    { id: 1, title: t('editor.wizard.steps.jd'), component: JDAnalysisStep, name: 'JDAnalysis' as const },
+    { id: 2, title: t('editor.wizard.steps.personalInfo'), component: PersonalInfoStep, validate: validatePersonalInfoStep as ValidationFunction, name: 'PersonalInfo' as const },
+    { id: 3, title: t('editor.wizard.steps.summary'), component: SummaryStep, name: 'Summary' as const },
+    { id: 4, title: t('editor.wizard.steps.experience'), component: ExperienceStep, validate: validateExperienceStep as ValidationFunction, name: 'Experience' as const },
+    { id: 5, title: t('editor.wizard.steps.education'), component: EducationStep, validate: validateEducationStep as ValidationFunction, name: 'Education' as const },
+    { id: 6, title: t('editor.wizard.steps.projects'), component: ProjectsStep, name: 'Projects' as const },
+    { id: 7, title: t('editor.wizard.steps.skills'), component: SkillsStep, name: 'Skills' as const },
+    { id: 8, title: t('editor.wizard.steps.certifications'), component: CertificationsStep, name: 'Certifications' as const },
+    { id: 9, title: t('editor.wizard.steps.review'), component: ReviewStep, name: 'Review' as const },
+  ], [t]);
 
   // Get user ID on mount
   useEffect(() => {
@@ -108,8 +110,8 @@ export default function WizardPanel() {
         
         if (!isValid) {
           const errorMessages = {
-            vi: 'Vui lòng sửa các lỗi trước khi tiếp tục',
-            en: 'Please fix the errors before continuing'
+            vi: t('editor.wizard.validationError'),
+            en: t('editor.wizard.validationError')
           };
           showErrorToast(errorMessages[language], language);
           return;
@@ -127,7 +129,7 @@ export default function WizardPanel() {
       {/* Progress Header */}
       <div className="p-4 sm:p-6 border-b border-gray-200">
         <h2 className="heading-feature text-base sm:text-lg text-gray-900 mb-3 sm:mb-4">
-          Tạo CV của bạn
+          {t('editor.wizard.title')}
         </h2>
         <StepNavigation
           currentStep={state.currentStep}
