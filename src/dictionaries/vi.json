@@ -437,5 +437,10 @@
     "footer": {
       "copyright": "© 2025 FastRezu. Tất cả quyền được bảo lưu."
     }
+  },
+  "ctaButton": {
+    "cta": "BẮT ĐẦU TẠO CV MIỄN PHÍ",
+    "continueDashboard": "Tiếp tục đến Dashboard",
+    "loginOrRegister": "Đăng nhập hoặc đăng ký nhanh chóng bằng email."
   }
 }

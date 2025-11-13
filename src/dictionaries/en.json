@@ -437,5 +437,10 @@
     "footer": {
       "copyright": "© 2025 FastRezu. All rights reserved."
     }
+  },
+  "ctaButton": {
+    "cta": "START CREATING CV FOR FREE",
+    "continueDashboard": "Continue to Dashboard",
+    "loginOrRegister": "Log in or sign up quickly with email."
   }
 }
