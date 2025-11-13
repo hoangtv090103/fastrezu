@@ -22,7 +22,7 @@ interface SavedJD {
 
 export default function JDAnalysisStep() {
   const { state, setJDAnalysis, setCurrentStep } = useCVEditor();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [jdText, setJdText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [keywords, setKeywords] = useState<string[]>([]);
@@ -110,7 +110,7 @@ const handleAnalyzeJD = async () => {
   };
 
   // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent('jd_analysis_importance', 'vi');
+  const tooltipContent = getTooltipContent('jd_analysis_importance', locale);
 
   return (
     <div className="p-4 sm:p-6">

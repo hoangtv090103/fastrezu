@@ -8,7 +8,7 @@ import { getTooltipContent } from "@/lib/tooltip-content";
 
 export default function LanguageSelectionStep() {
   const { state, setLanguage, setCurrentStep } = useCVEditor();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<CVLanguage | null>(null);
 
   // Initialize with existing language if available
@@ -30,8 +30,7 @@ export default function LanguageSelectionStep() {
     }
   };
 
-  // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent('language_selection', 'vi');
+  const tooltipContent = getTooltipContent('language_selection', locale);
 
   return (
     <div className="p-6">

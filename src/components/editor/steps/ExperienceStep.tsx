@@ -14,7 +14,7 @@ import { apiPost } from "@/lib/api-client";
 
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>({});
@@ -222,7 +222,7 @@ export default function ExperienceStep() {
   };
 
   // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent("ai_experience_benefits", "vi");
+  const tooltipContent = getTooltipContent("ai_experience_benefits", locale);
 
   return (
     <div className="p-4 sm:p-6">

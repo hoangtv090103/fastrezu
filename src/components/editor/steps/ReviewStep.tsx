@@ -40,7 +40,7 @@ interface ScoringResult {
 
 export default function ReviewStep() {
   const { state, updateCVData, saveCV } = useCVEditor();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [scoringResult, setScoringResult] = useState<ScoringResult | null>(
     null
   );
@@ -377,9 +377,9 @@ export default function ReviewStep() {
                   <div className="flex items-center">
                     <InfoTooltip
                       id="ats-score-review"
-                      title={getTooltipContent("ats_score_meaning", "vi").title}
+                      title={getTooltipContent("ats_score_meaning", locale).title}
                       content={
-                        getTooltipContent("ats_score_meaning", "vi").content
+                        getTooltipContent("ats_score_meaning", locale).content
                       }
                       placement="bottom"
                       icon="info"

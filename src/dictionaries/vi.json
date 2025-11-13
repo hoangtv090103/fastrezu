@@ -559,6 +559,40 @@
     },
     "suggestion": {
       "applied": "Đã cập nhật"
+    },
+    "tooltips": {
+      "jd_analysis_importance": {
+        "title": "Tại sao phân tích JD quan trọng?",
+        "content": "ATS (Applicant Tracking System) là phần mềm mà nhà tuyển dụng sử dụng để quét và lọc CV tự động. Hệ thống này tìm kiếm các từ khóa từ mô tả công việc (JD) trong CV của bạn. Phân tích JD giúp xác định những từ khóa quan trọng này để tối ưu hóa CV của bạn và tăng cơ hội vượt qua vòng lọc tự động."
+      },
+      "ats_score_meaning": {
+        "title": "Điểm ATS có nghĩa gì?",
+        "content": "Điểm ATS (0-100) đánh giá mức độ phù hợp của CV với yêu cầu công việc dựa trên các từ khóa và kỹ năng được tìm thấy. Điểm trên 80 cho thấy CV của bạn có cơ hội cao vượt qua vòng lọc tự động. Điểm thấp hơn có nghĩa là bạn cần thêm các từ khóa còn thiếu vào CV."
+      },
+      "ai_experience_benefits": {
+        "title": "Tại sao nên dùng AI viết kinh nghiệm?",
+        "content": "AI giúp bạn viết các điểm kinh nghiệm theo chuẩn chuyên nghiệp với động từ hành động mạnh mẽ và số liệu cụ thể. Những thành tựu được lượng hóa (ví dụ: 'Tăng doanh số 30%') giúp CV nổi bật hơn và dễ vượt qua ATS. AI cũng đảm bảo ngôn ngữ nhất quán và chuyên nghiệp."
+      },
+      "language_selection": {
+        "title": "Chọn ngôn ngữ cho CV",
+        "content": "Ngôn ngữ bạn chọn sẽ được sử dụng cho toàn bộ nội dung AI tạo ra (tóm tắt, kinh nghiệm, gợi ý) và nhãn trong CV. Hãy chọn ngôn ngữ phù hợp với công việc bạn ứng tuyển. Bạn có thể thay đổi ngôn ngữ sau, nhưng nội dung đã tạo sẽ không tự động dịch."
+      },
+      "keyword_match_meaning": {
+        "title": "Khớp từ khóa",
+        "content": "Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) có xuất hiện trong CV của bạn. Điểm cao hơn (trên 80) cho thấy CV có nhiều từ khóa liên quan, giúp vượt qua hệ thống ATS dễ dàng hơn. Nếu điểm thấp, hãy bổ sung các từ khóa còn thiếu vào CV."
+      },
+      "formatting_meaning": {
+        "title": "Định dạng",
+        "content": "Đánh giá cấu trúc và định dạng CV: các phần được sắp xếp rõ ràng, tiêu đề phù hợp, dễ đọc và thân thiện với hệ thống ATS. CV có định dạng tốt giúp cả con người và máy móc đều dễ dàng đọc và hiểu nội dung."
+      },
+      "completeness_meaning": {
+        "title": "Đầy đủ",
+        "content": "Đánh giá mức độ hoàn thiện của CV: có đủ các phần quan trọng (thông tin liên hệ, kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể, và độ dài phù hợp. CV đầy đủ giúp nhà tuyển dụng có cái nhìn toàn diện về bạn."
+      },
+      "relevance_meaning": {
+        "title": "Liên quan",
+        "content": "Đánh giá mức độ phù hợp của kinh nghiệm và kỹ năng trong CV với yêu cầu công việc. Nội dung càng liên quan và đáp ứng yêu cầu JD, cơ hội được chọn phỏng vấn càng cao. Tập trung vào kinh nghiệm phù hợp nhất với vị trí ứng tuyển."
+      }
     }
   },
   "feedback": {
