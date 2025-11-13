@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export type TooltipPlacement = "top" | "bottom" | "left" | "right";
 export type TooltipIcon = "info" | "lightbulb" | "warning";
@@ -33,6 +34,7 @@ export default function InfoTooltip({
   dismissible = true,
   children,
 }: InfoTooltipProps) {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
@@ -313,7 +315,7 @@ export default function InfoTooltip({
           <button
             onClick={() => setIsVisible(false)}
             className="text-gray-400 hover:text-white transition-colors shrink-0 p-1 -m-1"
-            aria-label="Đóng tooltip"
+            aria-label={t('tooltip.close')}
           >
             <svg
               className="w-4 h-4"
@@ -340,7 +342,7 @@ export default function InfoTooltip({
             onClick={handleDismiss}
             className="mt-3 text-xs text-blue-400 hover:text-blue-300 transition-colors underline"
           >
-            Đừng hiển thị lại
+            {t('tooltip.dismiss')}
           </button>
         )}
       </div>

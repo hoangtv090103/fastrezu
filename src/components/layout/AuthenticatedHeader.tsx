@@ -6,6 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import type { UserProfile } from "@/types";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 interface AuthenticatedHeaderProps {
   user: User;
@@ -15,6 +17,7 @@ interface AuthenticatedHeaderProps {
 export default function AuthenticatedHeader({ user, userProfile }: AuthenticatedHeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   // Get user initials from email
   const getUserInitials = (email: string) => {
@@ -65,18 +68,21 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
                 href="/dashboard" 
                 className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
               >
-                Quản lý CV
+                {t('navigation.manageCVs')}
               </Link>
               <Link 
                 href="/check-cv" 
                 className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
               >
-                Kiểm tra CV
+                {t('navigation.checkCV')}
               </Link>
             </nav>
           </div>
 
-          <div className="relative" ref={dropdownRef}>
+          <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
+            
+            <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
@@ -122,7 +128,7 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
                     <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    Gửi phản hồi
+                    {t('navigation.sendFeedback')}
                   </Link>
                 </div>
                 
@@ -131,6 +137,7 @@ export default function AuthenticatedHeader({ user, userProfile }: Authenticated
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>

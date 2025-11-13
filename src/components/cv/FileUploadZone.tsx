@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, DragEvent } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface FileUploadZoneProps {
   file: File | null;
@@ -17,6 +18,7 @@ export default function FileUploadZone({
   maxSizeMB = 10,
   disabled = false,
 }: FileUploadZoneProps) {
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,7 +27,7 @@ export default function FileUploadZone({
     // Check file size
     const maxSizeBytes = maxSizeMB * 1024 * 1024;
     if (selectedFile.size > maxSizeBytes) {
-      return `File quá lớn. Kích thước tối đa: ${maxSizeMB}MB`;
+      return t('fileUpload.errors.tooLarge', { maxSizeMB: maxSizeMB.toString() });
     }
 
     // Check file type
@@ -36,7 +38,7 @@ export default function FileUploadZone({
     );
 
     if (!isValidType) {
-      return `Định dạng file không hợp lệ. Chỉ chấp nhận: ${accept}`;
+      return t('fileUpload.errors.invalidFormat', { accept });
     }
 
     return null;
@@ -151,19 +153,19 @@ export default function FileUploadZone({
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
                 <p className="text-xs text-blue-600 mt-2">
-                  Nhấp hoặc kéo thả để chọn file khác
+                  {t('fileUpload.changeFile')}
                 </p>
               </>
             ) : (
               <>
                 <p className="text-lg font-medium text-gray-900">
-                  {isDragging ? "Thả file vào đây" : "Nhấp để tải lên hoặc kéo thả file"}
+                  {isDragging ? t('fileUpload.dragActive') : t('fileUpload.dragInactive')}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  PDF hoặc DOCX
+                  {t('fileUpload.supportedFormats')}
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  Kích thước file tối đa: {maxSizeMB}MB
+                  {t('fileUpload.maxSize', { maxSizeMB: maxSizeMB.toString() })}
                 </p>
               </>
             )}

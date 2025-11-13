@@ -6,6 +6,7 @@ import CVPreviewCard from "./CVPreviewCard";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import { apiPost, apiDelete } from "@/lib/api-client";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CVSection {
   section_type: string;
@@ -33,6 +34,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<'vi' | 'en'>('vi');
   const [cvTitle, setCvTitle] = useState("");
   const router = useRouter();
+  const { t, locale } = useTranslation();
 
   const handleCreateCV = async () => {
     setIsCreating(true);
@@ -44,14 +46,14 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
           language: selectedLanguage,
         },
         undefined,
-        'vi'
+        locale
       );
-      showSuccessToast('Đã tạo CV mới thành công!');
+      showSuccessToast(t('dashboard.cvCreated'));
       router.push(`/editor/${cvId}`);
     } catch (error) {
       console.error('Error creating CV:', error);
-      const appError = handleAPIError(error, 'create CV', 'vi');
-      showErrorToast(appError, 'vi');
+      const appError = handleAPIError(error, 'create CV', locale);
+      showErrorToast(appError, locale);
     } finally {
       setIsCreating(false);
       setShowLanguageModal(false);
@@ -64,16 +66,16 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
   };
 
   const handleDeleteCV = async (cvId: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa CV này?')) return;
+    if (!confirm(t('dashboard.deleteConfirm'))) return;
 
     try {
-      await apiDelete(`/api/cv/${cvId}/delete`, undefined, 'vi');
-      showSuccessToast('Đã xóa CV thành công!');
+      await apiDelete(`/api/cv/${cvId}/delete`, undefined, locale);
+      showSuccessToast(t('dashboard.cvDeleted'));
       router.refresh();
     } catch (error) {
       console.error('Error deleting CV:', error);
-      const appError = handleAPIError(error, 'delete CV', 'vi');
-      showErrorToast(appError, 'vi');
+      const appError = handleAPIError(error, 'delete CV', locale);
+      showErrorToast(appError, locale);
     }
   };
 
@@ -82,10 +84,10 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="heading-main text-3xl text-gray-900 mb-2">
-          Quản lý CV
+          {t('dashboard.title')}
         </h1>
         <p className="body-text text-gray-600">
-          Quản lý và tạo CV của bạn với sự hỗ trợ của AI
+          {t('dashboard.subtitle')}
         </p>
       </div>
 
@@ -95,7 +97,7 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
           disabled={isCreating}
           className="btn-primary btn-text disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isCreating ? "Đang tạo..." : "Tạo CV mới"}
+          {isCreating ? t('dashboard.creating') : t('dashboard.createNewCV')}
         </button>
       </div>
 
@@ -105,17 +107,17 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
             <span className="text-4xl">📄</span>
           </div>
           <h2 className="heading-feature text-xl text-gray-900 mb-4">
-            Chưa có CV nào
+            {t('dashboard.noCV')}
           </h2>
           <p className="body-text text-gray-600 mb-6 max-w-md mx-auto">
-            Bắt đầu tạo CV đầu tiên của bạn với sự hỗ trợ của AI để tối ưu hóa cho hệ thống ATS.
+            {t('dashboard.noCVDescription')}
           </p>
           <button
             onClick={handleCreateCVClick}
             disabled={isCreating}
             className="btn-primary btn-text disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isCreating ? "Đang tạo..." : "Tạo CV đầu tiên"}
+            {isCreating ? t('dashboard.creating') : t('dashboard.createFirstCV')}
           </button>
         </div>
       ) : (
@@ -135,13 +137,13 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="heading-feature text-lg text-gray-900 mb-4">
-              Tạo CV mới
+              {t('dashboard.createNewCV')}
             </h3>
 
             {/* Title Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-900 mb-2">
-                Tên CV
+                {t('dashboard.cvName')}
               </label>
               <input
                 type="text"
@@ -155,10 +157,10 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-900 mb-3">
-                Chọn ngôn ngữ
+                {t('dashboard.selectLanguage')}
               </label>
               <p className="body-text text-gray-700 mb-4">
-                Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.
+                {t('dashboard.languageNote')}
               </p>
             </div>
 
@@ -183,8 +185,8 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
                     )}
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">Tiếng Việt</h4>
-                    <p className="text-sm text-gray-600">Tạo CV bằng tiếng Việt</p>
+                    <h4 className="font-medium text-gray-900">{t('dashboard.vietnamese')}</h4>
+                    <p className="text-sm text-gray-600">{t('dashboard.createInVietnamese')}</p>
                   </div>
                   <div className="ml-auto text-xl font-semibold text-gray-500">VN</div>
                 </div>
@@ -210,8 +212,8 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
                     )}
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">English</h4>
-                    <p className="text-sm text-gray-600">Create CV in English</p>
+                    <h4 className="font-medium text-gray-900">{t('dashboard.english')}</h4>
+                    <p className="text-sm text-gray-600">{t('dashboard.createInEnglish')}</p>
                   </div>
                   <div className="ml-auto text-xl font-semibold text-gray-500">EN</div>
                 </div>
@@ -223,14 +225,14 @@ export default function DashboardContent({ cvs }: DashboardContentProps) {
                 onClick={() => setShowLanguageModal(false)}
                 className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
               >
-                Hủy
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleCreateCV}
                 disabled={isCreating}
                 className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
-                {isCreating ? "Đang tạo..." : "Tạo CV"}
+                {isCreating ? t('dashboard.creating') : t('dashboard.createCV')}
               </button>
             </div>
           </div>

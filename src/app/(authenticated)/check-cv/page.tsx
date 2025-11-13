@@ -16,6 +16,7 @@ import {
 import { createClient } from "@/lib/supabase-client";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import { getTooltipContent } from "@/lib/tooltip-content";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ScoreResult {
   score: number;
@@ -57,6 +58,7 @@ export default function CheckCVPage() {
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState<'upload' | 'review' | 'jd' | 'results'>('upload');
   const [userId, setUserId] = useState<string | null>(null);
+  const { t, locale } = useTranslation();
 
   // Track checker flow start and get user ID
   useEffect(() => {
@@ -85,9 +87,9 @@ export default function CheckCVPage() {
 
   const handleFileUpload = async () => {
     if (!file) {
-      const errorMsg = "Vui lòng chọn file trước";
+      const errorMsg = t('checkCV.errors.selectFile');
       setError(errorMsg);
-      showErrorToast(errorMsg, 'vi');
+      showErrorToast(errorMsg, locale);
       return;
     }
 
@@ -98,18 +100,16 @@ export default function CheckCVPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const data = await apiPostFormData<{ extractedText: string }>(
+      const data = await apiPostFormData<{ text: string; extractedText: string }>(
         "/api/cv/upload-check",
         formData,
         undefined,
-        "vi"
-      );
-
-      // Keep the extracted text as-is; BlockNoteEditor will emit Markdown on edits
-      setEditedText(data.extractedText);
-      setOriginalText(data.extractedText); // Store original for tracking
+        locale
+      );      // Keep the extracted text as-is; BlockNoteEditor will emit Markdown on edits
+      setEditedText(data.extractedText || data.text);
+      setOriginalText(data.extractedText || data.text); // Store original for tracking
       setCurrentStep('review');
-      showSuccessToast("Tải lên file và trích xuất văn bản thành công!");
+      showSuccessToast(t('checkCV.success.uploaded'));
       
       // Track file upload
       if (userId) {
@@ -124,9 +124,9 @@ export default function CheckCVPage() {
         }
       }
     } catch (err) {
-      const appError = handleAPIError(err, 'upload CV', 'vi');
+      const appError = handleAPIError(err, 'upload CV', locale);
       setError(appError.userMessage);
-      showErrorToast(appError, 'vi');
+      showErrorToast(appError, locale);
     } finally {
       setIsLoadingUpload(false);
     }
@@ -134,34 +134,37 @@ export default function CheckCVPage() {
 
   const handleConfirmText = () => {
     if (!editedText.trim()) {
-      const errorMsg = "Vui lòng xem lại và xác nhận văn bản";
+      const errorMsg = t('checkCV.errors.confirmTextFirst');
       setError(errorMsg);
-      showErrorToast(errorMsg, 'vi');
+      showErrorToast(errorMsg, locale);
       return;
     }
     setIsConfirmingText(true);
-    setCurrentStep('jd');
-    showSuccessToast("Văn bản đã được xác nhận! Bây giờ bạn có thể thêm mô tả công việc (tùy chọn).");
+    setTimeout(() => {
+      setIsConfirmingText(false);
+      setCurrentStep('jd');
+      showSuccessToast(t('checkCV.success.textConfirmed'));
     
-    // Track text confirmation
-    if (userId) {
-      try {
-        trackCheckerTextCorrected({
-          userId: userId,
-          textLengthOriginal: originalText.length,
-          textLengthCorrected: editedText.length,
-        });
-      } catch (error) {
-        console.error('Failed to track text correction:', error);
+      // Track text confirmation
+      if (userId) {
+        try {
+          trackCheckerTextCorrected({
+            userId: userId,
+            textLengthOriginal: originalText.length,
+            textLengthCorrected: editedText.length,
+          });
+        } catch (error) {
+          console.error('Failed to track text correction:', error);
+        }
       }
-    }
+    }, 300);
   };
 
   const handleScoreCV = async () => {
     if (!editedText.trim()) {
-      const errorMsg = "Vui lòng xác nhận văn bản trước";
+      const errorMsg = t('checkCV.errors.confirmBeforeScore');
       setError(errorMsg);
-      showErrorToast(errorMsg, 'vi');
+      showErrorToast(errorMsg, locale);
       return;
     }
 
@@ -178,12 +181,12 @@ export default function CheckCVPage() {
           language: 'vi',
         },
         { maxRetries: 3, backoffMs: 2000, timeoutMs: 180000, retryableStatuses: [429,500,502,503,504] },
-        'vi'
+        locale
       );
 
       setScoreResult(data);
       setCurrentStep('results');
-      showSuccessToast("Chấm điểm CV thành công!");
+      showSuccessToast(t('checkCV.success.scoreGenerated'));
       
       // Track score generation
       if (userId) {
@@ -198,19 +201,19 @@ export default function CheckCVPage() {
         }
       }
     } catch (err) {
-      const appError = handleAPIError(err, 'score CV', 'vi');
+      const appError = handleAPIError(err, 'score CV', locale);
       
       // Check if it's a service unavailable error
       const errorMessage = err instanceof Error ? err.message : String(err);
       const is503Error = errorMessage.includes('503') || errorMessage.includes('temporarily unavailable');
       
       if (is503Error) {
-        const friendlyMessage = "Dịch vụ AI đang quá tải. Vui lòng thử lại sau vài giây. Hệ thống đang tự động thử lại...";
+        const friendlyMessage = t('checkCV.errors.aiOverloaded');
         setError(friendlyMessage);
-        showErrorToast(friendlyMessage, 'vi');
+        showErrorToast(friendlyMessage, locale);
       } else {
         setError(appError.userMessage);
-        showErrorToast(appError, 'vi');
+        showErrorToast(appError, locale);
       }
     } finally {
       setIsLoadingScore(false);
@@ -229,24 +232,24 @@ export default function CheckCVPage() {
   return (
       <div className="w-full max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <div className="mb-6">
+          <div className="mb-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Kiểm tra CV
+                {t('checkCV.title')}
               </h1>
               <p className="text-sm sm:text-base text-gray-700">
-                Tải lên CV hiện tại của bạn để nhận điểm ATS và gợi ý cải thiện.
+                {t('checkCV.subtitle')}
               </p>
             </div>
             
             {/* Compact Step Indicator */}
             <div className="flex items-center space-x-1 sm:space-x-2 ml-4">
               {[
-                { key: 'upload', label: 'Tải lên', icon: '📁' },
-                { key: 'review', label: 'Kiểm tra', icon: '✏️' },
-                { key: 'jd', label: 'Mô tả công việc', icon: '📋' },
-                { key: 'results', label: 'Kết quả', icon: '📊' },
+                { key: 'upload', label: t('checkCV.steps.upload'), icon: '📁' },
+                { key: 'review', label: t('checkCV.steps.review'), icon: '✏️' },
+                { key: 'jd', label: t('checkCV.steps.jd'), icon: '📋' },
+                { key: 'results', label: t('checkCV.steps.results'), icon: '📊' },
               ].map((step, index) => (
                 <div key={step.key} className="relative group">
                   <div
@@ -292,7 +295,7 @@ export default function CheckCVPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tải lên file CV
+                {t('checkCV.uploadFileLabel')}
               </label>
               <FileUploadZone
                 file={file}
@@ -308,7 +311,7 @@ export default function CheckCVPage() {
               disabled={!file || isLoadingUpload}
               className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              {isLoadingUpload ? "Đang tải lên và trích xuất văn bản..." : "Tải lên & trích xuất văn bản"}
+              {isLoadingUpload ? t('checkCV.uploading') : t('checkCV.uploadButton')}
             </button>
           </div>
         )}
@@ -316,15 +319,14 @@ export default function CheckCVPage() {
         {/* Step 2: Review Text */}
         {currentStep === 'review' && (
           <div className="space-y-6">
-            {/* <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Xem lại và sửa văn bản đã trích xuất
+                {t('checkCV.review.title')}
               </label>
               <p className="text-sm text-gray-600 mb-4">
-                Vui lòng xem lại văn bản đã trích xuất và so sánh với bản PDF gốc. 
-                Bạn có thể chỉnh sửa văn bản ở bên trái và xem PDF gốc ở bên phải.
+                {t('checkCV.review.description')}
               </p>
-            </div> */}
+            </div>
 
             {/* PDF Viewer with responsive split layout */}
             <div className="border border-gray-300 rounded-lg overflow-hidden h-[500px] sm:h-[600px] lg:h-[700px]">
@@ -340,14 +342,14 @@ export default function CheckCVPage() {
                 onClick={() => setCurrentStep('upload')}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 text-sm sm:text-base"
               >
-                Quay lại
+                {t('common.back')}
               </button>
               <button
                 onClick={handleConfirmText}
                 disabled={!editedText.trim() || isConfirmingText}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
               >
-                {isConfirmingText ? "Đang xác nhận..." : "Tiếp tục"}
+                {isConfirmingText ? t('checkCV.confirming') : t('common.next')}
               </button>
             </div>
           </div>
@@ -358,16 +360,16 @@ export default function CheckCVPage() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mô tả công việc (Tùy chọn)
+                {t('checkCV.addJDLabel')}
               </label>
               <p className="text-sm text-gray-700 mb-4">
-                Dán mô tả công việc để nhận điểm ATS chính xác hơn dựa trên việc khớp từ khóa.
+                {t('checkCV.addJD')}
               </p>
               <textarea
                 value={jdText}
                 onChange={(e) => setJdText(e.target.value)}
                 className="w-full h-48 p-4 border border-gray-300 rounded-lg text-gray-900 bg-white"
-                placeholder="Dán mô tả công việc ở đây (tùy chọn)..."
+                placeholder={t('checkCV.addJDPlaceholder')}
               />
             </div>
 
@@ -376,14 +378,14 @@ export default function CheckCVPage() {
                 onClick={() => setCurrentStep('review')}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 text-sm sm:text-base"
               >
-                Quay lại
+                {t('common.back')}
               </button>
               <button
                 onClick={handleScoreCV}
                 disabled={isLoadingScore}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 text-sm sm:text-base"
               >
-                {isLoadingScore ? "Đang phân tích CV..." : "Kiểm tra điểm ATS"}
+                {isLoadingScore ? t('checkCV.scoring') : t('checkCV.generateScore')}
               </button>
             </div>
           </div>
@@ -398,12 +400,12 @@ export default function CheckCVPage() {
               </div>
               <div className="flex items-center justify-center gap-2">
                 <h2 className="text-2xl font-semibold text-gray-900">
-                  Điểm ATS
+                  {t('checkCV.atsScore')}
                 </h2>
                 <InfoTooltip
                   id="ats-score-check-cv"
-                  title={getTooltipContent("ats_score_meaning", "vi").title}
-                  content={getTooltipContent("ats_score_meaning", "vi").content}
+                  title={getTooltipContent("ats_score_meaning", locale).title}
+                  content={getTooltipContent("ats_score_meaning", locale).content}
                   placement="bottom"
                   icon="info"
                   dismissible={true}
@@ -418,11 +420,11 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.keyword_match}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">Khớp từ khóa</div>
+                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.keywordMatch')}</div>
                   <InfoTooltip
                     id="keyword-match-check-cv"
-                    title={getTooltipContent("keyword_match_meaning", "vi").title}
-                    content={getTooltipContent("keyword_match_meaning", "vi").content}
+                    title={getTooltipContent("keyword_match_meaning", locale).title}
+                    content={getTooltipContent("keyword_match_meaning", locale).content}
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -434,11 +436,11 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.formatting}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">Định dạng</div>
+                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.formatting')}</div>
                   <InfoTooltip
                     id="formatting-check-cv"
-                    title={getTooltipContent("formatting_meaning", "vi").title}
-                    content={getTooltipContent("formatting_meaning", "vi").content}
+                    title={getTooltipContent("formatting_meaning", locale).title}
+                    content={getTooltipContent("formatting_meaning", locale).content}
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -450,11 +452,11 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.completeness}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">Đầy đủ</div>
+                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.completeness')}</div>
                   <InfoTooltip
                     id="completeness-check-cv"
-                    title={getTooltipContent("completeness_meaning", "vi").title}
-                    content={getTooltipContent("completeness_meaning", "vi").content}
+                    title={getTooltipContent("completeness_meaning", locale).title}
+                    content={getTooltipContent("completeness_meaning", locale).content}
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -466,11 +468,11 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.relevance}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">Liên quan</div>
+                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.relevance')}</div>
                   <InfoTooltip
                     id="relevance-check-cv"
-                    title={getTooltipContent("relevance_meaning", "vi").title}
-                    content={getTooltipContent("relevance_meaning", "vi").content}
+                    title={getTooltipContent("relevance_meaning", locale).title}
+                    content={getTooltipContent("relevance_meaning", locale).content}
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -483,7 +485,7 @@ export default function CheckCVPage() {
             {scoreResult.matchedKeywords.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Từ khóa khớp
+                  {t('checkCV.matchedKeywords')}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {scoreResult.matchedKeywords.map((keyword, index) => (
@@ -501,7 +503,7 @@ export default function CheckCVPage() {
             {scoreResult.missingKeywords.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Từ khóa thiếu
+                  {t('checkCV.missingKeywords')}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {scoreResult.missingKeywords.map((keyword, index) => (
@@ -520,7 +522,7 @@ export default function CheckCVPage() {
             {scoreResult.suggestions && scoreResult.suggestions.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Gợi ý cải thiện
+                  {t('checkCV.suggestions')}
                 </h3>
                 <div className="space-y-3">
                   {scoreResult.suggestions.map((suggestion, index) => {
@@ -539,9 +541,9 @@ export default function CheckCVPage() {
 
                     const getPriorityLabel = (priority: string) => {
                       const labels = {
-                        high: "Ưu tiên cao",
-                        medium: "Ưu tiên trung bình",
-                        low: "Ưu tiên thấp",
+                        high: t('checkCV.priority.high'),
+                        medium: t('checkCV.priority.medium'),
+                        low: t('checkCV.priority.low'),
                       };
                       return labels[priority as keyof typeof labels] || priority;
                     };
@@ -582,9 +584,7 @@ export default function CheckCVPage() {
             {/* Disclaimer */}
             <div className="bg-yellow-50 border border-yellow-500 rounded-lg p-4">
               <p className="text-sm text-yellow-500">
-                <strong>Lưu ý:</strong> Điểm ATS này dựa trên văn bản đã trích xuất từ file bạn tải lên. 
-                Độ chính xác của điểm số phụ thuộc vào chất lượng trích xuất văn bản, có thể thay đổi tùy theo bố cục phức tạp 
-                hoặc file có định dạng nặng. Để có kết quả tốt nhất, hãy đảm bảo CV của bạn ở định dạng đơn giản, thân thiện với ATS.
+                <strong>{t('checkCV.disclaimer.note')}</strong> {t('checkCV.disclaimer.message')}
               </p>
             </div>
 
@@ -593,7 +593,7 @@ export default function CheckCVPage() {
                 onClick={resetProcess}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base"
               >
-                Kiểm tra CV khác
+                {t('checkCV.startOver')}
               </button>
             </div>
           </div>

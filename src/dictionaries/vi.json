@@ -1,0 +1,427 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Đã có lỗi xảy ra",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "next": "Tiếp tục",
+    "back": "Quay lại",
+    "skip": "Bỏ qua",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "apply": "Áp dụng",
+    "reset": "Đặt lại",
+    "submit": "Gửi",
+    "export": "Xuất",
+    "download": "Tải xuống",
+    "upload": "Tải lên",
+    "create": "Tạo mới",
+    "update": "Cập nhật",
+    "view": "Xem",
+    "preview": "Xem trước",
+    "copy": "Sao chép",
+    "duplicate": "Nhân bản",
+    "select": "Chọn",
+    "clear": "Xóa",
+    "required": "Bắt buộc",
+    "optional": "Tùy chọn",
+    "success": "Thành công",
+    "failed": "Thất bại",
+    "warning": "Cảnh báo",
+    "info": "Thông tin"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "signup": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "loginWithGoogle": "Đăng nhập bằng Google",
+    "loginWithMagicLink": "Đăng nhập bằng Magic Link",
+    "sendMagicLink": "Gửi Magic Link",
+    "checkEmail": "Kiểm tra email của bạn",
+    "magicLinkSent": "Magic link đã được gửi đến email của bạn",
+    "invalidCredentials": "Thông tin đăng nhập không hợp lệ",
+    "accountNotFound": "Tài khoản không tồn tại"
+  },
+  "dashboard": {
+    "title": "Quản lý CV",
+    "subtitle": "Tạo và quản lý CV của bạn với sự hỗ trợ của AI",
+    "createNew": "Tạo CV mới",
+    "createNewCV": "Tạo CV mới",
+    "createFirstCV": "Tạo CV đầu tiên",
+    "createCV": "Tạo CV",
+    "creating": "Đang tạo...",
+    "cvCreated": "Đã tạo CV mới thành công!",
+    "cvDeleted": "Đã xóa CV thành công!",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa CV này?",
+    "cvName": "Tên CV",
+    "selectLanguage": "Chọn ngôn ngữ",
+    "languageNote": "Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "createInVietnamese": "Tạo CV bằng tiếng Việt",
+    "createInEnglish": "Create CV in English",
+    "noCV": "Chưa có CV nào",
+    "noCVDescription": "Bắt đầu tạo CV đầu tiên của bạn với sự hỗ trợ của AI để tối ưu hóa cho hệ thống ATS.",
+    "noCVTitle": "Chưa có CV nào",
+    "noCVDesc": "Bắt đầu tạo CV đầu tiên của bạn với sự hỗ trợ của AI.",
+    "myCVs": "CV của tôi",
+    "recentCVs": "CV gần đây",
+    "lastModified": "Sửa đổi lần cuối",
+    "atsScore": "Điểm ATS",
+    "viewCV": "Xem CV",
+    "editCV": "Chỉnh sửa CV",
+    "deleteCV": "Xóa CV",
+    "duplicateCV": "Nhân bản CV",
+    "exportCV": "Xuất CV",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa CV này?",
+    "deleteSuccess": "Xóa CV thành công",
+    "deleteFailed": "Không thể xóa CV"
+  },
+  "wizard": {
+    "title": "Tạo CV của bạn",
+    "subtitle": "Hãy làm theo các bước để tạo CV hoàn hảo",
+    "steps": {
+      "language": "Ngôn ngữ",
+      "jd": "Phân tích JD",
+      "personal": "Thông tin cá nhân",
+      "experience": "Kinh nghiệm",
+      "education": "Học vấn",
+      "skills": "Kỹ năng",
+      "summary": "Tóm tắt",
+      "review": "Xem lại"
+    },
+    "stepProgress": "Bước {{current}} / {{total}}",
+    "next": "Tiếp tục",
+    "back": "Quay lại",
+    "skip": "Bỏ qua bước này",
+    "finish": "Hoàn thành"
+  },
+  "languageSelection": {
+    "title": "Chọn ngôn ngữ CV",
+    "subtitle": "Chọn ngôn ngữ để tạo CV. AI sẽ tạo nội dung phù hợp với ngôn ngữ bạn chọn.",
+    "vietnamese": "Tiếng Việt",
+    "english": "English",
+    "vietnameseDesc": "Phù hợp cho thị trường Việt Nam",
+    "englishDesc": "Phù hợp cho thị trường quốc tế"
+  },
+  "jdAnalysis": {
+    "title": "Phân tích mô tả công việc",
+    "subtitle": "Dán Job Description để AI phân tích và tối ưu CV của bạn",
+    "placeholder": "Dán Job Description vào đây...",
+    "analyze": "Phân tích JD",
+    "analyzing": "Đang phân tích...",
+    "skip": "Bỏ qua (không khuyến khích)",
+    "extractedKeywords": "Từ khóa quan trọng",
+    "keywordCount": "{{count}} từ khóa",
+    "skillsRequired": "Kỹ năng yêu cầu",
+    "experienceLevel": "Cấp độ kinh nghiệm",
+    "analysisComplete": "Phân tích hoàn tất",
+    "analysisError": "Không thể phân tích JD"
+  },
+  "personalInfo": {
+    "title": "Thông tin cá nhân",
+    "subtitle": "Điền thông tin cá nhân của bạn",
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "city": "Thành phố",
+    "country": "Quốc gia",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "website": "Website",
+    "portfolio": "Portfolio",
+    "placeholders": {
+      "fullName": "Nguyễn Văn A",
+      "email": "example@email.com",
+      "phone": "0123456789",
+      "address": "123 Đường ABC",
+      "city": "Hà Nội",
+      "linkedin": "linkedin.com/in/username",
+      "github": "github.com/username"
+    }
+  },
+  "experience": {
+    "title": "Kinh nghiệm làm việc",
+    "subtitle": "Thêm kinh nghiệm làm việc của bạn",
+    "addExperience": "Thêm kinh nghiệm",
+    "companyName": "Tên công ty",
+    "position": "Vị trí",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "current": "Hiện tại",
+    "description": "Mô tả công việc",
+    "achievements": "Thành tựu",
+    "responsibilities": "Trách nhiệm",
+    "addAchievement": "Thêm thành tựu",
+    "generateWithAI": "Tạo bằng AI",
+    "improveWithAI": "Cải thiện bằng AI",
+    "noExperience": "Chưa có kinh nghiệm nào",
+    "placeholders": {
+      "companyName": "Công ty ABC",
+      "position": "Lập trình viên Full-stack",
+      "description": "Mô tả công việc và trách nhiệm..."
+    }
+  },
+  "education": {
+    "title": "Học vấn",
+    "subtitle": "Thêm thông tin học vấn",
+    "addEducation": "Thêm học vấn",
+    "school": "Trường học",
+    "degree": "Bằng cấp",
+    "major": "Chuyên ngành",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày tốt nghiệp",
+    "gpa": "Điểm GPA",
+    "achievements": "Thành tựu",
+    "noEducation": "Chưa có thông tin học vấn"
+  },
+  "skills": {
+    "title": "Kỹ năng",
+    "subtitle": "Thêm kỹ năng của bạn",
+    "addSkill": "Thêm kỹ năng",
+    "skillName": "Tên kỹ năng",
+    "level": "Trình độ",
+    "levels": {
+      "beginner": "Cơ bản",
+      "intermediate": "Trung cấp",
+      "advanced": "Nâng cao",
+      "expert": "Chuyên gia"
+    },
+    "categories": {
+      "technical": "Kỹ năng kỹ thuật",
+      "soft": "Kỹ năng mềm",
+      "language": "Ngôn ngữ",
+      "other": "Khác"
+    },
+    "suggestSkills": "Gợi ý kỹ năng từ JD",
+    "noSkills": "Chưa có kỹ năng nào"
+  },
+  "summary": {
+    "title": "Tóm tắt nghề nghiệp",
+    "subtitle": "Viết tóm tắt ngắn gọn về bản thân",
+    "placeholder": "Viết tóm tắt về bản thân, kinh nghiệm và mục tiêu nghề nghiệp...",
+    "generateWithAI": "Tạo tự động bằng AI",
+    "generating": "Đang tạo...",
+    "regenerate": "Tạo lại",
+    "tips": "Mẹo: Tóm tắt nên ngắn gọn (2-3 câu), nêu bật điểm mạnh và phù hợp với vị trí ứng tuyển."
+  },
+  "fileUpload": {
+    "dragActive": "Thả file vào đây",
+    "dragInactive": "Nhấp để tải lên hoặc kéo thả file",
+    "changeFile": "Nhấp hoặc kéo thả để chọn file khác",
+    "supportedFormats": "PDF hoặc DOCX",
+    "maxSize": "Kích thước file tối đa: {{maxSizeMB}}MB",
+    "errors": {
+      "tooLarge": "File quá lớn. Kích thước tối đa: {{maxSizeMB}}MB",
+      "invalidFormat": "Định dạng file không hợp lệ. Chỉ chấp nhận: {{accept}}"
+    }
+  },
+  "pdfViewer": {
+    "noFile": "Chưa có file PDF để hiển thị",
+    "extractedText": "Văn bản đã trích xuất",
+    "reviewDescription": "Xem lại và chỉnh sửa văn bản đã trích xuất từ CV của bạn. Bạn có thể so sánh với bản PDF gốc ở bên phải.",
+    "placeholder": "Văn bản đã trích xuất sẽ xuất hiện ở đây...",
+    "loading": "Đang tải PDF...",
+    "error": "Lỗi tải PDF",
+    "cannotLoad": "Không thể tải PDF",
+    "reset": "Reset"
+  },
+  "tooltip": {
+    "close": "Đóng tooltip",
+    "dismiss": "Đừng hiển thị lại"
+  },
+  "checkCV": {
+    "title": "Kiểm tra CV",
+    "subtitle": "Tải lên CV hiện tại của bạn để nhận điểm ATS và gợi ý cải thiện.",
+    "uploadFile": "Tải file lên",
+    "uploadFileLabel": "Tải lên file CV",
+    "dragDrop": "Kéo thả file vào đây hoặc nhấn để chọn",
+    "supportedFormats": "Hỗ trợ: PDF, DOCX (tối đa 10MB)",
+    "uploading": "Đang tải lên...",
+    "uploadButton": "Tải lên và trích xuất văn bản",
+    "extractingText": "Đang trích xuất văn bản...",
+    "reviewText": "Xem lại văn bản",
+    "reviewTextDesc": "Xem lại và chỉnh sửa văn bản đã trích xuất từ CV của bạn",
+    "confirmText": "Xác nhận văn bản",
+    "confirmButton": "Xác nhận văn bản",
+    "confirming": "Đang xác nhận...",
+    "addJD": "Thêm Job Description (tùy chọn)",
+    "addJDLabel": "Job Description (Tùy chọn)",
+    "addJDPlaceholder": "Dán mô tả công việc vào đây để nhận gợi ý tối ưu hóa theo JD...",
+    "skipJD": "Bỏ qua (chấm điểm không có JD)",
+    "generateScore": "Tạo điểm ATS",
+    "scoring": "Đang chấm điểm...",
+    "atsScore": "Điểm ATS",
+    "results": "Kết quả",
+    "resultsTitle": "Kết quả phân tích CV",
+    "overallScore": "Điểm tổng thể",
+    "breakdown": "Chi tiết điểm",
+    "keywordMatch": "Khớp từ khóa",
+    "formatting": "Định dạng",
+    "completeness": "Hoàn thiện",
+    "relevance": "Liên quan",
+    "suggestions": "Gợi ý cải thiện",
+    "matchedKeywords": "Từ khóa phù hợp",
+    "missingKeywords": "Từ khóa còn thiếu",
+    "tryAgain": "Thử lại",
+    "startOver": "Bắt đầu lại",
+    "review": {
+      "title": "Xem lại và sửa văn bản đã trích xuất",
+      "description": "Vui lòng xem lại văn bản đã trích xuất và so sánh với bản PDF gốc. Bạn có thể chỉnh sửa văn bản ở bên trái và xem PDF gốc ở bên phải."
+    },
+    "priority": {
+      "high": "Ưu tiên cao",
+      "medium": "Ưu tiên trung bình",
+      "low": "Ưu tiên thấp"
+    },
+    "steps": {
+      "upload": "Tải lên",
+      "review": "Kiểm tra",
+      "jd": "Mô tả công việc",
+      "results": "Kết quả"
+    },
+    "errors": {
+      "selectFile": "Vui lòng chọn file trước",
+      "confirmTextFirst": "Vui lòng xem lại và xác nhận văn bản",
+      "confirmBeforeScore": "Vui lòng xác nhận văn bản trước",
+      "aiOverloaded": "Dịch vụ AI đang quá tải. Vui lòng thử lại sau vài giây. Hệ thống đang tự động thử lại..."
+    },
+    "success": {
+      "uploaded": "Tải lên file và trích xuất văn bản thành công!",
+      "textConfirmed": "Văn bản đã được xác nhận! Bây giờ bạn có thể thêm mô tả công việc (tùy chọn).",
+      "scoreGenerated": "Chấm điểm CV thành công!"
+    },
+    "disclaimer": {
+      "note": "Lưu ý:",
+      "message": "Điểm ATS này dựa trên văn bản đã trích xuất từ file bạn tải lên. Độ chính xác của điểm số phụ thuộc vào chất lượng trích xuất văn bản, có thể thay đổi tùy theo bố cục phức tạp hoặc file có định dạng nặng. Để có kết quả tốt nhất, hãy đảm bảo CV của bạn ở định dạng đơn giản, thân thiện với ATS."
+    }
+  },
+  "editor": {
+    "title": "Trình soạn thảo CV",
+    "saving": "Đang lưu...",
+    "saved": "Đã lưu",
+    "autoSave": "Tự động lưu",
+    "manualSave": "Lưu thủ công",
+    "preview": "Xem trước",
+    "export": "Xuất CV",
+    "exportPDF": "Xuất PDF",
+    "exportWord": "Xuất Word",
+    "template": "Mẫu",
+    "changeTemplate": "Đổi mẫu",
+    "sections": "Các phần",
+    "addSection": "Thêm phần",
+    "removeSection": "Xóa phần",
+    "reorderSections": "Sắp xếp lại",
+    "suggestions": "Gợi ý AI",
+    "applySuggestion": "Áp dụng",
+    "dismissSuggestion": "Bỏ qua",
+    "applyAll": "Áp dụng tất cả",
+    "refreshSuggestions": "Làm mới gợi ý"
+  },
+  "feedback": {
+    "title": "Gửi phản hồi",
+    "subtitle": "Chia sẻ ý kiến của bạn để giúp chúng tôi cải thiện",
+    "type": "Loại phản hồi",
+    "types": {
+      "bug": "Báo lỗi",
+      "feature": "Đề xuất tính năng",
+      "improvement": "Cải thiện",
+      "other": "Khác"
+    },
+    "message": "Nội dung phản hồi",
+    "placeholder": "Mô tả chi tiết phản hồi của bạn...",
+    "attachments": "Đính kèm file",
+    "submit": "Gửi phản hồi",
+    "submitting": "Đang gửi...",
+    "success": "Cảm ơn bạn đã gửi phản hồi!",
+    "error": "Không thể gửi phản hồi. Vui lòng thử lại."
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "dashboard": "Bảng điều khiển",
+    "manageCVs": "Quản lý CV",
+    "editor": "Soạn thảo",
+    "checkCV": "Kiểm tra CV",
+    "feedback": "Phản hồi",
+    "sendFeedback": "Gửi phản hồi",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "help": "Trợ giúp",
+    "about": "Giới thiệu"
+  },
+  "notifications": {
+    "saved": "Đã lưu thành công",
+    "updated": "Đã cập nhật",
+    "deleted": "Đã xóa",
+    "error": "Có lỗi xảy ra",
+    "networkError": "Lỗi kết nối mạng",
+    "tryAgain": "Vui lòng thử lại",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn"
+  },
+  "landing": {
+    "header": {
+      "brandName": "FastRezu"
+    },
+    "hero": {
+      "title": "CV TopCV, Canva vẫn bị loại?",
+      "titleHighlight": "Đã đến lúc",
+      "titleAction": "tối ưu nội dung.",
+      "subtitle": "Hơn 41% công ty Việt Nam đã dùng AI để sàng lọc CV. Template đẹp là chưa đủ. FastRezu giúp bạn viết nội dung thành tích (VI/EN) đánh bại cả Máy (ATS) và Người.",
+      "description": "Các công cụ khác giúp bạn \"check\" CV. FastRezu hướng dẫn bạn viết CV từ đầu. Chúng tôi biến kinh nghiệm của bạn thành thành tích có số liệu, tối ưu từ khóa JD, và giúp bạn nhận được lời mời phỏng vấn.",
+      "atsScoreLabel": "Điểm Tương thích ATS"
+    },
+    "companies": {
+      "title": "Một số công ty đã và đang ứng dụng AI trong quy trình tuyển dụng"
+    },
+    "painPoints": {
+      "sectionTitle": "Bạn đang đối đầu với AI.",
+      "sectionTitleBreak": "CV của bạn đã sẵn sàng chưa?",
+      "sectionDescription": "Theo khảo sát 2024, 41% doanh nghiệp Việt Nam đã dùng AI để tuyển dụng. Các hệ thống ATS (như Base, MISA, Talent Solution) đang tự động đọc, chấm điểm, và xếp hạng hồ sơ của bạn.",
+      "pain1": {
+        "title": "Khó diễn tả thành tích?",
+        "description": "Khó khăn lớn nhất là biến \"nhiệm vụ\" thành \"thành tích có số liệu\". AI của đối thủ có thể check, nhưng AI của FastRezu sẽ viết hộ bạn."
+      },
+      "pain2": {
+        "title": "Bị lọc vì thiếu từ khóa",
+        "description": "CV của bạn (dù đẹp) bị loại vì thiếu từ khóa khớp với JD. FastRezu tự động quét JD và tích hợp từ khóa vào nội dung CV cho bạn."
+      },
+      "pain3": {
+        "title": "Template đẹp nhưng ATS không đọc được",
+        "description": "Nhiều CV đẹp (từ Canva, TopCV) sử dụng cột, bảng, icon khiến máy ATS không thể đọc đúng nội dung. FastRezu đảm bảo CV vừa đẹp vừa chuẩn ATS."
+      }
+    },
+    "features": {
+      "sectionTitle": "CakeResume, JobsGO giúp bạn Check.",
+      "sectionTitleBreak": "FastRezu giúp bạn viết và tối ưu.",
+      "sectionDescription": "Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để tạo lập CV (VI/EN) vượt trội, giải quyết nỗi đau \"bí từ\" và \"thể hiện thành tích\".",
+      "feature1": {
+        "title": "AI làm nổi bật thành Tích",
+        "description": "Giải quyết nỗi đau lớn nhất: Chỉ cần nhập vị trí, AI tự động soạn thảo các bullet point thành tích (VI/EN) ấn tượng, sử dụng số liệu và động từ mạnh."
+      },
+      "feature2": {
+        "title": "AI phân tích JD sâu",
+        "description": "Tự động \"quét\" JD, chỉ ra từ khóa quan trọng. Giúp bạn tùy chỉnh CV đúng trọng tâm công việc chỉ trong vài giây."
+      },
+      "feature3": {
+        "title": "Check CV & Chấm điểm ATS",
+        "description": "Tải CV có sẵn (từ TopCV, Canva) để AI chấm điểm, phát hiện lỗi ATS, và gợi ý cải thiện cụ thể."
+      }
+    },
+    "cta": {
+      "title": "Sẵn sàng để CV của bạn được nhà tuyển dụng chú ý.",
+      "description": "Ngừng lãng phí thời gian và bỏ lỡ cơ hội. Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí."
+    },
+    "footer": {
+      "copyright": "© 2025 FastRezu. Tất cả quyền được bảo lưu."
+    }
+  }
+}

@@ -1,8 +1,13 @@
+'use client';
+
 import CompanyCarousel from "@/components/ui/CompanyCarousel";
 import CTAButton from "@/components/ui/CTAButton";
 import Image from "next/image";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 export default function Home() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -20,9 +25,11 @@ export default function Home() {
                 priority
               />
               <span className="heading-feature text-xl text-gray-900">
-                FastRezu
+                {t('landing.header.brandName')}
               </span>
             </div>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
@@ -35,22 +42,19 @@ export default function Home() {
               
               {/* === Tối ưu H1: Đánh thẳng vào đối thủ === */}
               <h1 className="heading-main text-3xl sm:text-4xl lg:text-6xl text-gray-900 mb-4 sm:mb-6">
-                CV TopCV, Canva <span className="text-red-600">vẫn bị loại?</span>
+                {t('landing.hero.title')}
                 <br className="hidden lg:block" />
-                <span className="text-blue-600">Đã đến lúc</span> tối ưu nội dung.
+                <span className="text-blue-600">{t('landing.hero.titleHighlight')}</span> {t('landing.hero.titleAction')}
               </h1>
 
               {/* === Tối ưu H2: Nhấn mạnh 41% công ty dùng AI === */}
               <h2 className="heading-sub text-lg sm:text-xl lg:text-2xl text-gray-700 mb-4 sm:mb-6">
-                Hơn 41% công ty Việt Nam đã dùng AI để sàng lọc CV. Template đẹp là chưa đủ.
-                FastRezu giúp bạn <span className="font-semibold">viết nội dung thành tích</span> (VI/EN) đánh bại cả Máy (ATS) và Người.
+                {t('landing.hero.subtitle')}
               </h2>
 
               {/* === Tối ưu P: Khẳng định sự khác biệt (Viết hộ) === */}
               <p className="body-text text-base sm:text-lg text-gray-700 mb-6 sm:mb-8">
-                Các công cụ khác giúp bạn &quot;check&quot; CV. FastRezu <span className="font-semibold">hướng dẫn bạn viết CV từ đầu</span>.
-                Chúng tôi biến kinh nghiệm của bạn thành <span className="font-semibold">thành tích có số liệu</span>,
-                tối ưu từ khóa JD, và giúp bạn nhận được lời mời phỏng vấn.
+                {t('landing.hero.description')}
               </p>
 
               {/* Nút CTA giữ nguyên */}
@@ -72,7 +76,7 @@ export default function Home() {
                     95/100
                   </div>
                   <div className="text-xs sm:text-sm text-gray-700">
-                    Điểm Tương thích ATS
+                    {t('landing.hero.atsScoreLabel')}
                   </div>
                 </div>
               </div>
@@ -86,7 +90,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-8">
             <p className="body-text text-gray-600 text-sm sm:text-base">
-              Một số công ty đã và đang ứng dụng AI trong quy trình tuyển dụng
+              {t('landing.companies.title')}
             </p>
           </div>
           <CompanyCarousel />
@@ -98,12 +102,11 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              Bạn đang đối đầu với AI. <br className="hidden sm:block" />
-              CV của bạn đã sẵn sàng chưa?
+              {t('landing.painPoints.sectionTitle')} <br className="hidden sm:block" />
+              {t('landing.painPoints.sectionTitleBreak')}
             </h2>
             <p className="body-text text-gray-700 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Theo khảo sát 2024, <span className="font-semibold text-blue-600">41% doanh nghiệp Việt Nam</span> đã dùng AI để tuyển dụng.
-              Các hệ thống ATS (như Base, MISA, Talent Solution) đang tự động <span className="font-semibold text-red-600">đọc, chấm điểm, và xếp hạng</span> hồ sơ của bạn.
+              {t('landing.painPoints.sectionDescription')}
             </p>
           </div>
           {/* === Cập nhật 3 cột nỗi đau === */}
@@ -114,10 +117,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">🏆</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Khó diễn tả thành tích?
+                {t('landing.painPoints.pain1.title')}
               </h3>
               <p className="body-text text-gray-700 text-sm sm:text-base">
-                Khó khăn lớn nhất là biến &quot;nhiệm vụ&quot; thành &quot;thành tích có số liệu&quot;. AI của đối thủ có thể check, nhưng <span className="font-semibold">AI của FastRezu sẽ viết hộ bạn</span>.
+                {t('landing.painPoints.pain1.description')}
               </p>
             </div>
             
@@ -127,10 +130,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">🤖</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Bị lọc vì thiếu từ khóa
+                {t('landing.painPoints.pain2.title')}
               </h3>
               <p className="body-text text-gray-700 text-sm sm:text-base">
-                CV của bạn (dù đẹp) bị loại vì thiếu từ khóa khớp với JD. FastRezu <span className="font-semibold">tự động quét JD</span> và tích hợp từ khóa vào nội dung CV cho bạn.
+                {t('landing.painPoints.pain2.description')}
               </p>
             </div>
             
@@ -140,10 +143,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">🎨</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4">
-                Template đẹp nhưng ATS không đọc được
+                {t('landing.painPoints.pain3.title')}
               </h3>
               <p className="body-text text-gray-700 text-sm sm:text-base">
-                Nhiều CV đẹp (từ Canva, TopCV) sử dụng cột, bảng, icon khiến máy ATS <span className="font-semibold">không thể đọc đúng nội dung</span>. FastRezu đảm bảo CV vừa đẹp vừa chuẩn ATS.
+                {t('landing.painPoints.pain3.description')}
               </p>
             </div>
           </div>
@@ -156,12 +159,12 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             {/* === Tối ưu H2: Nhấn mạnh sự khác biệt === */}
             <h2 className="heading-main text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4 sm:mb-6">
-              CakeResume, JobsGO giúp bạn <span className="italic">Check</span>.
+              {t('landing.features.sectionTitle')}
               <br className="hidden sm:block" />
-              FastRezu <span className="font-bold text-blue-600">giúp bạn viết và tối ưu</span>.
+              {t('landing.features.sectionTitleBreak')}
             </h2>
             <p className="body-text text-gray-700 mb-6 sm:mb-8 max-w-4xl mx-auto text-center text-sm sm:text-base">
-              Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để <span className="font-semibold">tạo lập</span> CV (VI/EN) vượt trội, giải quyết nỗi đau &quot;bí từ&quot; và &quot;thể hiện thành tích&quot;.
+              {t('landing.features.sectionDescription')}
             </p>
           </div>
 
@@ -172,10 +175,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">✍️✨</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI <span className="font-semibold">làm nổi bật</span> thành Tích
+                {t('landing.features.feature1.title')}
               </h3>
               <p className="body-text text-gray-700 text-center text-sm sm:text-base">
-                Giải quyết nỗi đau lớn nhất: Chỉ cần nhập vị trí, AI tự động <span className="font-semibold">soạn thảo các bullet point thành tích</span> (VI/EN) ấn tượng, sử dụng số liệu và động từ mạnh.
+                {t('landing.features.feature1.description')}
               </p>
             </div>
             
@@ -185,10 +188,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">🔍🎯</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                AI phân tích JD <span className="font-semibold">sâu</span>
+                {t('landing.features.feature2.title')}
               </h3>
               <p className="body-text text-gray-700 text-center text-sm sm:text-base">
-                Tự động &quot;quét&quot; JD, chỉ ra <span className="font-semibold">từ khóa quan trọng</span>. Giúp bạn tùy chỉnh CV đúng trọng tâm công việc chỉ trong vài giây.
+                {t('landing.features.feature2.description')}
               </p>
             </div>
 
@@ -198,10 +201,10 @@ export default function Home() {
                 <span className="text-xl sm:text-2xl">📊✅</span>
               </div>
               <h3 className="heading-feature text-lg sm:text-xl text-gray-900 mb-3 sm:mb-4 text-center">
-                Check CV & <span className="font-semibold">Chấm điểm ATS</span>
+                {t('landing.features.feature3.title')}
               </h3>
               <p className="body-text text-gray-700 text-center text-sm sm:text-base">
-                <span className="font-semibold">Tải CV có sẵn</span> (từ TopCV, Canva) để AI chấm điểm, phát hiện lỗi ATS, và gợi ý cải thiện cụ thể.
+                {t('landing.features.feature3.description')}
               </p>
             </div>
           </div>
@@ -213,12 +216,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="heading-main text-xl sm:text-2xl lg:text-3xl mb-4 sm:mb-6">
-              Sẵn sàng để CV của bạn được nhà tuyển dụng chú ý.
+              {t('landing.cta.title')}
             </h2>
             <p className="body-text text-lg sm:text-xl text-gray-400 mb-6 sm:mb-8">
-              Ngừng lãng phí thời gian và bỏ lỡ cơ hội. Hãy để AI giúp bạn tạo
-              CV ấn tượng chỉ trong vài phút.
-              <br /> Bắt đầu ngay hôm nay, hoàn toàn miễn phí.
+              {t('landing.cta.description')}
             </p>
             {/* Nút CTA giữ nguyên */}
             <div className="max-w-md mx-auto">
@@ -232,7 +233,7 @@ export default function Home() {
       <footer className="bg-gray-900 text-white py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-gray-500">
-            © 2025 FastRezu. Tất cả quyền được bảo lưu.
+            {t('landing.footer.copyright')}
           </p>
         </div>
       </footer>

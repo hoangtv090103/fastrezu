@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import FeedbackButton from "@/components/ui/FeedbackButton";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,35 +45,37 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: '#4ade80',
-                secondary: '#fff',
+        <LanguageProvider>
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
               },
-            },
-            error: {
-              duration: 5000,
-              iconTheme: {
-                primary: '#ef4444',
-                secondary: '#fff',
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: '#4ade80',
+                  secondary: '#fff',
+                },
               },
-            },
-          }}
-        />
-        {/* Show feedback button on public pages */}
-        <FeedbackButton />
+              error: {
+                duration: 5000,
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
+          {/* Show feedback button on public pages */}
+          <FeedbackButton />
+        </LanguageProvider>
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && <Analytics />}
         {process.env.NODE_ENV === 'production' && process.env.VERCEL && <SpeedInsights />}
 
