@@ -1,10 +1,15 @@
+
 "use client";
+
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ATSScoreWidgetProps {
   score: number;
 }
 
 export default function ATSScoreWidget({ score }: ATSScoreWidgetProps) {
+  const { t } = useTranslation();
+
   const getScoreColor = () => {
     if (score >= 80) return "text-green-600 bg-green-100";
     if (score >= 60) return "text-yellow-600 bg-yellow-100";
@@ -12,9 +17,9 @@ export default function ATSScoreWidget({ score }: ATSScoreWidgetProps) {
   };
 
   const getScoreLabel = () => {
-    if (score >= 80) return "Tuyệt vời";
-    if (score >= 60) return "Khá tốt";
-    return "Cần cải thiện";
+    if (score >= 80) return t('editor.review.atsScoreExcellent');
+    if (score >= 60) return t('editor.review.atsScoreGood');
+    return t('editor.review.atsScoreNeedsImprovement');
   };
 
   return (
@@ -25,7 +30,7 @@ export default function ATSScoreWidget({ score }: ATSScoreWidgetProps) {
         {score}/100
       </div>
       <div className="text-right">
-        <p className="text-xs text-gray-500">Điểm ATS</p>
+        <p className="text-xs text-gray-500">{t('editor.review.atsScore')}</p>
         <p className="text-xs font-medium text-gray-700">{getScoreLabel()}</p>
       </div>
     </div>
