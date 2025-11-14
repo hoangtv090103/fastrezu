@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { useTranslation } from '@/hooks/useTranslation';
 import { showSuccessToast, showErrorToast } from '@/lib/toast-utils';
 import { apiPostFormData } from '@/lib/api-client';
 
@@ -32,6 +33,7 @@ export default function FeedbackImageUpload({
   maxFiles = 3,
   maxFileSize = 5
 }: FeedbackImageUploadProps) {
+  const { t, locale } = useTranslation();
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,15 +48,15 @@ export default function FeedbackImageUpload({
 
   const validateFile = (file: File): string | null => {
     if (!allowedTypes.includes(file.type)) {
-      return 'Chỉ cho phép file ảnh (JPEG, PNG, GIF, WebP)';
+      return t('feedback.fileValidation.invalidType');
     }
 
     if (file.size > maxFileSize * 1024 * 1024) {
-      return `Kích thước file không được vượt quá ${maxFileSize}MB`;
+      return t('feedback.fileValidation.tooLarge', { maxSize: maxFileSize });
     }
 
     if (attachments.length >= maxFiles) {
-      return `Chỉ được upload tối đa ${maxFiles} file`;
+      return t('feedback.fileValidation.maxFiles', { maxFiles });
     }
 
     return null;
@@ -69,7 +71,7 @@ export default function FeedbackImageUpload({
         '/api/feedback/upload',
         formData,
         undefined,
-        'vi'
+        locale
       );
 
       return {
@@ -94,7 +96,7 @@ export default function FeedbackImageUpload({
     for (const file of filesToProcess) {
       const validationError = validateFile(file);
       if (validationError) {
-        showErrorToast(validationError, 'vi');
+        showErrorToast(validationError, locale);
         continue;
       }
 
@@ -107,11 +109,11 @@ export default function FeedbackImageUpload({
           const newAttachments = [...attachments, attachment];
           setAttachments(newAttachments);
           onAttachmentsChange(newAttachments);
-          showSuccessToast(`Đã upload ${file.name}`);
+          showSuccessToast(t('feedback.uploadSuccess', { fileName: file.name }));
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-        showErrorToast(`Lỗi upload ${file.name}: ${errorMessage}`, 'vi');
+        showErrorToast(t('feedback.uploadError', { fileName: file.name, error: errorMessage }), locale);
       } finally {
         setUploading(null);
       }
@@ -137,10 +139,10 @@ export default function FeedbackImageUpload({
     <div className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Ảnh minh họa (tùy chọn)
+          {t('feedback.attachmentsLabel')}
         </label>
         <p className="text-sm text-gray-500 mb-3">
-          Upload ảnh lỗi, screenshot hoặc hình ảnh liên quan giúp chúng tôi hiểu rõ vấn đề hơn (tối đa {maxFiles} file, {maxFileSize}MB mỗi file)
+          {t('feedback.attachmentsDescription', { maxFiles, maxFileSize })}
         </p>
 
         {/* Upload Button */}
@@ -156,7 +158,7 @@ export default function FeedbackImageUpload({
               {uploading ? (
                 <>
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
-                  <p className="text-sm text-gray-500">Đang upload {uploading}...</p>
+                  <p className="text-sm text-gray-500">{t('feedback.uploading', { fileName: uploading })}</p>
                 </>
               ) : (
                 <>
@@ -164,9 +166,9 @@ export default function FeedbackImageUpload({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <p className="mb-2 text-sm text-gray-500">
-                    <span className="font-semibold">Click để upload</span> hoặc drag and drop
+                    <span className="font-semibold">{t('feedback.clickToUpload')}</span> {t('feedback.dragDrop')}
                   </p>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF, WebP</p>
+                  <p className="text-xs text-gray-500">{t('feedback.supportedFormats')}</p>
                 </>
               )}
             </div>
@@ -190,7 +192,7 @@ export default function FeedbackImageUpload({
             disabled={uploading !== null || attachments.length >= maxFiles}
             className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 disabled:bg-gray-100 disabled:text-gray-400 transition-colors"
           >
-            📎 Chọn file từ máy tính
+            {t('feedback.uploadButton')}
           </button>
         </div>
       </div>
@@ -198,7 +200,7 @@ export default function FeedbackImageUpload({
       {/* Attachments Preview */}
       {attachments.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-700">Files đã upload:</p>
+          <p className="text-sm font-medium text-gray-700">{t('feedback.uploadedFiles')}</p>
           <div className="space-y-2">
             {attachments.map((attachment, index) => (
               <div
@@ -251,7 +253,7 @@ export default function FeedbackImageUpload({
                   type="button"
                   onClick={() => removeAttachment(index)}
                   className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Xóa file"
+                  title={t('feedback.removeFile')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
