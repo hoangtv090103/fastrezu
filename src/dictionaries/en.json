@@ -645,53 +645,53 @@
       "brandName": "FastRezu"
     },
     "hero": {
-      "title": "TopCV, Canva CVs still rejected?",
+      "title": "Beautiful CVs from Canva & templates getting rejected?",
       "titleHighlight": "It's time to",
-      "titleAction": "optimize content.",
-      "subtitle": "Over 41% of Vietnamese companies use AI to screen CVs. Beautiful templates are not enough. FastRezu helps you write achievement content (VI/EN) that beats both Machines (ATS) and People.",
-      "description": "Other tools help you \"check\" CVs. FastRezu guides you to write CVs from scratch. We turn your experience into achievements with metrics, optimize JD keywords, and help you get interview invitations.",
+      "titleAction": "optimize for AI recruitment.",
+      "subtitle": "67% of global companies use AI for recruitment, projected to reach 83% by 2025. FastRezu transforms your experience into achievement-focused content that beats both ATS systems and human recruiters.",
+      "description": "While competitors just check your CV, FastRezu guides you to write from scratch. We convert tasks into quantifiable achievements, integrate JD keywords, and ensure your CV passes modern ATS systems.",
       "atsScoreLabel": "ATS Compatibility Score"
     },
     "companies": {
       "title": "Some companies that are applying AI in their recruitment process"
     },
     "painPoints": {
-      "sectionTitle": "You're facing AI.",
-      "sectionTitleBreak": "Is your CV ready?",
-      "sectionDescription": "According to 2024 survey, 41% of Vietnamese businesses use AI for recruitment. ATS systems (like Base, MISA, Talent Solution) automatically read, score, and rank your resume.",
+      "sectionTitle": "AI is transforming recruitment.",
+      "sectionTitleBreak": "Is your CV future-ready?",
+      "sectionDescription": "67% of organizations globally use AI in recruitment, projected to reach 83% by 2025. ATS systems automatically read, score, and rank resumes using keyword extraction and skill matching algorithms.",
       "pain1": {
-        "title": "Hard to express achievements?",
-        "description": "The biggest challenge is turning \"tasks\" into \"achievements with metrics\". Competitor's AI can check, but FastRezu's AI will write for you."
+        "title": "Struggling to showcase achievements?",
+        "description": "The biggest challenge is converting \"tasks\" into \"achievements with metrics.\" While competitors can check your CV, FastRezu's AI writes compelling achievement bullet points using strong verbs and quantifiable results."
       },
       "pain2": {
-        "title": "Filtered out for missing keywords",
-        "description": "Your CV (though beautiful) is rejected due to missing JD-matching keywords. FastRezu automatically scans JD and integrates keywords into your CV content."
+        "title": "Rejected for missing keywords",
+        "description": "Your CV gets filtered out despite being visually appealing. FastRezu automatically scans job descriptions and integrates critical keywords into your content, ensuring ATS compatibility."
       },
       "pain3": {
-        "title": "Beautiful template but ATS can't read",
-        "description": "Many beautiful CVs (from Canva, TopCV) use columns, tables, icons that make ATS unable to read content correctly. FastRezu ensures CVs are both beautiful and ATS-compliant."
+        "title": "Beautiful templates that ATS can't read",
+        "description": "Many templates fail ATS compatibility due to complex formatting, graphics, and fonts. FastRezu ensures your CV is both visually appealing and machine-readable for modern ATS systems."
       }
     },
     "features": {
-      "sectionTitle": "CakeResume, JobsGO help you Check.",
-      "sectionTitleBreak": "FastRezu helps you write and optimize.",
-      "sectionDescription": "We don't just score existing CVs. We provide comprehensive AI tools to create outstanding CVs (VI/EN), solving the pain of \"word block\" and \"showing achievements\".",
+      "sectionTitle": "Jobscan & Rezi help you check.",
+      "sectionTitleBreak": "FastRezu helps you create and optimize.",
+      "sectionDescription": "We don't just score existing CVs. We provide comprehensive AI tools to create outstanding, ATS-optimized CVs that address the core challenges of modern AI-driven recruitment.",
       "feature1": {
-        "title": "AI highlights Achievements",
-        "description": "Solving the biggest pain: Just enter the position, AI automatically drafts impressive achievement bullet points (VI/EN) using metrics and strong verbs."
+        "title": "Achievement-focused content generation",
+        "description": "Solving the biggest pain point: Transform generic experience into quantifiable achievements with metrics and strong verbs. Unlike competitors, we write compelling content from scratch in multiple languages."
       },
       "feature2": {
-        "title": "AI deep JD analysis",
-        "description": "Automatically \"scans\" JD, points out important keywords. Helps you customize CV to job focus in seconds."
+        "title": "Advanced JD keyword integration",
+        "description": "Automatically analyzes job descriptions and seamlessly integrates critical keywords into your CV content. Ensures compatibility with modern ATS systems worldwide."
       },
       "feature3": {
-        "title": "Check CV & ATS Scoring",
-        "description": "Upload existing CV (from TopCV, Canva) for AI scoring, detect ATS errors, and get specific improvement suggestions."
+        "title": "ATS compatibility & scoring",
+        "description": "Upload existing CVs for comprehensive AI analysis, ATS error detection, and specific improvement suggestions. Get detailed scores and actionable recommendations to beat automated screening."
       }
     },
     "cta": {
-      "title": "Ready for your CV to get recruiter attention.",
-      "description": "Stop wasting time and missing opportunities. Let AI help you create impressive CVs in minutes. Start today, completely free."
+      "title": "Ready for your CV to stand out in the AI-driven recruitment market.",
+      "description": "With AI adoption growing rapidly in recruitment, don't let your CV get filtered out by ATS systems. Let FastRezu's AI help you create ATS-optimized CVs that pass automated screening. Start today, completely free."
     },
     "footer": {
       "copyright": "© 2025 FastRezu. All rights reserved."

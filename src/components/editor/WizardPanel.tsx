@@ -85,7 +85,7 @@ export default function WizardPanel() {
     }
 
     previousStepRef.current = currentStep;
-  }, [state.currentStep, state.cvData?.id, userId]);
+  }, [state.currentStep, state.cvData?.id, userId, STEPS]);
 
   const handleStepChange = (step: number) => {
     // If moving forward, validate current step

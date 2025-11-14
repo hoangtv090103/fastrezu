@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { cvIdSchema, validateSchema } from "@/lib/validation-schemas";
 import { translateTexts } from "@/lib/translate";
+import { ATSuggestion } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -99,9 +100,9 @@ export async function GET(
       return null;
     };
 
-    // Filter and normalize suggestions
+        // Filter and normalize suggestions
     let validSuggestions = (suggestions || [])
-      .map((suggestion: { target_section: string; [key: string]: unknown }) => {
+      .map((suggestion: ATSuggestion) => {
         const normalizedSection = normalizeTargetSection(suggestion.target_section);
         if (!normalizedSection) {
           console.warn(
@@ -119,9 +120,9 @@ export async function GET(
     // If a UI language is specified, translate suggestion_text to that language for display
     if (uiLang && validSuggestions.length > 0) {
       try {
-        const texts = validSuggestions.map((s: any) => String(s.suggestion_text || ''));
+        const texts = validSuggestions.map((s) => String(s.suggestion_text || ''));
         const translated = await translateTexts(texts, uiLang, 'auto');
-        validSuggestions = validSuggestions.map((s: any, idx: number) => ({
+        validSuggestions = validSuggestions.map((s, idx) => ({
           ...s,
           suggestion_text: translated[idx] || s.suggestion_text,
         }));

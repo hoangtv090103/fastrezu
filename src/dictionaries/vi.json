@@ -645,53 +645,53 @@
       "brandName": "FastRezu"
     },
     "hero": {
-      "title": "CV TopCV, Canva vẫn bị loại?",
+      "title": "CV đẹp từ Canva & template vẫn bị từ chối?",
       "titleHighlight": "Đã đến lúc",
-      "titleAction": "tối ưu nội dung.",
-      "subtitle": "Hơn 41% công ty Việt Nam đã dùng AI để sàng lọc CV. Template đẹp là chưa đủ. FastRezu giúp bạn viết nội dung thành tích (VI/EN) đánh bại cả Máy (ATS) và Người.",
-      "description": "Các công cụ khác giúp bạn \"check\" CV. FastRezu hướng dẫn bạn viết CV từ đầu. Chúng tôi biến kinh nghiệm của bạn thành thành tích có số liệu, tối ưu từ khóa JD, và giúp bạn nhận được lời mời phỏng vấn.",
+      "titleAction": "tối ưu cho tuyển dụng AI.",
+      "subtitle": "67% công ty toàn cầu sử dụng AI cho tuyển dụng, dự kiến đạt 83% vào năm 2025. FastRezu biến kinh nghiệm của bạn thành nội dung thành tích đánh bại cả hệ thống ATS và nhà tuyển dụng.",
+      "description": "Trong khi đối thủ chỉ kiểm tra CV, FastRezu hướng dẫn bạn viết từ đầu. Chúng tôi chuyển đổi nhiệm vụ thành thành tích có số liệu, tích hợp từ khóa JD, và đảm bảo CV của bạn vượt qua hệ thống ATS hiện đại.",
       "atsScoreLabel": "Điểm Tương thích ATS"
     },
     "companies": {
       "title": "Một số công ty đã và đang ứng dụng AI trong quy trình tuyển dụng"
     },
     "painPoints": {
-      "sectionTitle": "Bạn đang đối đầu với AI.",
-      "sectionTitleBreak": "CV của bạn đã sẵn sàng chưa?",
-      "sectionDescription": "Theo khảo sát 2024, 41% doanh nghiệp Việt Nam đã dùng AI để tuyển dụng. Các hệ thống ATS (như Base, MISA, Talent Solution) đang tự động đọc, chấm điểm, và xếp hạng hồ sơ của bạn.",
+      "sectionTitle": "AI đang thay đổi tuyển dụng.",
+      "sectionTitleBreak": "CV của bạn đã sẵn sàng cho tương lai?",
+      "sectionDescription": "67% tổ chức toàn cầu sử dụng AI trong tuyển dụng, dự kiến đạt 83% vào năm 2025. Các hệ thống ATS tự động đọc, chấm điểm và xếp hạng hồ sơ bằng thuật toán trích xuất từ khóa và khớp kỹ năng.",
       "pain1": {
-        "title": "Khó diễn tả thành tích?",
-        "description": "Khó khăn lớn nhất là biến \"nhiệm vụ\" thành \"thành tích có số liệu\". AI của đối thủ có thể check, nhưng AI của FastRezu sẽ viết hộ bạn."
+        "title": "Khó thể hiện thành tích?",
+        "description": "Thách thức lớn nhất là biến \"nhiệm vụ\" thành \"thành tích có số liệu.\" Trong khi đối thủ có thể kiểm tra CV, AI của FastRezu viết nội dung thành tích ấn tượng với động từ mạnh và kết quả định lượng."
       },
       "pain2": {
-        "title": "Bị lọc vì thiếu từ khóa",
-        "description": "CV của bạn (dù đẹp) bị loại vì thiếu từ khóa khớp với JD. FastRezu tự động quét JD và tích hợp từ khóa vào nội dung CV cho bạn."
+        "title": "Bị loại vì thiếu từ khóa",
+        "description": "CV của bạn bị lọc bỏ dù có thiết kế đẹp. FastRezu tự động phân tích mô tả công việc và tích hợp từ khóa quan trọng vào nội dung, đảm bảo tương thích với hệ thống ATS."
       },
       "pain3": {
         "title": "Template đẹp nhưng ATS không đọc được",
-        "description": "Nhiều CV đẹp (từ Canva, TopCV) sử dụng cột, bảng, icon khiến máy ATS không thể đọc đúng nội dung. FastRezu đảm bảo CV vừa đẹp vừa chuẩn ATS."
+        "description": "Nhiều template thất bại trong tương thích ATS do định dạng phức tạp, đồ họa và font chữ. FastRezu đảm bảo CV vừa đẹp mắt vừa có thể đọc được bởi hệ thống ATS hiện đại."
       }
     },
     "features": {
-      "sectionTitle": "CakeResume, JobsGO giúp bạn Check.",
-      "sectionTitleBreak": "FastRezu giúp bạn viết và tối ưu.",
-      "sectionDescription": "Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để tạo lập CV (VI/EN) vượt trội, giải quyết nỗi đau \"bí từ\" và \"thể hiện thành tích\".",
+      "sectionTitle": "Jobscan & Rezi giúp bạn kiểm tra.",
+      "sectionTitleBreak": "FastRezu giúp bạn tạo và tối ưu.",
+      "sectionDescription": "Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để tạo CV vượt trội, được tối ưu ATS, giải quyết những thách thức cốt lõi của thị trường tuyển dụng AI.",
       "feature1": {
-        "title": "AI làm nổi bật thành Tích",
-        "description": "Giải quyết nỗi đau lớn nhất: Chỉ cần nhập vị trí, AI tự động soạn thảo các bullet point thành tích (VI/EN) ấn tượng, sử dụng số liệu và động từ mạnh."
+        "title": "Tạo nội dung tập trung vào thành tích",
+        "description": "Giải quyết vấn đề lớn nhất: Biến kinh nghiệm chung thành thành tích định lượng với số liệu và động từ mạnh. Khác với đối thủ, chúng tôi viết nội dung thuyết phục từ đầu bằng nhiều ngôn ngữ."
       },
       "feature2": {
-        "title": "AI phân tích JD sâu",
-        "description": "Tự động \"quét\" JD, chỉ ra từ khóa quan trọng. Giúp bạn tùy chỉnh CV đúng trọng tâm công việc chỉ trong vài giây."
+        "title": "Tích hợp từ khóa JD nâng cao",
+        "description": "Tự động phân tích mô tả công việc và tích hợp liền mạch từ khóa quan trọng vào nội dung CV. Đảm bảo tương thích với hệ thống ATS hiện đại trên toàn cầu."
       },
       "feature3": {
-        "title": "Check CV & Chấm điểm ATS",
-        "description": "Tải CV có sẵn (từ TopCV, Canva) để AI chấm điểm, phát hiện lỗi ATS, và gợi ý cải thiện cụ thể."
+        "title": "Tương thích ATS & chấm điểm",
+        "description": "Tải CV hiện có để phân tích AI toàn diện, phát hiện lỗi ATS, và nhận gợi ý cải thiện cụ thể. Nhận điểm chi tiết và khuyến nghị hành động để vượt qua sàng lọc tự động."
       }
     },
     "cta": {
-      "title": "Sẵn sàng để CV của bạn được nhà tuyển dụng chú ý.",
-      "description": "Ngừng lãng phí thời gian và bỏ lỡ cơ hội. Hãy để AI giúp bạn tạo CV ấn tượng chỉ trong vài phút. Bắt đầu ngay hôm nay, hoàn toàn miễn phí."
+      "title": "Sẵn sàng để CV của bạn nổi bật trong thị trường tuyển dụng AI.",
+      "description": "Với việc áp dụng AI đang tăng nhanh trong tuyển dụng, đừng để CV của bạn bị lọc bỏ bởi hệ thống ATS. Hãy để AI của FastRezu giúp bạn tạo CV được tối ưu ATS, vượt qua sàng lọc tự động. Bắt đầu ngay hôm nay, hoàn toàn miễn phí."
     },
     "footer": {
       "copyright": "© 2025 FastRezu. Tất cả quyền được bảo lưu."

@@ -34,7 +34,7 @@ export default function ATSOptimizationPanel({
   reloadTrigger,
 }: ATSOptimizationPanelProps) {
   const { updateCVData, saveCV } = useCVEditor();
-  const { locale, t } = useTranslation();
+  const { locale,   t } = useTranslation();
   const [suggestions, setSuggestions] = useState<DBSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplying, setIsApplying] = useState<string | null>(null);
