@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CTAButtonProps {
   variant?: "primary" | "secondary";
 }
 
 export default function CTAButton({ variant = "primary" }: CTAButtonProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -68,12 +70,12 @@ export default function CTAButton({ variant = "primary" }: CTAButtonProps) {
         disabled={isLoading}
         className={buttonClass}
       >
-        {isLoading ? "..." : "BẮT ĐẦU TẠO CV MIỄN PHÍ"}
+        {isLoading ? "..." : t("ctaButton.cta")}
       </button>
       <p className={`small-text text-gray-500 text-center ${textAlignClass} mt-3`}>
         {isAuthenticated
-          ? "Tiếp tục đến Dashboard"
-          : "Đăng nhập hoặc đăng ký nhanh chóng bằng email."}
+          ? t("ctaButton.continueDashboard")
+          : t("ctaButton.loginOrRegister")}
       </p>
     </>
   );

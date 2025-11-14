@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SuggestionItemProps {
   suggestion: {
@@ -19,6 +20,7 @@ export default function SuggestionItem({
   onApply,
   isApplying = false,
 }: SuggestionItemProps) {
+  const { t } = useTranslation();
   const [isLocalApplying, setIsLocalApplying] = useState(false);
 
   const handleApply = async () => {
@@ -54,9 +56,9 @@ export default function SuggestionItem({
 
   const getPriorityLabel = (priority: string) => {
     const labels = {
-      high: "High",
-      medium: "Medium",
-      low: "Low",
+      high: t('common.priority.high'),
+      medium: t('common.priority.medium'),
+      low: t('common.priority.low'),
     };
     return labels[priority as keyof typeof labels] || priority;
   };
@@ -100,16 +102,16 @@ export default function SuggestionItem({
             className="shrink-0 px-4 py-2 bg-green-500 text-white text-xs font-medium rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={`Apply suggestion: ${suggestion.suggestion_text}`}
           >
-            {isLocalApplying ? "Đang áp dụng..." : "Áp dụng"}
+            {isLocalApplying ? t('common.applying') : t('common.apply')}
           </button>
         )}
 
         {suggestion.is_applied && (
-              <span className="px-2 py-1 text-xs font-medium rounded-full border bg-green-100 text-green-800 border-green-300 flex items-center gap-1">
-                <span className="text-green-600">✓</span>
-                Đã cập nhật
-              </span>
-            )}
+          <span className="px-2 py-1 text-xs font-medium rounded-full border bg-green-100 text-green-800 border-green-300 flex items-center gap-1">
+            <span className="text-green-600">✓</span>
+            {t('editor.suggestion.applied')}
+          </span>
+        )}
       </div>
     </div>
   );

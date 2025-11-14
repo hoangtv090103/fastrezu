@@ -1,0 +1,705 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip",
+    "confirm": "Confirm",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "apply": "Apply",
+    "applying": "Applying...",
+    "reset": "Reset",
+    "submit": "Submit",
+    "export": "Export",
+    "download": "Download",
+    "upload": "Upload",
+    "create": "Create",
+    "update": "Update",
+    "view": "View",
+    "preview": "Preview",
+    "copy": "Copy",
+    "duplicate": "Duplicate",
+    "select": "Select",
+    "clear": "Clear",
+    "required": "Required",
+    "optional": "Optional",
+    "success": "Success",
+    "failed": "Failed",
+    "warning": "Warning",
+    "info": "Info",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "auth": {
+    "login": "Log In",
+    "logout": "Log Out",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember Me",
+    "loginWithGoogle": "Log In with Google",
+    "loginWithMagicLink": "Log In with Magic Link",
+    "sendMagicLink": "Send Magic Link",
+    "checkEmail": "Check your email",
+    "magicLinkSent": "Magic link has been sent to your email",
+    "invalidCredentials": "Invalid credentials",
+    "accountNotFound": "Account not found"
+  },
+  "cvCard": {
+    "noContent": "No CV content",
+    "editHint": "Click \"Edit\" to add information",
+    "loading": "Loading...",
+    "download": "Download",
+    "downloadPDFError": "Error creating PDF",
+    "noContentToDownload": "CV has no content to download. Please edit the CV first.",
+    "noContentLabel": "No CV content",
+    "edit": "Edit",
+    "moreOptions": "More options",
+    "delete": "Delete",
+    "incomplete": "Incomplete",
+    "updated": "Updated:"
+  },
+  "dashboard": {
+    "title": "Manage CVs",
+    "subtitle": "Create and manage your CVs with AI assistance",
+    "createNew": "Create New CV",
+    "createNewCV": "Create New CV",
+    "createFirstCV": "Create First CV",
+    "createCV": "Create CV",
+    "creating": "Creating...",
+    "cvCreated": "CV created successfully!",
+    "cvDeleted": "CV deleted successfully!",
+    "deleteConfirm": "Are you sure you want to delete this CV?",
+    "cvName": "CV Name",
+    "selectLanguage": "Select Language",
+    "languageNote": "All CV content will be generated in the selected language.",
+    "vietnamese": "Vietnamese",
+    "english": "English",
+    "createInVietnamese": "Create CV in Vietnamese",
+    "createInEnglish": "Create CV in English",
+    "noCV": "No CVs Yet",
+    "noCVDescription": "Start creating your first CV with AI assistance to optimize for ATS systems.",
+    "noCVTitle": "No CVs Yet",
+    "noCVDesc": "Start creating your first CV with AI assistance.",
+    "myCVs": "My CVs",
+    "recentCVs": "Recent CVs",
+    "lastModified": "Last Modified",
+    "atsScore": "ATS Score",
+    "viewCV": "View CV",
+    "editCV": "Edit CV",
+    "deleteCV": "Delete CV",
+    "duplicateCV": "Duplicate CV",
+    "exportCV": "Export CV",
+    "confirmDelete": "Are you sure you want to delete this CV?",
+    "deleteSuccess": "CV deleted successfully",
+    "deleteFailed": "Failed to delete CV"
+  },
+  "wizard": {
+    "title": "Create Your CV",
+    "subtitle": "Follow the steps to create your perfect CV",
+    "steps": {
+      "language": "Language",
+      "jd": "JD Analysis",
+      "personal": "Personal Info",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills",
+      "summary": "Summary",
+      "review": "Review"
+    },
+    "stepProgress": "Step {{current}} / {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip this step",
+    "finish": "Finish"
+  },
+  "languageSelection": {
+    "title": "Select CV Language",
+    "subtitle": "Choose the language for your CV. AI will generate content in your selected language.",
+    "vietnamese": "Vietnamese",
+    "english": "English",
+    "vietnameseDesc": "Suitable for Vietnamese market",
+    "englishDesc": "Suitable for international market"
+  },
+  "jdAnalysis": {
+    "title": "Analyze Job Description",
+    "subtitle": "Paste the Job Description for AI to analyze and optimize your CV",
+    "placeholder": "Paste Job Description here...",
+    "analyze": "Analyze JD",
+    "analyzing": "Analyzing...",
+    "skip": "Skip (not recommended)",
+    "extractedKeywords": "Key Keywords",
+    "keywordCount": "{{count}} keywords",
+    "skillsRequired": "Required Skills",
+    "experienceLevel": "Experience Level",
+    "analysisComplete": "Analysis Complete",
+    "analysisError": "Failed to analyze JD"
+  },
+  "personalInfo": {
+    "title": "Personal Information",
+    "subtitle": "Fill in your personal information",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "website": "Website",
+    "portfolio": "Portfolio",
+    "placeholders": {
+      "fullName": "John Doe",
+      "email": "example@email.com",
+      "phone": "0123456789",
+      "address": "123 ABC Street",
+      "city": "Hanoi",
+      "linkedin": "linkedin.com/in/username",
+      "github": "github.com/username"
+    }
+  },
+  "experience": {
+    "title": "Work Experience",
+    "subtitle": "Add your work experience",
+    "addExperience": "Add Experience",
+    "companyName": "Company Name",
+    "position": "Position",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "current": "Current",
+    "description": "Job Description",
+    "achievements": "Achievements",
+    "responsibilities": "Responsibilities",
+    "addAchievement": "Add Achievement",
+    "generateWithAI": "Generate with AI",
+    "improveWithAI": "Improve with AI",
+    "noExperience": "No experience yet",
+    "placeholders": {
+      "companyName": "ABC Company",
+      "position": "Full-stack Developer",
+      "description": "Describe your job and responsibilities..."
+    }
+  },
+  "education": {
+    "title": "Education",
+    "subtitle": "Add your education information",
+    "addEducation": "Add Education",
+    "school": "School",
+    "degree": "Degree",
+    "major": "Major",
+    "startDate": "Start Date",
+    "endDate": "Graduation Date",
+    "gpa": "GPA",
+    "achievements": "Achievements",
+    "noEducation": "No education information"
+  },
+  "skills": {
+    "title": "Skills",
+    "subtitle": "Add your skills",
+    "addSkill": "Add Skill",
+    "skillName": "Skill Name",
+    "level": "Level",
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "expert": "Expert"
+    },
+    "categories": {
+      "technical": "Technical Skills",
+      "soft": "Soft Skills",
+      "language": "Languages",
+      "other": "Other"
+    },
+    "suggestSkills": "Suggest skills from JD",
+    "noSkills": "No skills yet"
+  },
+  "summary": {
+    "title": "Professional Summary",
+    "subtitle": "Write a brief summary about yourself",
+    "placeholder": "Write about yourself, experience, and career goals...",
+    "generateWithAI": "Auto-generate with AI",
+    "generating": "Generating...",
+    "regenerate": "Regenerate",
+        "tips": "Tip: Keep summary brief (2-3 sentences), highlight strengths and alignment with position."
+  },
+  "fileUpload": {
+    "dragActive": "Drop file here",
+    "dragInactive": "Click to upload or drag and drop file",
+    "changeFile": "Click or drag and drop to select another file",
+    "supportedFormats": "PDF or DOCX",
+    "maxSize": "Maximum file size: {{maxSizeMB}}MB",
+    "errors": {
+      "tooLarge": "File too large. Maximum size: {{maxSizeMB}}MB",
+      "invalidFormat": "Invalid file format. Only accepts: {{accept}}"
+    }
+  },
+  "pdfViewer": {
+    "noFile": "No PDF file to display",
+    "extractedText": "Extracted Text",
+    "reviewDescription": "Review and edit the extracted text from your CV. You can compare it with the original PDF on the right.",
+    "placeholder": "Extracted text will appear here...",
+    "loading": "Loading PDF...",
+    "error": "Error loading PDF",
+    "cannotLoad": "Cannot load PDF",
+    "reset": "Reset"
+  },
+  "tooltip": {
+    "close": "Close tooltip",
+    "dismiss": "Don't show again"
+  },
+  "checkCV": {
+    "title": "Check CV",
+    "subtitle": "Upload your current CV to get ATS score and improvement suggestions.",
+    "uploadFile": "Upload File",
+    "uploadFileLabel": "Upload CV File",
+    "dragDrop": "Drag & drop file here or click to select",
+    "supportedFormats": "Supported: PDF, DOCX (max 10MB)",
+    "uploading": "Uploading...",
+    "uploadButton": "Upload",
+    "extractingText": "Extracting text...",
+    "reviewText": "Review Text",
+    "reviewTextDesc": "Review and edit the text extracted from your CV",
+    "confirmText": "Confirm Text",
+    "confirmButton": "Confirm Text",
+    "confirming": "Confirming...",
+    "addJD": "Add Job Description (optional)",
+    "addJDLabel": "Job Description (Optional)",
+    "addJDPlaceholder": "Paste job description here to get JD-optimized suggestions...",
+    "skipJD": "Skip (score without JD)",
+    "generateScore": "Generate ATS Score",
+    "scoring": "Scoring...",
+    "atsScore": "ATS Score",
+    "results": "Results",
+    "resultsTitle": "CV Analysis Results",
+    "overallScore": "Overall Score",
+    "breakdown": "Score Breakdown",
+    "keywordMatch": "Keyword Match",
+    "formatting": "Formatting",
+    "completeness": "Completeness",
+    "relevance": "Relevance",
+    "suggestions": "Improvement Suggestions",
+    "matchedKeywords": "Matched Keywords",
+    "missingKeywords": "Missing Keywords",
+    "tryAgain": "Try Again",
+    "startOver": "Start Over",
+    "review": {
+      "title": "Review and edit extracted text",
+      "description": "Please review the extracted text and compare it with the original PDF. You can edit the text on the left and view the original PDF on the right."
+    },
+    "priority": {
+      "high": "High Priority",
+      "medium": "Medium Priority",
+      "low": "Low Priority"
+    },
+    "steps": {
+      "upload": "Upload",
+      "review": "Review",
+      "jd": "Job Description",
+      "results": "Results"
+    },
+    "errors": {
+      "selectFile": "Please select a file first",
+      "confirmTextFirst": "Please review and confirm the text",
+      "confirmBeforeScore": "Please confirm the text first",
+      "aiOverloaded": "AI service is overloaded. Please try again in a few seconds. The system is automatically retrying..."
+    },
+    "success": {
+      "uploaded": "File uploaded and text extracted successfully!",
+      "textConfirmed": "Text confirmed! You can now add job description (optional).",
+      "scoreGenerated": "CV scored successfully!"
+    },
+    "disclaimer": {
+      "note": "Note:",
+      "message": "This ATS score is based on the text extracted from your uploaded file. The accuracy of the score depends on the quality of text extraction, which can vary depending on complex layouts or heavily formatted files. For best results, ensure your CV is in a simple, ATS-friendly format."
+    }
+  },
+  "editor": {
+    "title": "CV Editor",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "manualSave": "Manual Save",
+    "preview": "Preview",
+    "export": "Export CV",
+    "exportPDF": "Export PDF",
+    "exportWord": "Export Word",
+    "template": "Template",
+    "changeTemplate": "Change Template",
+    "sections": "Sections",
+    "addSection": "Add Section",
+    "removeSection": "Remove Section",
+    "reorderSections": "Reorder",
+    "suggestions": "AI Suggestions",
+    "applySuggestion": "Apply",
+    "dismissSuggestion": "Dismiss",
+    "applyAll": "Apply All",
+    "refreshSuggestions": "Refresh Suggestions",
+    "layout": {
+      "loadingCV": "Loading CV...",
+      "errorLoadingCV": "Error Loading CV",
+      "backToDashboard": "Back to Dashboard",
+      "editTitle": "Edit CV Title",
+      "titlePlaceholder": "Enter CV name...",
+      "saveTitle": "Save",
+      "cancelTitle": "Cancel",
+      "loadingPreview": "Loading preview..."
+    },
+    "autoSave": {
+      "saving": "Saving...",
+      "saved": "Saved",
+      "error": "Save Error"
+    },
+    "wizard": {
+      "title": "Create Your CV",
+      "steps": {
+        "language": "Language",
+        "jd": "JD",
+        "personalInfo": "Personal Info",
+        "summary": "Summary",
+        "experience": "Experience",
+        "education": "Education",
+        "projects": "Projects",
+        "skills": "Skills",
+        "certifications": "Certifications",
+        "review": "Review"
+      },
+      "stepLabel": "Step",
+      "currentStep": "current",
+      "completedStep": "completed",
+      "validationError": "Please fix the errors before continuing"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "description": "Enter your basic information. This will be the first section recruiters see.",
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "location": "Location",
+      "linkedin": "LinkedIn",
+      "portfolio": "Portfolio/Website",
+      "fullNamePlaceholder": "John Doe",
+      "emailPlaceholder": "johndoe@email.com",
+      "phonePlaceholder": "123 456 789",
+      "locationPlaceholder": "City, Country",
+      "linkedinPlaceholder": "https://linkedin.com/in/johndoe",
+      "portfolioPlaceholder": "https://johndoe.dev"
+    },
+    "experience": {
+      "title": "Work Experience",
+      "description": "Describe your work experience in detail. Focus on achievements and measurable results.",
+      "addExperience": "Add Experience",
+      "company": "Company",
+      "jobTitle": "Job Title",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "currentlyWorking": "Present",
+      "location": "Location",
+      "achievements": "Achievements & Responsibilities",
+      "addAchievement": "Add Achievement",
+      "improve": "Improve with AI",
+      "improving": "Improving...",
+      "improveSuccess": "Description improved successfully!",
+      "remove": "Remove",
+      "companyPlaceholder": "Company name",
+      "jobTitlePlaceholder": "Job title",
+      "locationPlaceholder": "City, Country",
+      "achievementPlaceholder": "Describe your achievement..."
+    },
+    "education": {
+      "title": "Education",
+      "description": "Add information about your educational background.",
+      "addEducation": "Add Education",
+      "school": "School",
+      "degree": "Degree",
+      "fieldOfStudy": "Field of Study",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "gpa": "GPA",
+      "achievements": "Achievements",
+      "addAchievement": "Add Achievement",
+      "remove": "Remove",
+      "schoolPlaceholder": "School name",
+      "degreePlaceholder": "e.g., Bachelor's",
+      "fieldPlaceholder": "e.g., Computer Science",
+      "gpaPlaceholder": "e.g., 3.5/4.0",
+      "achievementPlaceholder": "Describe achievement..."
+    },
+    "projects": {
+      "title": "Projects",
+      "description": "List important projects you've worked on. Include both personal and work projects.",
+      "addProject": "Add Project",
+      "name": "Project Name",
+      "role": "Role",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "projectDescription": "Description",
+      "technologies": "Technologies Used",
+      "url": "Project Link",
+      "improve": "Improve with AI",
+      "improving": "Improving...",
+      "improveSuccess": "Description improved successfully!",
+      "remove": "Remove",
+      "namePlaceholder": "Project name",
+      "rolePlaceholder": "Your role",
+      "descriptionPlaceholder": "Describe the project and your contributions...",
+      "technologiesPlaceholder": "React, Node.js, MongoDB",
+      "urlPlaceholder": "https://..."
+    },
+    "skills": {
+      "title": "Skills",
+      "description": "Add your skills. You can get suggestions based on the JD.",
+      "addSkill": "Add Skill",
+      "skillName": "Skill Name",
+      "proficiency": "Proficiency",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "expert": "Expert",
+      "remove": "Remove",
+      "suggestions": "JD Suggestions",
+      "applyAll": "Apply All",
+      "applying": "Applying...",
+      "noSuggestions": "No suggestions available. Add a JD first.",
+      "skillPlaceholder": "e.g., JavaScript, Leadership"
+    },
+    "certifications": {
+      "title": "Certifications",
+      "description": "Add your certifications and credentials.",
+      "addCertification": "Add Certification",
+      "name": "Certification Name",
+      "issuer": "Issuing Organization",
+      "popularCertifications": "Popular Certifications",
+      "issueDate": "Issue Date",
+      "expiryDate": "Expiry Date",
+      "credentialId": "Credential ID",
+      "credentialUrl": "Credential URL",
+      "remove": "Remove",
+      "namePlaceholder": "Certification name",
+      "issuerPlaceholder": "Issuing organization",
+      "credentialIdPlaceholder": "ID number",
+      "credentialUrlPlaceholder": "https://..."
+    },
+    "summary": {
+      "title": "Professional Summary",
+      "description": "Write a brief summary about yourself and your career goals.",
+      "label": "Summary",
+      "placeholder": "Brief introduction about yourself, experience, and career goals...",
+      "generate": "Generate with AI",
+      "generating": "Generating...",
+      "regenerate": "Regenerate",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "generateSuccess": "Summary generated successfully!",
+      "saveSuccess": "Summary saved!",
+      "aiNote": "AI will use keywords from the JD to optimize your summary."
+    },
+    "jdAnalysis": {
+      "title": "Job Description Analysis",
+      "description": "Paste the JD here to get optimization suggestions for this position.",
+      "label": "Job Description",
+      "placeholder": "Paste JD content here...",
+      "analyze": "Analyze",
+      "analyzing": "Analyzing...",
+      "analyzeSuccess": "JD analyzed successfully!",
+      "savedJDs": "Saved JDs",
+      "noSavedJDs": "No saved JDs yet",
+      "delete": "Delete",
+      "deleteSuccess": "JD deleted successfully!",
+      "analysisError": "JD Analysis Error",
+      "keySkills": "Key Skills",
+      "requirements": "Requirements",
+      "recommendations": "Recommendations",
+      "use": "Use",
+      "keywords": "keywords",
+      "extractedKeywords": "Extracted keywords:",
+      "successMessage": "These keywords will be used to optimize your CV. You can continue with the next step.",
+      "nextStep": "Next: Personal Info →",
+      "close": "Close"
+    },
+    "review": {
+      "title": "Review CV",
+      "description": "Review your entire CV before completing.",
+      "complete": "Complete",
+      "downloadPDF": "Download PDF",
+      "backToEdit": "Back to Edit",
+      "atsScore": "ATS Score",
+      "atsScoreExcellent": "Excellent",
+      "atsScoreGood": "Good",
+      "atsScoreNeedsImprovement": "Needs Improvement",
+      "completeness": "Completeness",
+      "suggestions": "Improvement Suggestions",
+      "analyzedKeywords": "Analyzed JD keywords:",
+      "scoreCV": "Score CV",
+      "scoreOf100": "ATS Score / 100",
+      "scoring": "Scoring CV...",
+      "analyzeJDFirst": "Please analyze JD first to score CV",
+      "keywordMatch": "Keyword Match",
+      "formatting": "Formatting",
+      "relevance": "Relevance",
+      "matchedKeywords": "Matched keywords",
+      "missingKeywords": "Missing keywords",
+      "loadingSuggestions": "Loading suggestions..."
+    },
+    "languageSelection": {
+      "title": "Select CV Language",
+      "description": "Choose the primary language for your CV. You can change it later.",
+      "vietnamese": "Tiếng Việt",
+      "english": "English",
+      "select": "Select",
+      "importantNote": "Important Note",
+      "noteDescription": "The language you select will be used for your entire CV, including all sections such as professional summary, experience descriptions, and AI-generated content."
+    },
+    "suggestion": {
+      "applied": "Applied"
+    },
+    "tooltips": {
+      "jd_analysis_importance": {
+        "title": "Why is JD analysis important?",
+        "content": "ATS (Applicant Tracking System) is software that employers use to automatically scan and filter resumes. This system searches for keywords from the job description (JD) in your CV. JD analysis helps identify these important keywords to optimize your CV and increase your chances of passing the automated screening."
+      },
+      "ats_score_meaning": {
+        "title": "What does the ATS score mean?",
+        "content": "The ATS score (0-100) evaluates how well your CV matches the job requirements based on keywords and skills found. A score above 80 indicates your CV has a high chance of passing automated screening. A lower score means you need to add missing keywords to your CV."
+      },
+      "ai_experience_benefits": {
+        "title": "Why use AI to write experience?",
+        "content": "AI helps you write experience bullet points following professional standards with strong action verbs and specific metrics. Quantified achievements (e.g., 'Increased sales by 30%') make your CV stand out and pass ATS more easily. AI also ensures consistent and professional language."
+      },
+      "language_selection": {
+        "title": "Choose language for your CV",
+        "content": "The language you select will be used for all AI-generated content (summary, experience, suggestions) and labels in your CV. Choose the language that matches the job you're applying for. You can change the language later, but existing content won't be automatically translated."
+      },
+      "keyword_match_meaning": {
+        "title": "Keyword Match",
+        "content": "Percentage of keywords from the job description (JD) that appear in your CV. Higher scores (above 80) show your CV contains many relevant keywords, making it easier to pass ATS systems. If the score is low, add missing keywords to your CV."
+      },
+      "formatting_meaning": {
+        "title": "Formatting",
+        "content": "Evaluates CV structure and formatting: clearly organized sections, appropriate headings, easy to read, and ATS-friendly. Well-formatted CVs make it easy for both humans and machines to read and understand the content."
+      },
+      "completeness_meaning": {
+        "title": "Completeness",
+        "content": "Evaluates how complete your CV is: includes all important sections (contact info, experience, education, skills), detailed content with specific metrics, and appropriate length. A complete CV gives recruiters a comprehensive view of you."
+      },
+      "relevance_meaning": {
+        "title": "Relevance",
+        "content": "Evaluates how well your experience and skills match the job requirements. The more relevant your content is to the JD requirements, the higher your chances of getting an interview. Focus on experience most relevant to the position."
+      }
+    }
+  },
+  "feedback": {
+    "title": "Send Feedback",
+    "subtitle": "Share your thoughts to help us improve",
+    "type": "Feedback Type",
+    "types": {
+      "bug": "Bug Report",
+      "feature": "Feature Request",
+      "improvement": "Improvement",
+      "other": "Other"
+    },
+    "message": "Feedback Message",
+    "placeholder": "Describe your feedback in detail...",
+    "attachments": "Attachments",
+    "submit": "Send Feedback",
+    "submitting": "Sending...",
+    "success": "Thank you for your feedback!",
+    "error": "Failed to send feedback. Please try again."
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "manageCVs": "Manage CVs",
+    "editor": "Editor",
+    "checkCV": "Check CV",
+    "feedback": "Feedback",
+    "sendFeedback": "Send Feedback",
+    "profile": "Profile",
+    "settings": "Settings",
+    "help": "Help",
+    "about": "About"
+  },
+  "notifications": {
+    "saved": "Saved successfully",
+    "updated": "Updated",
+    "deleted": "Deleted",
+    "error": "An error occurred",
+    "networkError": "Network error",
+    "tryAgain": "Please try again",
+    "sessionExpired": "Session expired"
+  },
+  "landing": {
+    "header": {
+      "brandName": "FastRezu"
+    },
+    "hero": {
+      "title": "Beautiful CVs from Canva & templates getting rejected?",
+      "titleHighlight": "It's time to",
+      "titleAction": "optimize for AI recruitment.",
+      "subtitle": "67% of global companies use AI for recruitment, projected to reach 83% by 2025. FastRezu transforms your experience into achievement-focused content that beats both ATS systems and human recruiters.",
+      "description": "While competitors just check your CV, FastRezu guides you to write from scratch. We convert tasks into quantifiable achievements, integrate JD keywords, and ensure your CV passes modern ATS systems.",
+      "atsScoreLabel": "ATS Compatibility Score"
+    },
+    "companies": {
+      "title": "Some companies that are applying AI in their recruitment process"
+    },
+    "painPoints": {
+      "sectionTitle": "AI is transforming recruitment.",
+      "sectionTitleBreak": "Is your CV future-ready?",
+      "sectionDescription": "67% of organizations globally use AI in recruitment, projected to reach 83% by 2025. ATS systems automatically read, score, and rank resumes using keyword extraction and skill matching algorithms.",
+      "pain1": {
+        "title": "Struggling to showcase achievements?",
+        "description": "The biggest challenge is converting \"tasks\" into \"achievements with metrics.\" While competitors can check your CV, FastRezu's AI writes compelling achievement bullet points using strong verbs and quantifiable results."
+      },
+      "pain2": {
+        "title": "Rejected for missing keywords",
+        "description": "Your CV gets filtered out despite being visually appealing. FastRezu automatically scans job descriptions and integrates critical keywords into your content, ensuring ATS compatibility."
+      },
+      "pain3": {
+        "title": "Beautiful templates that ATS can't read",
+        "description": "Many templates fail ATS compatibility due to complex formatting, graphics, and fonts. FastRezu ensures your CV is both visually appealing and machine-readable for modern ATS systems."
+      }
+    },
+    "features": {
+      "sectionTitle": "Others help you check.",
+      "sectionTitleBreak": "FastRezu helps you create and optimize.",
+      "sectionDescription": "We don't just score existing CVs. We provide comprehensive AI tools to create outstanding, ATS-optimized CVs that address the core challenges of modern AI-driven recruitment.",
+      "feature1": {
+        "title": "Achievement-focused content generation",
+        "description": "Solving the biggest pain point: Transform generic experience into quantifiable achievements with metrics and strong verbs. Unlike competitors, we write compelling content from scratch in multiple languages."
+      },
+      "feature2": {
+        "title": "Advanced JD keyword integration",
+        "description": "Automatically analyzes job descriptions and seamlessly integrates critical keywords into your CV content. Ensures compatibility with modern ATS systems worldwide."
+      },
+      "feature3": {
+        "title": "ATS compatibility & scoring",
+        "description": "Upload existing CVs for comprehensive AI analysis, ATS error detection, and specific improvement suggestions. Get detailed scores and actionable recommendations to beat automated screening."
+      }
+    },
+    "cta": {
+      "title": "Ready for your CV to stand out in the AI-driven recruitment market.",
+      "description": "With AI adoption growing rapidly in recruitment, don't let your CV get filtered out by ATS systems. Let FastRezu's AI help you create ATS-optimized CVs that pass automated screening. Start today, completely free."
+    },
+    "footer": {
+      "copyright": "© 2025 FastRezu. All rights reserved."
+    }
+  },
+  "ctaButton": {
+    "cta": "START CREATING CV FOR FREE",
+    "continueDashboard": "Continue to Dashboard",
+    "loginOrRegister": "Log in or sign up quickly with email."
+  }
+}

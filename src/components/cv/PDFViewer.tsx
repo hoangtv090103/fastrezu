@@ -5,6 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import BlockNoteEditor from "./BlockNoteEditor";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -47,6 +48,7 @@ export default function PDFViewer({
   extractedText,
   onTextChange,
 }: PDFViewerProps) {
+  const { t } = useTranslation();
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [scale, setScale] = useState<number>(1.0);
@@ -209,7 +211,7 @@ export default function PDFViewer({
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <p className="text-gray-500">Chưa có file PDF để hiển thị</p>
+          <p className="text-gray-500">{t('pdfViewer.noFile')}</p>
         </div>
       </div>
     );
@@ -221,11 +223,10 @@ export default function PDFViewer({
       <div className="flex-1 border-r-0 lg:border-r border-gray-300 p-3 lg:p-4 lg:min-w-0 flex flex-col">
         <div className="mb-3 lg:mb-4">
           <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-2">
-            Văn bản đã trích xuất
+            {t('pdfViewer.extractedText')}
           </h3>
           <p className="text-xs lg:text-sm text-gray-600 mb-3 lg:mb-4">
-            Xem lại và chỉnh sửa văn bản đã trích xuất từ CV của bạn. Bạn có thể
-            so sánh với bản PDF gốc ở bên phải.
+            {t('pdfViewer.reviewDescription')}
           </p>
         </div>
 
@@ -233,7 +234,7 @@ export default function PDFViewer({
           <BlockNoteEditor
             value={extractedText}
             onChange={onTextChange}
-            placeholder="Văn bản đã trích xuất sẽ xuất hiện ở đây..."
+            placeholder={t('pdfViewer.placeholder')}
             className="w-full h-full"
           />
         </div>
@@ -363,7 +364,7 @@ export default function PDFViewer({
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                Reset
+                {t('pdfViewer.reset')}
               </button>
             </div>
           </div>
@@ -376,7 +377,7 @@ export default function PDFViewer({
               <div className="text-center">
                 <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  Đang tải PDF...
+                  {t('pdfViewer.loading')}
                 </p>
               </div>
             </div>
@@ -399,7 +400,7 @@ export default function PDFViewer({
                   />
                 </svg>
                 <p className="text-red-600 font-medium text-sm sm:text-base">
-                  Lỗi tải PDF
+                  {t('pdfViewer.error')}
                 </p>
                 <p className="text-red-500 text-xs sm:text-sm mt-1">{error}</p>
               </div>
@@ -413,8 +414,8 @@ export default function PDFViewer({
                 onLoadSuccess={onDocumentLoadSuccess}
                 onLoadError={onDocumentLoadError}
                 onLoadStart={onDocumentLoadStart}
-                loading={<div>Đang tải PDF...</div>}
-                error={<div>Không thể tải PDF</div>}
+                loading={<div>{t('pdfViewer.loading')}</div>}
+                error={<div>{t('pdfViewer.cannotLoad')}</div>}
               >
                 <Page
                   pageNumber={pageNumber}

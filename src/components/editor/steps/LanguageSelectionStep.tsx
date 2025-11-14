@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useCVEditor, CVLanguage } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import { getTooltipContent } from "@/lib/tooltip-content";
 
 export default function LanguageSelectionStep() {
   const { state, setLanguage, setCurrentStep } = useCVEditor();
+  const { t, locale } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<CVLanguage | null>(null);
 
   // Initialize with existing language if available
@@ -28,15 +30,14 @@ export default function LanguageSelectionStep() {
     }
   };
 
-  // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent('language_selection', 'vi');
+  const tooltipContent = getTooltipContent('language_selection', locale);
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <div className="flex items-start gap-2 mb-2">
           <h3 className="heading-feature text-lg text-gray-900">
-            Chọn ngôn ngữ cho CV
+            {t('editor.languageSelection.title')}
           </h3>
           <div className="mt-0.5">
             <InfoTooltip
@@ -49,7 +50,7 @@ export default function LanguageSelectionStep() {
           </div>
         </div>
         <p className="body-text text-gray-600 mb-4">
-          Chọn ngôn ngữ mà bạn muốn tạo CV. Tất cả nội dung CV sẽ được tạo bằng ngôn ngữ đã chọn.
+          {t('editor.languageSelection.description')}
         </p>
       </div>
 
@@ -74,8 +75,8 @@ export default function LanguageSelectionStep() {
               )}
             </div>
             <div>
-              <h4 className="font-medium text-gray-900">Tiếng Việt</h4>
-              <p className="text-sm text-gray-600">Tạo CV bằng tiếng Việt</p>
+              <h4 className="font-medium text-gray-900">{t('editor.languageSelection.vietnamese')}</h4>
+              <p className="text-sm text-gray-600">{t('dashboard.createInVietnamese')}</p>
             </div>
             <div className="ml-auto text-2xl font-semibold text-gray-500">VN</div>
           </div>
@@ -101,8 +102,8 @@ export default function LanguageSelectionStep() {
               )}
             </div>
             <div>
-              <h4 className="font-medium text-gray-900">English</h4>
-              <p className="text-sm text-gray-600">Create CV in English</p>
+              <h4 className="font-medium text-gray-900">{t('editor.languageSelection.english')}</h4>
+              <p className="text-sm text-gray-600">{t('dashboard.createInEnglish')}</p>
             </div>
             <div className="ml-auto text-2xl font-semibold text-gray-500">EN</div>
           </div>
@@ -120,7 +121,7 @@ export default function LanguageSelectionStep() {
               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >
-          Tiếp tục
+          {t('common.next')}
         </button>
       </div>
 
@@ -128,14 +129,14 @@ export default function LanguageSelectionStep() {
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-start">
           <div className="shrink-0">
-            <span className="text-blue-600 text-lg">ℹ️</span>
+            <span className="text-blue-600 text-lg">i️</span>
           </div>
           <div className="ml-3">
             <h4 className="text-sm font-medium text-blue-700 mb-1">
-              Lưu ý quan trọng
+              {t('editor.languageSelection.importantNote')}
             </h4>
             <p className="text-sm text-blue-600">
-              Ngôn ngữ bạn chọn sẽ được sử dụng cho toàn bộ CV, bao gồm tất cả các phần như tóm tắt nghề nghiệp, mô tả kinh nghiệm, và nội dung được tạo bởi AI.
+              {t('editor.languageSelection.noteDescription')}
             </p>
           </div>
         </div>

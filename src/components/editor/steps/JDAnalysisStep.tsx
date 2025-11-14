@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import KeywordTag from "@/components/ui/KeywordTag";
 import InfoTooltip from "@/components/ui/InfoTooltip";
@@ -21,6 +22,7 @@ interface SavedJD {
 
 export default function JDAnalysisStep() {
   const { state, setJDAnalysis, setCurrentStep } = useCVEditor();
+  const { t, locale } = useTranslation();
   const [jdText, setJdText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [keywords, setKeywords] = useState<string[]>([]);
@@ -108,14 +110,14 @@ const handleAnalyzeJD = async () => {
   };
 
   // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent('jd_analysis_importance', 'vi');
+  const tooltipContent = getTooltipContent('jd_analysis_importance', locale);
 
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
         <div className="flex items-start gap-2 mb-2">
           <h3 className="heading-feature text-base sm:text-lg text-gray-900">
-            Phân tích Mô tả công việc (JD)
+            {t('editor.jdAnalysis.title')}
           </h3>
           <div className="mt-0.5">
             <InfoTooltip
@@ -128,7 +130,7 @@ const handleAnalyzeJD = async () => {
           </div>
         </div>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
-          Dán mô tả công việc bạn muốn ứng tuyển để AI phân tích và trích xuất từ khóa quan trọng.
+          {t('editor.jdAnalysis.description')}
         </p>
       </div>
 
@@ -155,7 +157,7 @@ const handleAnalyzeJD = async () => {
           </div>
         ) : savedJDs.length > 0 ? (
           <div className="mb-4 sm:mb-6">
-            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">JD đã lưu</h4>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">{t('editor.jdAnalysis.savedJDs')}</h4>
             <div className="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
               {savedJDs.map((savedJD) => (
                 <div key={savedJD.id} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border">
@@ -164,7 +166,7 @@ const handleAnalyzeJD = async () => {
                       {savedJD.preview}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {new Date(savedJD.createdAt).toLocaleDateString('vi-VN')} • {savedJD.keywords.length} từ khóa
+                      {new Date(savedJD.createdAt).toLocaleDateString('vi-VN')} • {savedJD.keywords.length} {t('editor.jdAnalysis.keywords')}
                     </p>
                   </div>
                   <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-3">
@@ -172,13 +174,13 @@ const handleAnalyzeJD = async () => {
                       onClick={() => handleUseSavedJD(savedJD)}
                       className="px-2 sm:px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
-                      Sử dụng
+                      {t('editor.jdAnalysis.use')}
                     </button>
                     <button
                       onClick={() => handleDeleteJD(savedJD.id)}
                       className="px-2 sm:px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                     >
-                      Xóa
+                      {t('editor.jdAnalysis.delete')}
                     </button>
                   </div>
                 </div>
@@ -189,13 +191,13 @@ const handleAnalyzeJD = async () => {
 
         <div>
           <label htmlFor="jd-text" className="block text-sm font-medium text-gray-700 mb-2">
-            Mô tả công việc mới
+            {t('editor.jdAnalysis.label')}
           </label>
           <textarea
             id="jd-text"
             value={jdText}
             onChange={(e) => setJdText(e.target.value)}
-            placeholder="Dán mô tả công việc vào đây..."
+            placeholder={t('editor.jdAnalysis.placeholder')}
             className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
           />
         </div>
@@ -203,7 +205,7 @@ const handleAnalyzeJD = async () => {
         <AIAssistButton
           onClick={handleAnalyzeJD}
           loading={isAnalyzing}
-          label="Phân tích JD"
+          label={t('editor.jdAnalysis.analyze')}
           disabled={!jdText.trim()}
         />
 
@@ -214,13 +216,13 @@ const handleAnalyzeJD = async () => {
                 <span className="text-red-600 text-lg">⚠️</span>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700 font-medium">Lỗi phân tích JD</p>
+                <p className="text-sm text-red-700 font-medium">{t('editor.jdAnalysis.analysisError')}</p>
                 <p className="text-sm text-red-600 mt-1">{error}</p>
                 <button
                   onClick={() => setError(null)}
                   className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
                 >
-                  Đóng
+                  {t('editor.jdAnalysis.close')}
                 </button>
               </div>
             </div>
@@ -230,7 +232,7 @@ const handleAnalyzeJD = async () => {
         {keywords && keywords.length > 0 && (
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-2">
-              Từ khóa được trích xuất:
+              {t('editor.jdAnalysis.extractedKeywords')}
             </h4>
             <div className="flex flex-wrap gap-2">
               {keywords.map((keyword, index) => (
@@ -248,16 +250,16 @@ const handleAnalyzeJD = async () => {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-green-700 font-medium">
-                  Đã phân tích JD thành công!
+                  {t('editor.jdAnalysis.analyzeSuccess')}
                 </p>
                 <p className="text-sm text-green-600 mt-1">
-                  Các từ khóa này sẽ được sử dụng để tối ưu hóa CV của bạn. Bạn có thể tiếp tục với bước tiếp theo.
+                  {t('editor.jdAnalysis.successMessage')}
                 </p>
                 <button
                   onClick={() => setCurrentStep(2)}
                   className="mt-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors duration-200"
                 >
-                  Tiếp theo: Thông tin cá nhân →
+                  {t('editor.jdAnalysis.nextStep')}
                 </button>
               </div>
             </div>

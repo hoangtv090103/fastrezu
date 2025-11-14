@@ -4,7 +4,17 @@ Comprehensive documentation for the FastRezu project.
 
 ## 🎯 Quick Links
 
-### 🚀 New: Auto-Save System
+### 🌍 New: Internationalization (i18n)
+- [i18n Summary](./I18N_SUMMARY.md) - **⭐ START HERE!** Quick start guide
+- [i18n Guide](./I18N_GUIDE.md) - **⭐ NEW!** Complete usage guide
+- [i18n Implementation](./I18N_IMPLEMENTATION.md) - **⭐ NEW!** Implementation details
+- [i18n Migration Checklist](./I18N_MIGRATION_CHECKLIST.md) - **⭐ NEW!** Progress tracking
+- [i18n Migration Examples](./I18N_MIGRATION_EXAMPLES.md) - **⭐ NEW!** Page-by-page guide
+- [i18n Code Examples](./I18N_EXAMPLES.tsx) - **⭐ NEW!** Before/after examples
+- [Landing Page i18n Complete](./I18N_LANDING_PAGE_COMPLETE.md) - **✅ DONE!** Implementation details
+- [Landing Page Final Summary](./I18N_LANDING_PAGE_FINAL_SUMMARY.md) - **✅ DONE!** Complete summary
+
+### 🚀 Auto-Save System
 - [Auto-Save Improvements](./AUTO_SAVE_IMPROVEMENTS.md) - **⭐ NEW!** Complete technical guide
 - [Auto-Save Quick Reference](./AUTO_SAVE_QUICK_REFERENCE.md) - **⭐ NEW!** Developer quick guide
 - [Auto-Save Examples](./AUTO_SAVE_EXAMPLES.tsx) - **⭐ NEW!** Code examples

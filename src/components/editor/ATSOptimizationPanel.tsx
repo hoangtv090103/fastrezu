@@ -7,6 +7,7 @@ import SuggestionItem from "./SuggestionItem";
 import { handleAPIError } from "@/lib/error-handler";
 import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 import { apiGet, apiPost } from "@/lib/api-client";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ATSOptimizationPanelProps {
   cvData: CVData;
@@ -33,6 +34,7 @@ export default function ATSOptimizationPanel({
   reloadTrigger,
 }: ATSOptimizationPanelProps) {
   const { updateCVData, saveCV } = useCVEditor();
+  const { locale,   t } = useTranslation();
   const [suggestions, setSuggestions] = useState<DBSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplying, setIsApplying] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export default function ATSOptimizationPanel({
 
       setIsLoading(true);
       try {
-        const data = await apiGet<{ suggestions: DBSuggestion[] }>(`/api/cv/suggestions/${cvData.id}`);
+        const data = await apiGet<{ suggestions: DBSuggestion[] }>(`/api/cv/suggestions/${cvData.id}?ui=${locale}`);
         setSuggestions(data.suggestions || []);
       } catch (error) {
         console.error("Error loading suggestions:", error);
@@ -54,7 +56,7 @@ export default function ATSOptimizationPanel({
     };
 
     loadSuggestions();
-  }, [cvData.id, reloadTrigger]);
+  }, [cvData.id, reloadTrigger, locale]);
 
   const handleApplySuggestion = async (suggestionId: string) => {
     if (!cvData?.id) return;
@@ -206,7 +208,7 @@ export default function ATSOptimizationPanel({
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2 text-sm text-gray-600">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
-            Đang tải gợi ý...
+            {t('editor.review.loadingSuggestions')}
           </div>
         </div>
       </div>

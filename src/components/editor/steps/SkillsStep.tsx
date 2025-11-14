@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
@@ -9,6 +10,7 @@ import { apiPost } from "@/lib/api-client";
 
 export default function SkillsStep() {
   const { state, updateSection } = useCVEditor();
+  const { t } = useTranslation();
   const [isExtracting, setIsExtracting] = useState(false);
   
   const skillsData = (state.cvData?.sections.skills || {}) as Record<string, unknown>;
@@ -105,10 +107,10 @@ export default function SkillsStep() {
     <div className="p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          Kỹ năng
+          {t('editor.skills.title')}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          Liệt kê các Kỹ năng chuyên môn và kỹ năng mềm của bạn. Sử dụng từ khóa phù hợp với công việc bạn đang ứng tuyển.
+          {t('editor.skills.description')}
         </p>
       </div>
 
@@ -116,12 +118,12 @@ export default function SkillsStep() {
         {/* Technical Skills */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h4 className="font-medium text-gray-900">Kỹ năng chuyên môn</h4>
+            <h4 className="font-medium text-gray-900">{t('editor.skills.skillName')}</h4>
             {state.cvData?.jd_analysis?.keywords && (
               <AIAssistButton
                 onClick={handleExtractSkillsFromJD}
                 loading={isExtracting}
-                label="Trích xuất từ JD"
+                label={t('editor.skills.applyAll')}
                 disabled={false}
               />
             )}
@@ -148,7 +150,7 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder="Thêm Kỹ năng chuyên môn..."
+                placeholder={t('editor.skills.skillPlaceholder')}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
@@ -165,7 +167,7 @@ export default function SkillsStep() {
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
               >
-                Thêm
+                {t('editor.skills.addSkill')}
               </button>
             </div>
           </div>
@@ -173,7 +175,7 @@ export default function SkillsStep() {
 
         {/* Soft Skills */}
         <div>
-          <h4 className="font-medium text-gray-900 mb-4">Kỹ năng mềm</h4>
+          <h4 className="font-medium text-gray-900 mb-4">{t('editor.skills.proficiency')}</h4>
 
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
@@ -196,7 +198,7 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder="Thêm kỹ năng mềm..."
+                placeholder={t('editor.skills.skillPlaceholder')}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
@@ -213,7 +215,7 @@ export default function SkillsStep() {
                 }}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
               >
-                Thêm
+                {t('editor.skills.addSkill')}
               </button>
             </div>
           </div>
@@ -221,18 +223,18 @@ export default function SkillsStep() {
 
         {/* Suggestions */}
         <div className="p-4 bg-gray-50 rounded-lg">
-          <h5 className="font-medium text-gray-900 mb-2">Gợi ý kỹ năng phổ biến:</h5>
+          <h5 className="font-medium text-gray-900 mb-2">{t('editor.skills.suggestions')}:</h5>
           <div className="space-y-2">
             <div>
-              <span className="text-sm text-gray-600">Chuyên môn: </span>
+              <span className="text-sm text-gray-600">{t('editor.skills.skillName')}: </span>
               <span className="text-sm text-blue-600">
                 JavaScript, Python, React, Node.js, SQL, Git, Docker, AWS, Agile, Scrum
               </span>
             </div>
             <div>
-              <span className="text-sm text-gray-600">Mềm: </span>
+              <span className="text-sm text-gray-600">{t('editor.skills.proficiency')}: </span>
               <span className="text-sm text-green-600">
-                Lãnh đạo, Giao tiếp, Làm việc nhóm, Giải quyết vấn đề, Quản lý thời gian
+                {t('editor.skills.beginner')}, {t('editor.skills.intermediate')}, {t('editor.skills.advanced')}, {t('editor.skills.expert')}
               </span>
             </div>
           </div>

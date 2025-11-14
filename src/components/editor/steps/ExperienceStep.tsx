@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
@@ -13,6 +14,7 @@ import { apiPost } from "@/lib/api-client";
 
 export default function ExperienceStep() {
   const { state, updateSection } = useCVEditor();
+  const { t, locale } = useTranslation();
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>({});
@@ -220,14 +222,14 @@ export default function ExperienceStep() {
   };
 
   // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent("ai_experience_benefits", "vi");
+  const tooltipContent = getTooltipContent("ai_experience_benefits", locale);
 
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
         <div className="flex items-start gap-2 mb-2">
           <h3 className="heading-feature text-base sm:text-lg text-gray-900">
-            Kinh nghiệm làm việc
+            {t('editor.experience.title')}
           </h3>
           <div className="mt-0.5">
             <InfoTooltip
@@ -240,8 +242,7 @@ export default function ExperienceStep() {
           </div>
         </div>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
-          Liệt kê kinh nghiệm làm việc của bạn theo thứ tự thời gian gần nhất.
-          Sử dụng các động từ hành động và số liệu cụ thể.
+          {t('editor.experience.description')}
         </p>
       </div>
 
@@ -250,20 +251,20 @@ export default function ExperienceStep() {
           <div key={expIndex} className="border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium text-gray-900">
-                Kinh nghiệm {expIndex + 1}
+                {t('editor.experience.title')} {expIndex + 1}
               </h4>
               <button
                 onClick={() => removeExperience(expIndex)}
                 className="text-red-600 hover:text-red-800 text-sm"
               >
-                Xóa
+                {t('editor.experience.remove')}
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Tên công ty *
+                  {t('editor.experience.company')} *
                 </label>
                 <input
                   type="text"
@@ -271,14 +272,14 @@ export default function ExperienceStep() {
                   onChange={(e) =>
                     updateExperience(expIndex, "company", e.target.value)
                   }
-                  placeholder="Công ty ABC"
+                  placeholder={t('editor.experience.companyPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Chức vụ *
+                  {t('editor.experience.jobTitle')} *
                 </label>
                 <input
                   type="text"
@@ -286,14 +287,14 @@ export default function ExperienceStep() {
                   onChange={(e) =>
                     updateExperience(expIndex, "job_title", e.target.value)
                   }
-                  placeholder="Frontend Developer"
+                  placeholder={t('editor.experience.jobTitlePlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ngày bắt đầu
+                  {t('editor.experience.startDate')}
                 </label>
                 <input
                   type="month"
@@ -309,7 +310,7 @@ export default function ExperienceStep() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ngày kết thúc
+                  {t('editor.experience.endDate')}
                 </label>
                 <input
                   type="month"
@@ -317,7 +318,7 @@ export default function ExperienceStep() {
                   onChange={(e) =>
                     updateExperience(expIndex, "end_date", e.target.value)
                   }
-                  placeholder="Hiện tại"
+                  placeholder={t('editor.experience.currentlyWorking')}
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${
                     dateErrors[expIndex] ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
                   }`}
@@ -337,7 +338,7 @@ export default function ExperienceStep() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Địa điểm
+                  {t('editor.experience.location')}
                 </label>
                 <input
                   type="text"
@@ -345,7 +346,7 @@ export default function ExperienceStep() {
                   onChange={(e) =>
                     updateExperience(expIndex, "location", e.target.value)
                   }
-                  placeholder="Hà Nội, Việt Nam"
+                  placeholder={t('editor.experience.locationPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
@@ -354,25 +355,25 @@ export default function ExperienceStep() {
             <div>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                 <label className="block text-sm font-medium text-gray-700">
-                  Thành tích và trách nhiệm
+                  {t('editor.experience.achievements')}
                 </label>
                 <button
                   onClick={() => handleAIWriteExperience(expIndex)}
                   disabled={!getStringValue(exp, "job_title").trim() || loadingStates[`write-${expIndex}`]}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap self-start sm:self-auto"
-                  title="Để AI viết giúp bạn"
+                  title={t('editor.experience.improve')}
                 >
                   {loadingStates[`write-${expIndex}`] ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Đang tạo...</span>
+                      <span>{t('editor.experience.improving')}</span>
                     </>
                   ) : (
                     <>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                       </svg>
-                      <span>Để AI viết giúp bạn</span>
+                      <span>{t('editor.experience.improve')}</span>
                     </>
                   )}
                 </button>
@@ -389,7 +390,7 @@ export default function ExperienceStep() {
                         onChange={(e) =>
                           updateAchievement(expIndex, achIndex, e.target.value)
                         }
-                        placeholder="Ví dụ: Phát triển ứng dụng web sử dụng React và Node.js, giúp tăng 30% hiệu suất xử lý và giảm 25% thời gian tải trang..."
+                        placeholder={t('editor.experience.achievementPlaceholder')}
                         rows={2}
                         className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
                       />
@@ -433,7 +434,7 @@ export default function ExperienceStep() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                <span>Thêm thành tích</span>
+                <span>{t('editor.experience.addAchievement')}</span>
               </button>
             </div>
           </div>
@@ -443,7 +444,7 @@ export default function ExperienceStep() {
           onClick={addExperience}
           className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors duration-200"
         >
-          + Thêm kinh nghiệm làm việc
+          + {t('editor.experience.addExperience')}
         </button>
       </div>
     </div>

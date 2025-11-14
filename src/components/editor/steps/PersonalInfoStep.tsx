@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { validateEmail, validatePhone } from "@/lib/validation";
 import { useDebounce } from "@/lib/debounce";
 import ValidationMessage from "@/components/ui/ValidationMessage";
 
 export default function PersonalInfoStep() {
   const { state, updateSection } = useCVEditor();
+  const { t } = useTranslation();
   
   const personalInfo = useMemo(() => 
     (state.cvData?.sections.personal_info || {}) as Record<string, unknown>, 
@@ -85,24 +87,24 @@ export default function PersonalInfoStep() {
     <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
         <h3 className="heading-feature text-base sm:text-lg text-gray-900 mb-2">
-          Thông tin cá nhân
+          {t('editor.personalInfo.title')}
         </h3>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
-          Nhập thông tin cơ bản của bạn. Đây sẽ là phần đầu tiên mà nhà tuyển dụng nhìn thấy.
+          {t('editor.personalInfo.description')}
         </p>
       </div>
 
       <div className="space-y-3 sm:space-y-4">
         <div>
           <label htmlFor="full-name" className="block text-sm font-medium text-gray-700 mb-2">
-            Họ và tên *
+            {t('editor.personalInfo.fullName')} *
           </label>
           <input
             type="text"
             id="full-name"
             value={getStringValue('full_name')}
             onChange={(e) => handleInputChange('full_name', e.target.value)}
-            placeholder="Nguyễn Văn A"
+            placeholder={t('editor.personalInfo.fullNamePlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             required
           />
@@ -110,7 +112,7 @@ export default function PersonalInfoStep() {
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            Email *
+            {t('editor.personalInfo.email')} *
           </label>
           <input
             type="email"
@@ -118,7 +120,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('email')}
             onChange={(e) => handleInputChange('email', e.target.value)}
             onBlur={(e) => handleBlur('email', e.target.value)}
-            placeholder="nguyenvana@email.com"
+            placeholder={t('editor.personalInfo.emailPlaceholder')}
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
               emailError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
             }`}
@@ -134,7 +136,7 @@ export default function PersonalInfoStep() {
 
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-            Số điện thoại
+            {t('editor.personalInfo.phone')}
           </label>
           <input
             type="tel"
@@ -142,7 +144,7 @@ export default function PersonalInfoStep() {
             value={getStringValue('phone')}
             onChange={(e) => handleInputChange('phone', e.target.value)}
             onBlur={(e) => handleBlur('phone', e.target.value)}
-            placeholder="0123 456 789"
+            placeholder={t('editor.personalInfo.phonePlaceholder')}
             className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-500 ${
               phoneError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-500'
             }`}
@@ -157,42 +159,42 @@ export default function PersonalInfoStep() {
 
         <div>
           <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-            Địa chỉ
+            {t('editor.personalInfo.location')}
           </label>
           <input
             type="text"
             id="location"
             value={getStringValue('location')}
             onChange={(e) => handleInputChange('location', e.target.value)}
-            placeholder="Hà Nội, Việt Nam"
+            placeholder={t('editor.personalInfo.locationPlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>
 
         <div>
           <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 mb-2">
-            LinkedIn
+            {t('editor.personalInfo.linkedin')}
           </label>
           <input
             type="url"
             id="linkedin"
             value={getStringValue('linkedin')}
             onChange={(e) => handleInputChange('linkedin', e.target.value)}
-            placeholder="https://linkedin.com/in/nguyenvana"
+            placeholder={t('editor.personalInfo.linkedinPlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>
 
         <div>
           <label htmlFor="portfolio" className="block text-sm font-medium text-gray-700 mb-2">
-            Portfolio/Website
+            {t('editor.personalInfo.portfolio')}
           </label>
           <input
             type="url"
             id="portfolio"
             value={getStringValue('portfolio')}
             onChange={(e) => handleInputChange('portfolio', e.target.value)}
-            placeholder="https://nguyenvana.dev"
+            placeholder={t('editor.personalInfo.portfolioPlaceholder')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
           />
         </div>

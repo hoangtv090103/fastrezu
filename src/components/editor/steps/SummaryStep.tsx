@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import AIAssistButton from "@/components/ui/AIAssistButton";
 import { apiPost } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";
@@ -9,6 +10,7 @@ import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 
 export default function SummaryStep() {
   const { state, updateSection } = useCVEditor();
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const summaryData = (state.cvData?.sections.summary || {}) as Record<
@@ -78,11 +80,10 @@ export default function SummaryStep() {
     <div className="p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          Tóm tắt nghề nghiệp
+          {t('editor.summary.title')}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          Viết 3-5 câu tóm tắt về kinh nghiệm và mục tiêu nghề nghiệp của bạn.
-          Đây là phần quan trọng nhất để thu hút nhà tuyển dụng.
+          {t('editor.summary.description')}
         </p>
       </div>
 
@@ -93,7 +94,7 @@ export default function SummaryStep() {
               htmlFor="summary"
               className="block text-sm font-medium text-gray-700"
             >
-              Tóm tắt nghề nghiệp
+              {t('editor.summary.label')}
             </label>
             <div className="flex items-center space-x-2">
               <span
@@ -112,7 +113,7 @@ export default function SummaryStep() {
             id="summary"
             value={summary.content}
             onChange={(e) => handleInputChange(e.target.value)}
-            placeholder="Ví dụ: Chuyên viên phát triển phần mềm với 3 năm kinh nghiệm trong việc xây dựng ứng dụng web và mobile. Có kinh nghiệm làm việc với React, Node.js, và các công nghệ cloud. Mong muốn đóng góp vào các dự án có tác động lớn và phát triển kỹ năng lãnh đạo kỹ thuật."
+            placeholder={t('editor.summary.placeholder')}
             className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
           />
           <p className="text-xs text-gray-500 mt-1">
@@ -123,14 +124,14 @@ export default function SummaryStep() {
         <AIAssistButton
           onClick={handleGenerateWithAI}
           loading={isGenerating}
-          label="Tạo tóm tắt với AI"
+          label={t('editor.summary.generate')}
           disabled={!state.cvData || !state.cvData.sections.personal_info}
         />
 
         {state.cvData?.jd_analysis?.keywords && (
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-700">
-              💡 AI sẽ sử dụng các từ khóa từ JD để tối ưu hóa tóm tắt của bạn.
+              {t('editor.summary.aiNote')}
             </p>
           </div>
         )}

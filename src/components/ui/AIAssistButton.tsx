@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 interface AIAssistButtonProps {
   onClick: () => void;
   loading: boolean;
@@ -13,6 +15,7 @@ export default function AIAssistButton({
   label,
   disabled = false,
 }: AIAssistButtonProps) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={onClick}
@@ -22,7 +25,7 @@ export default function AIAssistButton({
       {loading ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-          <span>Đang xử lý...</span>
+          <span>{t('common.processing')}</span>
         </>
       ) : (
         <>
