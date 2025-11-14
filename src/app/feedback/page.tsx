@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import FeedbackForm from '@/components/ui/FeedbackForm';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function FeedbackPage() {
+  const { t, locale } = useTranslation();
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSuccess = () => {
@@ -24,11 +26,11 @@ export default function FeedbackPage() {
             </div>
 
             <h1 className="heading-main text-2xl text-gray-900 mb-4">
-              Cảm ơn bạn đã gửi phản hồi!
+              {t('feedback.success')}
             </h1>
 
             <p className="body-text text-gray-600 mb-8">
-              Phản hồi của bạn rất quan trọng với chúng tôi. Chúng tôi sẽ xem xét và phản hồi trong thời gian sớm nhất.
+              {t('feedback.successMessage')}
             </p>
 
             <div className="space-y-3">
@@ -36,14 +38,14 @@ export default function FeedbackPage() {
                 href="/dashboard"
                 className="btn-primary w-full block text-center"
               >
-                Về trang chủ
+                {t('feedback.backToHome')}
               </Link>
 
               <button
                 onClick={() => setIsSubmitted(false)}
                 className="w-full text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
-                Gửi phản hồi khác
+                {t('feedback.sendAnother')}
               </button>
             </div>
           </div>
@@ -65,15 +67,15 @@ export default function FeedbackPage() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="font-medium">Quay lại</span>
+              <span className="font-medium">{t('feedback.back')}</span>
             </Link>
 
             <div className="text-center">
               <h1 className="heading-main text-xl text-gray-900">
-                💬 Gửi phản hồi
+                💬 {t('feedback.title')}
               </h1>
               <p className="small-text text-gray-500 mt-1">
-                Giúp chúng tôi cải thiện sản phẩm
+                {t('feedback.helpUsImprove')}
               </p>
             </div>
 
@@ -94,12 +96,11 @@ export default function FeedbackPage() {
             </div>
 
             <h2 className="heading-sub text-2xl text-gray-900 mb-3">
-              Chúng tôi muốn nghe từ bạn
+              {t('feedback.weWantToHearFromYou')}
             </h2>
 
             <p className="body-text text-gray-600 max-w-2xl mx-auto">
-              Phản hồi của bạn giúp chúng tôi hiểu rõ hơn về trải nghiệm sử dụng và cải thiện sản phẩm.
-              Mọi góp ý, báo lỗi, hoặc đề xuất tính năng đều được chào đón!
+              {t('feedback.feedbackHelpsUs')}
             </p>
           </div>
 
@@ -118,15 +119,15 @@ export default function FeedbackPage() {
                   </svg>
                 </div>
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">💡 Mẹo hữu ích:</p>
-                  <p>Đối với báo lỗi, hãy upload screenshot hoặc ảnh lỗi để chúng tôi có thể hỗ trợ bạn tốt hơn!</p>
+                  <p className="font-medium mb-1">{t('feedback.helpfulTip')}</p>
+                  <p>{t('feedback.uploadScreenshot')}</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6 text-center">
               <p className="small-text text-gray-500">
-                Hoặc bạn có thể liên hệ trực tiếp với chúng tôi qua{' '}
+                {t('feedback.contactUsDirectly')}{' '}
                 <a
                   href="mailto:support@fastrezu.com"
                   className="text-blue-600 hover:text-blue-700 font-medium"
@@ -147,10 +148,10 @@ export default function FeedbackPage() {
               </svg>
             </div>
             <h3 className="heading-feature text-lg text-gray-900 mb-2">
-              Báo lỗi
+              {t('feedback.reportBug')}
             </h3>
             <p className="small-text text-gray-600">
-              Gặp sự cố khi sử dụng? Hãy cho chúng tôi biết để khắc phục nhanh chóng.
+              {t('feedback.bugDescription')}
             </p>
           </div>
 
@@ -161,10 +162,10 @@ export default function FeedbackPage() {
               </svg>
             </div>
             <h3 className="heading-feature text-lg text-gray-900 mb-2">
-              Đề xuất tính năng
+              {t('feedback.suggestFeature')}
             </h3>
             <p className="small-text text-gray-600">
-              Có ý tưởng hay? Chia sẻ với chúng tôi để phát triển thêm tính năng hữu ích.
+              {t('feedback.featureDescription')}
             </p>
           </div>
 
@@ -175,10 +176,10 @@ export default function FeedbackPage() {
               </svg>
             </div>
             <h3 className="heading-feature text-lg text-gray-900 mb-2">
-              Lời khen
+              {t('feedback.praise')}
             </h3>
             <p className="small-text text-gray-600">
-              Thích sản phẩm? Hãy cho chúng tôi biết điều gì làm bạn hài lòng.
+              {t('feedback.praiseDescription')}
             </p>
           </div>
         </div>

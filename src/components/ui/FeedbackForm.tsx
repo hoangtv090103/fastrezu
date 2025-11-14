@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { showSuccessToast, showErrorToast } from '@/lib/toast-utils';
 import FeedbackImageUpload from './FeedbackImageUpload';
 import { apiPost } from '@/lib/api-client';
@@ -28,21 +29,10 @@ interface FeedbackFormProps {
   showCancel?: boolean;
 }
 
-const feedbackTypes = [
-  { value: 'bug_report', label: '🐛 Báo lỗi', description: 'Báo cáo lỗi hoặc sự cố' },
-  { value: 'feature_request', label: '💡 Đề xuất tính năng', description: 'Gợi ý tính năng mới' },
-  { value: 'general_feedback', label: '💬 Phản hồi chung', description: 'Chia sẻ cảm nhận và góp ý' },
-  { value: 'praise', label: '⭐ Lời khen', description: 'Khen ngợi và đánh giá cao' },
-] as const;
-
-const priorities = [
-  { value: 'low', label: 'Thấp', color: 'bg-green-100 text-green-800' },
-  { value: 'medium', label: 'Trung bình', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'high', label: 'Cao', color: 'bg-orange-100 text-orange-800' },
-  { value: 'critical', label: 'Khẩn cấp', color: 'bg-red-100 text-red-800' },
-] as const;
+// These will be populated with translations in the component
 
 export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }: FeedbackFormProps) {
+  const { t, locale } = useTranslation();
   const [formData, setFormData] = useState<FeedbackFormData>({
     feedback_type: 'general_feedback',
     subject: '',
@@ -53,20 +43,34 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const feedbackTypes = [
+    { value: 'bug_report', label: t('feedback.types.bugLabel'), description: t('feedback.types.bugDescription') },
+    { value: 'feature_request', label: t('feedback.types.featureLabel'), description: t('feedback.types.featureDescription') },
+    { value: 'general_feedback', label: t('feedback.types.generalLabel'), description: t('feedback.types.generalDescription') },
+    { value: 'praise', label: t('feedback.types.praiseLabel'), description: t('feedback.types.praiseDescription') },
+  ] as const;
+
+  const priorities = [
+    { value: 'low', label: t('feedback.priorities.low'), color: 'bg-green-100 text-green-800' },
+    { value: 'medium', label: t('feedback.priorities.medium'), color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'high', label: t('feedback.priorities.high'), color: 'bg-orange-100 text-orange-800' },
+    { value: 'critical', label: t('feedback.priorities.critical'), color: 'bg-red-100 text-red-800' },
+  ] as const;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.subject.trim() || !formData.message.trim()) {
-      showErrorToast('Vui lòng điền đầy đủ thông tin', 'vi');
+      showErrorToast(t('feedback.errorFillRequired'), locale);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await apiPost('/api/feedback', formData, undefined, 'vi');
+      await apiPost('/api/feedback', formData, undefined, locale);
 
-      showSuccessToast('Cảm ơn! Phản hồi đã được gửi');
+      showSuccessToast(t('feedback.successMessage'));
       onSuccess?.();
 
       // Reset form
@@ -80,7 +84,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
       });
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      showErrorToast('Có lỗi xảy ra khi gửi phản hồi. Vui lòng thử lại.', 'vi');
+      showErrorToast(t('feedback.error'), locale);
     } finally {
       setIsSubmitting(false);
     }
@@ -99,7 +103,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
       {/* Feedback Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
-          Loại phản hồi <span className="text-red-500">*</span>
+          {t('feedback.type')} <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {feedbackTypes.map((type) => (
@@ -131,14 +135,14 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
       {/* Subject */}
       <div>
         <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-          Tiêu đề <span className="text-red-500">*</span>
+          {t('feedback.subject')} <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           id="subject"
           value={formData.subject}
           onChange={(e) => handleInputChange('subject', e.target.value)}
-          placeholder="Tóm tắt ngắn gọn về phản hồi của bạn..."
+          placeholder={t('feedback.subjectPlaceholder')}
           className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
           maxLength={255}
         />
@@ -147,13 +151,13 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
       {/* Message */}
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-          Nội dung chi tiết <span className="text-red-500">*</span>
+          {t('feedback.messageLabel')} <span className="text-red-500">*</span>
         </label>
         <textarea
           id="message"
           value={formData.message}
           onChange={(e) => handleInputChange('message', e.target.value)}
-          placeholder="Mô tả chi tiết về phản hồi, góp ý của bạn..."
+          placeholder={t('feedback.messagePlaceholder')}
           rows={5}
           className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none placeholder:text-gray-400"
           maxLength={2000}
@@ -166,25 +170,25 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
       {/* Email (optional) */}
       <div>
         <label htmlFor="user_email" className="block text-sm font-medium text-gray-700 mb-2">
-          Email (tùy chọn)
+          {t('feedback.email')}
         </label>
         <input
           type="email"
           id="user_email"
           value={formData.user_email}
           onChange={(e) => handleInputChange('user_email', e.target.value)}
-          placeholder="email@example.com"
+          placeholder={t('feedback.emailPlaceholder')}
           className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-400"
         />
         <div className="text-xs text-gray-500 mt-1">
-          Để chúng tôi có thể liên hệ với bạn nếu cần thêm thông tin
+          {t('feedback.emailHint')}
         </div>
       </div>
 
       {/* Priority */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
-          Mức độ ưu tiên
+          {t('feedback.priority')}
         </label>
         <div className="flex flex-wrap gap-2">
           {priorities.map((priority) => (
@@ -221,10 +225,10 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
           {isSubmitting ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>Đang gửi...</span>
+              <span>{t('feedback.submitting')}</span>
             </>
           ) : (
-            <span>📤 Gửi phản hồi</span>
+            <span>{t('feedback.submitButton')}</span>
           )}
         </button>
 
@@ -234,7 +238,7 @@ export default function FeedbackForm({ onSuccess, onCancel, showCancel = true }:
             onClick={onCancel}
             className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            Hủy
+            {t('common.cancel')}
           </button>
         )}
       </div>

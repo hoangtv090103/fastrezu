@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { useTranslation } from '@/hooks/useTranslation';
 import FeedbackForm from './FeedbackForm';
 
 export default function FeedbackButton() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function FeedbackButton() {
         <button
           onClick={() => setIsOpen(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
-          aria-label="Gửi phản hồi"
+          aria-label={t('feedback.title')}
         >
           <svg
             className="w-6 h-6"
@@ -69,7 +71,7 @@ export default function FeedbackButton() {
 
           {/* Tooltip */}
           <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-            Gửi phản hồi
+            {t('feedback.title')}
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </div>
         </button>
@@ -89,16 +91,16 @@ export default function FeedbackButton() {
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  💬 Gửi phản hồi
+                  {t('feedback.modalTitle')}
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  Chúng tôi rất trân trọng mọi góp ý từ bạn
+                  {t('feedback.modalSubtitle')}
                 </p>
               </div>
               <button
                 onClick={handleClose}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label="Đóng"
+                aria-label={t('common.close')}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
