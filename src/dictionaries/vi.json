@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "Đang tải...",
+    "processing": "Đang xử lý...",
     "error": "Đã có lỗi xảy ra",
     "save": "Lưu",
     "cancel": "Hủy",
@@ -549,7 +550,8 @@
       "formatting": "Định dạng",
       "relevance": "Liên quan",
       "matchedKeywords": "Từ khóa đã khớp",
-      "missingKeywords": "Từ khóa còn thiếu"
+      "missingKeywords": "Từ khóa còn thiếu",
+      "loadingSuggestions": "Đang tải gợi ý..."
     },
     "languageSelection": {
       "title": "Chọn ngôn ngữ CV",

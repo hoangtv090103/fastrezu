@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "Loading...",
+    "processing": "Processing...",
     "error": "An error occurred",
     "save": "Save",
     "cancel": "Cancel",
@@ -549,7 +550,8 @@
       "formatting": "Formatting",
       "relevance": "Relevance",
       "matchedKeywords": "Matched keywords",
-      "missingKeywords": "Missing keywords"
+      "missingKeywords": "Missing keywords",
+      "loadingSuggestions": "Loading suggestions..."
     },
     "languageSelection": {
       "title": "Select CV Language",
@@ -561,7 +563,7 @@
       "noteDescription": "The language you select will be used for your entire CV, including all sections such as professional summary, experience descriptions, and AI-generated content."
     },
     "suggestion": {
-      "applied": "Updated"
+      "applied": "Applied"
     },
     "tooltips": {
       "jd_analysis_importance": {

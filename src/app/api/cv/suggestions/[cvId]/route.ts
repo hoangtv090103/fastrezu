@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { cvIdSchema, validateSchema } from "@/lib/validation-schemas";
+import { translateTexts } from "@/lib/translate";
 
 export async function GET(
   request: NextRequest,
@@ -8,6 +9,8 @@ export async function GET(
 ) {
   try {
     const { cvId } = await params;
+    const uiLangParam = request.nextUrl.searchParams.get('ui');
+    const uiLang = uiLangParam === 'en' ? 'en' : uiLangParam === 'vi' ? 'vi' : null;
     
     // Validate cvId
     const validation = validateSchema(cvIdSchema, cvId);
@@ -97,7 +100,7 @@ export async function GET(
     };
 
     // Filter and normalize suggestions
-    const validSuggestions = (suggestions || [])
+    let validSuggestions = (suggestions || [])
       .map((suggestion: { target_section: string; [key: string]: unknown }) => {
         const normalizedSection = normalizeTargetSection(suggestion.target_section);
         if (!normalizedSection) {
@@ -112,6 +115,21 @@ export async function GET(
         };
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
+
+    // If a UI language is specified, translate suggestion_text to that language for display
+    if (uiLang && validSuggestions.length > 0) {
+      try {
+        const texts = validSuggestions.map((s: any) => String(s.suggestion_text || ''));
+        const translated = await translateTexts(texts, uiLang, 'auto');
+        validSuggestions = validSuggestions.map((s: any, idx: number) => ({
+          ...s,
+          suggestion_text: translated[idx] || s.suggestion_text,
+        }));
+      } catch (e) {
+        console.error('Failed to translate suggestion_texts for UI:', e);
+        // Continue returning original texts if translation fails
+      }
+    }
 
     return NextResponse.json({ suggestions: validSuggestions });
   } catch (error) {
