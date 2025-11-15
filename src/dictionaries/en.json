@@ -57,6 +57,27 @@
     "invalidCredentials": "Invalid credentials",
     "accountNotFound": "Account not found"
   },
+  "login": {
+    "title": "Welcome to FastRezu",
+    "subtitle": "Log in to start creating ATS-optimized CVs",
+    "noAccountMessage": "Don't have an account? We'll create one for you when you log in for the first time.",
+    "emailLabel": "Your Email",
+    "emailPlaceholder": "Enter your email...",
+    "sending": "Sending...",
+    "sendLink": "Send Login Link",
+    "errors": {
+      "generic": "An error occurred while sending the email. Please try again.",
+      "rateLimit": "You're sending requests too quickly. Please wait 60 seconds and try again.",
+      "invalidEmail": "Invalid email address. Please check your email address.",
+      "network": "Network connection error. Please check your internet and try again.",
+      "server": "Server error. Please try again in a few minutes.",
+      "unexpected": "An unexpected error occurred. Please try again later."
+    },
+    "success": {
+      "mobile": "We've sent a login link to your email. Click the link in the email to log in on your mobile device.",
+      "desktop": "We've sent a login link to your email. Please check your inbox (and spam folder)."
+    }
+  },
   "cvCard": {
     "noContent": "No CV content",
     "editHint": "Click \"Edit\" to add information",

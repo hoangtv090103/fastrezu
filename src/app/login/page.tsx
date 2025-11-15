@@ -2,9 +2,13 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase-client";
+import { useTranslation } from "@/hooks/useTranslation";
 import MagicLinkForm from "@/components/auth/MagicLinkForm";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import Image from "next/image";
 
 function LoginContent() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const supabase = createClient();
@@ -38,23 +42,23 @@ function LoginContent() {
 
       if (error) {
         // Enhanced error messages for better UX
-        let errorMessage = "Có lỗi xảy ra khi gửi email. Vui lòng thử lại.";
+        let errorMessage = t('login.errors.generic');
         
         // Rate limit error (429)
         if (error.message.includes("security purposes") || error.message.includes("second")) {
-          errorMessage = "⏳ Bạn đang gửi yêu cầu quá nhanh. Vui lòng đợi 60 giây rồi thử lại.";
+          errorMessage = t('login.errors.rateLimit');
         } 
         // Invalid email format
         else if (error.message.includes("invalid") || error.message.includes("email")) {
-          errorMessage = "❌ Email không hợp lệ. Vui lòng kiểm tra lại địa chỉ email.";
+          errorMessage = t('login.errors.invalidEmail');
         }
         // Network errors
         else if (error.message.includes("network") || error.message.includes("fetch")) {
-          errorMessage = "🌐 Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.";
+          errorMessage = t('login.errors.network');
         }
         // Server errors
         else if (error.message.includes("500") || error.message.includes("server")) {
-          errorMessage = "⚠️ Lỗi máy chủ. Vui lòng thử lại sau ít phút.";
+          errorMessage = t('login.errors.server');
         }
         
         setMessage(errorMessage);
@@ -62,12 +66,12 @@ function LoginContent() {
       } else {
         setMessage(
           isMobile 
-            ? "✅ Chúng tôi đã gửi link đăng nhập đến email của bạn. Nhấp vào link trong email để đăng nhập trên thiết bị di động của bạn."
-            : "✅ Chúng tôi đã gửi link đăng nhập đến email của bạn. Vui lòng kiểm tra hộp thư (và cả thư mục spam)."
+            ? t('login.success.mobile')
+            : t('login.success.desktop')
         );
       }
     } catch (error) {
-      setMessage("❌ Có lỗi không mong muốn xảy ra. Vui lòng thử lại sau.");
+      setMessage(t('login.errors.unexpected'));
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -75,29 +79,54 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="heading-main text-3xl text-gray-900 mb-2">
-              Chào mừng đến với FastRezu
-            </h1>
-            <p className="body-text text-gray-600">
-              Đăng nhập để bắt đầu tạo CV được tối ưu cho ATS
-            </p>
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-2">
+              <Image
+                src="/fastrezu-logo/trans_bg.png"
+                alt="FastRezu Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+                priority
+              />
+              <span className="heading-feature text-xl text-gray-900">
+                {t('landing.header.brandName')}
+              </span>
+            </div>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
           </div>
+        </div>
+      </header>
 
-          <MagicLinkForm
-            onSubmit={handleMagicLink}
-            isLoading={isLoading}
-            message={message}
-          />
+      {/* Login Form */}
+      <div className="flex items-center justify-center px-4 py-12">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <div className="text-center mb-8">
+              <h1 className="heading-main text-3xl text-gray-900 mb-2">
+                {t('login.title')}
+              </h1>
+              <p className="body-text text-gray-600">
+                {t('login.subtitle')}
+              </p>
+            </div>
 
-          <div className="mt-6 text-center">
-            <p className="small-text text-gray-500">
-              Chưa có tài khoản? Chúng tôi sẽ tạo tài khoản cho bạn khi bạn đăng
-              nhập lần đầu.
-            </p>
+            <MagicLinkForm
+              onSubmit={handleMagicLink}
+              isLoading={isLoading}
+              message={message}
+            />
+
+            <div className="mt-6 text-center">
+              <p className="small-text text-gray-500">
+                {t('login.noAccountMessage')}
+              </p>
+            </div>
           </div>
         </div>
       </div>

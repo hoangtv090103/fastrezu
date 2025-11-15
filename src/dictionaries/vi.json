@@ -57,6 +57,27 @@
     "invalidCredentials": "Thông tin đăng nhập không hợp lệ",
     "accountNotFound": "Tài khoản không tồn tại"
   },
+  "login": {
+    "title": "Chào mừng đến với FastRezu",
+    "subtitle": "Đăng nhập để bắt đầu tạo CV được tối ưu cho ATS",
+    "noAccountMessage": "Chưa có tài khoản? Chúng tôi sẽ tạo tài khoản cho bạn khi bạn đăng nhập lần đầu.",
+    "emailLabel": "Email của bạn",
+    "emailPlaceholder": "Nhập email của bạn...",
+    "sending": "Đang gửi...",
+    "sendLink": "Gửi link đăng nhập",
+    "errors": {
+      "generic": "Có lỗi xảy ra khi gửi email. Vui lòng thử lại.",
+      "rateLimit": "Bạn đang gửi yêu cầu quá nhanh. Vui lòng đợi 60 giây rồi thử lại.",
+      "invalidEmail": "Email không hợp lệ. Vui lòng kiểm tra lại địa chỉ email.",
+      "network": "Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.",
+      "server": "Lỗi máy chủ. Vui lòng thử lại sau ít phút.",
+      "unexpected": "Có lỗi không mong muốn xảy ra. Vui lòng thử lại sau."
+    },
+    "success": {
+      "mobile": "Chúng tôi đã gửi link đăng nhập đến email của bạn. Nhấp vào link trong email để đăng nhập trên thiết bị di động của bạn.",
+      "desktop": "Chúng tôi đã gửi link đăng nhập đến email của bạn. Vui lòng kiểm tra hộp thư (và cả thư mục spam)."
+    }
+  },
   "cvCard": {
     "noContent": "CV chưa có nội dung",
     "editHint": "Nhấn \"Chỉnh sửa\" để thêm thông tin",
