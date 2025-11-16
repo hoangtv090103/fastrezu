@@ -248,29 +248,29 @@ ALTER TABLE feedback_attachments ENABLE ROW LEVEL SECURITY;
 
 -- User profiles policies
 CREATE POLICY "Users can view own profile" ON user_profiles FOR
-SELECT USING (auth.uid () = id);
+SELECT USING ((select auth.uid()) = id);
 
 CREATE POLICY "Users can update own profile" ON user_profiles
 FOR UPDATE
-    USING (auth.uid () = id);
+    USING ((select auth.uid()) = id);
 
 CREATE POLICY "Users can insert own profile" ON user_profiles FOR INSERT
 WITH
-    CHECK (auth.uid () = id);
+    CHECK ((select auth.uid()) = id);
 
 -- CVs policies
 CREATE POLICY "Users can view own CVs" ON cvs FOR
-SELECT USING (auth.uid () = user_id);
+SELECT USING ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can create own CVs" ON cvs FOR INSERT
 WITH
-    CHECK (auth.uid () = user_id);
+    CHECK ((select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update own CVs" ON cvs
 FOR UPDATE
-    USING (auth.uid () = user_id);
+    USING ((select auth.uid()) = user_id);
 
-CREATE POLICY "Users can delete own CVs" ON cvs FOR DELETE USING (auth.uid () = user_id);
+CREATE POLICY "Users can delete own CVs" ON cvs FOR DELETE USING ((select auth.uid()) = user_id);
 
 -- CV sections policies
 CREATE POLICY "Users can view own CV sections" ON cv_sections FOR
@@ -280,7 +280,7 @@ SELECT USING (
             FROM cvs
             WHERE
                 cvs.id = cv_sections.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -292,7 +292,7 @@ WITH
             FROM cvs
             WHERE
                 cvs.id = cv_sections.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -304,7 +304,7 @@ FOR UPDATE
             FROM cvs
             WHERE
                 cvs.id = cv_sections.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -314,7 +314,7 @@ CREATE POLICY "Users can delete own CV sections" ON cv_sections FOR DELETE USING
         FROM cvs
         WHERE
             cvs.id = cv_sections.cv_id
-            AND cvs.user_id = auth.uid ()
+            AND cvs.user_id = (select auth.uid())
     )
 );
 
@@ -326,7 +326,7 @@ SELECT USING (
             FROM cvs
             WHERE
                 cvs.id = jd_analyses.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -338,7 +338,7 @@ WITH
             FROM cvs
             WHERE
                 cvs.id = jd_analyses.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -350,7 +350,7 @@ FOR UPDATE
             FROM cvs
             WHERE
                 cvs.id = jd_analyses.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -360,7 +360,7 @@ CREATE POLICY "Users can delete own JD analyses" ON jd_analyses FOR DELETE USING
         FROM cvs
         WHERE
             cvs.id = jd_analyses.cv_id
-            AND cvs.user_id = auth.uid ()
+            AND cvs.user_id = (select auth.uid())
     )
 );
 
@@ -371,7 +371,7 @@ SELECT USING (
             FROM cvs
             WHERE
                 cvs.id = ats_suggestions.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -383,7 +383,7 @@ WITH
             FROM cvs
             WHERE
                 cvs.id = ats_suggestions.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
@@ -395,24 +395,21 @@ FOR UPDATE
             FROM cvs
             WHERE
                 cvs.id = ats_suggestions.cv_id
-                AND cvs.user_id = auth.uid ()
+                AND cvs.user_id = (select auth.uid())
         )
     );
 
 -- Feedback policies
-CREATE POLICY "Users can view own feedback" ON feedback FOR
-SELECT USING (auth.uid () = user_id);
+CREATE POLICY "Users can view own and anonymous feedback" ON feedback FOR SELECT 
+USING ((select auth.uid()) = user_id OR user_id IS NULL);
 
 CREATE POLICY "Users can create feedback" ON feedback FOR INSERT
 WITH
-    CHECK (user_id IS NULL OR auth.uid() = user_id);
-
-CREATE POLICY "Anon users can view feedback" ON feedback FOR
-SELECT USING (true);
+    CHECK (user_id IS NULL OR (select auth.uid()) = user_id);
 
 CREATE POLICY "Users can update own feedback" ON feedback
 FOR UPDATE
-    USING (auth.uid () = user_id);
+    USING ((select auth.uid()) = user_id);
 
 -- Feedback attachments policies
 CREATE POLICY "Users can view own feedback attachments" ON feedback_attachments FOR
@@ -423,7 +420,7 @@ SELECT USING (
             WHERE
                 feedback.id = feedback_attachments.feedback_id
                 AND (
-                    feedback.user_id = auth.uid ()
+                    feedback.user_id = (select auth.uid())
                     OR feedback.user_id IS NULL
                 )
         )
@@ -438,13 +435,13 @@ WITH
             WHERE
                 feedback.id = feedback_attachments.feedback_id
                 AND (
-                    feedback.user_id = auth.uid ()
+                    feedback.user_id = (select auth.uid())
                     OR feedback.user_id IS NULL
                 )
         )
     );
 
-CREATE POLICY "Users can delete own feedback attachments" ON feedback_attachments FOR DELETE USING (uploaded_by = auth.uid ());
+CREATE POLICY "Users can delete own feedback attachments" ON feedback_attachments FOR DELETE USING (uploaded_by = (select auth.uid()));
 
 -- ============================================================================
 -- PERMISSIONS
