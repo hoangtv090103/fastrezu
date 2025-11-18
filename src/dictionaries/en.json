@@ -399,7 +399,10 @@
       "stepLabel": "Step",
       "currentStep": "current",
       "completedStep": "completed",
-      "validationError": "Please fix the errors before continuing"
+      "validationError": "Please fix the errors before continuing",
+      "next": "Next",
+      "back": "Back",
+      "finish": "Finish"
     },
     "personalInfo": {
       "title": "Personal Information",

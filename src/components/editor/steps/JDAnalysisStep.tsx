@@ -21,7 +21,7 @@ interface SavedJD {
 }
 
 export default function JDAnalysisStep() {
-  const { state, setJDAnalysis, setCurrentStep } = useCVEditor();
+  const { state, setJDAnalysis } = useCVEditor();
   const { t, locale } = useTranslation();
   const [jdText, setJdText] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -242,7 +242,7 @@ const handleAnalyzeJD = async () => {
           </div>
         )}
 
-        {state.cvData?.jd_analysis && (
+        {/* {state.cvData?.jd_analysis && (
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-start">
               <div className="shrink-0">
@@ -255,16 +255,13 @@ const handleAnalyzeJD = async () => {
                 <p className="text-sm text-green-600 mt-1">
                   {t('editor.jdAnalysis.successMessage')}
                 </p>
-                <button
-                  onClick={() => setCurrentStep(2)}
-                  className="mt-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors duration-200"
-                >
+                <p className="mt-2 text-xs sm:text-sm text-green-700">
                   {t('editor.jdAnalysis.nextStep')}
-                </button>
+                </p>
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

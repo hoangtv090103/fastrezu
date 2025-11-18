@@ -123,6 +123,26 @@ export default function WizardPanel() {
   };
 
   const CurrentStepComponent = STEPS[state.currentStep]?.component;
+  const totalSteps = STEPS.length;
+  const isFirstStep = state.currentStep === 0;
+  const isLastStep = state.currentStep === totalSteps - 1;
+  const shouldShowFooterNav = state.currentStep >= 1;
+  const isNextDisabled =
+    state.isLoading ||
+    !state.cvData ||
+    (state.currentStep === 1 && !state.cvData.jd_analysis);
+
+  const handlePrevious = () => {
+    if (!isFirstStep) {
+      handleStepChange(state.currentStep - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (!isLastStep && !isNextDisabled) {
+      handleStepChange(state.currentStep + 1);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -143,6 +163,40 @@ export default function WizardPanel() {
       <div className="flex-1 overflow-y-auto">
         {CurrentStepComponent && <CurrentStepComponent />}
       </div>
+
+      {shouldShowFooterNav && (
+        <div className="p-4 sm:p-6 border-t border-gray-200 bg-white">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={handlePrevious}
+              disabled={isFirstStep}
+              className={`w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                isFirstStep
+                  ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              {t('editor.wizard.back')}
+            </button>
+
+            {!isLastStep && (
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={isNextDisabled}
+                className={`w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors ${
+                  isNextDisabled
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+              >
+                {t('editor.wizard.next')}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

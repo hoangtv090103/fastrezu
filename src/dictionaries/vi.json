@@ -399,7 +399,10 @@
       "stepLabel": "Bước",
       "currentStep": "hiện tại",
       "completedStep": "đã hoàn thành",
-      "validationError": "Vui lòng sửa các lỗi trước khi tiếp tục"
+      "validationError": "Vui lòng sửa các lỗi trước khi tiếp tục",
+      "next": "Tiếp tục",
+      "back": "Quay lại",
+      "finish": "Hoàn tất"
     },
     "personalInfo": {
       "title": "Thông tin cá nhân",
