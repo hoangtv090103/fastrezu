@@ -400,7 +400,7 @@ export default function ReviewStep() {
                     <InfoTooltip
                       id="keyword-match-tooltip"
                       title={t('editor.review.keywordMatch')}
-                      content="Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) có xuất hiện trong CV của bạn. Điểm cao hơn giúp CV vượt qua hệ thống ATS dễ dàng hơn."
+                      content={t('editor.review.tooltips.keywordMatch')}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -416,7 +416,7 @@ export default function ReviewStep() {
                     <InfoTooltip
                       id="completeness-tooltip"
                       title={t('editor.review.completeness')}
-                      content="Đánh giá mức độ đầy đủ của CV: có đủ các phần quan trọng (kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể, và độ dài phù hợp."
+                      content={t('editor.review.tooltips.completeness')}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -432,7 +432,7 @@ export default function ReviewStep() {
                     <InfoTooltip
                       id="formatting-tooltip"
                       title={t('editor.review.formatting')}
-                      content="Đánh giá cấu trúc và định dạng CV: các phần được sắp xếp rõ ràng, tiêu đề phù hợp, dễ đọc và thân thiện với hệ thống ATS."
+                      content={t('editor.review.tooltips.formatting')}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -448,7 +448,7 @@ export default function ReviewStep() {
                     <InfoTooltip
                       id="relevance-tooltip"
                       title={t('editor.review.relevance')}
-                      content="Đánh giá mức độ phù hợp của kinh nghiệm và kỹ năng trong CV với yêu cầu công việc. Nội dung càng liên quan, cơ hội được chọn càng cao."
+                      content={t('editor.review.tooltips.relevance')}
                       placement="bottom"
                       icon="info"
                       dismissible={true}

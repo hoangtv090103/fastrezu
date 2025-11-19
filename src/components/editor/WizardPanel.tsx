@@ -126,11 +126,21 @@ export default function WizardPanel() {
   const totalSteps = STEPS.length;
   const isFirstStep = state.currentStep === 0;
   const isLastStep = state.currentStep === totalSteps - 1;
-  const shouldShowFooterNav = state.currentStep >= 1;
-  const isNextDisabled =
-    state.isLoading ||
-    !state.cvData ||
-    (state.currentStep === 1 && !state.cvData.jd_analysis);
+  const shouldShowFooterNav = true;
+  const selectedLanguage = state.selectedLanguage || state.cvData?.language;
+  const hasCVData = Boolean(state.cvData);
+
+  let isNextDisabled = state.isLoading;
+
+  if (state.currentStep === 0) {
+    isNextDisabled = isNextDisabled || !selectedLanguage;
+  } else {
+    isNextDisabled = isNextDisabled || !hasCVData;
+  }
+
+  if (state.currentStep === 1) {
+    isNextDisabled = isNextDisabled || !state.cvData?.jd_analysis;
+  }
 
   const handlePrevious = () => {
     if (!isFirstStep) {

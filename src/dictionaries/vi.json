@@ -575,7 +575,13 @@
       "relevance": "Liên quan",
       "matchedKeywords": "Từ khóa đã khớp",
       "missingKeywords": "Từ khóa còn thiếu",
-      "loadingSuggestions": "Đang tải gợi ý..."
+      "loadingSuggestions": "Đang tải gợi ý...",
+      "tooltips": {
+        "keywordMatch": "Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) xuất hiện trong CV của bạn. Điểm cao hơn giúp CV vượt qua hệ thống ATS dễ dàng hơn.",
+        "completeness": "Đánh giá mức độ đầy đủ của CV: có đủ các phần quan trọng (kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể và độ dài phù hợp.",
+        "formatting": "Đánh giá cấu trúc và định dạng CV: bố cục rõ ràng, tiêu đề nhất quán, dễ đọc và thân thiện với hệ thống ATS.",
+        "relevance": "Đánh giá mức độ phù hợp của kinh nghiệm và kỹ năng trong CV với yêu cầu công việc. Nội dung càng liên quan, cơ hội được chọn càng cao."
+      }
     },
     "languageSelection": {
       "title": "Chọn ngôn ngữ CV",

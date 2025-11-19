@@ -7,7 +7,7 @@ import InfoTooltip from "@/components/ui/InfoTooltip";
 import { getTooltipContent } from "@/lib/tooltip-content";
 
 export default function LanguageSelectionStep() {
-  const { state, setLanguage, setCurrentStep } = useCVEditor();
+  const { state, setLanguage } = useCVEditor();
   const { t, locale } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState<CVLanguage | null>(null);
 
@@ -21,13 +21,6 @@ export default function LanguageSelectionStep() {
   const handleLanguageSelect = (language: CVLanguage) => {
     setSelectedLanguage(language);
     setLanguage(language);
-  };
-
-  const handleContinue = () => {
-    if (selectedLanguage) {
-      // Move to next step (JD Analysis)
-      setCurrentStep(1);
-    }
   };
 
   const tooltipContent = getTooltipContent('language_selection', locale);
@@ -108,21 +101,6 @@ export default function LanguageSelectionStep() {
             <div className="ml-auto text-2xl font-semibold text-gray-500">EN</div>
           </div>
         </div>
-      </div>
-
-      {/* Continue Button */}
-      <div className="mt-8">
-        <button
-          onClick={handleContinue}
-          disabled={!selectedLanguage}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-colors duration-200 ${
-            selectedLanguage
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          {t('common.next')}
-        </button>
       </div>
 
       {/* Info Box */}
