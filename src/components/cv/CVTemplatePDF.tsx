@@ -296,7 +296,7 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
     const match = trimmed.match(/^(\d{4})-(\d{2})(?:-\d{2})?$/);
     if (match) {
       const [, year, month] = match;
-      return `${year}/${month}`;
+      return `${month}/${year}`;
     }
     return trimmed;
   };
