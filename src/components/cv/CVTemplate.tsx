@@ -292,6 +292,14 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
               >
                 {renderValue(edu.school) || labels.school}
               </p>
+              {renderValue(edu.field_of_study) && (
+                <p
+                  className="text-sm text-gray-700 mb-2"
+                  style={{ fontSize: "10pt" }}
+                >
+                  {labels.fieldOfStudy}: {renderValue(edu.field_of_study)}
+                </p>
+              )}
               <div className="flex justify-between items-start mb-2">
                 <h3
                   className="font-semibold text-gray-900"
@@ -307,16 +315,10 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                     labels.graduationDate}
                 </span>
               </div>
-              {(renderValue(edu.field_of_study) || renderValue(edu.gpa)) && (
+              {(renderValue(edu.field_of_study) ||
+                renderValue(edu.gpa) ||
+                renderValue(edu.activities)) && (
                 <ul className="space-y-1 mt-2" style={{ fontSize: "10pt" }}>
-                  {renderValue(edu.field_of_study) && (
-                    <li className="flex items-start">
-                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                      <span className="text-gray-700">
-                        {labels.fieldOfStudy}: {renderValue(edu.field_of_study)}
-                      </span>
-                    </li>
-                  )}
                   {renderValue(edu.gpa) && (
                     <li className="flex items-start">
                       <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
@@ -325,6 +327,28 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                       </span>
                     </li>
                   )}
+                  {/* Activities */}
+                  {(() => {
+                    const activityList = Array.isArray(edu.activities)
+                      ? edu.activities
+                      : typeof edu.activities === "string" && edu.activities
+                        ? [edu.activities]
+                        : [];
+
+                    return activityList.length > 0
+                      ? activityList.map(
+                          (activity: string, actIndex: number) =>
+                            activity && (
+                              <li key={actIndex} className="flex items-start">
+                                <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                                <span className="text-gray-700 leading-relaxed">
+                                  {activity}
+                                </span>
+                              </li>
+                            )
+                        )
+                      : null;
+                  })()}
                 </ul>
               )}
             </div>

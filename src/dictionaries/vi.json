@@ -213,19 +213,25 @@
       "description": "Mô tả công việc và trách nhiệm..."
     }
   },
-  "education": {
-    "title": "Học vấn",
-    "subtitle": "Thêm thông tin học vấn",
-    "addEducation": "Thêm học vấn",
-    "school": "Trường học",
-    "degree": "Bằng cấp",
-    "major": "Chuyên ngành",
-    "startDate": "Ngày bắt đầu",
-    "endDate": "Ngày tốt nghiệp",
-    "gpa": "Điểm GPA",
-    "achievements": "Thành tựu",
-    "noEducation": "Chưa có thông tin học vấn"
-  },
+    "education": {
+      "title": "Học vấn",
+      "subtitle": "Thêm thông tin học vấn",
+      "addEducation": "Thêm học vấn",
+      "school": "Trường học",
+      "degree": "Bằng cấp",
+      "major": "Chuyên ngành",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày tốt nghiệp",
+      "gpa": "Điểm GPA",
+      "achievements": "Thành tích",
+      "activities": "Hoạt động & Xã hội",
+      "activitiesPlaceholder": "VD: Thành viên hội sinh viên, Tình nguyện viên...",
+      "addActivity": "Thêm hoạt động",
+      "noEducation": "Chưa có thông tin học vấn",
+      "graduationDateInvalid": "Năm tốt nghiệp không hợp lệ",
+      "graduationDateFuture": "Năm tốt nghiệp không thể quá xa trong tương lai",
+      "graduationDatePast": "Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)"
+    },
   "skills": {
     "title": "Kỹ năng",
     "subtitle": "Thêm kỹ năng của bạn",
@@ -452,13 +458,19 @@
       "endDate": "Ngày kết thúc",
       "gpa": "GPA",
       "achievements": "Thành tích",
+      "activities": "Hoạt động & Xã hội",
+      "activitiesPlaceholder": "VD: Thành viên hội sinh viên, Tình nguyện viên...",
+      "addActivity": "Thêm hoạt động",
       "addAchievement": "Thêm thành tích",
       "remove": "Xóa",
       "schoolPlaceholder": "Tên trường",
       "degreePlaceholder": "VD: Cử nhân",
       "fieldPlaceholder": "VD: Khoa học máy tính",
       "gpaPlaceholder": "VD: 3.5/4.0",
-      "achievementPlaceholder": "Mô tả thành tích..."
+      "achievementPlaceholder": "Mô tả thành tích...",
+      "graduationDateInvalid": "Năm tốt nghiệp không hợp lệ",
+      "graduationDateFuture": "Năm tốt nghiệp không thể quá xa trong tương lai",
+      "graduationDatePast": "Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)"
     },
     "projects": {
       "title": "Dự án",

@@ -451,6 +451,30 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                     </View>
                   </View>
                 )}
+                {/* Activities */}
+                {((Array.isArray(edu.activities) &&
+                  edu.activities.length > 0) ||
+                  (typeof edu.activities === "string" && edu.activities)) && (
+                  <View style={styles.bulletList}>
+                    {Array.isArray(edu.activities) ? (
+                      edu.activities.map((activity: string, i: number) =>
+                        activity ? (
+                          <View key={i} style={styles.bulletItem}>
+                            <View style={styles.bullet} />
+                            <Text style={styles.bulletText}>{activity}</Text>
+                          </View>
+                        ) : null
+                      )
+                    ) : (
+                      <View style={styles.bulletItem}>
+                        <View style={styles.bullet} />
+                        <Text style={styles.bulletText}>
+                          {getString(edu, "activities")}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                )}
               </View>
             ))}
           </View>

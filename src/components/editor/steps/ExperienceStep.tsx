@@ -515,14 +515,15 @@ export default function ExperienceStep() {
 // Export validation function for use in navigation
 export function validateExperienceStep(
   experience: Record<string, unknown>[],
-  language: string = "vi"
+  language: "vi" | "en" = "vi"
 ): boolean {
+  const locale = language === "en" ? "en" : "vi";
   for (const exp of experience) {
     const startDate = String(exp.start_date || "");
     const endDate = String(exp.end_date || "");
 
     if (startDate && endDate) {
-      const result = validateDateRange(startDate, endDate, language);
+      const result = validateDateRange(startDate, endDate, locale);
       if (result.errors.length > 0) {
         return false;
       }

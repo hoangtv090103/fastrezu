@@ -213,19 +213,25 @@
       "description": "Describe your job and responsibilities..."
     }
   },
-  "education": {
-    "title": "Education",
-    "subtitle": "Add your education information",
-    "addEducation": "Add Education",
-    "school": "School",
-    "degree": "Degree",
-    "major": "Major",
-    "startDate": "Start Date",
-    "endDate": "Graduation Date",
-    "gpa": "GPA",
-    "achievements": "Achievements",
-    "noEducation": "No education information"
-  },
+    "education": {
+      "title": "Education",
+      "subtitle": "Add your education information",
+      "addEducation": "Add Education",
+      "school": "School",
+      "degree": "Degree",
+      "major": "Major",
+      "startDate": "Start Date",
+      "endDate": "Graduation Date",
+      "gpa": "GPA",
+      "achievements": "Achievements",
+      "activities": "Activities & Societies",
+      "activitiesPlaceholder": "e.g. Member of Student Council, Volunteer at...",
+      "addActivity": "Add Activity",
+      "noEducation": "No education information",
+      "graduationDateInvalid": "Invalid graduation year",
+      "graduationDateFuture": "Graduation year cannot be too far in the future",
+      "graduationDatePast": "Invalid graduation year (too far in the past)"
+    },
   "skills": {
     "title": "Skills",
     "subtitle": "Add your skills",
@@ -254,7 +260,7 @@
     "generateWithAI": "Auto-generate with AI",
     "generating": "Generating...",
     "regenerate": "Regenerate",
-        "tips": "Tip: Keep summary brief (2-3 sentences), highlight strengths and alignment with position."
+    "tips": "Tip: Keep summary brief (2-3 sentences), highlight strengths and alignment with position."
   },
   "fileUpload": {
     "dragActive": "Drop file here",
@@ -452,13 +458,19 @@
       "endDate": "End Date",
       "gpa": "GPA",
       "achievements": "Achievements",
+      "activities": "Activities & Societies",
+      "activitiesPlaceholder": "e.g. Member of Student Council, Volunteer at...",
+      "addActivity": "Add Activity",
       "addAchievement": "Add Achievement",
       "remove": "Remove",
       "schoolPlaceholder": "School name",
       "degreePlaceholder": "e.g., Bachelor's",
       "fieldPlaceholder": "e.g., Computer Science",
       "gpaPlaceholder": "e.g., 3.5/4.0",
-      "achievementPlaceholder": "Describe achievement..."
+      "achievementPlaceholder": "Describe achievement...",
+      "graduationDateInvalid": "Invalid graduation year",
+      "graduationDateFuture": "Graduation year cannot be too far in the future",
+      "graduationDatePast": "Invalid graduation year (too far in the past)"
     },
     "projects": {
       "title": "Projects",
