@@ -289,6 +289,18 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
     return typeof value === "string" ? value : "";
   };
 
+  const formatMonthDisplay = (value: string): string => {
+    const trimmed = value?.trim?.() ?? "";
+    if (!trimmed) return "";
+    // Match YYYY-MM or YYYY-MM-DD
+    const match = trimmed.match(/^(\d{4})-(\d{2})(?:-\d{2})?$/);
+    if (match) {
+      const [, year, month] = match;
+      return `${year}/${month}`;
+    }
+    return trimmed;
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -355,42 +367,49 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
         {experience.length > 0 && (
           <View style={styles.section} wrap={false}>
             <Text style={styles.sectionTitle}>{labels.workExperience}</Text>
-            {experience.map(
-              (exp: Record<string, unknown>, index: number) => (
-                <View key={index} style={styles.itemContainer} wrap={false}>
-                  <View style={styles.itemHeader}>
-                    <Text style={styles.itemTitle}>
-                      {getString(exp, "job_title")}, {getString(exp, "company") || labels.company}
-                    </Text>
-                    <Text style={styles.itemDate}>
-                      {getString(exp, "start_date") && getString(exp, "end_date")
-                        ? `${getString(exp, "start_date")} - ${getString(exp, "end_date")}`
-                        : getString(exp, "start_date") || getString(exp, "end_date") || ""}
-                    </Text>
-                  </View>
-                  {getString(exp, "location") && (
-                    <Text style={styles.itemLocation}>
-                      {getString(exp, "location")}
-                    </Text>
-                  )}
-                  {Array.isArray(exp.achievements) &&
-                    exp.achievements.length > 0 && (
-                      <View style={styles.bulletList}>
-                        {exp.achievements.map(
-                          (achievement: string, achIndex: number) => (
-                            <View key={achIndex} style={styles.bulletItem}>
-                              <View style={styles.bullet} />
-                              <Text style={styles.bulletText}>
-                                {cleanMarkdown(achievement)}
-                              </Text>
-                            </View>
-                          )
-                        )}
-                      </View>
-                    )}
+            {experience.map((exp: Record<string, unknown>, index: number) => (
+              <View key={index} style={styles.itemContainer} wrap={false}>
+                <View style={styles.itemHeader}>
+                  <Text style={styles.itemTitle}>
+                    {getString(exp, "job_title")},{" "}
+                    {getString(exp, "company") || labels.company}
+                  </Text>
+                  <Text style={styles.itemDate}>
+                    {(() => {
+                      const startDate = formatMonthDisplay(
+                        getString(exp, "start_date")
+                      );
+                      const endDate = formatMonthDisplay(
+                        getString(exp, "end_date")
+                      );
+                      return startDate && endDate
+                        ? `${startDate} - ${endDate}`
+                        : startDate || endDate || "";
+                    })()}
+                  </Text>
                 </View>
-              )
-            )}
+                {getString(exp, "location") && (
+                  <Text style={styles.itemLocation}>
+                    {getString(exp, "location")}
+                  </Text>
+                )}
+                {Array.isArray(exp.achievements) &&
+                  exp.achievements.length > 0 && (
+                    <View style={styles.bulletList}>
+                      {exp.achievements.map(
+                        (achievement: string, achIndex: number) => (
+                          <View key={achIndex} style={styles.bulletItem}>
+                            <View style={styles.bullet} />
+                            <Text style={styles.bulletText}>
+                              {cleanMarkdown(achievement)}
+                            </Text>
+                          </View>
+                        )
+                      )}
+                    </View>
+                  )}
+              </View>
+            ))}
           </View>
         )}
 
@@ -408,7 +427,7 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                     {getString(edu, "degree")}
                   </Text>
                   <Text style={styles.itemDate}>
-                    {getString(edu, "graduation_date")}
+                    {formatMonthDisplay(getString(edu, "graduation_date"))}
                   </Text>
                 </View>
                 {getString(edu, "field_of_study") && (
@@ -416,7 +435,8 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                     <View style={styles.bulletItem}>
                       <View style={styles.bullet} />
                       <Text style={styles.bulletText}>
-                        {labels.fieldOfStudy}: {getString(edu, "field_of_study")}
+                        {labels.fieldOfStudy}:{" "}
+                        {getString(edu, "field_of_study")}
                       </Text>
                     </View>
                   </View>
@@ -440,53 +460,50 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
         {projects.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{labels.projects}</Text>
-            {projects.map(
-              (project: Record<string, unknown>, index: number) => (
-                <View key={index} style={styles.itemContainer}>
-                  <View style={styles.itemHeader}>
-                    <Text style={styles.itemTitle}>
-                      {getString(project, "name") || labels.projectName}
-                    </Text>
-                    {getString(project, "link") && (
-                      <Link src={getString(project, "link")}>
-                        <Text style={styles.itemDate}>
-                          {labels.viewProject}
-                        </Text>
-                      </Link>
-                    )}
-                  </View>
-                  <View style={styles.bulletList}>
-                    {getString(project, "description") && (
-                      <View style={styles.bulletItem}>
-                        <View style={styles.bullet} />
-                        <Text style={styles.bulletText}>
-                          {cleanMarkdown(getString(project, "description"))}
-                        </Text>
-                      </View>
-                    )}
-                    {getString(project, "technologies") && (
-                      <View style={styles.bulletItem}>
-                        <View style={styles.bullet} />
-                        <Text style={styles.bulletText}>
-                          {labels.technologies}: {getString(project, "technologies")}
-                        </Text>
-                      </View>
-                    )}
-                    {Array.isArray(project.achievements) &&
-                      project.achievements.map(
-                        (achievement: string, achIndex: number) => (
-                          <View key={achIndex} style={styles.bulletItem}>
-                            <View style={styles.bullet} />
-                            <Text style={styles.bulletText}>
-                              {cleanMarkdown(achievement)}
-                            </Text>
-                          </View>
-                        )
-                      )}
-                  </View>
+            {projects.map((project: Record<string, unknown>, index: number) => (
+              <View key={index} style={styles.itemContainer}>
+                <View style={styles.itemHeader}>
+                  <Text style={styles.itemTitle}>
+                    {getString(project, "name") || labels.projectName}
+                  </Text>
+                  {getString(project, "link") && (
+                    <Link src={getString(project, "link")}>
+                      <Text style={styles.itemDate}>{labels.viewProject}</Text>
+                    </Link>
+                  )}
                 </View>
-              )
-            )}
+                <View style={styles.bulletList}>
+                  {getString(project, "description") && (
+                    <View style={styles.bulletItem}>
+                      <View style={styles.bullet} />
+                      <Text style={styles.bulletText}>
+                        {cleanMarkdown(getString(project, "description"))}
+                      </Text>
+                    </View>
+                  )}
+                  {getString(project, "technologies") && (
+                    <View style={styles.bulletItem}>
+                      <View style={styles.bullet} />
+                      <Text style={styles.bulletText}>
+                        {labels.technologies}:{" "}
+                        {getString(project, "technologies")}
+                      </Text>
+                    </View>
+                  )}
+                  {Array.isArray(project.achievements) &&
+                    project.achievements.map(
+                      (achievement: string, achIndex: number) => (
+                        <View key={achIndex} style={styles.bulletItem}>
+                          <View style={styles.bullet} />
+                          <Text style={styles.bulletText}>
+                            {cleanMarkdown(achievement)}
+                          </Text>
+                        </View>
+                      )
+                    )}
+                </View>
+              </View>
+            ))}
           </View>
         )}
 
@@ -496,9 +513,11 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
           certifications.length > 0) && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
-              {certifications.length > 0 ? "ADDITIONAL INFORMATION" : labels.skills}
+              {certifications.length > 0
+                ? "ADDITIONAL INFORMATION"
+                : labels.skills}
             </Text>
-            
+
             {/* Technical Skills */}
             {Array.isArray(skills.technical) && skills.technical.length > 0 && (
               <View style={styles.skillsSection}>
@@ -510,7 +529,7 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                 </Text>
               </View>
             )}
-            
+
             {/* Soft Skills */}
             {Array.isArray(skills.soft) && skills.soft.length > 0 && (
               <View style={styles.skillsSection}>
@@ -520,7 +539,7 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                 </Text>
               </View>
             )}
-            
+
             {/* Certifications */}
             {certifications.length > 0 && (
               <View style={styles.skillsSection}>
@@ -528,8 +547,13 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                 {certifications.map(
                   (cert: Record<string, unknown>, index: number) => (
                     <Text key={index} style={styles.skillsText}>
-                      {getString(cert, "name")} ({getString(cert, "issuing_organization")}), {getString(cert, "date") || labels.issueDate}
-                      {getString(cert, "credential_id") && `, ID: ${getString(cert, "credential_id")}`}.
+                      {getString(cert, "name")} (
+                      {getString(cert, "issuing_organization")}),{" "}
+                      {formatMonthDisplay(getString(cert, "date")) ||
+                        labels.issueDate}
+                      {getString(cert, "credential_id") &&
+                        `, ID: ${getString(cert, "credential_id")}`}
+                      .
                     </Text>
                   )
                 )}
