@@ -28,7 +28,7 @@ export default function CVEditorLayout() {
         await updateTitle(tempTitle.trim());
         setIsEditingTitle(false);
       } catch (error) {
-        console.error('Failed to update CV title:', error);
+        console.error("Failed to update CV title:", error);
         // Keep the input open so user can try again
         // You might want to show a toast notification here
       }
@@ -41,19 +41,24 @@ export default function CVEditorLayout() {
   };
 
   const handleTitleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleTitleSave();
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       handleTitleCancel();
     }
   };
 
   if (state.isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center" suppressHydrationWarning>
+      <div
+        className="min-h-screen bg-gray-50 flex items-center justify-center"
+        suppressHydrationWarning
+      >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="body-text text-gray-600">{t('editor.layout.loadingCV')}</p>
+          <p className="body-text text-gray-600">
+            {t("editor.layout.loadingCV")}
+          </p>
         </div>
       </div>
     );
@@ -61,11 +66,11 @@ export default function CVEditorLayout() {
 
   if (state.error) {
     // Auto redirect to dashboard if CV not found
-    if (state.error.includes('CV not found')) {
+    if (state.error.includes("CV not found")) {
       router.push("/dashboard");
       return null;
     }
-    
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -73,16 +78,14 @@ export default function CVEditorLayout() {
             <span className="text-2xl text-red-600">⚠️</span>
           </div>
           <h2 className="heading-feature text-xl text-gray-900 mb-4">
-            {t('editor.layout.errorLoadingCV')}
+            {t("editor.layout.errorLoadingCV")}
           </h2>
-          <p className="body-text text-gray-600 mb-6">
-            {state.error}
-          </p>
+          <p className="body-text text-gray-600 mb-6">{state.error}</p>
           <button
             onClick={() => router.push("/dashboard")}
             className="btn-primary btn-text"
           >
-            {t('editor.layout.backToDashboard')}
+            {t("editor.layout.backToDashboard")}
           </button>
         </div>
       </div>
@@ -110,25 +113,45 @@ export default function CVEditorLayout() {
                   onChange={(e) => setTempTitle(e.target.value)}
                   onKeyDown={handleTitleKeyDown}
                   className="heading-feature text-lg text-gray-900 bg-white border border-gray-300 rounded px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors duration-200"
-                  placeholder={t('editor.layout.titlePlaceholder')}
+                  placeholder={t("editor.layout.titlePlaceholder")}
                   autoFocus
                 />
                 <button
                   onClick={handleTitleSave}
                   className="text-green-600 hover:text-green-800 p-1"
-                  title={t('editor.layout.saveTitle')}
+                  title={t("editor.layout.saveTitle")}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </button>
                 <button
                   onClick={handleTitleCancel}
                   className="text-red-600 hover:text-red-800 p-1"
-                  title={t('editor.layout.cancelTitle')}
+                  title={t("editor.layout.cancelTitle")}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -140,10 +163,20 @@ export default function CVEditorLayout() {
                 <button
                   onClick={handleTitleEdit}
                   className="text-gray-400 hover:text-gray-600 p-1"
-                  title={t('editor.layout.editTitle')}
+                  title={t("editor.layout.editTitle")}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
                   </svg>
                 </button>
               </div>
@@ -156,20 +189,24 @@ export default function CVEditorLayout() {
       {/* Main Content */}
       <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden">
         {/* Left Panel - Wizard */}
-        <div className="w-full lg:w-2/5 bg-white border-r-0 lg:border-r border-gray-200 overflow-y-auto min-h-0">
+        <div className="w-full lg:w-1/2 bg-white border-r-0 lg:border-r border-gray-200 overflow-y-auto min-h-0">
           <WizardPanel />
         </div>
 
         {/* Right Panel - Preview */}
-        <div className="w-full lg:w-3/5 bg-gray-100 overflow-y-auto min-h-0">
-          <Suspense fallback={
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">{t('editor.layout.loadingPreview')}</p>
+        <div className="w-full lg:w-1/2 bg-gray-100 overflow-y-auto min-h-0">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                  <p className="text-sm text-gray-600">
+                    {t("editor.layout.loadingPreview")}
+                  </p>
+                </div>
               </div>
-            </div>
-          }>
+            }
+          >
             <CVPreview />
           </Suspense>
         </div>
