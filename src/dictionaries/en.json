@@ -213,25 +213,25 @@
       "description": "Describe your job and responsibilities..."
     }
   },
-    "education": {
-      "title": "Education",
-      "subtitle": "Add your education information",
-      "addEducation": "Add Education",
-      "school": "School",
-      "degree": "Degree",
-      "major": "Major",
-      "startDate": "Start Date",
-      "endDate": "Graduation Date",
-      "gpa": "GPA",
-      "achievements": "Achievements",
-      "activities": "Activities & Societies",
-      "activitiesPlaceholder": "e.g. Member of Student Council, Volunteer at...",
-      "addActivity": "Add Activity",
-      "noEducation": "No education information",
-      "graduationDateInvalid": "Invalid graduation year",
-      "graduationDateFuture": "Graduation year cannot be too far in the future",
-      "graduationDatePast": "Invalid graduation year (too far in the past)"
-    },
+  "education": {
+    "title": "Education",
+    "subtitle": "Add your education information",
+    "addEducation": "Add Education",
+    "school": "School",
+    "degree": "Degree",
+    "major": "Major",
+    "startDate": "Start Date",
+    "endDate": "Graduation Date",
+    "gpa": "GPA",
+    "achievements": "Achievements",
+    "activities": "Activities & Societies",
+    "activitiesPlaceholder": "e.g. Member of Student Council, Volunteer at...",
+    "addActivity": "Add Activity",
+    "noEducation": "No education information",
+    "graduationDateInvalid": "Invalid graduation year",
+    "graduationDateFuture": "Graduation year cannot be too far in the future",
+    "graduationDatePast": "Invalid graduation year (too far in the past)"
+  },
   "skills": {
     "title": "Skills",
     "subtitle": "Add your skills",
@@ -497,8 +497,8 @@
       "title": "Skills",
       "description": "Add your skills. You can get suggestions based on the JD.",
       "addSkill": "Add Skill",
-      "skillName": "Skill Name",
-      "proficiency": "Proficiency",
+      "skillName": "Hard Skills",
+      "proficiency": "Soft Skills",
       "beginner": "Beginner",
       "intermediate": "Intermediate",
       "advanced": "Advanced",
@@ -508,7 +508,10 @@
       "applyAll": "Apply All",
       "applying": "Applying...",
       "noSuggestions": "No suggestions available. Add a JD first.",
-      "skillPlaceholder": "e.g., JavaScript, Leadership"
+      "skillPlaceholder": "e.g., JavaScript, Leadership",
+      "technicalSkillPlaceholder": "e.g., JavaScript, Python, Photoshop",
+      "softSkillPlaceholder": "e.g., Communication, Teamwork, Critical Thinking",
+      "softSkillsExamples": "Communication, Teamwork, Problem Solving, Time Management, Adaptability"
     },
     "certifications": {
       "title": "Certifications",

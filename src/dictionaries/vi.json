@@ -213,25 +213,25 @@
       "description": "Mô tả công việc và trách nhiệm..."
     }
   },
-    "education": {
-      "title": "Học vấn",
-      "subtitle": "Thêm thông tin học vấn",
-      "addEducation": "Thêm học vấn",
-      "school": "Trường học",
-      "degree": "Bằng cấp",
-      "major": "Chuyên ngành",
-      "startDate": "Ngày bắt đầu",
-      "endDate": "Ngày tốt nghiệp",
-      "gpa": "Điểm GPA",
-      "achievements": "Thành tích",
-      "activities": "Hoạt động & Xã hội",
-      "activitiesPlaceholder": "VD: Thành viên hội sinh viên, Tình nguyện viên...",
-      "addActivity": "Thêm hoạt động",
-      "noEducation": "Chưa có thông tin học vấn",
-      "graduationDateInvalid": "Năm tốt nghiệp không hợp lệ",
-      "graduationDateFuture": "Năm tốt nghiệp không thể quá xa trong tương lai",
-      "graduationDatePast": "Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)"
-    },
+  "education": {
+    "title": "Học vấn",
+    "subtitle": "Thêm thông tin học vấn",
+    "addEducation": "Thêm học vấn",
+    "school": "Trường học",
+    "degree": "Bằng cấp",
+    "major": "Chuyên ngành",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày tốt nghiệp",
+    "gpa": "Điểm GPA",
+    "achievements": "Thành tích",
+    "activities": "Hoạt động & Xã hội",
+    "activitiesPlaceholder": "VD: Thành viên hội sinh viên, Tình nguyện viên...",
+    "addActivity": "Thêm hoạt động",
+    "noEducation": "Chưa có thông tin học vấn",
+    "graduationDateInvalid": "Năm tốt nghiệp không hợp lệ",
+    "graduationDateFuture": "Năm tốt nghiệp không thể quá xa trong tương lai",
+    "graduationDatePast": "Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)"
+  },
   "skills": {
     "title": "Kỹ năng",
     "subtitle": "Thêm kỹ năng của bạn",
@@ -497,8 +497,8 @@
       "title": "Kỹ năng",
       "description": "Thêm các kỹ năng của bạn. Bạn có thể nhận gợi ý dựa trên JD.",
       "addSkill": "Thêm kỹ năng",
-      "skillName": "Tên kỹ năng",
-      "proficiency": "Trình độ",
+      "skillName": "Kỹ năng chuyên môn",
+      "proficiency": "Kỹ năng mềm",
       "beginner": "Mới bắt đầu",
       "intermediate": "Trung bình",
       "advanced": "Nâng cao",
@@ -508,7 +508,10 @@
       "applyAll": "Áp dụng tất cả",
       "applying": "Đang áp dụng...",
       "noSuggestions": "Không có gợi ý nào. Hãy thêm JD trước.",
-      "skillPlaceholder": "VD: JavaScript, Leadership"
+      "skillPlaceholder": "VD: JavaScript, Leadership",
+      "technicalSkillPlaceholder": "VD: JavaScript, Python, Photoshop",
+      "softSkillPlaceholder": "VD: Giao tiếp, Làm việc nhóm, Tư duy phản biện",
+      "softSkillsExamples": "Giao tiếp, Làm việc nhóm, Giải quyết vấn đề, Quản lý thời gian, Thích nghi"
     },
     "certifications": {
       "title": "Chứng chỉ",

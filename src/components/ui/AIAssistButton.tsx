@@ -7,6 +7,7 @@ interface AIAssistButtonProps {
   loading: boolean;
   label: string;
   disabled?: boolean;
+  className?: string;
 }
 
 export default function AIAssistButton({
@@ -14,18 +15,19 @@ export default function AIAssistButton({
   loading,
   label,
   disabled = false,
+  className = "",
 }: AIAssistButtonProps) {
   const { t } = useTranslation();
   return (
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-sm hover:shadow-md"
+      className={`bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-sm hover:shadow-md ${className}`}
     >
       {loading ? (
         <>
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-          <span>{t('common.processing')}</span>
+          <span>{t("common.processing")}</span>
         </>
       ) : (
         <>

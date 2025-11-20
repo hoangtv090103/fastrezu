@@ -120,6 +120,18 @@ export default function SkillsStep() {
         </p>
       </div>
 
+      {state.cvData?.jd_analysis?.keywords && (
+        <div className="mb-6">
+          <AIAssistButton
+            onClick={handleExtractSkillsFromJD}
+            loading={isExtracting}
+            label={t("editor.skills.applyAll")}
+            disabled={false}
+            className="w-full justify-center"
+          />
+        </div>
+      )}
+
       <div className="space-y-6">
         {/* Technical Skills */}
         <div>
@@ -127,14 +139,6 @@ export default function SkillsStep() {
             <h4 className="font-medium text-gray-900">
               {t("editor.skills.skillName")}
             </h4>
-            {state.cvData?.jd_analysis?.keywords && (
-              <AIAssistButton
-                onClick={handleExtractSkillsFromJD}
-                loading={isExtracting}
-                label={t("editor.skills.applyAll")}
-                disabled={false}
-              />
-            )}
           </div>
 
           <div className="space-y-3">
@@ -158,7 +162,7 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder={t("editor.skills.skillPlaceholder")}
+                placeholder={t("editor.skills.technicalSkillPlaceholder")}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
@@ -209,7 +213,7 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder={t("editor.skills.skillPlaceholder")}
+                placeholder={t("editor.skills.softSkillPlaceholder")}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 onKeyPress={(e) => {
                   if (e.key === "Enter") {
@@ -253,8 +257,7 @@ export default function SkillsStep() {
                 {t("editor.skills.proficiency")}:{" "}
               </span>
               <span className="text-sm text-green-600">
-                {t("editor.skills.beginner")}, {t("editor.skills.intermediate")}
-                , {t("editor.skills.advanced")}, {t("editor.skills.expert")}
+                {t("editor.skills.softSkillsExamples")}
               </span>
             </div>
           </div>
