@@ -30,11 +30,11 @@ export default function StepNavigation({
 
       {/* Step Indicators and Labels Combined - with horizontal scroll */}
       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <div className="flex gap-0.5 sm:gap-1 min-w-min px-0">
+        <div className="flex gap-1 sm:gap-2 min-w-min px-0">
           {steps.map((step) => (
-                <div
-                  key={step}
-                  className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-11 sm:w-15"
+            <div
+              key={step}
+              className="flex flex-col items-center gap-1 sm:gap-1.5 shrink-0 w-14 sm:w-20"
             >
               {/* Step Button */}
               <button
@@ -63,7 +63,7 @@ export default function StepNavigation({
 
               {/* Step Label - wrapped text */}
               <span
-                className={`text-center text-xs leading text-gray-500 whitespace-normal ${
+                className={`text-center text-[10px] sm:text-xs leading-tight text-gray-500 whitespace-normal break-words ${
                   step === currentStep ? "text-blue-600 font-medium" : ""
                 }`}
               >
