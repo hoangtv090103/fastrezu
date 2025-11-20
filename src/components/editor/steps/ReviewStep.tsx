@@ -100,18 +100,21 @@ export default function ReviewStep() {
     ) {
       // Convert string[] suggestions to StructuredSuggestion[] if needed
       const suggestions = state.cvData.ats_analysis.suggestions || [];
-      const structuredSuggestions: StructuredSuggestion[] = Array.isArray(suggestions) && suggestions.length > 0 && typeof suggestions[0] === 'string'
-        ? (suggestions as string[]).map((s: string) => ({
-            suggestion_text: s,
-            suggestion_type: 'improve_content',
-            target_section: 'experience',
-            target_index: null,
-            keyword: null,
-            priority: 'medium' as const,
-            original_content: null,
-            suggested_content: null,
-          }))
-        : (suggestions as unknown as StructuredSuggestion[]);
+      const structuredSuggestions: StructuredSuggestion[] =
+        Array.isArray(suggestions) &&
+        suggestions.length > 0 &&
+        typeof suggestions[0] === "string"
+          ? (suggestions as string[]).map((s: string) => ({
+              suggestion_text: s,
+              suggestion_type: "improve_content",
+              target_section: "experience",
+              target_index: null,
+              keyword: null,
+              priority: "medium" as const,
+              original_content: null,
+              suggested_content: null,
+            }))
+          : (suggestions as unknown as StructuredSuggestion[]);
 
       setScoringResult({
         score: state.cvData.ats_score,
@@ -136,7 +139,12 @@ export default function ReviewStep() {
       // Deactivate old suggestions before scoring
       if (state.cvData.id) {
         try {
-          await apiPost(`/api/cv/deactivate-suggestions/${state.cvData.id}`, {}, undefined, 'vi');
+          await apiPost(
+            `/api/cv/deactivate-suggestions/${state.cvData.id}`,
+            {},
+            undefined,
+            "vi"
+          );
         } catch (error) {
           console.error("Failed to deactivate old suggestions:", error);
           // Continue with scoring even if deactivation fails
@@ -265,7 +273,7 @@ export default function ReviewStep() {
                   suggestions: normalizedResult.suggestions,
                 },
                 undefined,
-                'vi'
+                "vi"
               );
               console.log("Suggestions saved successfully");
               setSuggestionsReloadTrigger((prev) => prev + 1);
@@ -316,13 +324,13 @@ export default function ReviewStep() {
   };
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 h-full">
       <div className="mb-4 sm:mb-6">
         <h3 className="heading-feature text-base sm:text-lg text-gray-900 mb-2">
-          {t('editor.review.title')}
+          {t("editor.review.title")}
         </h3>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
-          {t('editor.review.description')}
+          {t("editor.review.description")}
         </p>
       </div>
 
@@ -331,7 +339,7 @@ export default function ReviewStep() {
         {state.cvData?.jd_analysis && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="text-sm font-medium text-blue-900 mb-2">
-              {t('editor.review.analyzedKeywords')}
+              {t("editor.review.analyzedKeywords")}
             </h4>
             <div className="flex flex-wrap gap-2">
               {state.cvData.jd_analysis.keywords.map(
@@ -346,11 +354,13 @@ export default function ReviewStep() {
         {/* Scoring Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-medium text-gray-900">{t('editor.review.atsScore')}</h4>
+            <h4 className="text-lg font-medium text-gray-900">
+              {t("editor.review.atsScore")}
+            </h4>
             <AIAssistButton
               onClick={handleScoreCV}
               loading={isScoring}
-              label={t('editor.review.scoreCV')}
+              label={t("editor.review.scoreCV")}
               disabled={!state.cvData}
             />
           </div>
@@ -373,11 +383,15 @@ export default function ReviewStep() {
                   </span>
                 </div>
                 <div className="flex items-center justify-center gap-1 mt-2">
-                  <p className="text-sm text-gray-600">{t('editor.review.scoreOf100')}</p>
+                  <p className="text-sm text-gray-600">
+                    {t("editor.review.scoreOf100")}
+                  </p>
                   <div className="flex items-center">
                     <InfoTooltip
                       id="ats-score-review"
-                      title={getTooltipContent("ats_score_meaning", locale).title}
+                      title={
+                        getTooltipContent("ats_score_meaning", locale).title
+                      }
                       content={
                         getTooltipContent("ats_score_meaning", locale).content
                       }
@@ -396,11 +410,13 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.keyword_match || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">{t('editor.review.keywordMatch')}</div>
+                    <div className="text-xs text-gray-600">
+                      {t("editor.review.keywordMatch")}
+                    </div>
                     <InfoTooltip
                       id="keyword-match-tooltip"
-                      title={t('editor.review.keywordMatch')}
-                      content={t('editor.review.tooltips.keywordMatch')}
+                      title={t("editor.review.keywordMatch")}
+                      content={t("editor.review.tooltips.keywordMatch")}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -412,11 +428,13 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.completeness || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">{t('editor.review.completeness')}</div>
+                    <div className="text-xs text-gray-600">
+                      {t("editor.review.completeness")}
+                    </div>
                     <InfoTooltip
                       id="completeness-tooltip"
-                      title={t('editor.review.completeness')}
-                      content={t('editor.review.tooltips.completeness')}
+                      title={t("editor.review.completeness")}
+                      content={t("editor.review.tooltips.completeness")}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -428,11 +446,13 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.formatting || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">{t('editor.review.formatting')}</div>
+                    <div className="text-xs text-gray-600">
+                      {t("editor.review.formatting")}
+                    </div>
                     <InfoTooltip
                       id="formatting-tooltip"
-                      title={t('editor.review.formatting')}
-                      content={t('editor.review.tooltips.formatting')}
+                      title={t("editor.review.formatting")}
+                      content={t("editor.review.tooltips.formatting")}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -444,11 +464,13 @@ export default function ReviewStep() {
                     {Math.round(scoringResult.analysis?.relevance || 0)}%
                   </div>
                   <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">{t('editor.review.relevance')}</div>
+                    <div className="text-xs text-gray-600">
+                      {t("editor.review.relevance")}
+                    </div>
                     <InfoTooltip
                       id="relevance-tooltip"
-                      title={t('editor.review.relevance')}
-                      content={t('editor.review.tooltips.relevance')}
+                      title={t("editor.review.relevance")}
+                      content={t("editor.review.tooltips.relevance")}
                       placement="bottom"
                       icon="info"
                       dismissible={true}
@@ -462,7 +484,7 @@ export default function ReviewStep() {
                 scoringResult.matchedKeywords.length > 0 && (
                   <div>
                     <h5 className="text-sm font-medium text-green-700 mb-2">
-                      ✓ {t('editor.review.matchedKeywords')} (
+                      ✓ {t("editor.review.matchedKeywords")} (
                       {scoringResult.matchedKeywords.length || 0}):
                     </h5>
                     <div className="flex flex-wrap gap-2">
@@ -484,7 +506,7 @@ export default function ReviewStep() {
                 scoringResult.missingKeywords.length > 0 && (
                   <div>
                     <h5 className="text-sm font-medium text-red-700 mb-2">
-                      ⚠️ {t('editor.review.missingKeywords')} (
+                      ⚠️ {t("editor.review.missingKeywords")} (
                       {scoringResult.missingKeywords.length}):
                     </h5>
                     <div className="flex flex-wrap gap-2">
@@ -509,8 +531,8 @@ export default function ReviewStep() {
               <div className="text-gray-400 mb-2">📊</div>
               <p className="text-gray-600">
                 {state.cvData?.jd_analysis
-                  ? t('editor.review.scoring')
-                  : t('editor.review.analyzeJDFirst')}
+                  ? t("editor.review.scoring")
+                  : t("editor.review.analyzeJDFirst")}
               </p>
             </div>
           )}
@@ -518,8 +540,8 @@ export default function ReviewStep() {
 
         {/* ATS Optimization Panel - Show when there are suggestions */}
         {scoringResult && state.cvData && (
-          <ATSOptimizationPanel 
-            cvData={state.cvData} 
+          <ATSOptimizationPanel
+            cvData={state.cvData}
             reloadTrigger={suggestionsReloadTrigger}
           />
         )}

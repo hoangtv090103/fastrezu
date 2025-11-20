@@ -13,8 +13,11 @@ export default function ProjectsStep() {
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
   }>({});
-  
-  const projects = (state.cvData?.sections.projects || []) as Record<string, unknown>[];
+
+  const projects = (state.cvData?.sections.projects || []) as Record<
+    string,
+    unknown
+  >[];
 
   const addProject = () => {
     const newProject = {
@@ -24,143 +27,180 @@ export default function ProjectsStep() {
       link: "",
       achievements: [""],
     };
-    updateSection('projects', [...projects, newProject]);
+    updateSection("projects", [...projects, newProject]);
   };
 
   const removeProject = (index: number) => {
-        const updatedProjects = projects.filter((_: unknown, i: number) => i !== index);
-    updateSection('projects', updatedProjects);
+    const updatedProjects = projects.filter(
+      (_: unknown, i: number) => i !== index
+    );
+    updateSection("projects", updatedProjects);
   };
 
-  const updateProject = (index: number, field: string, value: string | string[]) => {
+  const updateProject = (
+    index: number,
+    field: string,
+    value: string | string[]
+  ) => {
     const updatedProjects = [...projects];
     updatedProjects[index] = {
       ...updatedProjects[index],
       [field]: value,
     };
-    updateSection('projects', updatedProjects);
+    updateSection("projects", updatedProjects);
   };
 
-  const getStringValue = (project: Record<string, unknown>, key: string): string => {
+  const getStringValue = (
+    project: Record<string, unknown>,
+    key: string
+  ): string => {
     const value = project[key];
-    return typeof value === 'string' ? value : '';
+    return typeof value === "string" ? value : "";
   };
 
-  const getArrayValue = (project: Record<string, unknown>, key: string): string[] => {
+  const getArrayValue = (
+    project: Record<string, unknown>,
+    key: string
+  ): string[] => {
     const value = project[key];
     return Array.isArray(value) ? value : [];
   };
 
   const addAchievement = (projIndex: number) => {
     const updatedProjects = [...projects];
-    const achievements = getArrayValue(updatedProjects[projIndex], 'achievements');
+    const achievements = getArrayValue(
+      updatedProjects[projIndex],
+      "achievements"
+    );
     updatedProjects[projIndex] = {
       ...updatedProjects[projIndex],
-      achievements: [...achievements, ""]
+      achievements: [...achievements, ""],
     };
-    updateSection('projects', updatedProjects);
+    updateSection("projects", updatedProjects);
   };
 
   const removeAchievement = (projIndex: number, achIndex: number) => {
     const updatedProjects = [...projects];
-    const achievements = getArrayValue(updatedProjects[projIndex], 'achievements');
+    const achievements = getArrayValue(
+      updatedProjects[projIndex],
+      "achievements"
+    );
     updatedProjects[projIndex] = {
       ...updatedProjects[projIndex],
-      achievements: achievements.filter((_: unknown, i: number) => i !== achIndex)
+      achievements: achievements.filter(
+        (_: unknown, i: number) => i !== achIndex
+      ),
     };
-    updateSection('projects', updatedProjects);
+    updateSection("projects", updatedProjects);
   };
 
-  const updateAchievement = (projIndex: number, achIndex: number, value: string) => {
+  const updateAchievement = (
+    projIndex: number,
+    achIndex: number,
+    value: string
+  ) => {
     const updatedProjects = [...projects];
-    const achievements = getArrayValue(updatedProjects[projIndex], 'achievements');
+    const achievements = getArrayValue(
+      updatedProjects[projIndex],
+      "achievements"
+    );
     achievements[achIndex] = value;
     updatedProjects[projIndex] = {
       ...updatedProjects[projIndex],
-      achievements
+      achievements,
     };
-    updateSection('projects', updatedProjects);
+    updateSection("projects", updatedProjects);
   };
 
-  const handleImproveAchievement = async (projIndex: number, achIndex: number) => {
-    const achievements = getArrayValue(projects[projIndex], 'achievements');
+  const handleImproveAchievement = async (
+    projIndex: number,
+    achIndex: number
+  ) => {
+    const achievements = getArrayValue(projects[projIndex], "achievements");
     const achievement = achievements[achIndex];
-    if (typeof achievement !== 'string' || !achievement.trim()) return;
+    if (typeof achievement !== "string" || !achievement.trim()) return;
 
     const loadingKey = `improve-${projIndex}-${achIndex}`;
-    setLoadingStates(prev => ({ ...prev, [loadingKey]: true }));
+    setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
     try {
       const { improvedBullet } = await apiPost<{ improvedBullet: string }>(
-        '/api/ai/improve-bullet',
+        "/api/ai/improve-bullet",
         {
           bulletPoint: achievement,
           context: projects[projIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
-          language: state.cvData?.language || 'vi',
+          language: state.cvData?.language || "vi",
         },
         undefined,
-        'vi'
+        "vi"
       );
       updateAchievement(projIndex, achIndex, improvedBullet);
-      showSuccessToast('Đã cải thiện mô tả thành công!');
+      showSuccessToast("Đã cải thiện mô tả thành công!");
     } catch (error) {
-      console.error('Error improving achievement:', error);
-      const appError = handleAPIError(error, 'improve bullet', 'vi');
-      showErrorToast(appError, 'vi');
+      console.error("Error improving achievement:", error);
+      const appError = handleAPIError(error, "improve bullet", "vi");
+      showErrorToast(appError, "vi");
     } finally {
-      setLoadingStates(prev => ({ ...prev, [loadingKey]: false }));
+      setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
     }
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 h-full">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          {t('editor.projects.title')}
+          {t("editor.projects.title")}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          {t('editor.projects.description')}
+          {t("editor.projects.description")}
         </p>
       </div>
 
       <div className="space-y-6">
         {projects.map((project: Record<string, unknown>, projIndex: number) => (
-          <div key={projIndex} className="border border-gray-200 rounded-lg p-4">
+          <div
+            key={projIndex}
+            className="border border-gray-200 rounded-lg p-4"
+          >
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium text-gray-900">
-                {t('editor.projects.title')} {projIndex + 1}
+                {t("editor.projects.title")} {projIndex + 1}
               </h4>
               <button
                 onClick={() => removeProject(projIndex)}
                 className="text-red-600 hover:text-red-800 text-sm"
               >
-                {t('editor.projects.remove')}
+                {t("editor.projects.remove")}
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('editor.projects.name')} *
+                  {t("editor.projects.name")} *
                 </label>
                 <input
                   type="text"
-                  value={getStringValue(project, 'name')}
-                  onChange={(e) => updateProject(projIndex, 'name', e.target.value)}
-                  placeholder={t('editor.projects.namePlaceholder')}
+                  value={getStringValue(project, "name")}
+                  onChange={(e) =>
+                    updateProject(projIndex, "name", e.target.value)
+                  }
+                  placeholder={t("editor.projects.namePlaceholder")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('editor.projects.projectDescription')}
+                  {t("editor.projects.projectDescription")}
                 </label>
                 <textarea
-                  value={getStringValue(project, 'description')}
-                  onChange={(e) => updateProject(projIndex, 'description', e.target.value)}
-                  placeholder={t('editor.projects.descriptionPlaceholder')}
+                  value={getStringValue(project, "description")}
+                  onChange={(e) =>
+                    updateProject(projIndex, "description", e.target.value)
+                  }
+                  placeholder={t("editor.projects.descriptionPlaceholder")}
                   className="w-full h-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
                 />
               </div>
@@ -168,26 +208,30 @@ export default function ProjectsStep() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('editor.projects.technologies')}
+                    {t("editor.projects.technologies")}
                   </label>
                   <input
                     type="text"
-                    value={getStringValue(project, 'technologies')}
-                    onChange={(e) => updateProject(projIndex, 'technologies', e.target.value)}
-                    placeholder={t('editor.projects.technologiesPlaceholder')}
+                    value={getStringValue(project, "technologies")}
+                    onChange={(e) =>
+                      updateProject(projIndex, "technologies", e.target.value)
+                    }
+                    placeholder={t("editor.projects.technologiesPlaceholder")}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('editor.projects.url')}
+                    {t("editor.projects.url")}
                   </label>
                   <input
                     type="url"
-                    value={getStringValue(project, 'link')}
-                    onChange={(e) => updateProject(projIndex, 'link', e.target.value)}
-                    placeholder={t('editor.projects.urlPlaceholder')}
+                    value={getStringValue(project, "link")}
+                    onChange={(e) =>
+                      updateProject(projIndex, "link", e.target.value)
+                    }
+                    placeholder={t("editor.projects.urlPlaceholder")}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   />
                 </div>
@@ -195,56 +239,108 @@ export default function ProjectsStep() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('editor.education.achievements')}
+                  {t("editor.education.achievements")}
                 </label>
                 <div className="space-y-3">
-                  {getArrayValue(project, 'achievements').map((achievement: string, achIndex: number) => (
-                    <div key={achIndex} className="flex flex-col sm:flex-row items-stretch gap-2">
-                      <textarea
-                        value={achievement}
-                        onChange={(e) => updateAchievement(projIndex, achIndex, e.target.value)}
-                        placeholder={t('editor.experience.achievementPlaceholder')}
-                        rows={2}
-                        className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
-                      />
-                      <div className="flex items-start gap-2 sm:flex-col sm:justify-start">
-                        <button
-                          onClick={() => handleImproveAchievement(projIndex, achIndex)}
-                          disabled={!achievement.trim() || loadingStates[`improve-${projIndex}-${achIndex}`]}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-xs font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap"
-                          title="Cải thiện với AI"
-                        >
-                          {loadingStates[`improve-${projIndex}-${achIndex}`] ? (
-                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
-                          ) : (
-                            <>
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                              </svg>
-                            </>
+                  {getArrayValue(project, "achievements").map(
+                    (achievement: string, achIndex: number) => (
+                      <div
+                        key={achIndex}
+                        className="flex flex-col sm:flex-row items-stretch gap-2"
+                      >
+                        <textarea
+                          value={achievement}
+                          onChange={(e) =>
+                            updateAchievement(
+                              projIndex,
+                              achIndex,
+                              e.target.value
+                            )
+                          }
+                          placeholder={t(
+                            "editor.experience.achievementPlaceholder"
                           )}
-                        </button>
-                        <button
-                          onClick={() => removeAchievement(projIndex, achIndex)}
-                          className="inline-flex items-center justify-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
-                          title="Xóa"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
+                          rows={2}
+                          className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
+                        />
+                        <div className="flex items-start gap-2 sm:flex-col sm:justify-start">
+                          <button
+                            onClick={() =>
+                              handleImproveAchievement(projIndex, achIndex)
+                            }
+                            disabled={
+                              !achievement.trim() ||
+                              loadingStates[`improve-${projIndex}-${achIndex}`]
+                            }
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-xs font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap"
+                            title="Cải thiện với AI"
+                          >
+                            {loadingStates[
+                              `improve-${projIndex}-${achIndex}`
+                            ] ? (
+                              <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
+                            ) : (
+                              <>
+                                <svg
+                                  className="w-3.5 h-3.5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                                  />
+                                </svg>
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={() =>
+                              removeAchievement(projIndex, achIndex)
+                            }
+                            className="inline-flex items-center justify-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                            title="Xóa"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
                 <button
                   onClick={() => addAchievement(projIndex)}
                   className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium inline-flex items-center gap-1 hover:gap-2 transition-all duration-200"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
-                  <span>{t('editor.experience.addAchievement')}</span>
+                  <span>{t("editor.experience.addAchievement")}</span>
                 </button>
               </div>
             </div>
@@ -255,7 +351,7 @@ export default function ProjectsStep() {
           onClick={addProject}
           className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors duration-200"
         >
-          + {t('editor.projects.addProject')}
+          + {t("editor.projects.addProject")}
         </button>
       </div>
     </div>

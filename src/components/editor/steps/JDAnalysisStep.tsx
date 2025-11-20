@@ -32,13 +32,15 @@ export default function JDAnalysisStep() {
 
   const loadSavedJDs = useCallback(async () => {
     if (!state.cvData?.id) return;
-    
+
     setIsLoadingJDs(true);
     try {
-      const { jdAnalyses } = await apiGet<{ jdAnalyses: SavedJD[] }>(`/api/jd/list?cvId=${state.cvData.id}`);
+      const { jdAnalyses } = await apiGet<{ jdAnalyses: SavedJD[] }>(
+        `/api/jd/list?cvId=${state.cvData.id}`
+      );
       setSavedJDs(jdAnalyses);
     } catch (error) {
-      console.error('Error loading saved JDs:', error);
+      console.error("Error loading saved JDs:", error);
     } finally {
       setIsLoadingJDs(false);
     }
@@ -53,13 +55,13 @@ export default function JDAnalysisStep() {
 
   const handleDeleteJD = async (jdId: string) => {
     try {
-      await apiDelete(`/api/jd/delete?jdId=${jdId}`, undefined, 'vi');
-      setSavedJDs(prev => prev.filter(jd => jd.id !== jdId));
-      showSuccessToast('Đã xóa JD thành công!');
+      await apiDelete(`/api/jd/delete?jdId=${jdId}`, undefined, "vi");
+      setSavedJDs((prev) => prev.filter((jd) => jd.id !== jdId));
+      showSuccessToast("Đã xóa JD thành công!");
     } catch (error) {
-      console.error('Error deleting JD:', error);
-      const appError = handleAPIError(error, 'delete JD', 'vi');
-      showErrorToast(appError, 'vi');
+      console.error("Error deleting JD:", error);
+      const appError = handleAPIError(error, "delete JD", "vi");
+      showErrorToast(appError, "vi");
     }
   };
 
@@ -69,55 +71,55 @@ export default function JDAnalysisStep() {
     setJDAnalysis(savedJD.keywords, savedJD.analysis);
   };
 
-const handleAnalyzeJD = async () => {
+  const handleAnalyzeJD = async () => {
     if (!jdText.trim()) return;
 
     setIsAnalyzing(true);
     setError(null);
     try {
       const analysis = await apiPost<{ ats_keywords: string[] }>(
-        '/api/ai/analyze-jd',
-        { 
+        "/api/ai/analyze-jd",
+        {
           jdText,
           cvId: state.cvData?.id,
-          language: state.cvData?.language || 'vi'
+          language: state.cvData?.language || "vi",
         },
         undefined,
-        'vi'
+        "vi"
       );
 
       // Extract keywords from the analysis response
       const extractedKeywords = analysis.ats_keywords || [];
-      
+
       if (!Array.isArray(extractedKeywords)) {
-        throw new Error('Invalid response format from AI service');
+        throw new Error("Invalid response format from AI service");
       }
-      
+
       setKeywords(extractedKeywords);
       setJDAnalysis(extractedKeywords, analysis);
-      
+
       // Reload saved JDs to show the newly saved one
       loadSavedJDs();
-      showSuccessToast('Phân tích JD thành công!');
+      showSuccessToast("Phân tích JD thành công!");
     } catch (error) {
-      console.error('Error analyzing JD:', error);
-      const appError = handleAPIError(error, 'analyze JD', 'vi');
+      console.error("Error analyzing JD:", error);
+      const appError = handleAPIError(error, "analyze JD", "vi");
       setError(appError.userMessage);
-      showErrorToast(appError, 'vi');
+      showErrorToast(appError, "vi");
     } finally {
       setIsAnalyzing(false);
     }
   };
 
   // Always use Vietnamese for tooltips
-  const tooltipContent = getTooltipContent('jd_analysis_importance', locale);
+  const tooltipContent = getTooltipContent("jd_analysis_importance", locale);
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-4 sm:p-6 h-full">
       <div className="mb-4 sm:mb-6">
         <div className="flex items-start gap-2 mb-2">
           <h3 className="heading-feature text-base sm:text-lg text-gray-900">
-            {t('editor.jdAnalysis.title')}
+            {t("editor.jdAnalysis.title")}
           </h3>
           <div className="mt-0.5">
             <InfoTooltip
@@ -130,7 +132,7 @@ const handleAnalyzeJD = async () => {
           </div>
         </div>
         <p className="body-text text-gray-600 mb-4 text-sm sm:text-base">
-          {t('editor.jdAnalysis.description')}
+          {t("editor.jdAnalysis.description")}
         </p>
       </div>
 
@@ -138,11 +140,16 @@ const handleAnalyzeJD = async () => {
         {/* Saved JDs Section */}
         {isLoadingJDs ? (
           <div className="mb-4 sm:mb-6">
-            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">JD đã lưu</h4>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">
+              JD đã lưu
+            </h4>
             <div className="space-y-2">
               {/* Loading skeleton */}
               {[1, 2, 3].map((index) => (
-                <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border animate-pulse">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border animate-pulse"
+                >
                   <div className="flex-1 min-w-0">
                     <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                     <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -157,16 +164,23 @@ const handleAnalyzeJD = async () => {
           </div>
         ) : savedJDs.length > 0 ? (
           <div className="mb-4 sm:mb-6">
-            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">{t('editor.jdAnalysis.savedJDs')}</h4>
+            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-3">
+              {t("editor.jdAnalysis.savedJDs")}
+            </h4>
             <div className="space-y-2 max-h-32 sm:max-h-40 overflow-y-auto">
               {savedJDs.map((savedJD) => (
-                <div key={savedJD.id} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border">
+                <div
+                  key={savedJD.id}
+                  className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border"
+                >
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm text-gray-900 truncate">
                       {savedJD.preview}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {new Date(savedJD.createdAt).toLocaleDateString('vi-VN')} • {savedJD.keywords.length} {t('editor.jdAnalysis.keywords')}
+                      {new Date(savedJD.createdAt).toLocaleDateString("vi-VN")}{" "}
+                      • {savedJD.keywords.length}{" "}
+                      {t("editor.jdAnalysis.keywords")}
                     </p>
                   </div>
                   <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-3">
@@ -174,13 +188,13 @@ const handleAnalyzeJD = async () => {
                       onClick={() => handleUseSavedJD(savedJD)}
                       className="px-2 sm:px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
-                      {t('editor.jdAnalysis.use')}
+                      {t("editor.jdAnalysis.use")}
                     </button>
                     <button
                       onClick={() => handleDeleteJD(savedJD.id)}
                       className="px-2 sm:px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                     >
-                      {t('editor.jdAnalysis.delete')}
+                      {t("editor.jdAnalysis.delete")}
                     </button>
                   </div>
                 </div>
@@ -190,14 +204,17 @@ const handleAnalyzeJD = async () => {
         ) : null}
 
         <div>
-          <label htmlFor="jd-text" className="block text-sm font-medium text-gray-700 mb-2">
-            {t('editor.jdAnalysis.label')}
+          <label
+            htmlFor="jd-text"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            {t("editor.jdAnalysis.label")}
           </label>
           <textarea
             id="jd-text"
             value={jdText}
             onChange={(e) => setJdText(e.target.value)}
-            placeholder={t('editor.jdAnalysis.placeholder')}
+            placeholder={t("editor.jdAnalysis.placeholder")}
             className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
           />
         </div>
@@ -205,7 +222,7 @@ const handleAnalyzeJD = async () => {
         <AIAssistButton
           onClick={handleAnalyzeJD}
           loading={isAnalyzing}
-          label={t('editor.jdAnalysis.analyze')}
+          label={t("editor.jdAnalysis.analyze")}
           disabled={!jdText.trim()}
         />
 
@@ -216,13 +233,15 @@ const handleAnalyzeJD = async () => {
                 <span className="text-red-600 text-lg">⚠️</span>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700 font-medium">{t('editor.jdAnalysis.analysisError')}</p>
+                <p className="text-sm text-red-700 font-medium">
+                  {t("editor.jdAnalysis.analysisError")}
+                </p>
                 <p className="text-sm text-red-600 mt-1">{error}</p>
                 <button
                   onClick={() => setError(null)}
                   className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
                 >
-                  {t('editor.jdAnalysis.close')}
+                  {t("editor.jdAnalysis.close")}
                 </button>
               </div>
             </div>
@@ -232,7 +251,7 @@ const handleAnalyzeJD = async () => {
         {keywords && keywords.length > 0 && (
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-2">
-              {t('editor.jdAnalysis.extractedKeywords')}
+              {t("editor.jdAnalysis.extractedKeywords")}
             </h4>
             <div className="flex flex-wrap gap-2">
               {keywords.map((keyword, index) => (

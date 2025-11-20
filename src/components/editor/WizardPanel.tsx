@@ -261,12 +261,12 @@ export default function WizardPanel() {
       </div>
 
       {/* Step Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto flex flex-col pb-24 sm:pb-28 lg:pb-0">
         {CurrentStepComponent && <CurrentStepComponent />}
       </div>
 
       {shouldShowFooterNav && (
-        <div className="p-4 sm:p-6 border-t border-gray-200 bg-white">
+        <div className="fixed lg:static bottom-0 left-0 right-0 lg:bottom-auto lg:left-auto lg:right-auto p-4 sm:p-6 border-t border-gray-200 bg-white z-30">
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="button"

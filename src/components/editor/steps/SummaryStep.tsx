@@ -34,15 +34,19 @@ export default function SummaryStep() {
     // Type guard: ensure personalInfo is an object (not an array) and has full_name
     if (!personalInfo || Array.isArray(personalInfo)) {
       showErrorToast(
-        'Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân trước khi tạo tóm tắt.',
+        "Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân trước khi tạo tóm tắt.",
         "vi"
       );
       return;
     }
     const personalInfoObj = personalInfo as Record<string, unknown>;
-    if (!personalInfoObj.full_name || typeof personalInfoObj.full_name !== 'string' || personalInfoObj.full_name.trim() === '') {
+    if (
+      !personalInfoObj.full_name ||
+      typeof personalInfoObj.full_name !== "string" ||
+      personalInfoObj.full_name.trim() === ""
+    ) {
       showErrorToast(
-        'Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân trước khi tạo tóm tắt.',
+        "Họ và tên không được để trống. Vui lòng điền họ và tên trong phần thông tin cá nhân trước khi tạo tóm tắt.",
         "vi"
       );
       return;
@@ -77,13 +81,13 @@ export default function SummaryStep() {
   const isOptimalLength = characterCount >= 200 && characterCount <= 500;
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <div className="p-4 sm:p-6 h-full">
+      <div className="mb-4 sm:mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          {t('editor.summary.title')}
+          {t("editor.summary.title")}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          {t('editor.summary.description')}
+          {t("editor.summary.description")}
         </p>
       </div>
 
@@ -94,7 +98,7 @@ export default function SummaryStep() {
               htmlFor="summary"
               className="block text-sm font-medium text-gray-700"
             >
-              {t('editor.summary.label')}
+              {t("editor.summary.label")}
             </label>
             <div className="flex items-center space-x-2">
               <span
@@ -113,7 +117,7 @@ export default function SummaryStep() {
             id="summary"
             value={summary.content}
             onChange={(e) => handleInputChange(e.target.value)}
-            placeholder={t('editor.summary.placeholder')}
+            placeholder={t("editor.summary.placeholder")}
             className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
           />
           <p className="text-xs text-gray-500 mt-1">
@@ -124,14 +128,14 @@ export default function SummaryStep() {
         <AIAssistButton
           onClick={handleGenerateWithAI}
           loading={isGenerating}
-          label={t('editor.summary.generate')}
+          label={t("editor.summary.generate")}
           disabled={!state.cvData || !state.cvData.sections.personal_info}
         />
 
         {state.cvData?.jd_analysis?.keywords && (
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-700">
-              {t('editor.summary.aiNote')}
+              {t("editor.summary.aiNote")}
             </p>
           </div>
         )}

@@ -65,19 +65,19 @@ export default function EducationStep() {
       const currentYear = new Date().getFullYear();
 
       if (isNaN(year)) {
-        setDateErrors((prev) => ({ 
-          ...prev, 
-          [index]: t("editor.education.graduationDateInvalid") 
+        setDateErrors((prev) => ({
+          ...prev,
+          [index]: t("editor.education.graduationDateInvalid"),
         }));
       } else if (year < 1950) {
-        setDateErrors((prev) => ({ 
-          ...prev, 
-          [index]: t("editor.education.graduationDatePast") 
+        setDateErrors((prev) => ({
+          ...prev,
+          [index]: t("editor.education.graduationDatePast"),
         }));
       } else if (year > currentYear + 10) {
-        setDateErrors((prev) => ({ 
-          ...prev, 
-          [index]: t("editor.education.graduationDateFuture") 
+        setDateErrors((prev) => ({
+          ...prev,
+          [index]: t("editor.education.graduationDateFuture"),
         }));
       } else {
         setDateErrors((prev) => ({ ...prev, [index]: null }));
@@ -155,8 +155,8 @@ export default function EducationStep() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
+    <div className="p-4 sm:p-6 h-full">
+      <div className="mb-4 sm:mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
           {t("editor.education.title")}
         </h3>
