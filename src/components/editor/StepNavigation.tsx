@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/hooks/useTranslation";
+import { useEffect, useRef } from "react";
 
 interface StepNavigationProps {
   currentStep: number;
@@ -17,6 +18,32 @@ export default function StepNavigation({
 }: StepNavigationProps) {
   const { t } = useTranslation();
   const steps = Array.from({ length: totalSteps }, (_, i) => i);
+  const stepRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to current step when it changes
+  useEffect(() => {
+    const currentStepButton = stepRefs.current[currentStep];
+    const container = containerRef.current;
+
+    if (currentStepButton && container) {
+      const containerRect = container.getBoundingClientRect();
+      const buttonRect = currentStepButton.getBoundingClientRect();
+
+      // Check if button is outside the visible area
+      const isOutsideLeft = buttonRect.left < containerRect.left;
+      const isOutsideRight = buttonRect.right > containerRect.right;
+
+      if (isOutsideLeft || isOutsideRight) {
+        // Scroll the button into view with smooth behavior
+        currentStepButton.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [currentStep]);
 
   return (
     <div className="space-y-2 sm:space-y-3">
@@ -29,7 +56,10 @@ export default function StepNavigation({
       </div>
 
       {/* Step Indicators and Labels Combined - with horizontal scroll */}
-      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+      <div
+        ref={containerRef}
+        className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+      >
         <div className="flex gap-1 sm:gap-2 min-w-min px-0">
           {steps.map((step) => (
             <div
@@ -38,6 +68,9 @@ export default function StepNavigation({
             >
               {/* Step Button */}
               <button
+                ref={(el) => {
+                  stepRefs.current[step] = el;
+                }}
                 onClick={() => onStepChange(step)}
                 className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   step === currentStep
