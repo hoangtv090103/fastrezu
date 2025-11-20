@@ -566,7 +566,31 @@
       "extractedKeywords": "Extracted keywords:",
       "successMessage": "These keywords will be used to optimize your CV. You can continue with the next step.",
       "nextStep": "Next: Personal Info →",
-      "close": "Close"
+      "close": "Close",
+      "modeToggle": {
+        "hasJD": "Have Specific JD",
+        "noJD": "No JD Yet"
+      },
+      "genericMode": {
+        "title": "Create CV by Target Position",
+        "description": "Enter position and experience level, AI will create an industry-standard competency framework for you.",
+        "jobTitle": "Target Position",
+        "jobTitlePlaceholder": "e.g., Business Analyst, ReactJS Developer, Marketing Manager",
+        "level": "Experience Level",
+        "levels": {
+          "intern": "Intern",
+          "fresher": "Entry-level (0-1 years)",
+          "junior": "Junior (1-3 years)",
+          "midLevel": "Mid-level (3-5 years)",
+          "senior": "Senior (5+ years)",
+          "manager": "Manager"
+        },
+        "generateFramework": "Generate Competency Framework",
+        "generating": "Generating framework...",
+        "generateSuccess": "Competency framework generated successfully!",
+        "generateError": "Error generating competency framework",
+        "infoNote": "💡 This mode is suitable when you don't have a specific JD. AI will create industry-standard keywords and skills based on your position and level."
+      }
     },
     "review": {
       "title": "Review CV",

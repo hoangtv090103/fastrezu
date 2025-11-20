@@ -142,7 +142,9 @@ export const writeExperienceSchema = z.object({
   company: z.string().optional(),
   jdKeywords: z.array(z.string()),
   experienceLevel: z.string().optional(),
+  currentDescription: z.string().optional(),
   language: languageSchema,
+  mode: z.enum(['real', 'shadow']).optional().default('real'),
 });
 
 /**
@@ -179,6 +181,7 @@ export const improveBulletSchema = z.object({
   context: z.record(z.string(), z.unknown()).optional(),
   jdKeywords: z.array(z.string()).optional(),
   language: languageSchema,
+  mode: z.enum(['real', 'shadow']).optional().default('real'),
 });
 
 /**
@@ -189,6 +192,20 @@ export const scoreUploadedCVSchema = z.object({
   jdText: z.string().optional(),
   language: languageSchema,
 });
+
+/**
+ * Schema for generating Shadow JD (Generic Mode)
+ */
+export const generateShadowJDSchema = z.object({
+  jobTitle: z.string().min(1, 'Job title is required').max(200, 'Job title must be less than 200 characters'),
+  level: z.enum(['intern', 'fresher', 'junior', 'midLevel', 'senior', 'manager'], {
+    message: 'Invalid experience level'
+  }),
+  cvId: cvIdSchema,
+  language: languageSchema,
+});
+
+
 
 /**
  * Schema for JD list query parameters
@@ -214,6 +231,7 @@ export const scoreCVWithDataSchema = z.object({
   }),
   jdKeywords: z.array(z.string()).optional(),
   language: languageSchema,
+  mode: z.enum(['real', 'shadow']).optional().default('real'),
 });
 
 // ============================================================================
@@ -478,3 +496,4 @@ export type SubmitFeedbackInput = z.infer<typeof submitFeedbackSchema>;
 export type SaveJDInput = z.infer<typeof saveJDSchema>;
 export type JDListQueryInput = z.infer<typeof jdListQuerySchema>;
 export type JDDeleteQueryInput = z.infer<typeof jdDeleteQuerySchema>;
+export type GenerateShadowJDInput = z.infer<typeof generateShadowJDSchema>;

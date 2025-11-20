@@ -173,6 +173,7 @@ export default function ExperienceStep() {
           context: experience[expIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
           language: state.cvData?.language || "vi",
+          mode: state.cvData?.jd_analysis?.mode || "real",
         },
         undefined,
         state.cvData?.language || "vi"
@@ -211,6 +212,8 @@ export default function ExperienceStep() {
           jdKeywords: state.cvData?.jd_analysis?.keywords || [],
           experienceLevel: "Mid-level", // Could be determined from other data
           language: state.cvData?.language || "vi",
+          mode: state.cvData?.jd_analysis?.mode || "real",
+          currentDescription: "", // For generic mode, we might want to pass existing description if available
         },
         undefined,
         state.cvData?.language

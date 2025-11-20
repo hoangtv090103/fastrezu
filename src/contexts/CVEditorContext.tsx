@@ -24,6 +24,7 @@ export interface CVData {
   jd_analysis?: {
     keywords: string[];
     analysis: Record<string, unknown>;
+    mode?: "real" | "shadow";
   };
   ats_analysis?: {
     keyword_match: number;
@@ -62,7 +63,11 @@ type CVEditorAction =
   | { type: "SET_ERROR"; payload: string | null }
   | {
       type: "SET_JD_ANALYSIS";
-      payload: { keywords: string[]; analysis: Record<string, unknown> };
+      payload: {
+        keywords: string[];
+        analysis: Record<string, unknown>;
+        mode?: "real" | "shadow";
+      };
     }
   | { type: "SET_LANGUAGE"; payload: CVLanguage }
   | { type: "UPDATE_CV_DATA"; payload: CVData }
@@ -156,7 +161,8 @@ interface CVEditorContextType {
   setCurrentStep: (step: number) => void;
   setJDAnalysis: (
     keywords: string[],
-    analysis: Record<string, unknown>
+    analysis: Record<string, unknown>,
+    mode?: "real" | "shadow"
   ) => void;
   setLanguage: (language: CVLanguage) => void;
   updateCVData: (cvData: CVData) => void;
@@ -180,9 +186,11 @@ export function CVEditorProvider({
 }) {
   const [state, dispatch] = useReducer(cvEditorReducer, initialState);
   const supabase = createClient();
-  
+
   // Ref để giữ timeout ID, giúp clear dễ dàng hơn
-  const autoSaveTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoSaveTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   // Load CV data
   useEffect(() => {
@@ -326,6 +334,7 @@ export function CVEditorProvider({
             ? {
                 keywords: jdAnalysis.keywords_extracted,
                 analysis: jdAnalysis.analysis_result,
+                mode: jdAnalysis.mode as "real" | "shadow",
               }
             : undefined,
           ats_analysis: sectionsData.ats_analysis as CVData["ats_analysis"],
@@ -473,18 +482,18 @@ export function CVEditorProvider({
       if (state.isSaving || state.isDirty) {
         // Kích hoạt cảnh báo của trình duyệt
         e.preventDefault();
-        e.returnValue = ''; // Chrome yêu cầu cái này
+        e.returnValue = ""; // Chrome yêu cầu cái này
       }
     };
 
     // Chỉ gắn event listener nếu cần thiết
     if (state.isSaving || state.isDirty) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener("beforeunload", handleBeforeUnload);
     }
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    }
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, [state.isSaving, state.isDirty]);
 
   const updateSection = (
@@ -500,9 +509,13 @@ export function CVEditorProvider({
 
   const setJDAnalysis = (
     keywords: string[],
-    analysis: Record<string, unknown>
+    analysis: Record<string, unknown>,
+    mode: "real" | "shadow" = "real"
   ) => {
-    dispatch({ type: "SET_JD_ANALYSIS", payload: { keywords, analysis } });
+    dispatch({
+      type: "SET_JD_ANALYSIS",
+      payload: { keywords, analysis, mode },
+    });
   };
 
   const setLanguage = (language: CVLanguage) => {
