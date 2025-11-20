@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { useTranslation } from '@/hooks/useTranslation';
-import FeedbackForm from './FeedbackForm';
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "@/hooks/useTranslation";
+import FeedbackForm from "./FeedbackForm";
 
 export default function FeedbackButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,25 +13,25 @@ export default function FeedbackButton() {
   // Handle Escape key to close modal
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
       // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   // Don't show feedback button on the feedback page itself
-  if (pathname === '/feedback') {
+  if (pathname === "/feedback") {
     return null;
   }
 
@@ -49,11 +49,11 @@ export default function FeedbackButton() {
   return (
     <>
       {/* Floating Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="hidden lg:block fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsOpen(true)}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
-          aria-label={t('feedback.title')}
+          aria-label={t("feedback.title")}
         >
           <svg
             className="w-6 h-6"
@@ -71,7 +71,7 @@ export default function FeedbackButton() {
 
           {/* Tooltip */}
           <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-            {t('feedback.title')}
+            {t("feedback.title")}
             <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </div>
         </button>
@@ -79,11 +79,11 @@ export default function FeedbackButton() {
 
       {/* Modal */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
           onClick={handleClose}
         >
-          <div 
+          <div
             className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
@@ -91,19 +91,29 @@ export default function FeedbackButton() {
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {t('feedback.modalTitle')}
+                  {t("feedback.modalTitle")}
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  {t('feedback.modalSubtitle')}
+                  {t("feedback.modalSubtitle")}
                 </p>
               </div>
               <button
                 onClick={handleClose}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label={t('common.close')}
+                aria-label={t("common.close")}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>

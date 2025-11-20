@@ -12,16 +12,21 @@ export default function SkillsStep() {
   const { state, updateSection } = useCVEditor();
   const { t } = useTranslation();
   const [isExtracting, setIsExtracting] = useState(false);
-  
-  const skillsData = (state.cvData?.sections.skills || {}) as Record<string, unknown>;
+
+  const skillsData = (state.cvData?.sections.skills || {}) as Record<
+    string,
+    unknown
+  >;
   const skills = {
-    technical: Array.isArray(skillsData.technical) ? skillsData.technical as string[] : [],
-    soft: Array.isArray(skillsData.soft) ? skillsData.soft as string[] : []
+    technical: Array.isArray(skillsData.technical)
+      ? (skillsData.technical as string[])
+      : [],
+    soft: Array.isArray(skillsData.soft) ? (skillsData.soft as string[]) : [],
   };
 
   const addTechnicalSkill = (skill: string) => {
     if (skill.trim() && !skills.technical.includes(skill.trim())) {
-      updateSection('skills', {
+      updateSection("skills", {
         ...skillsData,
         technical: [...skills.technical, skill.trim()],
       });
@@ -31,7 +36,7 @@ export default function SkillsStep() {
   const removeTechnicalSkill = (index: number) => {
     const updatedSkills = [...skills.technical];
     updatedSkills.splice(index, 1);
-    updateSection('skills', {
+    updateSection("skills", {
       ...skillsData,
       technical: updatedSkills,
     });
@@ -39,7 +44,7 @@ export default function SkillsStep() {
 
   const addSoftSkill = (skill: string) => {
     if (skill.trim() && !skills.soft.includes(skill.trim())) {
-      updateSection('skills', {
+      updateSection("skills", {
         ...skillsData,
         soft: [...skills.soft, skill.trim()],
       });
@@ -49,7 +54,7 @@ export default function SkillsStep() {
   const removeSoftSkill = (index: number) => {
     const updatedSkills = [...skills.soft];
     updatedSkills.splice(index, 1);
-    updateSection('skills', {
+    updateSection("skills", {
       ...skillsData,
       soft: updatedSkills,
     });
@@ -60,57 +65,58 @@ export default function SkillsStep() {
 
     setIsExtracting(true);
     try {
-      const { technicalSkills, softSkills } = await apiPost<{ technicalSkills: string[]; softSkills: string[] }>(
-        '/api/ai/extract-skills',
+      const { technicalSkills, softSkills } = await apiPost<{
+        technicalSkills: string[];
+        softSkills: string[];
+      }>(
+        "/api/ai/extract-skills",
         {
           jdKeywords: state.cvData.jd_analysis.keywords,
           existingSkills: skills,
-          language: state.cvData?.language || 'vi',
+          language: state.cvData?.language || "vi",
         },
         undefined,
-        'vi'
+        "vi"
       );
-        
-        
-        // Filter out skills that already exist
-        const newTechnicalSkills = technicalSkills.filter((skill: string) => 
+
+      // Filter out skills that already exist
+      const newTechnicalSkills = technicalSkills.filter(
+        (skill: string) =>
           skill.trim() && !skills.technical.includes(skill.trim())
-        );
-        
-        const newSoftSkills = softSkills.filter((skill: string) => 
-          skill.trim() && !skills.soft.includes(skill.trim())
-        );
-        
-        
-        // Update skills section with all new skills at once
-        if (newTechnicalSkills.length > 0 || newSoftSkills.length > 0) {
-          updateSection('skills', {
-            ...skillsData,
-            technical: [...skills.technical, ...newTechnicalSkills],
-            soft: [...skills.soft, ...newSoftSkills],
-          });
-          showSuccessToast('Đã trích xuất kỹ năng từ JD thành công!');
-        } else {
-          showSuccessToast('Không tìm thấy kỹ năng mới để thêm.');
-        }
-      
+      );
+
+      const newSoftSkills = softSkills.filter(
+        (skill: string) => skill.trim() && !skills.soft.includes(skill.trim())
+      );
+
+      // Update skills section with all new skills at once
+      if (newTechnicalSkills.length > 0 || newSoftSkills.length > 0) {
+        updateSection("skills", {
+          ...skillsData,
+          technical: [...skills.technical, ...newTechnicalSkills],
+          soft: [...skills.soft, ...newSoftSkills],
+        });
+        showSuccessToast("Đã trích xuất kỹ năng từ JD thành công!");
+      } else {
+        showSuccessToast("Không tìm thấy kỹ năng mới để thêm.");
+      }
     } catch (error) {
-      console.error('Error extracting skills:', error);
-      const appError = handleAPIError(error, 'extract skills', 'vi');
-      showErrorToast(appError, 'vi');
+      console.error("Error extracting skills:", error);
+      const appError = handleAPIError(error, "extract skills", "vi");
+      showErrorToast(appError, "vi");
     } finally {
       setIsExtracting(false);
     }
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
-          {t('editor.skills.title')}
+          {t("editor.skills.title")}
         </h3>
         <p className="body-text text-gray-600 mb-4">
-          {t('editor.skills.description')}
+          {t("editor.skills.description")}
         </p>
       </div>
 
@@ -118,12 +124,14 @@ export default function SkillsStep() {
         {/* Technical Skills */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h4 className="font-medium text-gray-900">{t('editor.skills.skillName')}</h4>
+            <h4 className="font-medium text-gray-900">
+              {t("editor.skills.skillName")}
+            </h4>
             {state.cvData?.jd_analysis?.keywords && (
               <AIAssistButton
                 onClick={handleExtractSkillsFromJD}
                 loading={isExtracting}
-                label={t('editor.skills.applyAll')}
+                label={t("editor.skills.applyAll")}
                 disabled={false}
               />
             )}
@@ -150,24 +158,25 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder={t('editor.skills.skillPlaceholder')}
+                placeholder={t("editor.skills.skillPlaceholder")}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     addTechnicalSkill(e.currentTarget.value);
-                    e.currentTarget.value = '';
+                    e.currentTarget.value = "";
                   }
                 }}
               />
               <button
                 onClick={(e) => {
-                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                  const input = e.currentTarget
+                    .previousElementSibling as HTMLInputElement;
                   addTechnicalSkill(input.value);
-                  input.value = '';
+                  input.value = "";
                 }}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
               >
-                {t('editor.skills.addSkill')}
+                {t("editor.skills.addSkill")}
               </button>
             </div>
           </div>
@@ -175,7 +184,9 @@ export default function SkillsStep() {
 
         {/* Soft Skills */}
         <div>
-          <h4 className="font-medium text-gray-900 mb-4">{t('editor.skills.proficiency')}</h4>
+          <h4 className="font-medium text-gray-900 mb-4">
+            {t("editor.skills.proficiency")}
+          </h4>
 
           <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
@@ -198,24 +209,25 @@ export default function SkillsStep() {
             <div className="flex space-x-2">
               <input
                 type="text"
-                placeholder={t('editor.skills.skillPlaceholder')}
+                placeholder={t("editor.skills.skillPlaceholder")}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     addSoftSkill(e.currentTarget.value);
-                    e.currentTarget.value = '';
+                    e.currentTarget.value = "";
                   }
                 }}
               />
               <button
                 onClick={(e) => {
-                  const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                  const input = e.currentTarget
+                    .previousElementSibling as HTMLInputElement;
                   addSoftSkill(input.value);
-                  input.value = '';
+                  input.value = "";
                 }}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
               >
-                {t('editor.skills.addSkill')}
+                {t("editor.skills.addSkill")}
               </button>
             </div>
           </div>
@@ -223,18 +235,26 @@ export default function SkillsStep() {
 
         {/* Suggestions */}
         <div className="p-4 bg-gray-50 rounded-lg">
-          <h5 className="font-medium text-gray-900 mb-2">{t('editor.skills.suggestions')}:</h5>
+          <h5 className="font-medium text-gray-900 mb-2">
+            {t("editor.skills.suggestions")}:
+          </h5>
           <div className="space-y-2">
             <div>
-              <span className="text-sm text-gray-600">{t('editor.skills.skillName')}: </span>
+              <span className="text-sm text-gray-600">
+                {t("editor.skills.skillName")}:{" "}
+              </span>
               <span className="text-sm text-blue-600">
-                JavaScript, Python, React, Node.js, SQL, Git, Docker, AWS, Agile, Scrum
+                JavaScript, Python, React, Node.js, SQL, Git, Docker, AWS,
+                Agile, Scrum
               </span>
             </div>
             <div>
-              <span className="text-sm text-gray-600">{t('editor.skills.proficiency')}: </span>
+              <span className="text-sm text-gray-600">
+                {t("editor.skills.proficiency")}:{" "}
+              </span>
               <span className="text-sm text-green-600">
-                {t('editor.skills.beginner')}, {t('editor.skills.intermediate')}, {t('editor.skills.advanced')}, {t('editor.skills.expert')}
+                {t("editor.skills.beginner")}, {t("editor.skills.intermediate")}
+                , {t("editor.skills.advanced")}, {t("editor.skills.expert")}
               </span>
             </div>
           </div>
