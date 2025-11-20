@@ -147,7 +147,7 @@ export default function ProjectsStep() {
   };
 
   return (
-    <div className="p-4 sm:p-6 h-full">
+    <div className="p-4 sm:p-6">
       <div className="mb-6">
         <h3 className="heading-feature text-lg text-gray-900 mb-2">
           {t("editor.projects.title")}

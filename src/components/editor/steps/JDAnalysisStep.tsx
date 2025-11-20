@@ -115,7 +115,7 @@ export default function JDAnalysisStep() {
   const tooltipContent = getTooltipContent("jd_analysis_importance", locale);
 
   return (
-    <div className="p-4 sm:p-6 h-full">
+    <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
         <div className="flex items-start gap-2 mb-2">
           <h3 className="heading-feature text-base sm:text-lg text-gray-900">
