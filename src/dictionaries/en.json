@@ -633,6 +633,9 @@
       "applySuggestionSuccess": "Suggestion applied successfully!",
       "noSuggestions": "No suggestions to apply",
       "applyAllSuccess": "All suggestions applied successfully!",
+      "profileStrength": "Profile Strength",
+      "profileStrengthTooltip": "Score based on CV completeness and industry standards, not compared to a specific JD.",
+      "keywordCopied": "Keyword copied to clipboard!",
       "tooltips": {
         "keywordMatch": "Percentage of keywords from the job description (JD) that appear in your CV. Higher scores mean your CV is more likely to pass ATS filters.",
         "completeness": "Checks whether your CV covers all key sections (experience, education, skills), includes detailed content with measurable results, and has an appropriate length.",
