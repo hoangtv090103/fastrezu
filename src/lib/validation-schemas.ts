@@ -142,7 +142,7 @@ export const writeExperienceSchema = z.object({
   company: z.string().optional(),
   jdKeywords: z.array(z.string()),
   experienceLevel: z.string().optional(),
-  currentDescription: z.string().optional(),
+  currentDescription: z.string().optional(), // Existing work experience description to improve (used in both real and shadow modes)
   language: languageSchema,
   mode: z.enum(['real', 'shadow']).optional().default('real'),
 });
