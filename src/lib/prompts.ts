@@ -509,7 +509,7 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 
 **Input Context (provided by user):**
 * \`jobTitle\`: Target job position (e.g., "Business Analyst", "ReactJS Developer")
-* \`level\`: Experience level (e.g., "Intern", "Entry-level", "Junior", "Mid-level", "Senior", "Manager")
+* \`level\`: Experience level (e.g., "Intern", "Fresher", "Junior", "Mid-level", "Senior", "Manager")
 
 **Instructions:**
 1. Based on job market knowledge, identify INDUSTRY STANDARD requirements for this position.
