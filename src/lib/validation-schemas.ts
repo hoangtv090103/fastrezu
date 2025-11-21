@@ -199,7 +199,7 @@ export const scoreUploadedCVSchema = z.object({
 export const generateShadowJDSchema = z.object({
   jobTitle: z.string().min(1, 'Job title is required').max(200, 'Job title must be less than 200 characters'),
   level: z.enum(['intern', 'fresher', 'junior', 'midLevel', 'senior', 'manager'], {
-    message: 'Invalid experience level'
+    message: 'Experience level must be one of: intern, fresher, junior, midLevel, senior, manager'
   }),
   cvId: cvIdSchema,
   language: languageSchema,
