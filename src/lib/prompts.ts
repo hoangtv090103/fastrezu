@@ -458,8 +458,14 @@ You MUST output *only* a valid JSON object with the following structure:
 
 **Input Context (provided by user):**
 * \`jobTitle\`: Vị trí công việc mục tiêu (VD: "Business Analyst", "ReactJS Developer")
-* \`level\`: Cấp độ kinh nghiệm (VD: "Intern", "Fresher", "Junior", "Mid-level", "Senior", "Manager")
-
+* \`level\`: Cấp độ kinh nghiệm (VD: sử dụng giá trị mã code: "Intern", "Fresher", "Junior", "Mid-level", "Senior", "Manager". 
+  - Lưu ý: Đây là các giá trị mã code (enum) dùng cho hệ thống. Tên hiển thị tiếng Việt tương ứng:
+    - "Intern": "Thực tập sinh"
+    - "Fresher": "Mới tốt nghiệp"
+    - "Junior": "Nhân viên mới"
+    - "Mid-level": "Nhân viên có kinh nghiệm"
+    - "Senior": "Nhân viên cao cấp"
+    - "Manager": "Quản lý"
 **Instructions:**
 1. Dựa trên kiến thức về thị trường việc làm, xác định các yêu cầu CHUẨN NGÀNH cho vị trí này.
 2. Trích xuất 15-20 từ khóa kỹ thuật quan trọng nhất (hard skills, tools, technologies, methodologies).
