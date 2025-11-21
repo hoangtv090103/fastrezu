@@ -179,7 +179,7 @@ export default function ExperienceStep() {
       );
 
       updateAchievement(expIndex, achIndex, result.improvedBullet);
-      showSuccessToast("Đã cải thiện mô tả thành công!");
+      showSuccessToast(t("editor.experience.improveSuccess"));
     } catch (error) {
       console.error("Error improving achievement:", error);
       const appError = handleAPIError(error, "improve bullet", locale);
@@ -219,7 +219,7 @@ export default function ExperienceStep() {
       );
 
       updateExperience(expIndex, "achievements", result.achievements);
-      showSuccessToast("Đã tạo mô tả kinh nghiệm thành công!");
+      showSuccessToast(t("editor.experience.generateSuccess"));
     } catch (error) {
       console.error("Error writing experience with AI:", error);
       const appError = handleAPIError(error, "write experience", "vi");

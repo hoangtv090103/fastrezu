@@ -136,7 +136,7 @@ export default function ProjectsStep() {
         "vi"
       );
       updateAchievement(projIndex, achIndex, improvedBullet);
-      showSuccessToast("Đã cải thiện mô tả thành công!");
+      showSuccessToast(t("editor.projects.improveSuccess"));
     } catch (error) {
       console.error("Error improving achievement:", error);
       const appError = handleAPIError(error, "improve bullet", "vi");

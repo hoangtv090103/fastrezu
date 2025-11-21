@@ -11,6 +11,8 @@ import { handleAPIError, logError } from "@/lib/error-handler";
 import { generateShadowJDSchema, validateSchema } from "@/lib/validation-schemas";
 
 export async function POST(request: NextRequest) {
+  let language: CVLanguage = "vi"; // Default language for error handling
+  
   try {
     const body = await request.json();
     
@@ -24,7 +26,9 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { jobTitle, level, cvId, language } = validation.data;
+    const validatedData = validation.data;
+    language = validatedData.language as CVLanguage; // Update language from validated data
+    const { jobTitle, level, cvId } = validatedData;
 
     // Get system prompt based on language
     const systemPrompt = getSystemPrompt("generate_shadow_jd", language as CVLanguage);

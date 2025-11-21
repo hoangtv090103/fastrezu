@@ -125,7 +125,15 @@
     "exportCV": "Export CV",
     "confirmDelete": "Are you sure you want to delete this CV?",
     "deleteSuccess": "CV deleted successfully",
-    "deleteFailed": "Failed to delete CV"
+    "deleteFailed": "Unable to delete CV",
+    "copyLinkSuccess": "Link copied!",
+    "duplicateSuccess": "CV duplicated!",
+    "renameSuccess": "CV renamed!"
+  },
+  "cv": {
+    "export": {
+      "copySuccess": "CV copied to clipboard!"
+    }
   },
   "wizard": {
     "title": "Create Your CV",
@@ -251,7 +259,10 @@
       "other": "Other"
     },
     "suggestSkills": "Suggest skills from JD",
-    "noSkills": "No skills yet"
+    "noSkills": "No skills yet",
+    "extractFromJD": "Extract from JD",
+    "extractSuccess": "Skills extracted from JD successfully!",
+    "noNewSkills": "No new skills found to add."
   },
   "summary": {
     "title": "Professional Summary",
@@ -441,6 +452,7 @@
       "improve": "Improve with AI",
       "improving": "Improving...",
       "improveSuccess": "Description improved successfully!",
+      "generateSuccess": "Work experience description generated successfully!",
       "remove": "Remove",
       "companyPlaceholder": "Company name",
       "jobTitlePlaceholder": "Job title",
@@ -485,7 +497,7 @@
       "url": "Project Link",
       "improve": "Improve with AI",
       "improving": "Improving...",
-      "improveSuccess": "Description improved successfully!",
+      "improveSuccess": "Project description improved successfully!",
       "remove": "Remove",
       "namePlaceholder": "Project name",
       "rolePlaceholder": "Your role",
@@ -508,6 +520,9 @@
       "applyAll": "Apply All",
       "applying": "Applying...",
       "noSuggestions": "No suggestions available. Add a JD first.",
+      "extractFromJD": "Extract from JD",
+      "extractSuccess": "Skills extracted from JD successfully!",
+      "noNewSkills": "No new skills found to add.",
       "skillPlaceholder": "e.g., JavaScript, Leadership",
       "technicalSkillPlaceholder": "e.g., JavaScript, Python, Photoshop",
       "softSkillPlaceholder": "e.g., Communication, Teamwork, Critical Thinking",
@@ -615,6 +630,9 @@
       "matchedKeywords": "Matched keywords",
       "missingKeywords": "Missing keywords",
       "loadingSuggestions": "Loading suggestions...",
+      "applySuggestionSuccess": "Suggestion applied successfully!",
+      "noSuggestions": "No suggestions to apply",
+      "applyAllSuccess": "All suggestions applied successfully!",
       "tooltips": {
         "keywordMatch": "Percentage of keywords from the job description (JD) that appear in your CV. Higher scores mean your CV is more likely to pass ATS filters.",
         "completeness": "Checks whether your CV covers all key sections (experience, education, skills), includes detailed content with measurable results, and has an appropriate length.",
