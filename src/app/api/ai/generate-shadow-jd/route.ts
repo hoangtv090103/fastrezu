@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(shadowJD, { status: 200 });
   } catch (error) {
-    const appError = handleAPIError(error, "generate-shadow-jd API", "vi");
+    const appError = handleAPIError(error, "generate-shadow-jd API", language as "vi" | "en");
     logError(appError);
 
     return NextResponse.json(
