@@ -34,7 +34,7 @@ export default function ATSOptimizationPanel({
   reloadTrigger,
 }: ATSOptimizationPanelProps) {
   const { updateCVData, saveCV } = useCVEditor();
-  const { locale,   t } = useTranslation();
+  const { locale, t } = useTranslation();
   const [suggestions, setSuggestions] = useState<DBSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplying, setIsApplying] = useState<string | null>(null);
@@ -46,7 +46,9 @@ export default function ATSOptimizationPanel({
 
       setIsLoading(true);
       try {
-        const data = await apiGet<{ suggestions: DBSuggestion[] }>(`/api/cv/suggestions/${cvData.id}?ui=${locale}`);
+        const data = await apiGet<{ suggestions: DBSuggestion[] }>(
+          `/api/cv/suggestions/${cvData.id}?ui=${locale}`
+        );
         setSuggestions(data.suggestions || []);
       } catch (error) {
         console.error("Error loading suggestions:", error);
@@ -62,27 +64,34 @@ export default function ATSOptimizationPanel({
     if (!cvData?.id) return;
 
     console.log("Applying suggestion:", { cvId: cvData.id, suggestionId });
-    console.log("Available suggestions:", suggestions.map(s => ({ 
-      suggestion_id: s.suggestion_id, 
-      is_active: s.is_active, 
-      is_applied: s.is_applied 
-    })));
+    console.log(
+      "Available suggestions:",
+      suggestions.map((s) => ({
+        suggestion_id: s.suggestion_id,
+        is_active: s.is_active,
+        is_applied: s.is_applied,
+      }))
+    );
 
     setIsApplying(suggestionId);
     try {
-      const result = await apiPost<{ updatedSection?: { section_type: string; data: unknown } }>(
+      const result = await apiPost<{
+        updatedSection?: { section_type: string; data: unknown };
+      }>(
         "/api/cv/apply-suggestion",
         { cvId: cvData.id, suggestionId },
         undefined,
-        'vi'
+        "vi"
       );
 
       // Update CV data in context
       if (result.updatedSection) {
         const updatedSections = {
           ...cvData.sections,
-          [result.updatedSection.section_type]: (result.updatedSection.data as Record<string, unknown> | Record<string, unknown>[]),
-        } as CVData['sections'];
+          [result.updatedSection.section_type]: result.updatedSection.data as
+            | Record<string, unknown>
+            | Record<string, unknown>[],
+        } as CVData["sections"];
 
         updateCVData({
           ...cvData,
@@ -94,15 +103,15 @@ export default function ATSOptimizationPanel({
       }
 
       // Update only the applied suggestion in local state instead of reloading all
-      setSuggestions(prevSuggestions => 
-        prevSuggestions.map(s => 
-          s.suggestion_id === suggestionId 
+      setSuggestions((prevSuggestions) =>
+        prevSuggestions.map((s) =>
+          s.suggestion_id === suggestionId
             ? { ...s, is_applied: true, applied_at: new Date().toISOString() }
             : s
         )
       );
 
-      showSuccessToast("Gợi ý đã được áp dụng thành công!");
+      showSuccessToast(t("editor.review.applySuggestionSuccess"));
     } catch (error) {
       console.error("Error applying suggestion:", error);
       const appError = handleAPIError(error, "apply suggestion", "vi");
@@ -117,31 +126,28 @@ export default function ATSOptimizationPanel({
 
     const unappliedSuggestions = suggestions.filter((s) => !s.is_applied);
     if (unappliedSuggestions.length === 0) {
-      showSuccessToast("Không có gợi ý nào để áp dụng");
+      showSuccessToast(t("editor.review.noSuggestions"));
       return;
     }
 
     setIsApplyingAll(true);
     try {
-      const result = await apiPost<{ 
-        appliedCount: number; 
+      const result = await apiPost<{
+        appliedCount: number;
         appliedSuggestions?: string[];
         failedCount?: number;
         failedSuggestions?: string[];
-      }>(
-        "/api/cv/apply-all-suggestions",
-        { cvId: cvData.id },
-        undefined,
-        'vi'
-      );
+      }>("/api/cv/apply-all-suggestions", { cvId: cvData.id }, undefined, "vi");
 
       console.log("Apply all result:", result);
 
       // Reload CV data from database to get updated sections
       if (result.appliedCount > 0) {
         try {
-          const supabase = (await import("@/lib/supabase-client")).createClient();
-          
+          const supabase = (
+            await import("@/lib/supabase-client")
+          ).createClient();
+
           // Get CV sections
           const { data: sections, error: sectionsError } = await supabase
             .from("cv_sections")
@@ -153,10 +159,18 @@ export default function ATSOptimizationPanel({
             console.error("Error reloading CV sections:", sectionsError);
           } else if (sections) {
             // Transform sections into object
-            const sectionsData: { [key: string]: Record<string, unknown> | Record<string, unknown>[] } = {};
-            sections.forEach((section: { section_type: string; data: unknown }) => {
-              sectionsData[section.section_type] = section.data as Record<string, unknown> | Record<string, unknown>[];
-            });
+            const sectionsData: {
+              [key: string]:
+                | Record<string, unknown>
+                | Record<string, unknown>[];
+            } = {};
+            sections.forEach(
+              (section: { section_type: string; data: unknown }) => {
+                sectionsData[section.section_type] = section.data as
+                  | Record<string, unknown>
+                  | Record<string, unknown>[];
+              }
+            );
 
             // Update CV data in context with new sections
             updateCVData({
@@ -164,7 +178,9 @@ export default function ATSOptimizationPanel({
               sections: sectionsData,
             });
 
-            console.log("CV sections reloaded successfully after applying all suggestions");
+            console.log(
+              "CV sections reloaded successfully after applying all suggestions"
+            );
           }
         } catch (reloadError) {
           console.error("Error reloading CV data:", reloadError);
@@ -172,11 +188,12 @@ export default function ATSOptimizationPanel({
       }
 
       // Update applied suggestions in local state
-      const appliedSuggestionIds = result.appliedSuggestions || 
-        unappliedSuggestions.map(s => s.suggestion_id);
-      
-      setSuggestions(prevSuggestions => 
-        prevSuggestions.map(s => 
+      const appliedSuggestionIds =
+        result.appliedSuggestions ||
+        unappliedSuggestions.map((s) => s.suggestion_id);
+
+      setSuggestions((prevSuggestions) =>
+        prevSuggestions.map((s) =>
           appliedSuggestionIds.includes(s.suggestion_id)
             ? { ...s, is_applied: true, applied_at: new Date().toISOString() }
             : s
@@ -186,12 +203,12 @@ export default function ATSOptimizationPanel({
       const failedCount = result.failedCount || 0;
       if (failedCount > 0) {
         showSuccessToast(
-          `Đã áp dụng thành công ${result.appliedCount}/${result.appliedCount + failedCount} gợi ý`
+          `Đã áp dụng thành công ${result.appliedCount}/${
+            result.appliedCount + failedCount
+          } gợi ý`
         );
       } else {
-        showSuccessToast(
-          `Đã áp dụng thành công ${result.appliedCount} gợi ý!`
-        );
+        showSuccessToast(t("editor.review.applyAllSuccess"));
       }
     } catch (error) {
       console.error("Error applying all suggestions:", error);
@@ -208,7 +225,7 @@ export default function ATSOptimizationPanel({
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2 text-sm text-gray-600">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
-            {t('editor.review.loadingSuggestions')}
+            {t("editor.review.loadingSuggestions")}
           </div>
         </div>
       </div>
@@ -256,7 +273,11 @@ export default function ATSOptimizationPanel({
         </div>
       )}
 
-      <div className="space-y-3" role="list" aria-label="Optimization suggestions">
+      <div
+        className="space-y-3"
+        role="list"
+        aria-label="Optimization suggestions"
+      >
         {suggestions.map((suggestion) => (
           <SuggestionItem
             key={suggestion.id}

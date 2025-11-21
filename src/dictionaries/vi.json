@@ -125,7 +125,15 @@
     "exportCV": "Xuất CV",
     "confirmDelete": "Bạn có chắc chắn muốn xóa CV này?",
     "deleteSuccess": "Xóa CV thành công",
-    "deleteFailed": "Không thể xóa CV"
+    "deleteFailed": "Không thể xóa CV",
+    "copyLinkSuccess": "Đã sao chép liên kết!",
+    "duplicateSuccess": "Đã tạo bản sao CV!",
+    "renameSuccess": "Đã đổi tên CV!"
+  },
+  "cv": {
+    "export": {
+      "copySuccess": "Đã sao chép CV vào clipboard!"
+    }
   },
   "wizard": {
     "title": "Tạo CV của bạn",
@@ -441,6 +449,7 @@
       "improve": "Cải thiện bằng AI",
       "improving": "Đang cải thiện...",
       "improveSuccess": "Đã cải thiện mô tả thành công!",
+      "generateSuccess": "Đã tạo mô tả kinh nghiệm thành công!",
       "remove": "Xóa",
       "companyPlaceholder": "Tên công ty",
       "jobTitlePlaceholder": "Tên vị trí",
@@ -485,7 +494,7 @@
       "url": "Link dự án",
       "improve": "Cải thiện bằng AI",
       "improving": "Đang cải thiện...",
-      "improveSuccess": "Đã cải thiện mô tả thành công!",
+      "improveSuccess": "Đã cải thiện mô tả dự án thành công!",
       "remove": "Xóa",
       "namePlaceholder": "Tên dự án",
       "rolePlaceholder": "Vai trò của bạn",
@@ -508,6 +517,9 @@
       "applyAll": "Áp dụng tất cả",
       "applying": "Đang áp dụng...",
       "noSuggestions": "Không có gợi ý nào. Hãy thêm JD trước.",
+      "extractFromJD": "Trích xuất từ JD",
+      "extractSuccess": "Đã trích xuất kỹ năng từ JD thành công!",
+      "noNewSkills": "Không tìm thấy kỹ năng mới để thêm.",
       "skillPlaceholder": "VD: JavaScript, Leadership",
       "technicalSkillPlaceholder": "VD: JavaScript, Python, Photoshop",
       "softSkillPlaceholder": "VD: Giao tiếp, Làm việc nhóm, Tư duy phản biện",
@@ -566,7 +578,31 @@
       "extractedKeywords": "Từ khóa được trích xuất:",
       "successMessage": "Các từ khóa này sẽ được sử dụng để tối ưu hóa CV của bạn. Bạn có thể tiếp tục với bước tiếp theo.",
       "nextStep": "Tiếp theo: Thông tin cá nhân →",
-      "close": "Đóng"
+      "close": "Đóng",
+      "modeToggle": {
+        "hasJD": "Có JD",
+        "noJD": "Chưa có JD"
+      },
+      "genericMode": {
+        "title": "Tạo CV theo vị trí mục tiêu",
+        "description": "Nhập vị trí và cấp độ kinh nghiệm, AI sẽ tạo khung năng lực chuẩn ngành cho bạn.",
+        "jobTitle": "Vị trí muốn ứng tuyển",
+        "jobTitlePlaceholder": "VD: Business Analyst, ReactJS Developer, Marketing Manager",
+        "level": "Cấp độ kinh nghiệm",
+        "levels": {
+          "intern": "Thực tập sinh",
+          "fresher": "Mới tốt nghiệp (0-1 năm)",
+          "junior": "Junior (1-3 năm)",
+          "midLevel": "Mid-level (3-5 năm)",
+          "senior": "Senior (5+ năm)",
+          "manager": "Quản lý"
+        },
+        "generateFramework": "Tạo khung năng lực chuẩn",
+        "generating": "Đang tạo khung...",
+        "generateSuccess": "Đã tạo khung năng lực thành công!",
+        "generateError": "Lỗi tạo khung năng lực",
+        "infoNote": "💡 Chế độ này phù hợp khi bạn chưa có JD cụ thể. AI sẽ tạo bộ từ khóa và kỹ năng chuẩn ngành dựa trên vị trí và cấp độ của bạn."
+      }
     },
     "review": {
       "title": "Xem lại CV",
@@ -591,6 +627,9 @@
       "matchedKeywords": "Từ khóa đã khớp",
       "missingKeywords": "Từ khóa còn thiếu",
       "loadingSuggestions": "Đang tải gợi ý...",
+      "applySuggestionSuccess": "Gợi ý đã được áp dụng thành công!",
+      "noSuggestions": "Không có gợi ý nào để áp dụng",
+      "applyAllSuccess": "Đã áp dụng tất cả gợi ý thành công!",
       "tooltips": {
         "keywordMatch": "Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) xuất hiện trong CV của bạn. Điểm cao hơn giúp CV vượt qua hệ thống ATS dễ dàng hơn.",
         "completeness": "Đánh giá mức độ đầy đủ của CV: có đủ các phần quan trọng (kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể và độ dài phù hợp.",

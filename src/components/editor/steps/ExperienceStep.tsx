@@ -142,10 +142,9 @@ export default function ExperienceStep() {
     value: string
   ) => {
     const updatedExperience = [...experience];
-    const achievements = getArrayValue(
-      updatedExperience[expIndex],
-      "achievements"
-    );
+    const achievements = [
+      ...getArrayValue(updatedExperience[expIndex], "achievements"),
+    ];
     achievements[achIndex] = value;
     updatedExperience[expIndex] = {
       ...updatedExperience[expIndex],
@@ -173,13 +172,14 @@ export default function ExperienceStep() {
           context: experience[expIndex],
           jdKeywords: state.cvData?.jd_analysis?.keywords,
           language: state.cvData?.language || "vi",
+          mode: state.cvData?.jd_analysis?.mode || "real",
         },
         undefined,
         state.cvData?.language || "vi"
       );
 
       updateAchievement(expIndex, achIndex, result.improvedBullet);
-      showSuccessToast("Đã cải thiện mô tả thành công!");
+      showSuccessToast(t("editor.experience.improveSuccess"));
     } catch (error) {
       console.error("Error improving achievement:", error);
       const appError = handleAPIError(error, "improve bullet", locale);
@@ -211,13 +211,15 @@ export default function ExperienceStep() {
           jdKeywords: state.cvData?.jd_analysis?.keywords || [],
           experienceLevel: "Mid-level", // Could be determined from other data
           language: state.cvData?.language || "vi",
+          mode: state.cvData?.jd_analysis?.mode || "real",
+          currentDescription: exp.description || "", // Pass existing description for improvement
         },
         undefined,
         state.cvData?.language
       );
 
       updateExperience(expIndex, "achievements", result.achievements);
-      showSuccessToast("Đã tạo mô tả kinh nghiệm thành công!");
+      showSuccessToast(t("editor.experience.generateSuccess"));
     } catch (error) {
       console.error("Error writing experience with AI:", error);
       const appError = handleAPIError(error, "write experience", "vi");

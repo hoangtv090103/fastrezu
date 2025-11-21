@@ -18,14 +18,32 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { jobTitle, company, jdKeywords, experienceLevel, language } = validation.data;
+    const { jobTitle, company, jdKeywords, experienceLevel, language, mode, currentDescription } = validation.data;
 
-    // Get system prompt based on language
-    const systemPrompt = getSystemPrompt('write_experience', language as CVLanguage)
+    // Get system prompt based on language and mode
+    const promptName = mode === 'shadow' ? 'write_experience_generic' : 'write_experience';
+    const systemPrompt = getSystemPrompt(promptName, language as CVLanguage);
 
     // Get user message template based on language
     const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
-    const userMessage = userMessageTemplates.write_experience(jobTitle, company || '', jdKeywords, experienceLevel || '');
+    
+    let userMessage;
+    if (mode === 'shadow') {
+      userMessage = userMessageTemplates.write_experience_generic(
+        jobTitle, 
+        company || '', 
+        currentDescription || '', 
+        jdKeywords, 
+        experienceLevel || ''
+      );
+    } else {
+      userMessage = userMessageTemplates.write_experience(
+        jobTitle, 
+        company || '', 
+        jdKeywords, 
+        experienceLevel || ''
+      );
+    }
 
     // Call OpenAI API
     let result;

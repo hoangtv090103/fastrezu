@@ -67,7 +67,7 @@ export default function SummaryStep() {
       );
 
       handleInputChange(result.summary);
-      showSuccessToast("Đã tạo tóm tắt nghề nghiệp thành công!");
+      showSuccessToast(t("editor.summary.generateSuccess"));
     } catch (error) {
       console.error("Error generating summary:", error);
       const appError = handleAPIError(error, "generate summary", "vi");

@@ -185,6 +185,7 @@ export default function ReviewStep() {
           cvData: state.cvData,
           jdKeywords: state.cvData.jd_analysis?.keywords || [],
           language: state.cvData?.language || "vi",
+          mode: state.cvData.jd_analysis?.mode || "real",
         },
         scoreRetryConfig,
         "vi"

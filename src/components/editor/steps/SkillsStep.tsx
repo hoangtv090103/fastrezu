@@ -96,9 +96,9 @@ export default function SkillsStep() {
           technical: [...skills.technical, ...newTechnicalSkills],
           soft: [...skills.soft, ...newSoftSkills],
         });
-        showSuccessToast("Đã trích xuất kỹ năng từ JD thành công!");
+        showSuccessToast(t("editor.skills.extractSuccess"));
       } else {
-        showSuccessToast("Không tìm thấy kỹ năng mới để thêm.");
+        showSuccessToast(t("editor.skills.noNewSkills"));
       }
     } catch (error) {
       console.error("Error extracting skills:", error);
