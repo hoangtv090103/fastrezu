@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     // Get JD analyses for this CV
     const { data: jdAnalyses, error: jdError } = await supabase
       .from('jd_analyses')
-      .select('id, jd_text, keywords_extracted, analysis_result, created_at, mode')
+      .select('id, jd_text, keywords_extracted, analysis_result, created_at, mode, shadow_job_title, shadow_level')
       .eq('cv_id', cvId)
       .order('created_at', { ascending: false })
 
