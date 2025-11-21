@@ -289,6 +289,11 @@ export default function JDAnalysisStep() {
                           )}{" "}
                           • {savedJD.keywords.length}{" "}
                           {t("editor.jdAnalysis.keywords")}
+                          {savedJD.mode === "shadow" && (
+                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                              Shadow JD
+                            </span>
+                          )}
                         </p>
                       </div>
                       <div className="flex items-center space-x-1 sm:space-x-2 ml-2 sm:ml-3">

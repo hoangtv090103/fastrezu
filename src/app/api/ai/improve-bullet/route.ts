@@ -18,14 +18,17 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { bulletPoint, context: _context, jdKeywords: _jdKeywords, language } = validation.data;
+    const { bulletPoint, context: _context, jdKeywords: _jdKeywords, language, mode } = validation.data;
 
-    // Get system prompt based on language
-    const systemPrompt = getSystemPrompt('improve_bullet', language as CVLanguage);
+    // Get system prompt based on language and mode
+    const promptType = mode === 'shadow' ? 'improve_bullet_generic' : 'improve_bullet';
+    const systemPrompt = getSystemPrompt(promptType, language as CVLanguage);
 
     // Get user message template based on language
     const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
-    const userMessage = userMessageTemplates.improve_bullet(bulletPoint, _context || {}, _jdKeywords || []);
+    const userMessage = mode === 'shadow' 
+      ? userMessageTemplates.improve_bullet_generic(bulletPoint, _context || {}, _jdKeywords || [])
+      : userMessageTemplates.improve_bullet(bulletPoint, _context || {}, _jdKeywords || []);
 
     // Call AI API
     let result;

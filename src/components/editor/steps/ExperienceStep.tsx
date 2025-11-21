@@ -142,10 +142,9 @@ export default function ExperienceStep() {
     value: string
   ) => {
     const updatedExperience = [...experience];
-    const achievements = getArrayValue(
-      updatedExperience[expIndex],
-      "achievements"
-    );
+    const achievements = [
+      ...getArrayValue(updatedExperience[expIndex], "achievements"),
+    ];
     achievements[achIndex] = value;
     updatedExperience[expIndex] = {
       ...updatedExperience[expIndex],

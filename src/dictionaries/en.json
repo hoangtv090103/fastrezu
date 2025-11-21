@@ -568,8 +568,8 @@
       "nextStep": "Next: Personal Info →",
       "close": "Close",
       "modeToggle": {
-        "hasJD": "Have Specific JD",
-        "noJD": "No JD Yet"
+        "hasJD": "With JD",
+        "noJD": "Without JD"
       },
       "genericMode": {
         "title": "Create CV by Target Position",

@@ -568,7 +568,7 @@
       "nextStep": "Tiếp theo: Thông tin cá nhân →",
       "close": "Đóng",
       "modeToggle": {
-        "hasJD": "Có JD cụ thể",
+        "hasJD": "Có JD",
         "noJD": "Chưa có JD"
       },
       "genericMode": {

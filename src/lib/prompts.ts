@@ -620,7 +620,7 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 
 **Example Transformation:**
 * **Input (raw):** "I worked as sales staff at clothing shop, often advise customers."
-* **Output (polished):** "Consulted and assisted customers in selecting appropriate apparel, maintained positive shopping experience, and ensured merchandise display met brand standards."
+* **Output (polished): "Consulted and assisted customers in selecting appropriate apparel, maintained positive shopping experience, and ensured merchandise display met brand standards."
 
 You MUST output *only* a valid JSON object with the following structure. Do not include explanations.
 
@@ -631,6 +631,31 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
     // ... 5-7 bullet points
   ]
 }`,
+  },
+
+  improve_bullet_generic: {
+    vi: `Bạn là FastRezu AI, chuyên gia tối ưu hóa CV. Nhiệm vụ của bạn là cải thiện một gạch đầu dòng (bullet point) trong phần kinh nghiệm làm việc.
+
+**LƯU Ý QUAN TRỌNG (Generic Mode):**
+1. **KHÔNG BỊA SỐ LIỆU:** Nếu người dùng không cung cấp số liệu cụ thể, TUYỆT ĐỐI KHÔNG tự thêm vào.
+2. **CHỈ POLISH NGÔN NGỮ:** Tập trung vào việc sử dụng từ ngữ chuyên nghiệp, thuật ngữ ngành chuẩn và động từ hành động mạnh.
+3. **GIỮ NGUYÊN Ý NGHĨA:** Không thay đổi ý nghĩa gốc của nội dung.
+
+Bạn PHẢI trả về JSON object hợp lệ với cấu trúc sau:
+{
+  "improvedBullet": "<string> Bullet point đã được cải thiện bằng tiếng Việt"
+}`,
+    en: `You are FastRezu AI, a CV optimization expert. Your task is to improve a single bullet point in the work experience section.
+
+**CRITICAL CONSTRAINTS (Generic Mode):**
+1. **DO NOT FABRICATE METRICS:** If the user does not provide specific numbers, ABSOLUTELY DO NOT add them.
+2. **ONLY POLISH LANGUAGE:** Focus on using professional wording, industry terminology, and strong action verbs.
+3. **PRESERVE MEANING:** Do not change the original meaning of the content.
+
+You MUST output *only* a valid JSON object with the following structure:
+{
+  "improvedBullet": "<string> Improved bullet point in English"
+}`
   },
 
   score_cv_generic: {
@@ -857,6 +882,22 @@ ${JSON.stringify(context)}
 ${JSON.stringify(jdKeywords)}
 
 Hãy trả về JSON chỉ chứa bullet point đã cải thiện.`,
+      improve_bullet_generic: (
+        bulletPoint: string,
+        context: Record<string, unknown>,
+        shadowKeywords: string[]
+      ) => `Hãy cải thiện bullet point sau (Generic Mode - không bịa số liệu):
+
+Bullet point gốc:
+"${bulletPoint}"
+
+(Tùy chọn) Bối cảnh:
+${JSON.stringify(context)}
+
+(Tùy chọn) Từ khóa ngành chuẩn:
+${JSON.stringify(shadowKeywords)}
+
+Hãy trả về JSON chỉ chứa bullet point đã cải thiện.`,
       generate_shadow_jd: (
         jobTitle: string,
         level: string
@@ -970,6 +1011,22 @@ ${JSON.stringify(context)}
 
 (Optional) JD Keywords:
 ${JSON.stringify(jdKeywords)}
+
+Please return JSON containing only the improved bullet point.`,
+      improve_bullet_generic: (
+        bulletPoint: string,
+        context: Record<string, unknown>,
+        shadowKeywords: string[]
+      ) => `Please rewrite the following bullet point in English (Generic Mode - do not fabricate metrics):
+
+Original bullet point:
+"${bulletPoint}"
+
+(Optional) Context:
+${JSON.stringify(context)}
+
+(Optional) Shadow Keywords:
+${JSON.stringify(shadowKeywords)}
 
 Please return JSON containing only the improved bullet point.`,
       generate_shadow_jd: (
