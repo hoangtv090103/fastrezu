@@ -11,7 +11,7 @@ import ValidationMessage from "@/components/ui/ValidationMessage";
 import { validateCVLength, type CVData } from "@/lib/validation";
 import { apiPost, type RetryConfig } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";
-import { showErrorToast } from "@/lib/toast-utils";
+import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 import { getTooltipContent } from "@/lib/tooltip-content";
 
 interface StructuredSuggestion {
@@ -324,6 +324,21 @@ export default function ReviewStep() {
     return "bg-red-100";
   };
 
+  // Detect mode for conditional rendering
+  const mode = state.cvData?.jd_analysis?.mode || "real";
+  const isShadowMode = mode === "shadow";
+
+  // Copy keyword to clipboard
+  const handleCopyKeyword = async (keyword: string) => {
+    try {
+      await navigator.clipboard.writeText(keyword);
+      showSuccessToast(t("editor.review.keywordCopied"));
+    } catch (error) {
+      console.error("Failed to copy keyword:", error);
+      showErrorToast("Failed to copy keyword");
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-4 sm:mb-6">
@@ -355,9 +370,23 @@ export default function ReviewStep() {
         {/* Scoring Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-medium text-gray-900">
-              {t("editor.review.atsScore")}
-            </h4>
+            <div className="flex items-center gap-2">
+              <h4 className="text-lg font-medium text-gray-900">
+                {isShadowMode
+                  ? t("editor.review.profileStrength")
+                  : t("editor.review.atsScore")}
+              </h4>
+              {isShadowMode && (
+                <InfoTooltip
+                  id="profile-strength-tooltip"
+                  title={t("editor.review.profileStrength")}
+                  content={t("editor.review.profileStrengthTooltip")}
+                  placement="right"
+                  icon="info"
+                  dismissible={true}
+                />
+              )}
+            </div>
             <AIAssistButton
               onClick={handleScoreCV}
               loading={isScoring}
@@ -406,24 +435,30 @@ export default function ReviewStep() {
 
               {/* Analysis Breakdown */}
               <div className="grid grid-cols-2 gap-2 sm:gap-4">
-                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-blue-600">
-                    {Math.round(scoringResult.analysis?.keyword_match || 0)}%
-                  </div>
-                  <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">
-                      {t("editor.review.keywordMatch")}
+                {/* Keyword Match - hide in Shadow Mode if 0% */}
+                {(!isShadowMode ||
+                  (isShadowMode &&
+                    scoringResult.analysis?.keyword_match > 0)) && (
+                  <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-blue-600">
+                      {Math.round(scoringResult.analysis?.keyword_match || 0)}%
                     </div>
-                    <InfoTooltip
-                      id="keyword-match-tooltip"
-                      title={t("editor.review.keywordMatch")}
-                      content={t("editor.review.tooltips.keywordMatch")}
-                      placement="bottom"
-                      icon="info"
-                      dismissible={true}
-                    />
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="text-xs text-gray-600">
+                        {t("editor.review.keywordMatch")}
+                      </div>
+                      <InfoTooltip
+                        id="keyword-match-tooltip"
+                        title={t("editor.review.keywordMatch")}
+                        content={t("editor.review.tooltips.keywordMatch")}
+                        placement="bottom"
+                        icon="info"
+                        dismissible={true}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
+                {/* Completeness - always show */}
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-green-600">
                     {Math.round(scoringResult.analysis?.completeness || 0)}%
@@ -442,6 +477,7 @@ export default function ReviewStep() {
                     />
                   </div>
                 </div>
+                {/* Formatting - always show */}
                 <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
                   <div className="text-lg sm:text-2xl font-bold text-yellow-600">
                     {Math.round(scoringResult.analysis?.formatting || 0)}%
@@ -460,24 +496,28 @@ export default function ReviewStep() {
                     />
                   </div>
                 </div>
-                <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
-                  <div className="text-lg sm:text-2xl font-bold text-orange-600">
-                    {Math.round(scoringResult.analysis?.relevance || 0)}%
-                  </div>
-                  <div className="flex items-center justify-center gap-1">
-                    <div className="text-xs text-gray-600">
-                      {t("editor.review.relevance")}
+                {/* Relevance - hide in Shadow Mode if 0% */}
+                {(!isShadowMode ||
+                  (isShadowMode && scoringResult.analysis?.relevance > 0)) && (
+                  <div className="text-center p-2 sm:p-3 bg-gray-50 rounded-lg">
+                    <div className="text-lg sm:text-2xl font-bold text-orange-600">
+                      {Math.round(scoringResult.analysis?.relevance || 0)}%
                     </div>
-                    <InfoTooltip
-                      id="relevance-tooltip"
-                      title={t("editor.review.relevance")}
-                      content={t("editor.review.tooltips.relevance")}
-                      placement="bottom"
-                      icon="info"
-                      dismissible={true}
-                    />
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="text-xs text-gray-600">
+                        {t("editor.review.relevance")}
+                      </div>
+                      <InfoTooltip
+                        id="relevance-tooltip"
+                        title={t("editor.review.relevance")}
+                        content={t("editor.review.tooltips.relevance")}
+                        placement="bottom"
+                        icon="info"
+                        dismissible={true}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Keywords Analysis */}
@@ -513,12 +553,14 @@ export default function ReviewStep() {
                     <div className="flex flex-wrap gap-2">
                       {scoringResult.missingKeywords.map(
                         (keyword: string, index: number) => (
-                          <span
+                          <button
                             key={index}
-                            className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full"
+                            onClick={() => handleCopyKeyword(keyword)}
+                            className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full hover:bg-red-200 cursor-pointer transition-colors"
+                            title="Click to copy"
                           >
                             {keyword}
-                          </span>
+                          </button>
                         )
                       )}
                     </div>

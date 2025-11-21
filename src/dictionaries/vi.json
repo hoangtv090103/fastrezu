@@ -630,6 +630,9 @@
       "applySuggestionSuccess": "Gợi ý đã được áp dụng thành công!",
       "noSuggestions": "Không có gợi ý nào để áp dụng",
       "applyAllSuccess": "Đã áp dụng tất cả gợi ý thành công!",
+      "profileStrength": "Điểm mạnh của hồ sơ",
+      "profileStrengthTooltip": "Điểm số dựa trên độ hoàn thiện và chuẩn mực của ngành, không so sánh với JD cụ thể.",
+      "keywordCopied": "Đã sao chép từ khóa!",
       "tooltips": {
         "keywordMatch": "Tỷ lệ phần trăm từ khóa trong mô tả công việc (JD) xuất hiện trong CV của bạn. Điểm cao hơn giúp CV vượt qua hệ thống ATS dễ dàng hơn.",
         "completeness": "Đánh giá mức độ đầy đủ của CV: có đủ các phần quan trọng (kinh nghiệm, học vấn, kỹ năng), nội dung chi tiết với số liệu cụ thể và độ dài phù hợp.",
