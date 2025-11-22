@@ -228,8 +228,29 @@ export async function POST(request: NextRequest) {
           updatedData = sectionData?.data || { content: '' };
         }
       } else {
-        // Replace entire section for other section types
-        updatedData = validatedSuggestion.suggested_content;
+        // Handle array sections when target_index is null (e.g. adding new item or replacing list)
+        const arraySections = ['experience', 'education', 'projects', 'certifications'];
+        
+        if (arraySections.includes(validatedSuggestion.target_section)) {
+          const suggestedContent = validatedSuggestion.suggested_content;
+          
+          if (Array.isArray(suggestedContent)) {
+            // If suggestion is an array, replace the whole list
+            updatedData = suggestedContent;
+          } else if (suggestedContent && typeof suggestedContent === 'object') {
+            // If suggestion is a single object, check if we should append or replace
+            // For now, if the section is empty, we create a new array with this item
+            // If not empty, we append it (safest assumption for "add" suggestions)
+            const currentData = (sectionData?.data as unknown[]) || [];
+            updatedData = [...currentData, suggestedContent];
+          } else {
+             // Fallback
+             updatedData = [];
+          }
+        } else {
+          // Replace entire section for other section types
+          updatedData = validatedSuggestion.suggested_content;
+        }
       }
     }
 
