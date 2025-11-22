@@ -4,33 +4,33 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  
+
   /* Color Palette - Tuân theo design system */
   /* Primary - Xanh lam đậm (blue-600) */
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
   --color-primary-light: #3b82f6;
-  
+
   /* Accent - Xanh lục (green-500) */
   --color-accent: #22c55e;
   --color-accent-hover: #16a34a;
   --color-accent-light: #10b981;
-  
+
   /* Text Colors */
   --color-text-primary: #111827; /* gray-900 */
   --color-text-body: #374151; /* gray-700 */
   --color-text-secondary: #6b7280; /* gray-500 */
-  
+
   /* Background Colors */
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f9fafb; /* gray-50 */
   --color-bg-panel: #f3f4f6; /* gray-100 */
-  
+
   /* System Colors */
   --color-error: #ef4444; /* red-500 */
   --color-warning: #eab308; /* yellow-500 */
   --color-success: #22c55e; /* green-500 */
-  
+
   /* Border Colors */
   --color-border-light: #e5e7eb; /* gray-200 */
   --color-border-default: #d1d5db; /* gray-300 */
@@ -176,6 +176,22 @@ body {
   animation: pulse 2s infinite;
 }
 
+@keyframes bounceSmall {
+  0%,
+  100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-bounce-small {
+  animation: bounceSmall 2s infinite;
+}
+
 /* Custom button hover effects */
 .btn-primary {
   @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl;
@@ -213,13 +229,13 @@ body {
 
 /* Hide scrollbar for CV preview cards */
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-  overflow: auto;  /* Ensure scrolling still works */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  overflow: auto; /* Ensure scrolling still works */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none; /* Chrome, Safari, Opera */
 }
 
 /* Additional hiding for nested elements */
@@ -238,7 +254,8 @@ a,
 input,
 textarea,
 select {
-  transition-property: color, background-color, border-color, transform, box-shadow, opacity;
+  transition-property: color, background-color, border-color, transform,
+    box-shadow, opacity;
   transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
