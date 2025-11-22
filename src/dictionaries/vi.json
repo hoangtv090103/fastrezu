@@ -479,7 +479,9 @@
       "achievementPlaceholder": "Mô tả thành tích...",
       "graduationDateInvalid": "Năm tốt nghiệp không hợp lệ",
       "graduationDateFuture": "Năm tốt nghiệp không thể quá xa trong tương lai",
-      "graduationDatePast": "Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)"
+      "graduationDatePast": "Năm tốt nghiệp không hợp lệ (quá xa trong quá khứ)",
+      "relevantCoursework": "Môn học liên quan",
+      "relevantCourseworkPlaceholder": "VD: Cấu trúc dữ liệu, Giải thuật, Cơ sở dữ liệu..."
     },
     "projects": {
       "title": "Dự án",

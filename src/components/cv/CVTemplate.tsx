@@ -34,6 +34,7 @@ const getTemplateLabels = (language: "vi" | "en") => {
       certificationName: "Tên chứng chỉ",
       issueDate: "Ngày cấp",
       issuingOrganization: "Tổ chức cấp",
+      relevantCoursework: "Môn học liên quan",
     },
     en: {
       fullName: "Full Name",
@@ -59,6 +60,7 @@ const getTemplateLabels = (language: "vi" | "en") => {
       certificationName: "Certification Name",
       issueDate: "Issue Date",
       issuingOrganization: "Issuing Organization",
+      relevantCoursework: "Relevant Coursework",
     },
   };
 
@@ -317,6 +319,7 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
               </div>
               {(renderValue(edu.field_of_study) ||
                 renderValue(edu.gpa) ||
+                renderValue(edu.relevant_coursework) ||
                 renderValue(edu.activities)) && (
                 <ul className="space-y-1 mt-2" style={{ fontSize: "10pt" }}>
                   {renderValue(edu.gpa) && (
@@ -327,13 +330,24 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
                       </span>
                     </li>
                   )}
+                  {renderValue(edu.relevant_coursework) && (
+                    <li className="flex items-start">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                      <span className="text-gray-700 leading-relaxed">
+                        <span className="font-semibold">
+                          {labels.relevantCoursework}:{" "}
+                        </span>
+                        {renderValue(edu.relevant_coursework)}
+                      </span>
+                    </li>
+                  )}
                   {/* Activities */}
                   {(() => {
                     const activityList = Array.isArray(edu.activities)
                       ? edu.activities
                       : typeof edu.activities === "string" && edu.activities
-                        ? [edu.activities]
-                        : [];
+                      ? [edu.activities]
+                      : [];
 
                     return activityList.length > 0
                       ? activityList.map(
