@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     // 2. Get Prompt
     // We need to access the prompt directly since getSystemPrompt might not handle the replacement logic we want here
     // or we can just use the string from SYSTEM_PROMPTS and replace {userInput}
-    let systemPrompt = SYSTEM_PROMPTS.rewrite_text[lang as CVLanguage];
     
     // The prompt in prompts.ts has {userInput} placeholder, but usually we pass user input as the user message.
     // However, the prompt structure in prompts.ts seems to include "Input: "{userInput}"" inside the system prompt?
