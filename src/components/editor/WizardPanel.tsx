@@ -23,17 +23,20 @@ import { showErrorToast } from "@/lib/toast-utils";
 import { trackWizardStepCompleted } from "@/lib/analytics";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase-client";
+import AutoSaveIndicator from "@/components/editor/AutoSaveIndicator";
 
 type ValidationFunction =
   | ((data: Record<string, unknown>, language: "vi" | "en") => boolean)
   | ((data: Record<string, unknown>[], language: "vi" | "en") => boolean);
 
 export default function WizardPanel() {
-  const { state, setCurrentStep } = useCVEditor();
+  const { state, setCurrentStep, updateTitle } = useCVEditor();
   const { t } = useTranslation();
   const stepStartTimeRef = useRef<number>(Date.now());
   const previousStepRef = useRef<number>(state.currentStep);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [tempTitle, setTempTitle] = useState("");
 
   const STEPS = useMemo(
     () => [
@@ -153,6 +156,35 @@ export default function WizardPanel() {
     previousStepRef.current = currentStep;
   }, [state.currentStep, state.cvData?.id, userId, STEPS]);
 
+  const handleTitleEdit = () => {
+    setTempTitle(state.cvData?.title || "");
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = async () => {
+    if (tempTitle.trim()) {
+      try {
+        await updateTitle(tempTitle.trim());
+        setIsEditingTitle(false);
+      } catch (error) {
+        console.error("Failed to update CV title:", error);
+      }
+    }
+  };
+
+  const handleTitleCancel = () => {
+    setIsEditingTitle(false);
+    setTempTitle("");
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleTitleSave();
+    } else if (e.key === "Escape") {
+      handleTitleCancel();
+    }
+  };
+
   const handleStepChange = (step: number) => {
     // If moving forward, validate current step
     if (step > state.currentStep) {
@@ -249,9 +281,85 @@ export default function WizardPanel() {
     <div className="h-full flex flex-col">
       {/* Progress Header */}
       <div className="p-4 sm:p-6 border-b border-gray-200">
-        <h2 className="heading-feature text-base sm:text-lg text-gray-900 mb-3 sm:mb-4">
-          {t("editor.wizard.title")}
-        </h2>
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          {isEditingTitle ? (
+            <div className="flex items-center space-x-2 flex-1 mr-4">
+              <input
+                type="text"
+                value={tempTitle}
+                onChange={(e) => setTempTitle(e.target.value)}
+                onKeyDown={handleTitleKeyDown}
+                className="heading-feature text-base sm:text-lg text-gray-900 bg-white border border-gray-300 rounded px-2 py-1 w-full placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors duration-200"
+                placeholder={t("editor.layout.titlePlaceholder")}
+                autoFocus
+              />
+              <button
+                onClick={handleTitleSave}
+                className="text-green-600 hover:text-green-800 p-1 shrink-0"
+                title={t("editor.layout.saveTitle")}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={handleTitleCancel}
+                className="text-red-600 hover:text-red-800 p-1 shrink-0"
+                title={t("editor.layout.cancelTitle")}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2 flex-1 mr-4 overflow-hidden">
+              <h2 className="heading-feature text-base sm:text-lg text-gray-900 truncate">
+                {state.cvData?.title || "CV Editor"}
+              </h2>
+              <button
+                onClick={handleTitleEdit}
+                className="text-gray-400 hover:text-gray-600 p-1 shrink-0"
+                title={t("editor.layout.editTitle")}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+          <AutoSaveIndicator />
+        </div>
         <StepNavigation
           currentStep={state.currentStep}
           totalSteps={STEPS.length}

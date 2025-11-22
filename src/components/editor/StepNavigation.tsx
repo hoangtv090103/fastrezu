@@ -60,11 +60,11 @@ export default function StepNavigation({
         ref={containerRef}
         className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
       >
-        <div className="flex gap-1 sm:gap-2 min-w-min px-0">
+        <div className="flex gap-1 sm:gap-1 min-w-min px-0">
           {steps.map((step) => (
             <div
               key={step}
-              className="flex flex-col items-center gap-1 sm:gap-1.5 shrink-0 w-14 sm:w-20"
+              className="flex flex-col items-center gap-1 sm:gap-1.5 shrink-0 w-14 sm:w-16"
             >
               {/* Step Button */}
               <button
