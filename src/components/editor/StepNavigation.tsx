@@ -46,7 +46,7 @@ export default function StepNavigation({
   }, [currentStep]);
 
   return (
-    <div className="space-y-2 sm:space-y-3">
+    <div className="space-y-1 sm:space-y-2">
       {/* Progress Bar */}
       <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
         <div
@@ -58,13 +58,13 @@ export default function StepNavigation({
       {/* Step Indicators and Labels Combined - with horizontal scroll */}
       <div
         ref={containerRef}
-        className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 p-1"
       >
         <div className="flex gap-1 sm:gap-1 min-w-min px-0">
           {steps.map((step) => (
             <div
               key={step}
-              className="flex flex-col items-center gap-1 sm:gap-1.5 shrink-0 w-14 sm:w-16"
+              className="flex flex-col items-center gap-0.5 sm:gap-1 shrink-0 w-14 sm:w-16"
             >
               {/* Step Button */}
               <button
