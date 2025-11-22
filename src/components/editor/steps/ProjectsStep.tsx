@@ -124,22 +124,20 @@ export default function ProjectsStep() {
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
 
     try {
-      const { improvedBullet } = await apiPost<{ improvedBullet: string }>(
-        "/api/ai/improve-bullet",
+      const result = await apiPost<{ result: string }>(
+        "/api/ai/rewrite-text",
         {
-          bulletPoint: achievement,
-          context: projects[projIndex],
-          jdKeywords: state.cvData?.jd_analysis?.keywords,
+          text: achievement,
           language: state.cvData?.language || "vi",
         },
         undefined,
-        "vi"
+        state.cvData?.language || "vi"
       );
-      updateAchievement(projIndex, achIndex, improvedBullet);
+      updateAchievement(projIndex, achIndex, result.result);
       showSuccessToast(t("editor.projects.improveSuccess"));
     } catch (error) {
       console.error("Error improving achievement:", error);
-      const appError = handleAPIError(error, "improve bullet", "vi");
+      const appError = handleAPIError(error, "rewrite text", "vi");
       showErrorToast(appError, "vi");
     } finally {
       setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
@@ -248,22 +246,22 @@ export default function ProjectsStep() {
                         key={achIndex}
                         className="flex flex-col sm:flex-row items-stretch gap-2"
                       >
-                        <textarea
-                          value={achievement}
-                          onChange={(e) =>
-                            updateAchievement(
-                              projIndex,
-                              achIndex,
-                              e.target.value
-                            )
-                          }
-                          placeholder={t(
-                            "editor.experience.achievementPlaceholder"
-                          )}
-                          rows={2}
-                          className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
-                        />
-                        <div className="flex items-start gap-2 sm:flex-col sm:justify-start">
+                        <div className="relative flex-1">
+                          <textarea
+                            value={achievement}
+                            onChange={(e) =>
+                              updateAchievement(
+                                projIndex,
+                                achIndex,
+                                e.target.value
+                              )
+                            }
+                            placeholder={t(
+                              "editor.experience.achievementPlaceholder"
+                            )}
+                            rows={2}
+                            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 resize-none"
+                          />
                           <button
                             onClick={() =>
                               handleImproveAchievement(projIndex, achIndex)
@@ -272,36 +270,36 @@ export default function ProjectsStep() {
                               !achievement.trim() ||
                               loadingStates[`improve-${projIndex}-${achIndex}`]
                             }
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-xs font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap"
-                            title="Cải thiện với AI"
+                            className="absolute right-2 bottom-2 p-1.5 text-purple-600 hover:bg-purple-50 rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            title={t("editor.experience.improve")}
                           >
                             {loadingStates[
                               `improve-${projIndex}-${achIndex}`
                             ] ? (
-                              <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
                             ) : (
-                              <>
-                                <svg
-                                  className="w-3.5 h-3.5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                                  />
-                                </svg>
-                              </>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                                />
+                              </svg>
                             )}
                           </button>
+                        </div>
+                        <div className="flex items-center gap-2 sm:flex-col sm:justify-center">
                           <button
                             onClick={() =>
                               removeAchievement(projIndex, achIndex)
                             }
-                            className="inline-flex items-center justify-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                            className="inline-flex items-center justify-center px-3 py-2 text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors duration-200"
                             title="Xóa"
                           >
                             <svg

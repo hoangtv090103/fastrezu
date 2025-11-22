@@ -808,6 +808,32 @@ You MUST output *only* a valid JSON object:
   ]
 }`,
   },
+
+  rewrite_text: {
+    vi: `Bạn là chuyên gia biên tập CV chuyên nghiệp. Nhiệm vụ của bạn là viết lại văn bản đầu vào của người dùng để nó nghe chuyên nghiệp hơn, ấn tượng hơn, nhưng vẫn giữ nguyên ý nghĩa gốc.
+
+QUY TẮC BẮT BUỘC:
+1. KHÔNG thêm thắt thông tin sai sự thật hoặc số liệu mà người dùng không cung cấp.
+2. Sử dụng các động từ hành động mạnh (Ví dụ: Thay "làm việc với" bằng "phối hợp", "quản lý", "vận hành").
+3. Sửa toàn bộ lỗi chính tả và ngữ pháp.
+4. Giữ văn phong trang trọng, phù hợp môi trường công sở.
+5. Output trả về chỉ là đoạn văn bản đã sửa, không bao gồm lời dẫn.
+
+Input: "{userInput}"
+Output (Tiếng Việt):`,
+
+    en: `You are a professional CV editor. Your task is to rewrite the user's raw input to make it sound more professional, impactful, and ATS-friendly, while strictly preserving the original meaning.
+
+CRITICAL RULES:
+1. DO NOT hallucinate or add facts/metrics that are not in the input.
+2. Use strong action verbs (e.g., Change "worked on" to "Spearheaded", "Managed", "Executed").
+3. Correct all grammar and spelling errors.
+4. Maintain a formal, corporate tone.
+5. Output ONLY the rewritten text, no conversational filler.
+
+Input: "{userInput}"
+Output (English):`
+  }
 };
 
 // Helper function to get system prompt for a specific task and language

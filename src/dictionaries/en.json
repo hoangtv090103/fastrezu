@@ -271,6 +271,9 @@
     "generateWithAI": "Auto-generate with AI",
     "generating": "Generating...",
     "regenerate": "Regenerate",
+    "rewrite": "Improve",
+    "rewriting": "Improving...",
+    "rewriteSuccess": "Improved successfully!",
     "tips": "Tip: Keep summary brief (2-3 sentences), highlight strengths and alignment with position."
   },
   "fileUpload": {
@@ -555,6 +558,9 @@
       "generate": "Generate with AI",
       "generating": "Generating...",
       "regenerate": "Regenerate",
+      "rewrite": "Improve",
+      "rewriting": "Improving...",
+      "rewriteSuccess": "Improved successfully!",
       "edit": "Edit",
       "save": "Save",
       "cancel": "Cancel",
