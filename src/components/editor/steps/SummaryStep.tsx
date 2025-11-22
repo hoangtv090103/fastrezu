@@ -12,6 +12,7 @@ export default function SummaryStep() {
   const { state, updateSection } = useCVEditor();
   const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isRewriting, setIsRewriting] = useState(false);
 
   const summaryData = (state.cvData?.sections.summary || {}) as Record<
     string,
@@ -26,6 +27,36 @@ export default function SummaryStep() {
       ...summaryData,
       content: value,
     });
+  };
+
+  const handleRewrite = async () => {
+    if (summary.content.length < 10) return;
+
+    setIsRewriting(true);
+    try {
+      const result = await apiPost<{ result: string }>(
+        "/api/ai/rewrite-text",
+        {
+          text: summary.content,
+          language: state.cvData?.language || "vi",
+        },
+        undefined,
+        state.cvData?.language || "vi"
+      );
+
+      handleInputChange(result.result);
+      showSuccessToast(t("editor.summary.rewriteSuccess"));
+    } catch (error) {
+      console.error("Error rewriting summary:", error);
+      const appError = handleAPIError(
+        error,
+        "rewrite summary",
+        state.cvData?.language || "vi"
+      );
+      showErrorToast(appError, state.cvData?.language || "vi");
+    } finally {
+      setIsRewriting(false);
+    }
   };
 
   const handleGenerateWithAI = async () => {
@@ -125,12 +156,22 @@ export default function SummaryStep() {
           </p>
         </div>
 
-        <AIAssistButton
-          onClick={handleGenerateWithAI}
-          loading={isGenerating}
-          label={t("editor.summary.generate")}
-          disabled={!state.cvData || !state.cvData.sections.personal_info}
-        />
+        <div className="flex flex-wrap gap-3">
+          <AIAssistButton
+            onClick={handleGenerateWithAI}
+            loading={isGenerating}
+            label={t("editor.summary.generate")}
+            disabled={!state.cvData || !state.cvData.sections.personal_info}
+          />
+
+          <AIAssistButton
+            onClick={handleRewrite}
+            loading={isRewriting}
+            label={t("editor.summary.rewrite")}
+            disabled={summary.content.length < 10}
+            className="bg-purple-600 hover:bg-purple-700"
+          />
+        </div>
 
         {state.cvData?.jd_analysis?.keywords && (
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
