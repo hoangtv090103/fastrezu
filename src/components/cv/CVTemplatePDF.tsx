@@ -221,6 +221,7 @@ const getTemplateLabels = (language: "vi" | "en") => {
       certificationName: "Tên chứng chỉ",
       issueDate: "Ngày cấp",
       issuingOrganization: "Tổ chức cấp",
+      relevantCoursework: "Môn học liên quan",
     },
     en: {
       fullName: "Full Name",
@@ -246,6 +247,7 @@ const getTemplateLabels = (language: "vi" | "en") => {
       certificationName: "Certification Name",
       issueDate: "Issue Date",
       issuingOrganization: "Issuing Organization",
+      relevantCoursework: "Relevant Coursework",
     },
   };
 
@@ -447,6 +449,19 @@ export default function CVTemplatePDF({ cvData }: CVTemplatePDFProps) {
                       <View style={styles.bullet} />
                       <Text style={styles.bulletText}>
                         GPA: {getString(edu, "gpa")}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                {getString(edu, "relevant_coursework") && (
+                  <View style={styles.bulletList}>
+                    <View style={styles.bulletItem}>
+                      <View style={styles.bullet} />
+                      <Text style={styles.bulletText}>
+                        <Text style={{ fontWeight: 700 }}>
+                          {labels.relevantCoursework}:{" "}
+                        </Text>
+                        {getString(edu, "relevant_coursework")}
                       </Text>
                     </View>
                   </View>

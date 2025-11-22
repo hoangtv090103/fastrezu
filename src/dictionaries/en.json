@@ -482,7 +482,9 @@
       "achievementPlaceholder": "Describe achievement...",
       "graduationDateInvalid": "Invalid graduation year",
       "graduationDateFuture": "Graduation year cannot be too far in the future",
-      "graduationDatePast": "Invalid graduation year (too far in the past)"
+      "graduationDatePast": "Invalid graduation year (too far in the past)",
+      "relevantCoursework": "Relevant Coursework",
+      "relevantCourseworkPlaceholder": "e.g. Data Structures, Algorithms, Database Systems..."
     },
     "projects": {
       "title": "Projects",

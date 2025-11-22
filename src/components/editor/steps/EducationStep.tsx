@@ -33,6 +33,7 @@ export default function EducationStep() {
       field_of_study: "",
       graduation_date: "",
       gpa: "",
+      relevant_coursework: "",
       activities: [""],
     };
     updateSection("education", [...education, newEducation]);
@@ -259,6 +260,26 @@ export default function EducationStep() {
                   }
                   placeholder={t("editor.education.gpaPlaceholder")}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("editor.education.relevantCoursework")}
+                </label>
+                <textarea
+                  value={getStringValue(edu, "relevant_coursework")}
+                  onChange={(e) =>
+                    updateEducation(
+                      index,
+                      "relevant_coursework",
+                      e.target.value
+                    )
+                  }
+                  placeholder={t(
+                    "editor.education.relevantCourseworkPlaceholder"
+                  )}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 min-h-[80px]"
                 />
               </div>
             </div>
