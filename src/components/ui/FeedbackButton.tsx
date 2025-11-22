@@ -80,17 +80,17 @@ export default function FeedbackButton() {
       {/* Modal */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black bg-opacity-50"
           onClick={handleClose}
         >
           <div
-            className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-5 border-b border-gray-200">
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-gray-900 leading-relaxed">
                   {t("feedback.modalTitle")}
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
@@ -119,7 +119,7 @@ export default function FeedbackButton() {
             </div>
 
             {/* Modal Content */}
-            <div className="p-6">
+            <div className="p-5">
               <FeedbackForm
                 onSuccess={handleSuccess}
                 onCancel={handleClose}
