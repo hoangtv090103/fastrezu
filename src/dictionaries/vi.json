@@ -364,6 +364,18 @@
       "message": "Điểm ATS này dựa trên văn bản đã trích xuất từ file bạn tải lên. Độ chính xác của điểm số phụ thuộc vào chất lượng trích xuất văn bản, có thể thay đổi tùy theo bố cục phức tạp hoặc file có định dạng nặng. Để có kết quả tốt nhất, hãy đảm bảo CV của bạn ở định dạng đơn giản, thân thiện với ATS."
     }
   },
+  "successModal": {
+    "title": "Chúc mừng! CV đã hoàn tất 🎉",
+    "atsScore": "Điểm ATS của bạn",
+    "scoring": "Đang chấm điểm...",
+    "noScore": "Chưa có điểm",
+    "savedMessage": "Dữ liệu của bạn đã được",
+    "saved": "Lưu",
+    "savedMessageSuffix": "vào hệ thống.",
+    "wish": "Chúc bạn sớm nhận được Offer xịn nhé!",
+    "continue": "Ở lại chỉnh tiếp",
+    "createNew": "Tạo CV mới"
+  },
   "editor": {
     "title": "Trình soạn thảo CV",
     "saving": "Đang lưu...",
@@ -616,6 +628,7 @@
       "title": "Xem lại CV",
       "description": "Xem lại toàn bộ CV của bạn trước khi hoàn thành.",
       "complete": "Hoàn thành",
+      "completeAndSave": "Hoàn thành",
       "downloadPDF": "Tải PDF",
       "backToEdit": "Quay lại chỉnh sửa",
       "atsScore": "Điểm ATS",

@@ -24,19 +24,21 @@ import { trackWizardStepCompleted } from "@/lib/analytics";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase-client";
 import AutoSaveIndicator from "@/components/editor/AutoSaveIndicator";
+import SuccessModal from "@/components/ui/SuccessModal";
 
 type ValidationFunction =
   | ((data: Record<string, unknown>, language: "vi" | "en") => boolean)
   | ((data: Record<string, unknown>[], language: "vi" | "en") => boolean);
 
 export default function WizardPanel() {
-  const { state, setCurrentStep, updateTitle } = useCVEditor();
+  const { state, setCurrentStep, updateTitle, saveCV } = useCVEditor();
   const { t } = useTranslation();
   const stepStartTimeRef = useRef<number>(Date.now());
   const previousStepRef = useRef<number>(state.currentStep);
   const [userId, setUserId] = useState<string | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const STEPS = useMemo(
     () => [
@@ -389,7 +391,7 @@ export default function WizardPanel() {
               {t("editor.wizard.back")}
             </button>
 
-            {!isLastStep && (
+            {!isLastStep ? (
               <button
                 type="button"
                 onClick={handleNext}
@@ -402,10 +404,27 @@ export default function WizardPanel() {
               >
                 {t("editor.wizard.next")}
               </button>
+            ) : (
+              <button
+                type="button"
+                onClick={async () => {
+                  await saveCV();
+                  setShowSuccess(true);
+                }}
+                className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+              >
+                {t("editor.review.completeAndSave")}
+              </button>
             )}
           </div>
         </div>
       )}
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
     </div>
   );
 }

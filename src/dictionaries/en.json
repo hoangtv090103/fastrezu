@@ -367,6 +367,18 @@
       "message": "This ATS score is based on the text extracted from your uploaded file. The accuracy of the score depends on the quality of text extraction, which can vary depending on complex layouts or heavily formatted files. For best results, ensure your CV is in a simple, ATS-friendly format."
     }
   },
+  "successModal": {
+    "title": "Congratulations! CV Completed 🎉",
+    "atsScore": "Your ATS Score",
+    "scoring": "Scoring...",
+    "noScore": "No score yet",
+    "savedMessage": "Your data has been",
+    "saved": "Saved",
+    "savedMessageSuffix": "to the system.",
+    "wish": "Hope you get a great offer soon!",
+    "continue": "Continue Editing",
+    "createNew": "Create New CV"
+  },
   "editor": {
     "title": "CV Editor",
     "saving": "Saving...",
@@ -619,6 +631,7 @@
       "title": "Review CV",
       "description": "Review your entire CV before completing.",
       "complete": "Complete",
+      "completeAndSave": "Complete",
       "downloadPDF": "Download PDF",
       "backToEdit": "Back to Edit",
       "atsScore": "ATS Score",
