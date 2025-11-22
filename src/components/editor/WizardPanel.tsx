@@ -369,7 +369,7 @@ export default function WizardPanel() {
       </div>
 
       {/* Step Content */}
-      <div className="flex-1 overflow-y-auto flex flex-col pb-20 sm:pb-20 lg:pb-0">
+      <div className="flex-1 overflow-y-auto flex flex-col pb-40 sm:pb-24 lg:pb-0">
         {CurrentStepComponent && <CurrentStepComponent />}
       </div>
 
