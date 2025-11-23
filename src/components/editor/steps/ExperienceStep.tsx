@@ -13,7 +13,7 @@ import { useDebounce } from "@/lib/debounce";
 import { apiPost } from "@/lib/api-client";
 
 export default function ExperienceStep() {
-  const { state, updateSection } = useCVEditor();
+  const { state, updateSection, setRewritingSection } = useCVEditor();
   const { t, locale } = useTranslation();
   const [loadingStates, setLoadingStates] = useState<{
     [key: string]: boolean;
@@ -163,6 +163,7 @@ export default function ExperienceStep() {
 
     const loadingKey = `improve-${expIndex}-${achIndex}`;
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
+    setRewritingSection(`experience-${expIndex}-ach-${achIndex}`);
 
     try {
       const result = await apiPost<{ result: string }>(
@@ -183,6 +184,7 @@ export default function ExperienceStep() {
       showErrorToast(appError, locale);
     } finally {
       setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
+      setRewritingSection(null);
     }
   };
 
@@ -198,6 +200,7 @@ export default function ExperienceStep() {
 
     const loadingKey = `write-${expIndex}`;
     setLoadingStates((prev) => ({ ...prev, [loadingKey]: true }));
+    setRewritingSection(`experience-${expIndex}`);
 
     try {
       const result = await apiPost<{ achievements: string[] }>(
@@ -223,6 +226,7 @@ export default function ExperienceStep() {
       showErrorToast(appError, locale);
     } finally {
       setLoadingStates((prev) => ({ ...prev, [loadingKey]: false }));
+      setRewritingSection(null);
     }
   };
 
@@ -376,12 +380,12 @@ export default function ExperienceStep() {
                     loadingStates[`write-${expIndex}`]
                   }
                   className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap self-start sm:self-auto"
-                  title={t("editor.experience.improve")}
+                  title={t("editor.experience.generateWithAI")}
                 >
                   {loadingStates[`write-${expIndex}`] ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>{t("editor.experience.improving")}</span>
+                      <span>{t("editor.summary.generating")}</span>
                     </>
                   ) : (
                     <>
@@ -398,7 +402,7 @@ export default function ExperienceStep() {
                           d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
                         />
                       </svg>
-                      <span>{t("editor.experience.improve")}</span>
+                      <span>{t("editor.experience.generateWithAI")}</span>
                     </>
                   )}
                 </button>

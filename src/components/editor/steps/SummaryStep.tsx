@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import AIAssistButton from "@/components/ui/AIAssistButton";
+import SmartTextarea from "@/components/ui/SmartTextarea";
 import { apiPost } from "@/lib/api-client";
 import { handleAPIError } from "@/lib/error-handler";
 import { showErrorToast, showSuccessToast } from "@/lib/toast-utils";
 
 export default function SummaryStep() {
-  const { state, updateSection } = useCVEditor();
+  const { state, updateSection, setRewritingSection } = useCVEditor();
   const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRewriting, setIsRewriting] = useState(false);
@@ -33,6 +34,7 @@ export default function SummaryStep() {
     if (summary.content.length < 10) return;
 
     setIsRewriting(true);
+    setRewritingSection("summary");
     try {
       const result = await apiPost<{ result: string }>(
         "/api/ai/rewrite-text",
@@ -56,6 +58,7 @@ export default function SummaryStep() {
       showErrorToast(appError, state.cvData?.language || "vi");
     } finally {
       setIsRewriting(false);
+      setRewritingSection(null);
     }
   };
 
@@ -84,6 +87,7 @@ export default function SummaryStep() {
     }
 
     setIsGenerating(true);
+    setRewritingSection("summary");
     try {
       const result = await apiPost<{ summary: string }>(
         "/api/ai/generate-summary",
@@ -105,6 +109,7 @@ export default function SummaryStep() {
       showErrorToast(appError, "vi");
     } finally {
       setIsGenerating(false);
+      setRewritingSection(null);
     }
   };
 
@@ -144,12 +149,13 @@ export default function SummaryStep() {
               )}
             </div>
           </div>
-          <textarea
+          <SmartTextarea
             id="summary"
             value={summary.content}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder={t("editor.summary.placeholder")}
-            className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500"
+            className="h-32"
+            isRewriting={isRewriting}
           />
           <p className="text-xs text-gray-500 mt-1">
             Khuyến nghị: 200-500 ký tự để tối ưu cho ATS

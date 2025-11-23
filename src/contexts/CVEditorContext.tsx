@@ -46,6 +46,7 @@ export interface CVEditorState {
   error: string | null;
   selectedLanguage: CVLanguage | null;
   isDirty: boolean;
+  activeRewriteSection: string | null;
 }
 
 type CVEditorAction =
@@ -71,7 +72,8 @@ type CVEditorAction =
     }
   | { type: "SET_LANGUAGE"; payload: CVLanguage }
   | { type: "UPDATE_CV_DATA"; payload: CVData }
-  | { type: "UPDATE_TITLE"; payload: string };
+  | { type: "UPDATE_TITLE"; payload: string }
+  | { type: "SET_ACTIVE_REWRITE_SECTION"; payload: string | null };
 
 const initialState: CVEditorState = {
   currentStep: 0,
@@ -82,6 +84,7 @@ const initialState: CVEditorState = {
   error: null,
   selectedLanguage: null,
   isDirty: false,
+  activeRewriteSection: null,
 };
 
 function cvEditorReducer(
@@ -147,6 +150,8 @@ function cvEditorReducer(
         },
         isDirty: true,
       };
+    case "SET_ACTIVE_REWRITE_SECTION":
+      return { ...state, activeRewriteSection: action.payload };
     default:
       return state;
   }
@@ -169,6 +174,7 @@ interface CVEditorContextType {
   updateTitle: (title: string) => void;
   saveCV: () => Promise<void>;
   saveNow: () => Promise<void>;
+  setRewritingSection: (sectionId: string | null) => void;
 }
 
 const CVEditorContext = createContext<CVEditorContextType | undefined>(
@@ -587,6 +593,10 @@ export function CVEditorProvider({
     return await saveCV();
   }, [saveCV]);
 
+  const setRewritingSection = (sectionId: string | null) => {
+    dispatch({ type: "SET_ACTIVE_REWRITE_SECTION", payload: sectionId });
+  };
+
   return (
     <CVEditorContext.Provider
       value={{
@@ -599,6 +609,7 @@ export function CVEditorProvider({
         updateTitle,
         saveCV,
         saveNow,
+        setRewritingSection,
       }}
     >
       {children}
