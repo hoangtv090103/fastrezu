@@ -218,10 +218,7 @@ export default function CVTemplate({
                 color: "#374151",
               }}
             >
-              <TextMorphEffect
-                text={getString(summary, "content")}
-                isLoading={activeRewriteSection === "summary"}
-              />
+              {parseMarkdown(getString(summary, "content"))}
             </div>
           </AIGlowWrapper>
         </div>
