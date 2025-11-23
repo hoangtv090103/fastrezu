@@ -1,10 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
 import { CVData } from "@/contexts/CVEditorContext";
 import { parseMarkdown } from "@/lib/markdown";
+import AIGlowWrapper from "@/components/ui/AIGlowWrapper";
+import TextMorphEffect from "@/components/ui/TextMorphEffect";
 
 interface CVTemplateProps {
   cvData: CVData;
+  activeRewriteSection?: string | null;
 }
 
 // Translation object for CV template labels
@@ -67,7 +71,10 @@ const getTemplateLabels = (language: "vi" | "en") => {
   return labels[language];
 };
 
-export default function CVTemplate({ cvData }: CVTemplateProps) {
+export default function CVTemplate({
+  cvData,
+  activeRewriteSection,
+}: CVTemplateProps) {
   const labels = getTemplateLabels(cvData.language);
 
   // Safely access sections with fallbacks
@@ -111,6 +118,18 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
     }
     return trimmed;
   };
+
+  // Auto-scroll to active section
+  useEffect(() => {
+    if (activeRewriteSection) {
+      const element = document.getElementById(
+        `cv-preview-${activeRewriteSection}`
+      );
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [activeRewriteSection]);
 
   return (
     <div
@@ -186,16 +205,22 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
           >
             {labels.professionalSummary}
           </h2>
-          <div
-            className="text-sm leading-relaxed"
-            style={{
-              fontSize: "11pt",
-              lineHeight: "1.6",
-              color: "#374151",
-            }}
+          <AIGlowWrapper
+            id="cv-preview-summary"
+            isActive={activeRewriteSection === "summary"}
+            className="rounded-lg"
           >
-            {parseMarkdown(getString(summary, "content"))}
-          </div>
+            <div
+              className="text-sm leading-relaxed"
+              style={{
+                fontSize: "11pt",
+                lineHeight: "1.6",
+                color: "#374151",
+              }}
+            >
+              {parseMarkdown(getString(summary, "content"))}
+            </div>
+          </AIGlowWrapper>
         </div>
       )}
 
@@ -215,55 +240,77 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             {labels.workExperience}
           </h2>
           {experience.map((exp: Record<string, unknown>, index: number) => (
-            <div
+            <AIGlowWrapper
               key={index}
-              className="mb-6 pb-4 border-b border-gray-100 last:border-b-0"
+              id={`cv-preview-experience-${index}`}
+              isActive={activeRewriteSection === `experience-${index}`}
+              className="mb-6 pb-4 border-b border-gray-100 last:border-b-0 rounded-lg"
             >
-              <div className="flex justify-between items-start mb-2">
-                <h3
-                  className="font-bold text-gray-900"
-                  style={{ fontSize: "12pt", fontWeight: "700" }}
-                >
-                  {renderValue(exp.job_title)},{" "}
-                  {renderValue(exp.company) || labels.company}
-                </h3>
-                <span
-                  className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded"
-                  style={{ fontSize: "10pt" }}
-                >
-                  {(() => {
-                    const startDate = formatMonthDisplay(exp.start_date);
-                    const endDate = formatMonthDisplay(exp.end_date);
-                    return startDate && endDate
-                      ? `${startDate} - ${endDate}`
-                      : startDate || endDate || "";
-                  })()}
-                </span>
-              </div>
-              {renderValue(exp.location) && (
-                <p
-                  className="text-sm text-gray-500 mb-3"
-                  style={{ fontSize: "10pt" }}
-                >
-                  {renderValue(exp.location)}
-                </p>
-              )}
-              {Array.isArray(exp.achievements) &&
-                exp.achievements.length > 0 && (
-                  <ul className="space-y-2" style={{ fontSize: "10pt" }}>
-                    {exp.achievements.map(
-                      (achievement: string, achIndex: number) => (
-                        <li key={achIndex} className="flex items-start">
-                          <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                          <span className="text-gray-700 leading-relaxed">
-                            {parseMarkdown(achievement)}
-                          </span>
-                        </li>
-                      )
-                    )}
-                  </ul>
+              <div className="p-2">
+                <div className="flex justify-between items-start mb-2">
+                  <h3
+                    className="font-bold text-gray-900"
+                    style={{ fontSize: "12pt", fontWeight: "700" }}
+                  >
+                    {renderValue(exp.job_title)},{" "}
+                    {renderValue(exp.company) || labels.company}
+                  </h3>
+                  <span
+                    className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded"
+                    style={{ fontSize: "10pt" }}
+                  >
+                    {(() => {
+                      const startDate = formatMonthDisplay(exp.start_date);
+                      const endDate = formatMonthDisplay(exp.end_date);
+                      return startDate && endDate
+                        ? `${startDate} - ${endDate}`
+                        : startDate || endDate || "";
+                    })()}
+                  </span>
+                </div>
+                {renderValue(exp.location) && (
+                  <p
+                    className="text-sm text-gray-500 mb-3"
+                    style={{ fontSize: "10pt" }}
+                  >
+                    {renderValue(exp.location)}
+                  </p>
                 )}
-            </div>
+                {Array.isArray(exp.achievements) &&
+                  exp.achievements.length > 0 && (
+                    <ul className="space-y-2" style={{ fontSize: "10pt" }}>
+                      {exp.achievements.map(
+                        (achievement: string, achIndex: number) => (
+                          <AIGlowWrapper
+                            key={achIndex}
+                            id={`cv-preview-experience-${index}-ach-${achIndex}`}
+                            isActive={
+                              activeRewriteSection ===
+                              `experience-${index}-ach-${achIndex}`
+                            }
+                            className="rounded-md -mx-2 px-2 py-1"
+                          >
+                            <li className="flex items-start">
+                              <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                              <span className="text-gray-700 leading-relaxed">
+                                <TextMorphEffect
+                                  text={achievement}
+                                  isLoading={
+                                    activeRewriteSection ===
+                                      `experience-${index}-ach-${achIndex}` ||
+                                    activeRewriteSection ===
+                                      `experience-${index}`
+                                  }
+                                />
+                              </span>
+                            </li>
+                          </AIGlowWrapper>
+                        )
+                      )}
+                    </ul>
+                  )}
+              </div>
+            </AIGlowWrapper>
           ))}
         </div>
       )}
@@ -284,88 +331,123 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             {labels.education}
           </h2>
           {education.map((edu: Record<string, unknown>, index: number) => (
-            <div
+            <AIGlowWrapper
               key={index}
-              className="mb-4 pb-3 border-b border-gray-100 last:border-b-0"
+              id={`cv-preview-education-${index}`}
+              isActive={activeRewriteSection === `education-${index}`}
+              className="mb-4 pb-3 border-b border-gray-100 last:border-b-0 rounded-lg"
             >
-              <p
-                className="font-bold text-blue-600 mb-2"
-                style={{ fontSize: "11pt", fontWeight: "600" }}
-              >
-                {renderValue(edu.school) || labels.school}
-              </p>
-              {renderValue(edu.field_of_study) && (
+              <div className="p-2">
                 <p
-                  className="text-sm text-gray-700 mb-2"
-                  style={{ fontSize: "10pt" }}
+                  className="font-bold text-blue-600 mb-2"
+                  style={{ fontSize: "11pt", fontWeight: "600" }}
                 >
-                  {labels.fieldOfStudy}: {renderValue(edu.field_of_study)}
+                  <TextMorphEffect
+                    text={String(renderValue(edu.school) || labels.school)}
+                    isLoading={activeRewriteSection === `education-${index}`}
+                  />
                 </p>
-              )}
-              <div className="flex justify-between items-start mb-2">
-                <h3
-                  className="font-semibold text-gray-900"
-                  style={{ fontSize: "12pt", fontWeight: "700" }}
-                >
-                  {renderValue(edu.degree)}
-                </h3>
-                <span
-                  className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded"
-                  style={{ fontSize: "10pt" }}
-                >
-                  {formatMonthDisplay(edu.graduation_date) ||
-                    labels.graduationDate}
-                </span>
-              </div>
-              {(renderValue(edu.field_of_study) ||
-                renderValue(edu.gpa) ||
-                renderValue(edu.relevant_coursework) ||
-                renderValue(edu.activities)) && (
-                <ul className="space-y-1 mt-2" style={{ fontSize: "10pt" }}>
-                  {renderValue(edu.gpa) && (
-                    <li className="flex items-start">
-                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                      <span className="text-gray-700">
-                        GPA: {renderValue(edu.gpa)}
-                      </span>
-                    </li>
-                  )}
-                  {renderValue(edu.relevant_coursework) && (
-                    <li className="flex items-start">
-                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                      <span className="text-gray-700 leading-relaxed">
-                        <span className="font-semibold">
-                          {labels.relevantCoursework}:{" "}
+                {renderValue(edu.field_of_study) && (
+                  <p
+                    className="text-sm text-gray-700 mb-2"
+                    style={{ fontSize: "10pt" }}
+                  >
+                    {labels.fieldOfStudy}:{" "}
+                    <TextMorphEffect
+                      text={String(renderValue(edu.field_of_study))}
+                      isLoading={activeRewriteSection === `education-${index}`}
+                    />
+                  </p>
+                )}
+                <div className="flex justify-between items-start mb-2">
+                  <h3
+                    className="font-semibold text-gray-900"
+                    style={{ fontSize: "12pt", fontWeight: "700" }}
+                  >
+                    <TextMorphEffect
+                      text={String(renderValue(edu.degree))}
+                      isLoading={activeRewriteSection === `education-${index}`}
+                    />
+                  </h3>
+                  <span
+                    className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded"
+                    style={{ fontSize: "10pt" }}
+                  >
+                    {formatMonthDisplay(edu.graduation_date) ||
+                      labels.graduationDate}
+                  </span>
+                </div>
+                {(renderValue(edu.field_of_study) ||
+                  renderValue(edu.gpa) ||
+                  renderValue(edu.relevant_coursework) ||
+                  renderValue(edu.activities)) && (
+                  <ul className="space-y-1 mt-2" style={{ fontSize: "10pt" }}>
+                    {renderValue(edu.gpa) && (
+                      <li className="flex items-start">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                        <span className="text-gray-700">
+                          GPA:{" "}
+                          <TextMorphEffect
+                            text={String(renderValue(edu.gpa))}
+                            isLoading={
+                              activeRewriteSection === `education-${index}`
+                            }
+                          />
                         </span>
-                        {renderValue(edu.relevant_coursework)}
-                      </span>
-                    </li>
-                  )}
-                  {/* Activities */}
-                  {(() => {
-                    const activityList = Array.isArray(edu.activities)
-                      ? edu.activities
-                      : typeof edu.activities === "string" && edu.activities
-                      ? [edu.activities]
-                      : [];
+                      </li>
+                    )}
+                    {renderValue(edu.relevant_coursework) && (
+                      <li className="flex items-start">
+                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                        <span className="text-gray-700 leading-relaxed">
+                          <span className="font-semibold">
+                            {labels.relevantCoursework}:{" "}
+                          </span>
+                          {renderValue(edu.relevant_coursework) && (
+                            <TextMorphEffect
+                              text={String(
+                                renderValue(edu.relevant_coursework)
+                              )}
+                              isLoading={
+                                activeRewriteSection === `education-${index}`
+                              }
+                            />
+                          )}
+                        </span>
+                      </li>
+                    )}
+                    {/* Activities */}
+                    {(() => {
+                      const activityList = Array.isArray(edu.activities)
+                        ? edu.activities
+                        : typeof edu.activities === "string" && edu.activities
+                        ? [edu.activities]
+                        : [];
 
-                    return activityList.length > 0
-                      ? activityList.map(
-                          (activity: string, actIndex: number) =>
-                            activity && (
-                              <li key={actIndex} className="flex items-start">
-                                <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                                <span className="text-gray-700 leading-relaxed">
-                                  {activity}
-                                </span>
-                              </li>
-                            )
-                        )
-                      : null;
-                  })()}
-                </ul>
-              )}
-            </div>
+                      return activityList.length > 0
+                        ? activityList.map(
+                            (activity: string, actIndex: number) =>
+                              activity && (
+                                <li key={actIndex} className="flex items-start">
+                                  <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                                  <span className="text-gray-700 leading-relaxed">
+                                    <TextMorphEffect
+                                      text={activity}
+                                      isLoading={
+                                        activeRewriteSection ===
+                                        `education-${index}`
+                                      }
+                                    />
+                                  </span>
+                                </li>
+                              )
+                          )
+                        : null;
+                    })()}
+                  </ul>
+                )}
+              </div>
+            </AIGlowWrapper>
           ))}
         </div>
       )}
@@ -386,54 +468,77 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
             {labels.projects}
           </h2>
           {projects.map((project: Record<string, unknown>, index: number) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-start mb-1">
-                <h3
-                  className="font-bold"
-                  style={{ fontSize: "11pt", fontWeight: "bold" }}
-                >
-                  {renderValue(project.name) || labels.projectName}
-                </h3>
-                {renderValue(project.link) && (
-                  <a
-                    href={String(project.link)}
-                    className="text-sm text-blue-600"
-                    style={{ fontSize: "10pt" }}
+            <AIGlowWrapper
+              key={index}
+              id={`cv-preview-projects-${index}`}
+              isActive={activeRewriteSection === `projects-${index}`}
+              className="mb-4 rounded-lg"
+            >
+              <div className="p-2">
+                <div className="flex justify-between items-start mb-1">
+                  <h3
+                    className="font-bold"
+                    style={{ fontSize: "11pt", fontWeight: "bold" }}
                   >
-                    {labels.viewProject}
-                  </a>
-                )}
-              </div>
-              <ul className="space-y-2 mt-2" style={{ fontSize: "10pt" }}>
-                {renderValue(project.description) && (
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                    <span className="text-gray-700 leading-relaxed">
-                      {parseMarkdown(String(renderValue(project.description)))}
-                    </span>
-                  </li>
-                )}
-                {renderValue(project.technologies) && (
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                    <span className="text-gray-700 leading-relaxed">
-                      {labels.technologies}: {renderValue(project.technologies)}
-                    </span>
-                  </li>
-                )}
-                {Array.isArray(project.achievements) &&
-                  project.achievements.map(
-                    (achievement: string, achIndex: number) => (
-                      <li key={achIndex} className="flex items-start">
-                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
-                        <span className="text-gray-700 leading-relaxed">
-                          {parseMarkdown(achievement)}
-                        </span>
-                      </li>
-                    )
+                    {renderValue(project.name) || labels.projectName}
+                  </h3>
+                  {renderValue(project.link) && (
+                    <a
+                      href={String(project.link)}
+                      className="text-sm text-blue-600"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      {labels.viewProject}
+                    </a>
                   )}
-              </ul>
-            </div>
+                </div>
+                <ul className="space-y-2 mt-2" style={{ fontSize: "10pt" }}>
+                  {renderValue(project.description) && (
+                    <li className="flex items-start">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                      <span className="text-gray-700 leading-relaxed">
+                        <TextMorphEffect
+                          text={String(renderValue(project.description))}
+                          isLoading={
+                            activeRewriteSection === `projects-${index}`
+                          }
+                        />
+                      </span>
+                    </li>
+                  )}
+                  {renderValue(project.technologies) && (
+                    <li className="flex items-start">
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                      <span className="text-gray-700 leading-relaxed">
+                        {labels.technologies}:{" "}
+                        <TextMorphEffect
+                          text={String(renderValue(project.technologies))}
+                          isLoading={
+                            activeRewriteSection === `projects-${index}`
+                          }
+                        />
+                      </span>
+                    </li>
+                  )}
+                  {Array.isArray(project.achievements) &&
+                    project.achievements.map(
+                      (achievement: string, achIndex: number) => (
+                        <li key={achIndex} className="flex items-start">
+                          <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 shrink-0"></span>
+                          <span className="text-gray-700 leading-relaxed">
+                            <TextMorphEffect
+                              text={achievement}
+                              isLoading={
+                                activeRewriteSection === `projects-${index}`
+                              }
+                            />
+                          </span>
+                        </li>
+                      )
+                    )}
+                </ul>
+              </div>
+            </AIGlowWrapper>
           ))}
         </div>
       )}
@@ -454,32 +559,47 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
           >
             {labels.skills}
           </h2>
-          {Array.isArray(skills.technical) && skills.technical.length > 0 && (
-            <div className="mb-3">
-              <h3
-                className="font-medium mb-1"
-                style={{ fontSize: "11pt", fontWeight: "600" }}
-              >
-                {labels.technicalSkills}:
-              </h3>
-              <p className="text-sm" style={{ fontSize: "10pt" }}>
-                {(skills.technical as string[]).join(", ")}
-              </p>
+          <AIGlowWrapper
+            id="cv-preview-skills"
+            isActive={activeRewriteSection === "skills"}
+            className="rounded-lg"
+          >
+            <div className="p-2">
+              {Array.isArray(skills.technical) &&
+                skills.technical.length > 0 && (
+                  <div className="mb-3">
+                    <h3
+                      className="font-medium mb-1"
+                      style={{ fontSize: "11pt", fontWeight: "600" }}
+                    >
+                      {labels.technicalSkills}:
+                    </h3>
+                    <p className="text-sm" style={{ fontSize: "10pt" }}>
+                      <TextMorphEffect
+                        text={(skills.technical as string[]).join(", ")}
+                        isLoading={activeRewriteSection === "skills"}
+                      />
+                    </p>
+                  </div>
+                )}
+              {Array.isArray(skills.soft) && skills.soft.length > 0 && (
+                <div>
+                  <h3
+                    className="font-medium mb-1"
+                    style={{ fontSize: "11pt", fontWeight: "600" }}
+                  >
+                    {labels.softSkills}:
+                  </h3>
+                  <p className="text-sm" style={{ fontSize: "10pt" }}>
+                    <TextMorphEffect
+                      text={(skills.soft as string[]).join(", ")}
+                      isLoading={activeRewriteSection === "skills"}
+                    />
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-          {Array.isArray(skills.soft) && skills.soft.length > 0 && (
-            <div>
-              <h3
-                className="font-medium mb-1"
-                style={{ fontSize: "11pt", fontWeight: "600" }}
-              >
-                {labels.softSkills}:
-              </h3>
-              <p className="text-sm" style={{ fontSize: "10pt" }}>
-                {(skills.soft as string[]).join(", ")}
-              </p>
-            </div>
-          )}
+          </AIGlowWrapper>
         </div>
       )}
 
@@ -500,37 +620,58 @@ export default function CVTemplate({ cvData }: CVTemplateProps) {
           </h2>
           {certifications.map(
             (cert: Record<string, unknown>, index: number) => (
-              <div key={index} className="mb-3">
-                <div className="flex justify-between items-start mb-1">
-                  <h3
-                    className="font-bold"
-                    style={{ fontSize: "11pt", fontWeight: "bold" }}
-                  >
-                    {renderValue(cert.name) || labels.certificationName}
-                  </h3>
-                  <span
-                    className="text-sm text-gray-600"
-                    style={{ fontSize: "10pt" }}
-                  >
-                    {formatMonthDisplay(cert.date) || labels.issueDate}
-                  </span>
-                </div>
-                <p
-                  className="font-medium"
-                  style={{ fontSize: "11pt", fontWeight: "600" }}
-                >
-                  {renderValue(cert.issuing_organization) ||
-                    labels.issuingOrganization}
-                </p>
-                {renderValue(cert.credential_id) && (
+              <AIGlowWrapper
+                key={index}
+                id={`cv-preview-certifications-${index}`}
+                isActive={activeRewriteSection === `certifications-${index}`}
+                className="mb-3 rounded-lg"
+              >
+                <div className="p-2">
+                  <div className="flex justify-between items-start mb-1">
+                    <h3
+                      className="font-bold"
+                      style={{ fontSize: "11pt", fontWeight: "bold" }}
+                    >
+                      <TextMorphEffect
+                        text={String(
+                          renderValue(cert.name) || labels.certificationName
+                        )}
+                        isLoading={
+                          activeRewriteSection === `certifications-${index}`
+                        }
+                      />
+                    </h3>
+                    <span
+                      className="text-sm text-gray-600"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      {formatMonthDisplay(cert.date) || labels.issueDate}
+                    </span>
+                  </div>
                   <p
-                    className="text-sm text-gray-600"
-                    style={{ fontSize: "10pt" }}
+                    className="font-medium"
+                    style={{ fontSize: "11pt", fontWeight: "600" }}
                   >
-                    ID: {renderValue(cert.credential_id)}
+                    <TextMorphEffect
+                      text={String(
+                        renderValue(cert.issuing_organization) ||
+                          labels.issuingOrganization
+                      )}
+                      isLoading={
+                        activeRewriteSection === `certifications-${index}`
+                      }
+                    />
                   </p>
-                )}
-              </div>
+                  {renderValue(cert.credential_id) && (
+                    <p
+                      className="text-sm text-gray-600"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      ID: {renderValue(cert.credential_id)}
+                    </p>
+                  )}
+                </div>
+              </AIGlowWrapper>
             )
           )}
         </div>

@@ -464,6 +464,7 @@
       "location": "Location",
       "achievements": "Achievements & Responsibilities",
       "addAchievement": "Add Achievement",
+      "generateWithAI": "Generate with AI",
       "improve": "Improve with AI",
       "improving": "Improving...",
       "improveSuccess": "Description improved successfully!",

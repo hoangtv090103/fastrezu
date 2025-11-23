@@ -40,7 +40,10 @@ export default function CVPreview() {
       <div className="flex-1 overflow-y-auto p-3 sm:p-6">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <CVTemplate cvData={state.cvData} />
+            <CVTemplate
+              cvData={state.cvData}
+              activeRewriteSection={state.activeRewriteSection}
+            />
           </div>
         </div>
       </div>

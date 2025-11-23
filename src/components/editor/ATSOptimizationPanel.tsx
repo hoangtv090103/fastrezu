@@ -33,7 +33,7 @@ export default function ATSOptimizationPanel({
   cvData,
   reloadTrigger,
 }: ATSOptimizationPanelProps) {
-  const { updateCVData, saveCV } = useCVEditor();
+  const { updateCVData, saveCV, setRewritingSection } = useCVEditor();
   const { locale, t } = useTranslation();
   const [suggestions, setSuggestions] = useState<DBSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,6 +72,19 @@ export default function ATSOptimizationPanel({
         is_applied: s.is_applied,
       }))
     );
+
+    // Determine the section ID for the glow effect
+    const suggestion = suggestions.find(
+      (s) => s.suggestion_id === suggestionId
+    );
+    if (suggestion) {
+      const sectionId =
+        suggestion.target_index !== null &&
+        suggestion.target_index !== undefined
+          ? `${suggestion.target_section}-${suggestion.target_index}`
+          : suggestion.target_section;
+      setRewritingSection(sectionId);
+    }
 
     setIsApplying(suggestionId);
     try {
@@ -118,6 +131,7 @@ export default function ATSOptimizationPanel({
       showErrorToast(appError, "vi");
     } finally {
       setIsApplying(null);
+      setRewritingSection(null);
     }
   };
 
