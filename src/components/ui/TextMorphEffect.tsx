@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TextMorphEffectProps {
