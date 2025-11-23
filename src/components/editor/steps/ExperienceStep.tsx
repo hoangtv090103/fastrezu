@@ -385,7 +385,7 @@ export default function ExperienceStep() {
                   {loadingStates[`write-${expIndex}`] ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>{t("editor.summary.generating")}</span>
+                      <span>{t("editor.experience.generating")}</span>
                     </>
                   ) : (
                     <>
