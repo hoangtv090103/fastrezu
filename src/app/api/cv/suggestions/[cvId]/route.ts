@@ -38,12 +38,12 @@ export async function GET(
       );
     }
 
-    // Verify CV ownership
+    // Verify CV ownership and get language
     const {
       data: cv,
       error: cvError,
-    }: { data: { id: string; user_id: string } | null; error: Error | null } =
-      await supabase.from("cvs").select("id, user_id").eq("id", cvId).single();
+    }: { data: { id: string; user_id: string; language: string } | null; error: Error | null } =
+      await supabase.from("cvs").select("id, user_id, language").eq("id", cvId).single();
 
     if (cvError || !cv) {
       return NextResponse.json(
@@ -117,22 +117,81 @@ export async function GET(
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
 
-    // If a UI language is specified, translate suggestion_text to that language for display
-    if (uiLang && validSuggestions.length > 0) {
+    // Process suggestions to handle JSON storage and translation
+    const processedSuggestions = [];
+    const suggestionsToTranslate: { index: number; text: string }[] = [];
+
+    for (let i = 0; i < validSuggestions.length; i++) {
+      const s = validSuggestions[i];
+      let text = s.suggestion_text || "";
+      let isJson = false;
+
+      // Try to parse JSON
       try {
-        const texts = validSuggestions.map((s) => String(s.suggestion_text || ''));
-        const translated = await translateTexts(texts, uiLang, 'auto');
-        validSuggestions = validSuggestions.map((s, idx) => ({
-          ...s,
-          suggestion_text: translated[idx] || s.suggestion_text,
-        }));
+        if (text.trim().startsWith("{")) {
+          const json = JSON.parse(text);
+          if (json && typeof json === "object") {
+            isJson = true;
+            // If UI language is specified, try to get that language
+            // Otherwise fallback to CV language, then 'vi', then first key
+            const targetLang = uiLang || cv.language || "vi";
+            
+            if (json[targetLang]) {
+              text = json[targetLang];
+            } else if (json[cv.language]) {
+              text = json[cv.language];
+            } else {
+              // Fallback to first available value
+              const values = Object.values(json);
+              if (values.length > 0 && typeof values[0] === "string") {
+                text = values[0] as string;
+              }
+            }
+          }
+        }
       } catch (e) {
-        console.error('Failed to translate suggestion_texts for UI:', e);
-        // Continue returning original texts if translation fails
+        // Not JSON, continue as string
+      }
+
+      // If it was JSON, we have the final text now.
+      // If it was NOT JSON (legacy data), we might need to translate it.
+      if (isJson) {
+        processedSuggestions.push({
+          ...s,
+          suggestion_text: text,
+        });
+      } else {
+        // Legacy path: check if we need translation
+        if (uiLang && uiLang !== cv.language) {
+          suggestionsToTranslate.push({ index: i, text });
+          // Push placeholder, will update later
+          processedSuggestions.push({ ...s });
+        } else {
+          // No translation needed
+          processedSuggestions.push({ ...s });
+        }
       }
     }
 
-    return NextResponse.json({ suggestions: validSuggestions });
+    // Batch translate legacy items if needed
+    if (suggestionsToTranslate.length > 0) {
+      try {
+        const texts = suggestionsToTranslate.map((item) => item.text);
+        const translated = await translateTexts(texts, uiLang as "vi" | "en", "auto");
+        
+        suggestionsToTranslate.forEach((item, idx) => {
+          processedSuggestions[item.index].suggestion_text = translated[idx] || item.text;
+        });
+      } catch (e) {
+        console.error("Failed to translate legacy suggestion_texts:", e);
+        // Fallback to original text
+        suggestionsToTranslate.forEach((item) => {
+          processedSuggestions[item.index].suggestion_text = item.text;
+        });
+      }
+    }
+
+    return NextResponse.json({ suggestions: processedSuggestions });
   } catch (error) {
     console.error("Error in suggestions GET:", error);
     return NextResponse.json(

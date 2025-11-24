@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     // Verify CV ownership
     const { data: cv, error: cvError } = await supabase
       .from("cvs")
-      .select("id, user_id")
+      .select("id, user_id, language")
       .eq("id", cvId)
       .single();
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const cvData = cv as { user_id: string };
+    const cvData = cv as { user_id: string; language: "vi" | "en" };
     if (cvData.user_id !== user.id) {
       return NextResponse.json(
         { error: "Forbidden" },
@@ -125,36 +125,60 @@ export async function POST(request: NextRequest) {
     };
 
     // Prepare suggestions for insertion
-    const suggestionsToInsert = suggestions
-      .map((suggestion: SuggestionInput, index: number) => {
-        const normalizedSection = normalizeTargetSection(
-          suggestion.target_section
-        );
-
-        // Skip invalid sections
-        if (!normalizedSection) {
+    // First, filter valid suggestions to avoid processing invalid ones
+    const validSuggestionsInput = suggestions
+      .map((s, index) => ({ ...s, originalIndex: index }))
+      .filter((s) => {
+        const normalized = normalizeTargetSection(s.target_section);
+        if (!normalized) {
           console.warn(
-            `Skipping suggestion ${index}: invalid target_section "${suggestion.target_section}"`
+            `Skipping suggestion ${s.originalIndex}: invalid target_section "${s.target_section}"`
           );
-          return null;
+          return false;
         }
+        return true;
+      });
 
-        return {
-          cv_id: cvId,
-          suggestion_id: `suggestion-${index}`,
-          suggestion_text: suggestion.suggestion_text,
-          suggestion_type: suggestion.suggestion_type,
-          target_section: normalizedSection,
-          target_index: suggestion.target_index ?? null,
-          keyword: suggestion.keyword ?? null,
-          priority: suggestion.priority,
-          original_content: suggestion.original_content,
-          suggested_content: suggestion.suggested_content,
-          is_active: true,
-          is_applied: false,
-        };
-      })
-      .filter((s): s is NonNullable<typeof s> => s !== null);
+    // Prepare translations
+    const sourceLang = cvData.language || "vi";
+    const targetLang = sourceLang === "vi" ? "en" : "vi";
+    const textsToTranslate = validSuggestionsInput.map((s) => s.suggestion_text);
+    
+    let translatedTexts: string[] = [];
+    try {
+      // Import dynamically to avoid circular dependencies if any, though standard import is fine here
+      const { translateTexts } = await import("@/lib/translate");
+      translatedTexts = await translateTexts(textsToTranslate, targetLang, sourceLang);
+    } catch (error) {
+      console.error("Error translating suggestions:", error);
+      // Fallback: use original text for both if translation fails
+      translatedTexts = textsToTranslate;
+    }
+
+    const suggestionsToInsert = validSuggestionsInput.map((suggestion, index) => {
+      const normalizedSection = normalizeTargetSection(suggestion.target_section)!; // We already filtered nulls
+      
+      // Create JSON object with both languages
+      const suggestionTextJson = JSON.stringify({
+        [sourceLang]: suggestion.suggestion_text,
+        [targetLang]: translatedTexts[index] || suggestion.suggestion_text
+      });
+
+      return {
+        cv_id: cvId,
+        suggestion_id: `suggestion-${suggestion.originalIndex}`,
+        suggestion_text: suggestionTextJson, // Store JSON string
+        suggestion_type: suggestion.suggestion_type,
+        target_section: normalizedSection,
+        target_index: suggestion.target_index ?? null,
+        keyword: suggestion.keyword ?? null,
+        priority: suggestion.priority,
+        original_content: suggestion.original_content,
+        suggested_content: suggestion.suggested_content,
+        is_active: true,
+        is_applied: false,
+      };
+    });
 
     // Insert suggestions
     const { error: insertError } = await supabase
