@@ -38,12 +38,27 @@ export async function GET(
       );
     }
 
-    // Verify CV ownership and get language
-    const {
-      data: cv,
-      error: cvError,
-    }: { data: { id: string; user_id: string; language: string } | null; error: Error | null } =
-      await supabase.from("cvs").select("id, user_id, language").eq("id", cvId).single();
+    // Parallelize CV verification and suggestions fetching
+    // We start both queries at the same time
+    const cvPromise = supabase
+      .from("cvs")
+      .select("id, user_id, language")
+      .eq("id", cvId)
+      .single();
+
+    const suggestionsPromise = supabase
+      .from("ats_suggestions")
+      .select(
+        "id, suggestion_id, suggestion_text, suggestion_type, target_section, target_index, priority, is_active, is_applied, created_at"
+      )
+      .eq("cv_id", cvId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: true });
+
+    const [
+      { data: cv, error: cvError },
+      { data: suggestions, error: suggestionsError },
+    ] = await Promise.all([cvPromise, suggestionsPromise]);
 
     if (cvError || !cv) {
       return NextResponse.json(
@@ -58,14 +73,6 @@ export async function GET(
         { status: 403 }
       );
     }
-
-    // Get active suggestions
-    const { data: suggestions, error: suggestionsError } = await supabase
-      .from("ats_suggestions")
-      .select("*")
-      .eq("cv_id", cvId)
-      .eq("is_active", true)
-      .order("created_at", { ascending: true });
 
     if (suggestionsError) {
       console.error("Error fetching suggestions:", suggestionsError);
