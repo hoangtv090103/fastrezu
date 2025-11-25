@@ -19,16 +19,7 @@ const saveSuggestionsInternalSchema = z.object({
   })),
 });
 
-interface SuggestionInput {
-  suggestion_text: string;
-  suggestion_type: string;
-  target_section: string;
-  target_index?: number | null;
-  keyword?: string | null;
-  priority: "high" | "medium" | "low";
-  original_content: unknown;
-  suggested_content: unknown;
-}
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -126,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     // Prepare suggestions for insertion
     const suggestionsToInsert = suggestions
-      .map((suggestion: SuggestionInput, index: number) => {
+      .map((suggestion, index: number) => {
         const normalizedSection = normalizeTargetSection(
           suggestion.target_section
         );
