@@ -114,9 +114,10 @@ export default function JDAnalysisStep() {
       );
 
       setJdText(jdAnalysis.jdText || "");
-      setKeywords(jdAnalysis.keywords || []);
+      const keywords = jdAnalysis.keywords || [];
+      setKeywords(keywords);
       setJDAnalysis(
-        jdAnalysis.keywords,
+        keywords,
         jdAnalysis.analysis,
         jdAnalysis.mode || "real"
       );
