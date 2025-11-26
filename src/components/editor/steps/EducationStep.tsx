@@ -332,7 +332,7 @@ export default function EducationStep() {
 
         <button
           onClick={addEducation}
-          className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4 text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors duration-200"
+          className="w-full border-2 border-dashed border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-700 rounded-lg p-4 transition-colors duration-200 font-medium"
         >
           + {t("editor.education.addEducation")}
         </button>

@@ -369,7 +369,7 @@ export default function ExperienceStep() {
             </div>
 
             <div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+              <div className="flex flex-row items-center justify-between gap-2 mb-3">
                 <label className="block text-sm font-medium text-gray-700">
                   {t("editor.experience.achievements")}
                 </label>
@@ -379,7 +379,7 @@ export default function ExperienceStep() {
                     !getStringValue(exp, "job_title").trim() ||
                     loadingStates[`write-${expIndex}`]
                   }
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap self-start sm:self-auto"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed shadow-sm hover:shadow-md whitespace-nowrap"
                   title={t("editor.experience.generateWithAI")}
                 >
                   {loadingStates[`write-${expIndex}`] ? (
