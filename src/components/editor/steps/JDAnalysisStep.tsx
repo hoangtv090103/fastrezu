@@ -96,8 +96,9 @@ export default function JDAnalysisStep() {
     // If we already have the analysis (e.g. from a fresh creation), use it
     if (savedJD.analysis && Object.keys(savedJD.analysis).length > 0) {
       setJdText(savedJD.jdText || "");
-      setKeywords(savedJD.keywords || []);
-      setJDAnalysis(savedJD.keywords, savedJD.analysis, savedJD.mode || "real");
+      const keywords = savedJD.keywords || [];
+      setKeywords(keywords);
+      setJDAnalysis(keywords, savedJD.analysis, savedJD.mode || "real");
       if (savedJD.mode === "shadow") {
         setMode("shadow");
       } else {
