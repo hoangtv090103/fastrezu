@@ -64,7 +64,11 @@ export async function GET(
       .eq('id', jdId)
       .single()
 
-    if (error || !jdAnalysis) {
+    if (error) {
+      console.error('Error fetching JD:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+    if (!jdAnalysis) {
       return NextResponse.json({ error: 'JD not found' }, { status: 404 })
     }
 
