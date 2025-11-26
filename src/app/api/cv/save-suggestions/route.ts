@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
       // Create JSON object with both languages
       const suggestionTextJson = JSON.stringify({
         [sourceLang]: suggestion.suggestion_text,
-        [targetLang]: translatedTexts[index] || suggestion.suggestion_text
+        [targetLang]: translatedTexts[index] || textsToTranslate[index]
       });
 
       return {
