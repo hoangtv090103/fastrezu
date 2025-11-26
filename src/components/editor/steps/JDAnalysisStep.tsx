@@ -335,7 +335,10 @@ export default function JDAnalysisStep() {
                           className="px-2 sm:px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
                           {isLoadingDetails === savedJD.id ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <div className="flex items-center">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <span className="sr-only">{t("common.loading")}</span>
+                            </div>
                           ) : (
                             t("editor.jdAnalysis.use")
                           )}
