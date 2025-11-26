@@ -145,20 +145,25 @@ export async function GET(
         if (text.trim().startsWith("{")) {
           const json = JSON.parse(text);
           if (json && typeof json === "object") {
-            isJson = true;
-            // If UI language is specified, try to get that language
-            // Otherwise fallback to CV language, then 'vi', then first key
-            const targetLang = uiLang || cv.language || "vi";
-            
-            if (json[targetLang]) {
-              text = json[targetLang];
-            } else if (cv.language && json[cv.language]) {
-              text = json[cv.language];
-            } else {
-              // Fallback to first available value
-              const values = Object.values(json);
-              if (values.length > 0 && typeof values[0] === "string") {
-                text = values[0] as string;
+            const hasLangKey = Object.keys(json).some(
+              (k) => k === "vi" || k === "en"
+            );
+            if (hasLangKey) {
+              isJson = true;
+              // If UI language is specified, try to get that language
+              // Otherwise fallback to CV language, then 'vi', then first key
+              const targetLang = uiLang || cv.language || "vi";
+              
+              if (json[targetLang]) {
+                text = json[targetLang];
+              } else if (json[cv.language]) {
+                text = json[cv.language];
+              } else {
+                // Fallback to first available value
+                const values = Object.values(json);
+                if (values.length > 0 && typeof values[0] === "string") {
+                  text = values[0] as string;
+                }
               }
             }
           }
