@@ -152,7 +152,7 @@ export async function GET(
             
             if (json[targetLang]) {
               text = json[targetLang];
-            } else if (json[cv.language]) {
+            } else if (cv.language && json[cv.language]) {
               text = json[cv.language];
             } else {
               // Fallback to first available value
