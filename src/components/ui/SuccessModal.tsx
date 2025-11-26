@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import confetti from "canvas-confetti";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import { apiPost, type RetryConfig } from "@/lib/api-client";
@@ -14,7 +13,6 @@ interface SuccessModalProps {
 }
 
 export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
-  const router = useRouter();
   const { t } = useTranslation();
   const { state, updateCVData } = useCVEditor();
   const [isScoring, setIsScoring] = useState(false);

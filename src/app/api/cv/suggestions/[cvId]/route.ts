@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { cvIdSchema, validateSchema } from "@/lib/validation-schemas";
+import { 
+  type CVMinimalResponse, 
+  type ATSuggestionsResponse 
+} from "@/lib/supabase-schemas";
 import { translateTexts } from "@/lib/translate";
 import { ATSuggestion } from "@/types";
 
@@ -55,10 +59,13 @@ export async function GET(
       .eq("is_active", true)
       .order("created_at", { ascending: true });
 
-    const [
-      { data: cv, error: cvError },
-      { data: suggestions, error: suggestionsError },
-    ] = await Promise.all([cvPromise, suggestionsPromise]);
+    const [cvResponse, suggestionsResponse] = await Promise.all([
+      cvPromise,
+      suggestionsPromise,
+    ]) as [CVMinimalResponse, ATSuggestionsResponse];
+
+    const { data: cv, error: cvError } = cvResponse;
+    const { data: suggestions, error: suggestionsError } = suggestionsResponse;
 
     if (cvError || !cv) {
       return NextResponse.json(
@@ -108,8 +115,8 @@ export async function GET(
     };
 
         // Filter and normalize suggestions
-    let validSuggestions = (suggestions || [])
-      .map((suggestion: ATSuggestion) => {
+    const validSuggestions = (suggestions || [])
+      .map((suggestion) => {
         const normalizedSection = normalizeTargetSection(suggestion.target_section);
         if (!normalizedSection) {
           console.warn(
@@ -120,12 +127,12 @@ export async function GET(
         return {
           ...suggestion,
           target_section: normalizedSection,
-        };
+        } as ATSuggestion;
       })
-      .filter((s): s is NonNullable<typeof s> => s !== null);
+      .filter((s): s is ATSuggestion => s !== null);
 
     // Process suggestions to handle JSON storage and translation
-    const processedSuggestions = [];
+    const processedSuggestions: ATSuggestion[] = [];
     const suggestionsToTranslate: { index: number; text: string }[] = [];
 
     for (let i = 0; i < validSuggestions.length; i++) {
@@ -156,7 +163,7 @@ export async function GET(
             }
           }
         }
-      } catch (e) {
+      } catch {
         // Not JSON, continue as string
       }
 
