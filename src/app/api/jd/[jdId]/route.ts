@@ -73,8 +73,9 @@ export async function GET(
     }
 
     // Verify ownership
-    if (jdAnalysis.cv.user_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const cvData = jdAnalysis.cv as { user_id: string } | undefined;
+    if (!cvData || cvData.user_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Return formatted response
