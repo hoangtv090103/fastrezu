@@ -90,14 +90,49 @@ export default function JDAnalysisStep() {
     }
   };
 
-  const handleUseSavedJD = (savedJD: SavedJD) => {
-    setJdText(savedJD.jdText);
-    setKeywords(savedJD.keywords);
-    setJDAnalysis(savedJD.keywords, savedJD.analysis, savedJD.mode || "real");
-    if (savedJD.mode === "shadow") {
-      setMode("shadow");
-    } else {
-      setMode("real");
+  const [isLoadingDetails, setIsLoadingDetails] = useState<string | null>(null);
+
+  const handleUseSavedJD = async (savedJD: SavedJD) => {
+    // If we already have the analysis (e.g. from a fresh creation), use it
+    if (savedJD.analysis && Object.keys(savedJD.analysis).length > 0) {
+      setJdText(savedJD.jdText || "");
+      const keywords = savedJD.keywords || [];
+      setKeywords(keywords);
+      setJDAnalysis(keywords, savedJD.analysis, savedJD.mode || "real");
+      if (savedJD.mode === "shadow") {
+        setMode("shadow");
+      } else {
+        setMode("real");
+      }
+      return;
+    }
+
+    // Otherwise fetch full details
+    setIsLoadingDetails(savedJD.id);
+    try {
+      const { jdAnalysis } = await apiGet<{ jdAnalysis: SavedJD }>(
+        `/api/jd/${savedJD.id}`
+      );
+
+      setJdText(jdAnalysis.jdText || "");
+      const keywords = jdAnalysis.keywords || [];
+      setKeywords(keywords);
+      setJDAnalysis(
+        keywords,
+        jdAnalysis.analysis,
+        jdAnalysis.mode || "real"
+      );
+
+      if (jdAnalysis.mode === "shadow") {
+        setMode("shadow");
+      } else {
+        setMode("real");
+      }
+    } catch (error) {
+      console.error("Error loading JD details:", error);
+      showErrorToast(t("common.error"), locale as "vi" | "en");
+    } finally {
+      setIsLoadingDetails(null);
     }
   };
 
@@ -301,7 +336,14 @@ export default function JDAnalysisStep() {
                           onClick={() => handleUseSavedJD(savedJD)}
                           className="px-2 sm:px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
-                          {t("editor.jdAnalysis.use")}
+                          {isLoadingDetails === savedJD.id ? (
+                            <div className="flex items-center">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <span className="sr-only">{t("common.loading")}</span>
+                            </div>
+                          ) : (
+                            t("editor.jdAnalysis.use")
+                          )}
                         </button>
                         <button
                           onClick={() => handleDeleteJD(savedJD.id)}

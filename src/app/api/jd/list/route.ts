@@ -59,9 +59,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Get JD analyses for this CV
+    // Optimized: Exclude analysis_result (heavy JSON)
     const { data: jdAnalyses, error: jdError } = await supabase
       .from('jd_analyses')
-      .select('id, jd_text, keywords_extracted, analysis_result, created_at, mode, shadow_job_title, shadow_level')
+      .select('id, jd_text, keywords_extracted, created_at, mode, shadow_job_title, shadow_level')
       .eq('cv_id', cvId)
       .order('created_at', { ascending: false })
 
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
       id: analysis.id,
       jdText: analysis.jd_text,
       keywords: analysis.keywords_extracted,
-      analysis: analysis.analysis_result,
+      // analysis: analysis.analysis_result, // Excluded for performance
       createdAt: analysis.created_at,
       mode: analysis.mode,
       preview: analysis.jd_text ? (analysis.jd_text.substring(0, 200) + (analysis.jd_text.length > 200 ? '...' : '')) : (analysis.mode === 'shadow' ? 'Shadow JD' : '')
