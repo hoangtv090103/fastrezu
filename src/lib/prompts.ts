@@ -841,7 +841,15 @@ export function getSystemPrompt(
   task: keyof typeof SYSTEM_PROMPTS,
   language: CVLanguage
 ): string {
-  return SYSTEM_PROMPTS[task][language];
+  const prompt = SYSTEM_PROMPTS[task][language];
+  const today = new Date().toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  return `${prompt}\n\nCurrent Date: ${today}`;
 }
 
 // Helper function to get user message template based on language
