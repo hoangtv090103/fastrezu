@@ -146,7 +146,6 @@ export default function ExportButtons({ cvData }: ExportButtonsProps) {
       <button
         onClick={handleCopyAsText}
         className="relative bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-lg transition-colors duration-200 flex items-center justify-center group"
-        title="Sao chép văn bản"
       >
         <svg
           className="w-4 h-4"

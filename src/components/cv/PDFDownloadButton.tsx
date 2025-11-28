@@ -8,7 +8,10 @@ interface PDFDownloadButtonProps {
   fileName: string;
 }
 
-export default function PDFDownloadButton({ cvData, fileName }: PDFDownloadButtonProps) {
+export default function PDFDownloadButton({
+  cvData,
+  fileName,
+}: PDFDownloadButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,14 +23,14 @@ export default function PDFDownloadButton({ cvData, fileName }: PDFDownloadButto
       // Dynamically import to avoid SSR issues
       const [{ default: CVTemplatePDF }, { pdf }] = await Promise.all([
         import("@/components/cv/CVTemplatePDF"),
-        import("@react-pdf/renderer")
+        import("@react-pdf/renderer"),
       ]);
 
       const blob = await pdf(<CVTemplatePDF cvData={cvData} />).toBlob();
       const url = URL.createObjectURL(blob);
 
       // Download the file
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = fileName;
       link.click();
@@ -49,7 +52,6 @@ export default function PDFDownloadButton({ cvData, fileName }: PDFDownloadButto
       onClick={generatePDF}
       disabled={isGenerating}
       className="relative bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors duration-200 flex items-center justify-center group disabled:opacity-50 disabled:cursor-not-allowed"
-      title="Tải xuống PDF"
     >
       {isGenerating ? (
         <>
@@ -103,5 +105,3 @@ export default function PDFDownloadButton({ cvData, fileName }: PDFDownloadButto
     </button>
   );
 }
-
-
