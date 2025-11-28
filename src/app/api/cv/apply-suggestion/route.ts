@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
           // If it's already an object, ensure it has 'content' field
           const contentObj = suggestedContent as Record<string, unknown>;
           updatedData = {
-            content: contentObj.content || contentObj.text || ''
+            content: contentObj.content || contentObj.text || contentObj.summary || contentObj.value || ''
           };
         } else {
           // Fallback: preserve existing data or use empty

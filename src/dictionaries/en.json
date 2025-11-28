@@ -39,7 +39,8 @@
       "high": "High",
       "medium": "Medium",
       "low": "Low"
-    }
+    },
+    "pleaseWait": "Please wait a moment..."
   },
   "auth": {
     "login": "Log In",
@@ -323,6 +324,10 @@
     "skipJD": "Skip (score without JD)",
     "generateScore": "Generate ATS Score",
     "scoring": "Scoring...",
+    "scanning": "Scanning CV...",
+    "analyzing": "Analyzing keywords...",
+    "evaluating": "Evaluating structure...",
+    "calculating": "Calculating score...",
     "atsScore": "ATS Score",
     "results": "Results",
     "resultsTitle": "CV Analysis Results",

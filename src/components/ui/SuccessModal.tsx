@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { useCVEditor } from "@/contexts/CVEditorContext";
@@ -14,8 +14,7 @@ interface SuccessModalProps {
 
 export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
   const { t } = useTranslation();
-  const { state, updateCVData } = useCVEditor();
-  const [isScoring, setIsScoring] = useState(false);
+  const { state } = useCVEditor();
   const [score, setScore] = useState<number | null>(null);
 
   // Initialize score from CV data
@@ -25,70 +24,9 @@ export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
     }
   }, [state.cvData?.ats_score]);
 
-  const handleScoreCV = useCallback(async () => {
-    if (!state.cvData || isScoring || score !== null) return;
-
-    setIsScoring(true);
-    try {
-      // Custom retry config with extended timeout for AI scoring
-      const scoreRetryConfig: RetryConfig = {
-        maxRetries: 2,
-        backoffMs: 1000,
-        timeoutMs: 120000,
-        retryableStatuses: [429, 500, 502, 503, 504],
-      };
-
-      const result = await apiPost<{
-        score: number;
-        analysis: {
-          keyword_match: number;
-          formatting: number;
-          completeness: number;
-          relevance: number;
-          matched_keywords: string[];
-          missing_keywords: string[];
-          suggestions: string[];
-        };
-        matchedKeywords: string[];
-        missingKeywords: string[];
-        suggestions: unknown[];
-      }>(
-        "/api/ai/score-cv",
-        {
-          cvData: state.cvData,
-          jdKeywords: state.cvData.jd_analysis?.keywords || [],
-          language: state.cvData?.language || "vi",
-          mode: state.cvData.jd_analysis?.mode || "real",
-        },
-        scoreRetryConfig,
-        "vi"
-      );
-
-      const newScore = Math.round(result.score || 0);
-      setScore(newScore);
-
-      // Update CV data with new score
-      if (state.cvData) {
-        updateCVData({
-          ...state.cvData,
-          ats_score: newScore,
-          ats_analysis: result.analysis,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to score CV:", error);
-    } finally {
-      setIsScoring(false);
-    }
-  }, [state.cvData, isScoring, score, updateCVData]);
-
+  // Visual effects (Confetti & Sound)
   useEffect(() => {
     if (isOpen) {
-      // Trigger scoring if needed
-      if (!state.cvData?.ats_score && !score && !isScoring) {
-        handleScoreCV();
-      }
-
       // --- 1. Trigger Confetti ---
       const duration = 3000;
       const end = Date.now() + duration;
@@ -130,7 +68,7 @@ export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
 
       playSuccessSound();
     }
-  }, [isOpen, handleScoreCV, state.cvData?.ats_score, score, isScoring]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -171,14 +109,7 @@ export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
           <div className="text-sm text-gray-500 mb-2 font-medium uppercase tracking-wide">
             {t("successModal.atsScore")}
           </div>
-          {isScoring ? (
-            <div className="flex flex-col items-center justify-center py-2">
-              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
-              <span className="text-sm text-blue-600 font-medium animate-pulse">
-                {t("successModal.scoring")}
-              </span>
-            </div>
-          ) : score !== null ? (
+          {score !== null ? (
             <div className="flex items-center justify-center gap-2">
               <span
                 className={`text-4xl font-bold ${

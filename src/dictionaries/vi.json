@@ -39,7 +39,8 @@
       "high": "High",
       "medium": "Medium",
       "low": "Low"
-    }
+    },
+    "pleaseWait": "Vui lòng đợi trong giây lát..."
   },
   "auth": {
     "login": "Đăng nhập",
@@ -320,6 +321,10 @@
     "skipJD": "Bỏ qua (chấm điểm không có JD)",
     "generateScore": "Tạo điểm ATS",
     "scoring": "Đang chấm điểm...",
+    "scanning": "Đang quét CV...",
+    "analyzing": "Đang phân tích từ khóa...",
+    "evaluating": "Đang đánh giá cấu trúc...",
+    "calculating": "Đang tính điểm...",
     "atsScore": "Điểm ATS",
     "results": "Kết quả",
     "resultsTitle": "Kết quả phân tích CV",

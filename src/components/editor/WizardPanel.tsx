@@ -1,5 +1,3 @@
-"use client";
-
 import { useCVEditor } from "@/contexts/CVEditorContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import StepNavigation from "@/components/editor/StepNavigation";
@@ -21,17 +19,20 @@ import CertificationsStep from "@/components/editor/steps/CertificationsStep";
 import ReviewStep from "@/components/editor/steps/ReviewStep";
 import { showErrorToast } from "@/lib/toast-utils";
 import { trackWizardStepCompleted } from "@/lib/analytics";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase-client";
 import AutoSaveIndicator from "@/components/editor/AutoSaveIndicator";
 import SuccessModal from "@/components/ui/SuccessModal";
+import ScanningAnimation from "@/components/ui/ScanningAnimation";
+import { apiPost, type RetryConfig } from "@/lib/api-client";
 
 type ValidationFunction =
   | ((data: Record<string, unknown>, language: "vi" | "en") => boolean)
   | ((data: Record<string, unknown>[], language: "vi" | "en") => boolean);
 
 export default function WizardPanel() {
-  const { state, setCurrentStep, updateTitle, saveCV } = useCVEditor();
+  const { state, setCurrentStep, updateTitle, saveCV, updateCVData } =
+    useCVEditor();
   const { t } = useTranslation();
   const stepStartTimeRef = useRef<number>(Date.now());
   const previousStepRef = useRef<number>(state.currentStep);
@@ -39,7 +40,7 @@ export default function WizardPanel() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const STEPS = useMemo(
     () => [
@@ -248,6 +249,75 @@ export default function WizardPanel() {
     setCurrentStep(step);
   };
 
+  const handleScoreCV = useCallback(async () => {
+    if (!state.cvData) return;
+
+    try {
+      // Custom retry config with extended timeout for AI scoring
+      const scoreRetryConfig: RetryConfig = {
+        maxRetries: 2,
+        backoffMs: 1000,
+        timeoutMs: 120000,
+        retryableStatuses: [429, 500, 502, 503, 504],
+      };
+
+      const result = await apiPost<{
+        score: number;
+        analysis: {
+          keyword_match: number;
+          formatting: number;
+          completeness: number;
+          relevance: number;
+          matched_keywords: string[];
+          missing_keywords: string[];
+          suggestions: string[];
+        };
+        matchedKeywords: string[];
+        missingKeywords: string[];
+        suggestions: unknown[];
+      }>(
+        "/api/ai/score-cv",
+        {
+          cvData: state.cvData,
+          jdKeywords: state.cvData.jd_analysis?.keywords || [],
+          language: state.cvData?.language || "vi",
+          mode: state.cvData.jd_analysis?.mode || "real",
+        },
+        scoreRetryConfig,
+        "vi"
+      );
+
+      const newScore = Math.round(result.score || 0);
+
+      // Update CV data with new score
+      if (state.cvData) {
+        updateCVData({
+          ...state.cvData,
+          ats_score: newScore,
+          ats_analysis: result.analysis,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to score CV:", error);
+    }
+  }, [state.cvData, updateCVData]);
+
+  const handleComplete = async () => {
+    try {
+      setIsProcessing(true);
+      // 1. Save CV
+      await saveCV();
+      // 2. Score CV
+      await handleScoreCV();
+      // 3. Show Success Modal
+      setShowSuccess(true);
+    } catch (error) {
+      console.error("Failed to complete CV:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const CurrentStepComponent = STEPS[state.currentStep]?.component;
   const totalSteps = STEPS.length;
   const isFirstStep = state.currentStep === 0;
@@ -281,7 +351,14 @@ export default function WizardPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
+      {/* Full Screen Loading Overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm">
+          <ScanningAnimation />
+        </div>
+      )}
+
       {/* Progress Header */}
       <div className="p-4 sm:p-6 border-b border-gray-200">
         <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -408,25 +485,15 @@ export default function WizardPanel() {
             ) : (
               <button
                 type="button"
-                onClick={async () => {
-                  try {
-                    setIsSaving(true);
-                    await saveCV();
-                    setShowSuccess(true);
-                  } catch (error) {
-                    console.error("Failed to save CV:", error);
-                  } finally {
-                    setIsSaving(false);
-                  }
-                }}
-                disabled={isSaving}
+                onClick={handleComplete}
+                disabled={isProcessing}
                 className={`w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors shadow-lg hover:shadow-xl ${
-                  isSaving
+                  isProcessing
                     ? "bg-blue-400 cursor-not-allowed"
                     : "bg-blue-600 hover:bg-blue-700"
                 }`}
               >
-                {isSaving ? (
+                {isProcessing ? (
                   <>
                     <svg
                       className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
