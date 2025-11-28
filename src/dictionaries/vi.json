@@ -39,7 +39,8 @@
       "high": "High",
       "medium": "Medium",
       "low": "Low"
-    }
+    },
+    "pleaseWait": "Vui lòng đợi trong giây lát..."
   },
   "auth": {
     "login": "Đăng nhập",
@@ -213,6 +214,7 @@
     "responsibilities": "Trách nhiệm",
     "addAchievement": "Thêm thành tựu",
     "generateWithAI": "Viết bằng AI",
+    "generating": "Đang tạo...",
     "improveWithAI": "Cải thiện bằng AI",
     "noExperience": "Chưa có kinh nghiệm nào",
     "placeholders": {
@@ -319,6 +321,10 @@
     "skipJD": "Bỏ qua (chấm điểm không có JD)",
     "generateScore": "Tạo điểm ATS",
     "scoring": "Đang chấm điểm...",
+    "scanning": "Đang quét CV...",
+    "analyzing": "Đang phân tích từ khóa...",
+    "evaluating": "Đang đánh giá cấu trúc...",
+    "calculating": "Đang tính điểm...",
     "atsScore": "Điểm ATS",
     "results": "Kết quả",
     "resultsTitle": "Kết quả phân tích CV",
@@ -462,6 +468,7 @@
       "achievements": "Thành tựu & Trách nhiệm",
       "addAchievement": "Thêm thành tựu",
       "generateWithAI": "Viết bằng AI",
+      "generating": "Đang tạo...",
       "improve": "Cải thiện bằng AI",
       "improving": "Đang cải thiện...",
       "improveSuccess": "Đã cải thiện mô tả thành công!",

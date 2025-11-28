@@ -221,7 +221,7 @@ export async function POST(request: NextRequest) {
           // If it's already an object, ensure it has 'content' field
           const contentObj = suggestedContent as Record<string, unknown>;
           updatedData = {
-            content: contentObj.content || contentObj.text || ''
+            content: contentObj.content || contentObj.text || contentObj.summary || contentObj.value || ''
           };
         } else {
           // Fallback: preserve existing data or use empty
@@ -233,19 +233,25 @@ export async function POST(request: NextRequest) {
         
         if (arraySections.includes(validatedSuggestion.target_section)) {
           const suggestedContent = validatedSuggestion.suggested_content;
+          const currentData = (sectionData?.data as unknown[]) || [];
           
           if (Array.isArray(suggestedContent)) {
             // If suggestion is an array, replace the whole list
             updatedData = suggestedContent;
           } else if (suggestedContent && typeof suggestedContent === 'object') {
-            // If suggestion is a single object, check if we should append or replace
-            // For now, if the section is empty, we create a new array with this item
-            // If not empty, we append it (safest assumption for "add" suggestions)
-            const currentData = (sectionData?.data as unknown[]) || [];
-            updatedData = [...currentData, suggestedContent];
+            // If suggestion is a single object, check if it's valid before appending
+            const hasKeys = Object.keys(suggestedContent).length > 0;
+            if (hasKeys) {
+              updatedData = [...currentData, suggestedContent];
+            } else {
+              // Empty object, do not append
+              console.warn("Skipping empty suggestion object for array section");
+              updatedData = currentData;
+            }
           } else {
-             // Fallback
-             updatedData = [];
+             // Fallback: preserve existing data if suggestion is invalid (e.g. string advice)
+             console.warn("Skipping invalid suggestion content for array section:", typeof suggestedContent);
+             updatedData = currentData;
           }
         } else {
           // Replace entire section for other section types

@@ -83,14 +83,22 @@ export default function CVTemplate({
     (sections.personal_info as Record<string, unknown>) || {};
   const summary = (sections.summary as Record<string, unknown>) || {};
   const experience =
-    (sections.experience as unknown as Record<string, unknown>[]) || [];
+    (sections.experience as unknown as Record<string, unknown>[])?.filter(
+      Boolean
+    ) || [];
   const education =
-    (sections.education as unknown as Record<string, unknown>[]) || [];
+    (sections.education as unknown as Record<string, unknown>[])?.filter(
+      Boolean
+    ) || [];
   const projects =
-    (sections.projects as unknown as Record<string, unknown>[]) || [];
+    (sections.projects as unknown as Record<string, unknown>[])?.filter(
+      Boolean
+    ) || [];
   const skills = (sections.skills as Record<string, unknown>) || {};
   const certifications =
-    (sections.certifications as unknown as Record<string, unknown>[]) || [];
+    (sections.certifications as unknown as Record<string, unknown>[])?.filter(
+      Boolean
+    ) || [];
 
   // Helper function to safely get string values
   const getString = (obj: Record<string, unknown>, key: string): string => {

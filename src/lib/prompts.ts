@@ -260,15 +260,16 @@ Mỗi suggestion phải có đầy đủ thông tin để có thể tự động
 - Với experience/projects/education/certifications: original_content là object hoặc phần tử trong array
 - Với skills: 
   * original_content PHẢI là object có dạng: { "technical": ["skill1", "skill2"], "soft": ["skill3", "skill4"] }
-  * suggested_content PHẢI có CÙNG cấu trúc object với cả "technical" VÀ "soft" arrays
-  * KHÔNG được để một trong hai là undefined hoặc null
-  * Ví dụ đúng: {"technical": ["React", "Node.js", "Docker"], "soft": ["Teamwork", "Communication"]}
+  * suggested_content CÓ THỂ chỉ chứa "technical" HOẶC "soft" nếu chỉ muốn cập nhật một loại kỹ năng.
+  * Ví dụ cập nhật technical: {"technical": ["React", "Node.js", "Docker"]} (giữ nguyên soft skills hiện tại)
+  * Ví dụ cập nhật soft: {"soft": ["Teamwork", "Communication", "Leadership"]} (giữ nguyên technical skills hiện tại)
+  * HÃY TÁCH RIÊNG gợi ý cho technical và soft skills. Đừng gộp chung vào một suggestion.
 - Với summary: original_content là string, suggested_content là string đã cải thiện
 - Luôn phải giữ đúng cấu trúc dữ liệu của section đó
 - VỀ NGÔN NGỮ: suggestion_text LUÔN bằng tiếng Việt TRỰC TIẾP (không dịch từ tiếng Anh). suggested_content phải bằng cùng ngôn ngữ với original_content (nếu original tiếng Việt thì applied tiếng Việt, nếu original tiếng Anh thì applied tiếng Anh).
 
 **Ví dụ suggestion_text tiếng Việt (VĂN BẢN CỤ THỂ):**
-- "Thêm từ khóa 'Docker' vào phần kỹ năng để khớp với yêu cầu công việc"
+- "Thêm từ khóa 'Docker' vào phần kỹ năng chuyên môn"
 - "Cải thiện phần summary bằng cách thêm số liệu cụ thể về thành tích"
 - "Mở rộng phần Projects để bao gồm các dự án AI/ML liên quan"
 - "Nâng cao mức độ chi tiết trong các bullet points về kinh nghiệm"
@@ -353,9 +354,10 @@ Each suggestion must have complete information for automatic application:
 - For experience/projects/education/certifications: original_content is object or element in array
 - For skills: 
   * original_content MUST be an object with format: { "technical": ["skill1", "skill2"], "soft": ["skill3", "skill4"] }
-  * suggested_content MUST have the SAME object structure with BOTH "technical" AND "soft" arrays
-  * DO NOT set either one as undefined or null
-  * Correct example: {"technical": ["React", "Node.js", "Docker"], "soft": ["Teamwork", "Communication"]}
+  * suggested_content CAN contain ONLY "technical" OR "soft" if you only want to update one type of skill.
+  * Example updating technical: {"technical": ["React", "Node.js", "Docker"]} (preserves existing soft skills)
+  * Example updating soft: {"soft": ["Teamwork", "Communication", "Leadership"]} (preserves existing technical skills)
+  * PLEASE SEPARATE suggestions for technical and soft skills. Do not combine them into one suggestion.
 - For summary: original_content is string, suggested_content is improved string
 - Always maintain the exact data structure of that section
 - **CRITICAL LANGUAGE NOTE:** suggested_content MUST be written in the SAME language as original_content. If original_content is in Vietnamese, suggested_content must be in Vietnamese. If original_content is in English, suggested_content must be in English.
@@ -841,7 +843,15 @@ export function getSystemPrompt(
   task: keyof typeof SYSTEM_PROMPTS,
   language: CVLanguage
 ): string {
-  return SYSTEM_PROMPTS[task][language];
+  const prompt = SYSTEM_PROMPTS[task][language];
+  const today = new Date().toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  return `${prompt}\n\nCurrent Date: ${today}`;
 }
 
 // Helper function to get user message template based on language
