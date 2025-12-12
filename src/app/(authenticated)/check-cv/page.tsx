@@ -1,22 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { showSuccessToast, showErrorToast } from "@/lib/toast-utils";
 import { handleAPIError } from "@/lib/error-handler";
 import PDFViewerWrapper from "@/components/cv/PDFViewerWrapper";
 import FileUploadZone from "@/components/cv/FileUploadZone";
 // import { parseMarkdown } from "@/lib/markdown"; // no longer used here
 import { apiPost, apiPostFormData } from "@/lib/api-client";
-import { 
-  trackCheckerFlowStarted, 
-  trackCheckerFileUploaded, 
+import {
+  trackCheckerFlowStarted,
+  trackCheckerFileUploaded,
   trackCheckerTextCorrected,
-  trackCheckerScoreGenerated 
+  trackCheckerScoreGenerated,
 } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase-client";
 import InfoTooltip from "@/components/ui/InfoTooltip";
 import { getTooltipContent } from "@/lib/tooltip-content";
 import { useTranslation } from "@/hooks/useTranslation";
+import { getPendingCVAsFile, clearPendingCV } from "@/lib/pending-cv-storage";
 
 interface ScoreResult {
   score: number;
@@ -30,7 +32,11 @@ interface ScoreResult {
   missingKeywords: string[];
   suggestions: Array<{
     suggestion_text: string;
-    suggestion_type: "add_keyword" | "improve_bullet" | "add_section" | "enhance_content";
+    suggestion_type:
+      | "add_keyword"
+      | "improve_bullet"
+      | "add_section"
+      | "enhance_content";
     target_section: string;
     target_index: number | null;
     keyword: string | null;
@@ -47,6 +53,7 @@ interface ScoreResult {
 }
 
 export default function CheckCVPage() {
+  const searchParams = useSearchParams();
   const [file, setFile] = useState<File | null>(null);
   const [isLoadingUpload, setIsLoadingUpload] = useState(false);
   const [editedText, setEditedText] = useState("");
@@ -56,38 +63,59 @@ export default function CheckCVPage() {
   const [isLoadingScore, setIsLoadingScore] = useState(false);
   const [scoreResult, setScoreResult] = useState<ScoreResult | null>(null);
   const [error, setError] = useState("");
-  const [currentStep, setCurrentStep] = useState<'upload' | 'review' | 'jd' | 'results'>('upload');
+  const [currentStep, setCurrentStep] = useState<
+    "upload" | "review" | "jd" | "results"
+  >("upload");
   const [userId, setUserId] = useState<string | null>(null);
+  const [autoUploadTriggered, setAutoUploadTriggered] = useState(false);
   const { t, locale } = useTranslation();
 
-  // Track checker flow start and get user ID
+  // Track checker flow start, get user ID, and auto-load pending CV
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (user) {
         setUserId(user.id);
         // Track checker flow started
         try {
           trackCheckerFlowStarted({ userId: user.id });
         } catch (error) {
-          console.error('Failed to track checker flow:', error);
+          console.error("Failed to track checker flow:", error);
+        }
+      }
+
+      // Auto-load pending CV if coming from upload flow
+      const fromUpload = searchParams.get("from_upload") === "true";
+      if (fromUpload && !autoUploadTriggered) {
+        const pendingFile = getPendingCVAsFile();
+        if (pendingFile) {
+          setFile(pendingFile);
+          setAutoUploadTriggered(true);
+          // Clear the pending CV from storage
+          clearPendingCV();
+          // Show success message
+          showSuccessToast(
+            'CV đã được tải lên thành công! Nhấn "Tải lên" để tiếp tục.'
+          );
         }
       }
     };
     init();
-  }, []);
+  }, [searchParams, autoUploadTriggered, locale]);
 
   const handleFileChange = (selectedFile: File) => {
     setFile(selectedFile);
     setError("");
     setScoreResult(null);
-    setCurrentStep('upload');
+    setCurrentStep("upload");
   };
 
   const handleFileUpload = async () => {
     if (!file) {
-      const errorMsg = t('checkCV.errors.selectFile');
+      const errorMsg = t("checkCV.errors.selectFile");
       setError(errorMsg);
       showErrorToast(errorMsg, locale);
       return;
@@ -100,31 +128,29 @@ export default function CheckCVPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const data = await apiPostFormData<{ text: string; extractedText: string }>(
-        "/api/cv/upload-check",
-        formData,
-        undefined,
-        locale
-      );      // Keep the extracted text as-is; BlockNoteEditor will emit Markdown on edits
+      const data = await apiPostFormData<{
+        text: string;
+        extractedText: string;
+      }>("/api/cv/upload-check", formData, undefined, locale); // Keep the extracted text as-is; BlockNoteEditor will emit Markdown on edits
       setEditedText(data.extractedText || data.text);
       setOriginalText(data.extractedText || data.text); // Store original for tracking
-      setCurrentStep('review');
-      showSuccessToast(t('checkCV.success.uploaded'));
-      
+      setCurrentStep("review");
+      showSuccessToast(t("checkCV.success.uploaded"));
+
       // Track file upload
       if (userId) {
         try {
           trackCheckerFileUploaded({
             userId: userId,
-            fileType: file.name.endsWith('.pdf') ? 'pdf' : 'docx',
+            fileType: file.name.endsWith(".pdf") ? "pdf" : "docx",
             fileSizeKb: Math.round(file.size / 1024),
           });
         } catch (error) {
-          console.error('Failed to track file upload:', error);
+          console.error("Failed to track file upload:", error);
         }
       }
     } catch (err) {
-      const appError = handleAPIError(err, 'upload CV', locale);
+      const appError = handleAPIError(err, "upload CV", locale);
       setError(appError.userMessage);
       showErrorToast(appError, locale);
     } finally {
@@ -134,7 +160,7 @@ export default function CheckCVPage() {
 
   const handleConfirmText = () => {
     if (!editedText.trim()) {
-      const errorMsg = t('checkCV.errors.confirmTextFirst');
+      const errorMsg = t("checkCV.errors.confirmTextFirst");
       setError(errorMsg);
       showErrorToast(errorMsg, locale);
       return;
@@ -142,9 +168,9 @@ export default function CheckCVPage() {
     setIsConfirmingText(true);
     setTimeout(() => {
       setIsConfirmingText(false);
-      setCurrentStep('jd');
-      showSuccessToast(t('checkCV.success.textConfirmed'));
-    
+      setCurrentStep("jd");
+      showSuccessToast(t("checkCV.success.textConfirmed"));
+
       // Track text confirmation
       if (userId) {
         try {
@@ -154,7 +180,7 @@ export default function CheckCVPage() {
             textLengthCorrected: editedText.length,
           });
         } catch (error) {
-          console.error('Failed to track text correction:', error);
+          console.error("Failed to track text correction:", error);
         }
       }
     }, 300);
@@ -162,7 +188,7 @@ export default function CheckCVPage() {
 
   const handleScoreCV = async () => {
     if (!editedText.trim()) {
-      const errorMsg = t('checkCV.errors.confirmBeforeScore');
+      const errorMsg = t("checkCV.errors.confirmBeforeScore");
       setError(errorMsg);
       showErrorToast(errorMsg, locale);
       return;
@@ -178,16 +204,21 @@ export default function CheckCVPage() {
           // editedText is Markdown emitted by the editor
           confirmedText: editedText,
           jdText: jdText.trim() || undefined,
-          language: 'vi',
+          language: "vi",
         },
-        { maxRetries: 3, backoffMs: 2000, timeoutMs: 180000, retryableStatuses: [429,500,502,503,504] },
+        {
+          maxRetries: 3,
+          backoffMs: 2000,
+          timeoutMs: 180000,
+          retryableStatuses: [429, 500, 502, 503, 504],
+        },
         locale
       );
 
       setScoreResult(data);
-      setCurrentStep('results');
-      showSuccessToast(t('checkCV.success.scoreGenerated'));
-      
+      setCurrentStep("results");
+      showSuccessToast(t("checkCV.success.scoreGenerated"));
+
       // Track score generation
       if (userId) {
         try {
@@ -197,18 +228,20 @@ export default function CheckCVPage() {
             withJD: !!jdText.trim(),
           });
         } catch (error) {
-          console.error('Failed to track score generation:', error);
+          console.error("Failed to track score generation:", error);
         }
       }
     } catch (err) {
-      const appError = handleAPIError(err, 'score CV', locale);
-      
+      const appError = handleAPIError(err, "score CV", locale);
+
       // Check if it's a service unavailable error
       const errorMessage = err instanceof Error ? err.message : String(err);
-      const is503Error = errorMessage.includes('503') || errorMessage.includes('temporarily unavailable');
-      
+      const is503Error =
+        errorMessage.includes("503") ||
+        errorMessage.includes("temporarily unavailable");
+
       if (is503Error) {
-        const friendlyMessage = t('checkCV.errors.aiOverloaded');
+        const friendlyMessage = t("checkCV.errors.aiOverloaded");
         setError(friendlyMessage);
         showErrorToast(friendlyMessage, locale);
       } else {
@@ -226,57 +259,71 @@ export default function CheckCVPage() {
     setJdText("");
     setScoreResult(null);
     setError("");
-    setCurrentStep('upload');
+    setCurrentStep("upload");
   };
 
   return (
-      <div className="w-full max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-          <div className="mb-6">
+    <div className="w-full max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+        <div className="mb-6">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                {t('checkCV.title')}
+                {t("checkCV.title")}
               </h1>
               <p className="text-sm sm:text-base text-gray-700">
-                {t('checkCV.subtitle')}
+                {t("checkCV.subtitle")}
               </p>
             </div>
-            
+
             {/* Compact Step Indicator */}
             <div className="flex items-center space-x-1 sm:space-x-2 ml-4">
               {[
-                { key: 'upload', label: t('checkCV.steps.upload'), icon: '📁' },
-                { key: 'review', label: t('checkCV.steps.review'), icon: '✏️' },
-                { key: 'jd', label: t('checkCV.steps.jd'), icon: '📋' },
-                { key: 'results', label: t('checkCV.steps.results'), icon: '📊' },
+                { key: "upload", label: t("checkCV.steps.upload"), icon: "📁" },
+                { key: "review", label: t("checkCV.steps.review"), icon: "✏️" },
+                { key: "jd", label: t("checkCV.steps.jd"), icon: "📋" },
+                {
+                  key: "results",
+                  label: t("checkCV.steps.results"),
+                  icon: "📊",
+                },
               ].map((step, index) => (
                 <div key={step.key} className="relative group">
                   <div
                     className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 ${
                       currentStep === step.key
-                        ? 'bg-blue-600 text-white shadow-lg'
-                        : ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
-                        ? 'bg-green-500 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                        ? "bg-blue-600 text-white shadow-lg"
+                        : ["upload", "review", "jd", "results"].indexOf(
+                            currentStep
+                          ) > index
+                        ? "bg-green-500 text-white shadow-md"
+                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                     }`}
                   >
-                    {['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index ? '✓' : step.icon}
+                    {["upload", "review", "jd", "results"].indexOf(
+                      currentStep
+                    ) > index
+                      ? "✓"
+                      : step.icon}
                   </div>
-                  
+
                   {/* Tooltip */}
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
                     {step.label}
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
-                  
+
                   {/* Connector line */}
                   {index < 3 && (
-                    <div className={`absolute top-1/2 left-full w-2 sm:w-4 h-0.5 transform -translate-y-1/2 ${
-                      ['upload', 'review', 'jd', 'results'].indexOf(currentStep) > index
-                        ? 'bg-green-500'
-                        : 'bg-gray-100'
-                    }`} />
+                    <div
+                      className={`absolute top-1/2 left-full w-2 sm:w-4 h-0.5 transform -translate-y-1/2 ${
+                        ["upload", "review", "jd", "results"].indexOf(
+                          currentStep
+                        ) > index
+                          ? "bg-green-500"
+                          : "bg-gray-100"
+                      }`}
+                    />
                   )}
                 </div>
               ))}
@@ -291,11 +338,11 @@ export default function CheckCVPage() {
         )}
 
         {/* Step 1: Upload */}
-        {currentStep === 'upload' && (
+        {currentStep === "upload" && (
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('checkCV.uploadFileLabel')}
+                {t("checkCV.uploadFileLabel")}
               </label>
               <FileUploadZone
                 file={file}
@@ -311,20 +358,22 @@ export default function CheckCVPage() {
               disabled={!file || isLoadingUpload}
               className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              {isLoadingUpload ? t('checkCV.uploading') : t('checkCV.uploadButton')}
+              {isLoadingUpload
+                ? t("checkCV.uploading")
+                : t("checkCV.uploadButton")}
             </button>
           </div>
         )}
 
         {/* Step 2: Review Text */}
-        {currentStep === 'review' && (
+        {currentStep === "review" && (
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('checkCV.review.title')}
+                {t("checkCV.review.title")}
               </label>
               <p className="text-sm text-gray-600 mb-4">
-                {t('checkCV.review.description')}
+                {t("checkCV.review.description")}
               </p>
             </div>
 
@@ -339,60 +388,60 @@ export default function CheckCVPage() {
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
-                onClick={() => setCurrentStep('upload')}
+                onClick={() => setCurrentStep("upload")}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 text-sm sm:text-base"
               >
-                {t('common.back')}
+                {t("common.back")}
               </button>
               <button
                 onClick={handleConfirmText}
                 disabled={!editedText.trim() || isConfirmingText}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm sm:text-base"
               >
-                {isConfirmingText ? t('checkCV.confirming') : t('common.next')}
+                {isConfirmingText ? t("checkCV.confirming") : t("common.next")}
               </button>
             </div>
           </div>
         )}
 
         {/* Step 3: Job Description */}
-        {currentStep === 'jd' && (
+        {currentStep === "jd" && (
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('checkCV.addJDLabel')}
+                {t("checkCV.addJDLabel")}
               </label>
-              <p className="text-sm text-gray-700 mb-4">
-                {t('checkCV.addJD')}
-              </p>
+              <p className="text-sm text-gray-700 mb-4">{t("checkCV.addJD")}</p>
               <textarea
                 value={jdText}
                 onChange={(e) => setJdText(e.target.value)}
                 className="w-full h-48 p-4 border border-gray-300 rounded-lg text-gray-900 bg-white"
-                placeholder={t('checkCV.addJDPlaceholder')}
+                placeholder={t("checkCV.addJDPlaceholder")}
               />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
-                onClick={() => setCurrentStep('review')}
+                onClick={() => setCurrentStep("review")}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 text-sm sm:text-base"
               >
-                {t('common.back')}
+                {t("common.back")}
               </button>
               <button
                 onClick={handleScoreCV}
                 disabled={isLoadingScore}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 text-sm sm:text-base"
               >
-                {isLoadingScore ? t('checkCV.scoring') : t('checkCV.generateScore')}
+                {isLoadingScore
+                  ? t("checkCV.scoring")
+                  : t("checkCV.generateScore")}
               </button>
             </div>
           </div>
         )}
 
         {/* Step 4: Results */}
-        {currentStep === 'results' && scoreResult && (
+        {currentStep === "results" && scoreResult && (
           <div className="space-y-6">
             <div className="text-center">
               <div className="text-6xl font-bold text-blue-600 mb-2">
@@ -400,12 +449,14 @@ export default function CheckCVPage() {
               </div>
               <div className="flex items-center justify-center gap-2">
                 <h2 className="text-2xl font-semibold text-gray-900">
-                  {t('checkCV.atsScore')}
+                  {t("checkCV.atsScore")}
                 </h2>
                 <InfoTooltip
                   id="ats-score-check-cv"
                   title={getTooltipContent("ats_score_meaning", locale).title}
-                  content={getTooltipContent("ats_score_meaning", locale).content}
+                  content={
+                    getTooltipContent("ats_score_meaning", locale).content
+                  }
                   placement="bottom"
                   icon="info"
                   dismissible={true}
@@ -420,11 +471,17 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.keyword_match}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.keywordMatch')}</div>
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    {t("checkCV.keywordMatch")}
+                  </div>
                   <InfoTooltip
                     id="keyword-match-check-cv"
-                    title={getTooltipContent("keyword_match_meaning", locale).title}
-                    content={getTooltipContent("keyword_match_meaning", locale).content}
+                    title={
+                      getTooltipContent("keyword_match_meaning", locale).title
+                    }
+                    content={
+                      getTooltipContent("keyword_match_meaning", locale).content
+                    }
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -436,11 +493,17 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.formatting}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.formatting')}</div>
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    {t("checkCV.formatting")}
+                  </div>
                   <InfoTooltip
                     id="formatting-check-cv"
-                    title={getTooltipContent("formatting_meaning", locale).title}
-                    content={getTooltipContent("formatting_meaning", locale).content}
+                    title={
+                      getTooltipContent("formatting_meaning", locale).title
+                    }
+                    content={
+                      getTooltipContent("formatting_meaning", locale).content
+                    }
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -452,11 +515,17 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.completeness}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.completeness')}</div>
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    {t("checkCV.completeness")}
+                  </div>
                   <InfoTooltip
                     id="completeness-check-cv"
-                    title={getTooltipContent("completeness_meaning", locale).title}
-                    content={getTooltipContent("completeness_meaning", locale).content}
+                    title={
+                      getTooltipContent("completeness_meaning", locale).title
+                    }
+                    content={
+                      getTooltipContent("completeness_meaning", locale).content
+                    }
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -468,11 +537,15 @@ export default function CheckCVPage() {
                   {scoreResult.analysis.relevance}
                 </div>
                 <div className="flex items-center justify-center gap-1">
-                  <div className="text-xs sm:text-sm text-gray-700">{t('checkCV.relevance')}</div>
+                  <div className="text-xs sm:text-sm text-gray-700">
+                    {t("checkCV.relevance")}
+                  </div>
                   <InfoTooltip
                     id="relevance-check-cv"
                     title={getTooltipContent("relevance_meaning", locale).title}
-                    content={getTooltipContent("relevance_meaning", locale).content}
+                    content={
+                      getTooltipContent("relevance_meaning", locale).content
+                    }
                     placement="bottom"
                     icon="info"
                     dismissible={true}
@@ -485,7 +558,7 @@ export default function CheckCVPage() {
             {scoreResult.matchedKeywords.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('checkCV.matchedKeywords')}
+                  {t("checkCV.matchedKeywords")}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {scoreResult.matchedKeywords.map((keyword, index) => (
@@ -503,7 +576,7 @@ export default function CheckCVPage() {
             {scoreResult.missingKeywords.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {t('checkCV.missingKeywords')}
+                  {t("checkCV.missingKeywords")}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {scoreResult.missingKeywords.map((keyword, index) => (
@@ -522,7 +595,7 @@ export default function CheckCVPage() {
             {scoreResult.suggestions && scoreResult.suggestions.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  {t('checkCV.suggestions')}
+                  {t("checkCV.suggestions")}
                 </h3>
                 <div className="space-y-3">
                   {scoreResult.suggestions.map((suggestion, index) => {
@@ -541,11 +614,13 @@ export default function CheckCVPage() {
 
                     const getPriorityLabel = (priority: string) => {
                       const labels = {
-                        high: t('checkCV.priority.high'),
-                        medium: t('checkCV.priority.medium'),
-                        low: t('checkCV.priority.low'),
+                        high: t("checkCV.priority.high"),
+                        medium: t("checkCV.priority.medium"),
+                        low: t("checkCV.priority.low"),
                       };
-                      return labels[priority as keyof typeof labels] || priority;
+                      return (
+                        labels[priority as keyof typeof labels] || priority
+                      );
                     };
 
                     return (
@@ -584,7 +659,8 @@ export default function CheckCVPage() {
             {/* Disclaimer */}
             <div className="bg-yellow-50 border border-yellow-500 rounded-lg p-4">
               <p className="text-sm text-yellow-500">
-                <strong>{t('checkCV.disclaimer.note')}</strong> {t('checkCV.disclaimer.message')}
+                <strong>{t("checkCV.disclaimer.note")}</strong>{" "}
+                {t("checkCV.disclaimer.message")}
               </p>
             </div>
 
@@ -593,7 +669,7 @@ export default function CheckCVPage() {
                 onClick={resetProcess}
                 className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base"
               >
-                {t('checkCV.startOver')}
+                {t("checkCV.startOver")}
               </button>
             </div>
           </div>

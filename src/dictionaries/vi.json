@@ -819,12 +819,18 @@
       "brandName": "FastRezu"
     },
     "hero": {
-      "title": "CV đẹp từ Canva & template vẫn bị từ chối?",
-      "titleHighlight": "Đã đến lúc",
-      "titleAction": "tối ưu cho tuyển dụng AI.",
-      "subtitle": "67% công ty toàn cầu sử dụng AI cho tuyển dụng, dự kiến đạt 83% vào năm 2025. FastRezu biến kinh nghiệm của bạn thành nội dung thành tích đánh bại cả hệ thống ATS và nhà tuyển dụng.",
+      "title": "Tạo CV chuyên nghiệp:",
+      "titleHighlight": "Chuẩn hệ thống ATS,",
+      "titleAction": "Thuyết phục nhà tuyển dụng.",
+      "subtitle": "Đừng để hồ sơ bị loại vì lỗi định dạng hay nội dung mờ nhạt. FastRezu giúp bạn tối ưu hóa CV để vượt qua bộ lọc tự động VÀ gây ấn tượng với HR chỉ trong 6 giây.",
       "description": "Trong khi đối thủ chỉ kiểm tra CV, FastRezu hướng dẫn bạn viết từ đầu. Chúng tôi chuyển đổi nhiệm vụ thành thành tích có số liệu, tích hợp từ khóa JD, và đảm bảo CV của bạn vượt qua hệ thống ATS hiện đại.",
       "atsScoreLabel": "Điểm Tương thích ATS"
+    },
+    "uploadWidget": {
+      "heading": "CV của bạn đã đủ tốt để thuyết phục HR?",
+      "subheading": "Tải lên để chấm điểm miễn phí",
+      "button": "Chọn CV của bạn (PDF/DOCX)",
+      "dragText": "hoặc kéo thả file vào đây"
     },
     "companies": {
       "title": "Một số công ty đã và đang ứng dụng AI trong quy trình tuyển dụng"
