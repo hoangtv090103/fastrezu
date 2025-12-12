@@ -8,7 +8,11 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get('code')
   const error = requestUrl.searchParams.get('error')
   const errorDescription = requestUrl.searchParams.get('error_description')
-  const next = requestUrl.searchParams.get('next') || '/dashboard'
+  
+  // Check if coming from CV upload flow
+  const fromUpload = requestUrl.searchParams.get('from_upload') === 'true'
+  const defaultNext = fromUpload ? '/check-cv?from_upload=true' : '/dashboard'
+  const next = requestUrl.searchParams.get('next') || defaultNext
 
   // Handle OAuth errors
   if (error) {

@@ -822,12 +822,18 @@
       "brandName": "FastRezu"
     },
     "hero": {
-      "title": "Beautiful CVs from Canva & templates getting rejected?",
-      "titleHighlight": "It's time to",
-      "titleAction": "optimize for AI recruitment.",
-      "subtitle": "67% of global companies use AI for recruitment, projected to reach 83% by 2025. FastRezu transforms your experience into achievement-focused content that beats both ATS systems and human recruiters.",
+      "title": "Create Professional CVs:",
+      "titleHighlight": "ATS-Compliant,",
+      "titleAction": "Recruiter-Approved.",
+      "subtitle": "Don't let your resume get filtered out due to formatting errors or weak content. FastRezu optimizes your CV to pass automated systems AND impress HR in 6 seconds.",
       "description": "While competitors just check your CV, FastRezu guides you to write from scratch. We convert tasks into quantifiable achievements, integrate JD keywords, and ensure your CV passes modern ATS systems.",
       "atsScoreLabel": "ATS Compatibility Score"
+    },
+    "uploadWidget": {
+      "heading": "Is your CV good enough to convince HR?",
+      "subheading": "Upload for free scoring",
+      "button": "Select Your CV (PDF/DOCX)",
+      "dragText": "or drag and drop here"
     },
     "companies": {
       "title": "Some companies that are applying AI in their recruitment process"
@@ -878,5 +884,36 @@
     "cta": "START CREATING CV FOR FREE",
     "continueDashboard": "Continue to Dashboard",
     "loginOrRegister": "Log in or sign up quickly with email."
+  },
+  "cvPreview": {
+    "loading": "Loading PDF...",
+    "docxNotSupported": "Preview not available for DOCX files",
+    "errors": {
+      "pdfLoadError": "Unable to load PDF preview"
+    }
+  },
+  "upload": {
+    "errors": {
+      "invalidFileType": "Please select a PDF or DOCX file",
+      "fileTooLarge": "File is too large. Maximum size is 5MB",
+      "storageFailed": "Unable to save file. Please try again.",
+      "unexpectedError": "An error occurred. Please try again."
+    },
+    "processing": "Processing...",
+    "dragActive": "Drop file here",
+    "trustBadges": {
+      "free": "100% Free",
+      "noSignup": "No signup required"
+    },
+    "mobileCTA": "Check CV for Free Now",
+    "ctaButtons": {
+      "checkCV": "Check CV for Free Now",
+      "createCV": "Create CV with AI"
+    },
+    "successToast": "CV uploaded successfully! Click \"Upload\" to continue."
+  },
+  "loginSplitView": {
+    "title": "Sign in to continue",
+    "subtitle": "Sign in to view your ATS score and CV improvement suggestions"
   }
 }
