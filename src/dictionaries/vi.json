@@ -881,5 +881,36 @@
     "cta": "BẮT ĐẦU TẠO CV MIỄN PHÍ",
     "continueDashboard": "Tiếp tục đến Dashboard",
     "loginOrRegister": "Đăng nhập hoặc đăng ký nhanh chóng bằng email."
+  },
+  "cvPreview": {
+    "loading": "Đang tải PDF...",
+    "docxNotSupported": "Xem trước không khả dụng cho file DOCX",
+    "errors": {
+      "pdfLoadError": "Không thể tải bản xem trước PDF"
+    }
+  },
+  "upload": {
+    "errors": {
+      "invalidFileType": "Vui lòng chọn file PDF hoặc DOCX",
+      "fileTooLarge": "File quá lớn. Kích thước tối đa là 5MB",
+      "storageFailed": "Không thể lưu file. Vui lòng thử lại.",
+      "unexpectedError": "Có lỗi xảy ra. Vui lòng thử lại."
+    },
+    "processing": "Đang xử lý...",
+    "dragActive": "Thả file vào đây",
+    "trustBadges": {
+      "free": "Miễn phí 100%",
+      "noSignup": "Không cần đăng ký"
+    },
+    "mobileCTA": "Kiểm tra CV miễn phí ngay",
+    "ctaButtons": {
+      "checkCV": "Kiểm tra CV miễn phí ngay",
+      "createCV": "Tạo CV với AI"
+    },
+    "successToast": "CV đã được tải lên thành công! Nhấn \"Tải lên\" để tiếp tục."
+  },
+  "loginSplitView": {
+    "title": "Đăng nhập để tiếp tục",
+    "subtitle": "Đăng nhập để xem điểm ATS và gợi ý cải thiện CV của bạn"
   }
 }

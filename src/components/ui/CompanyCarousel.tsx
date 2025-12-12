@@ -28,11 +28,16 @@ export default function CompanyCarousel() {
   return (
     <div className="relative w-full max-w-6xl mx-auto overflow-hidden">
       {/* Gradient fade on edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-16 bg-linear-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
 
-      {/* Scrolling container */}
-      <div className="flex animate-scroll hover:pause-animation">
+      {/* Scrolling container with inline keyframes */}
+      <div
+        className="flex hover:[animation-play-state:paused]"
+        style={{
+          animation: "scroll 25s linear infinite",
+        }}
+      >
         {duplicatedCompanies.map((company, index) => (
           <div
             key={index}
@@ -51,23 +56,17 @@ export default function CompanyCarousel() {
         ))}
       </div>
 
-      {/* CSS Animation */}
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
+      {/* Global CSS for animation */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+          @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
           }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-scroll {
-          animation: scroll 25s linear infinite;
-        }
-        .animate-scroll:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
+        `,
+        }}
+      />
     </div>
   );
 }

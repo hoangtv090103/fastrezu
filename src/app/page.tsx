@@ -28,13 +28,13 @@ export default function LandingPage() {
       file.name.toLowerCase().endsWith(".docx");
 
     if (!isValidType) {
-      alert("Vui lòng chọn file PDF hoặc DOCX");
+      alert(t("upload.errors.invalidFileType"));
       return;
     }
 
     // Check file size (max 5MB for localStorage)
     if (file.size > 5 * 1024 * 1024) {
-      alert("File quá lớn. Kích thước tối đa là 5MB");
+      alert(t("upload.errors.fileTooLarge"));
       return;
     }
 
@@ -46,12 +46,12 @@ export default function LandingPage() {
         // Redirect to login with pending CV flag
         router.push("/login?pending_cv=true");
       } else {
-        alert("Không thể lưu file. Vui lòng thử lại.");
+        alert(t("upload.errors.storageFailed"));
         setIsUploading(false);
       }
     } catch (error) {
       console.error("Error storing file:", error);
-      alert("Có lỗi xảy ra. Vui lòng thử lại.");
+      alert(t("upload.errors.unexpectedError"));
       setIsUploading(false);
     }
   };
@@ -156,7 +156,7 @@ export default function LandingPage() {
                   onClick={handleUploadClick}
                   className="btn-primary w-full text-lg py-4"
                 >
-                  Kiểm tra CV miễn phí ngay
+                  {t("upload.mobileCTA")}
                 </button>
               </div>
             </div>
@@ -192,7 +192,16 @@ export default function LandingPage() {
                   onDragLeave={handleDragLeave}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
-                  className={`border-2 border-dashed rounded-xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group ${
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleUploadClick();
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={t("landing.uploadWidget.button")}
+                  className={`border-2 border-dashed rounded-xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     isDragging
                       ? "border-blue-600 bg-blue-100"
                       : "border-blue-300 hover:border-blue-500 hover:bg-blue-50/50"
@@ -238,20 +247,19 @@ export default function LandingPage() {
                       )}
                     </div>
 
-                    {/* Main Button */}
                     <button
                       className="btn-primary mb-3 text-base sm:text-lg px-6 py-3"
                       disabled={isUploading}
                     >
                       {isUploading
-                        ? "Đang xử lý..."
+                        ? t("upload.processing")
                         : t("landing.uploadWidget.button")}
                     </button>
 
                     {/* Drag text */}
                     <p className="small-text text-gray-500">
                       {isDragging
-                        ? "Thả file vào đây"
+                        ? t("upload.dragActive")
                         : t("landing.uploadWidget.dragText")}
                     </p>
 
@@ -281,7 +289,7 @@ export default function LandingPage() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Miễn phí 100%
+                    {t("upload.trustBadges.free")}
                   </span>
                   <span className="flex items-center gap-1">
                     <svg
@@ -295,7 +303,7 @@ export default function LandingPage() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    Không cần đăng ký
+                    {t("upload.trustBadges.noSignup")}
                   </span>
                 </div>
               </div>
@@ -520,13 +528,13 @@ export default function LandingPage() {
               onClick={handleUploadClick}
               className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg text-lg"
             >
-              Kiểm tra CV miễn phí ngay
+              {t("upload.ctaButtons.checkCV")}
             </button>
             <button
               onClick={handleCreateCV}
               className="border-2 border-white text-white hover:bg-white/10 font-bold py-4 px-8 rounded-lg transition-all duration-200"
             >
-              Tạo CV với AI
+              {t("upload.ctaButtons.createCV")}
             </button>
           </div>
         </div>

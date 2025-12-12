@@ -17,6 +17,36 @@ export interface PendingCV {
 }
 
 /**
+ * Check if localStorage is available (SSR safety)
+ */
+function isLocalStorageAvailable(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const testKey = "__storage_test__";
+    window.localStorage.setItem(testKey, testKey);
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate PendingCV data structure
+ */
+function isValidPendingCV(data: unknown): data is PendingCV {
+  if (!data || typeof data !== "object") return false;
+  const cv = data as Record<string, unknown>;
+  return (
+    typeof cv.name === "string" &&
+    typeof cv.type === "string" &&
+    typeof cv.size === "number" &&
+    typeof cv.data === "string" &&
+    typeof cv.uploadedAt === "number"
+  );
+}
+
+/**
  * Convert File to base64 string
  */
 function fileToBase64(file: File): Promise<string> {
@@ -51,6 +81,11 @@ export function base64ToFile(pendingCV: PendingCV): File {
  * Store a file for later upload after login
  */
 export async function storeFileForUpload(file: File): Promise<boolean> {
+  if (!isLocalStorageAvailable()) {
+    console.warn("localStorage is not available");
+    return false;
+  }
+
   try {
     // Check file size
     if (file.size > MAX_FILE_SIZE) {
@@ -80,11 +115,24 @@ export async function storeFileForUpload(file: File): Promise<boolean> {
  * Get the pending CV from storage
  */
 export function getPendingCV(): PendingCV | null {
+  if (!isLocalStorageAvailable()) {
+    return null;
+  }
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
 
-    const pendingCV: PendingCV = JSON.parse(stored);
+    const parsed: unknown = JSON.parse(stored);
+    
+    // Validate data structure
+    if (!isValidPendingCV(parsed)) {
+      console.warn("Invalid pending CV data structure");
+      clearPendingCV();
+      return null;
+    }
+
+    const pendingCV = parsed;
     
     // Check if the stored file is not too old (max 1 hour)
     const maxAge = 60 * 60 * 1000; // 1 hour
@@ -111,6 +159,10 @@ export function hasPendingCV(): boolean {
  * Clear the pending CV from storage
  */
 export function clearPendingCV(): void {
+  if (!isLocalStorageAvailable()) {
+    return;
+  }
+
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (error) {

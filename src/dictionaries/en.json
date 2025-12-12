@@ -884,5 +884,36 @@
     "cta": "START CREATING CV FOR FREE",
     "continueDashboard": "Continue to Dashboard",
     "loginOrRegister": "Log in or sign up quickly with email."
+  },
+  "cvPreview": {
+    "loading": "Loading PDF...",
+    "docxNotSupported": "Preview not available for DOCX files",
+    "errors": {
+      "pdfLoadError": "Unable to load PDF preview"
+    }
+  },
+  "upload": {
+    "errors": {
+      "invalidFileType": "Please select a PDF or DOCX file",
+      "fileTooLarge": "File is too large. Maximum size is 5MB",
+      "storageFailed": "Unable to save file. Please try again.",
+      "unexpectedError": "An error occurred. Please try again."
+    },
+    "processing": "Processing...",
+    "dragActive": "Drop file here",
+    "trustBadges": {
+      "free": "100% Free",
+      "noSignup": "No signup required"
+    },
+    "mobileCTA": "Check CV for Free Now",
+    "ctaButtons": {
+      "checkCV": "Check CV for Free Now",
+      "createCV": "Create CV with AI"
+    },
+    "successToast": "CV uploaded successfully! Click \"Upload\" to continue."
+  },
+  "loginSplitView": {
+    "title": "Sign in to continue",
+    "subtitle": "Sign in to view your ATS score and CV improvement suggestions"
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import { PendingCV } from "@/lib/pending-cv-storage";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -12,7 +13,7 @@ interface CVPreviewPaneProps {
 }
 
 export default function CVPreviewPane({ pendingCV }: CVPreviewPaneProps) {
-  const [pageLoaded, setPageLoaded] = useState(false);
+  const { t } = useTranslation();
   const [error, setError] = useState<string>("");
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(500);
@@ -37,13 +38,12 @@ export default function CVPreviewPane({ pendingCV }: CVPreviewPaneProps) {
   }, []);
 
   const onDocumentLoadSuccess = () => {
-    setPageLoaded(true);
     setError("");
   };
 
   const onDocumentLoadError = (err: Error) => {
     console.error("PDF load error:", err);
-    setError("Không thể tải bản xem trước PDF");
+    setError(t("cvPreview.errors.pdfLoadError"));
   };
 
   if (!isPDF) {
@@ -69,7 +69,7 @@ export default function CVPreviewPane({ pendingCV }: CVPreviewPaneProps) {
             {(pendingCV.size / 1024).toFixed(1)} KB
           </p>
           <p className="text-gray-400 text-xs mt-4">
-            Xem trước không khả dụng cho file DOCX
+            {t("cvPreview.docxNotSupported")}
           </p>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function CVPreviewPane({ pendingCV }: CVPreviewPaneProps) {
           onLoadError={onDocumentLoadError}
           loading={
             <div className="flex items-center justify-center h-64">
-              <div className="text-gray-400">Đang tải PDF...</div>
+              <div className="text-gray-400">{t("cvPreview.loading")}</div>
             </div>
           }
           className="flex items-center justify-center"

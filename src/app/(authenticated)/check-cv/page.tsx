@@ -97,14 +97,12 @@ export default function CheckCVPage() {
           // Clear the pending CV from storage
           clearPendingCV();
           // Show success message
-          showSuccessToast(
-            'CV đã được tải lên thành công! Nhấn "Tải lên" để tiếp tục.'
-          );
+          showSuccessToast(t("upload.successToast"));
         }
       }
     };
     init();
-  }, [searchParams, autoUploadTriggered, locale]);
+  }, [searchParams, autoUploadTriggered]);
 
   const handleFileChange = (selectedFile: File) => {
     setFile(selectedFile);

@@ -128,12 +128,10 @@ function LoginContent() {
     <div className={showSplitView ? "" : "bg-white rounded-2xl shadow-2xl p-8"}>
       <div className="text-center mb-8">
         <h1 className="heading-main text-3xl text-gray-900 mb-2">
-          {showSplitView ? "Đăng nhập để tiếp tục" : t("login.title")}
+          {showSplitView ? t("loginSplitView.title") : t("login.title")}
         </h1>
         <p className="body-text text-gray-600">
-          {showSplitView
-            ? "Đăng nhập để xem điểm ATS và gợi ý cải thiện CV của bạn"
-            : t("login.subtitle")}
+          {showSplitView ? t("loginSplitView.subtitle") : t("login.subtitle")}
         </p>
       </div>
 
