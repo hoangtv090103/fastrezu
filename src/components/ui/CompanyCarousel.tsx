@@ -7,6 +7,9 @@ interface Company {
   logo: string;
 }
 
+// Animation constants
+const SCROLL_ANIMATION_DURATION = 25; // seconds for full carousel scroll
+
 const companies: Company[] = [
   { name: "Base.vn", logo: "/logos/basevn-logo.png" },
   { name: "CakeResume", logo: "/logos/cake-logo.png" },
@@ -35,7 +38,7 @@ export default function CompanyCarousel() {
       <div
         className="flex hover:[animation-play-state:paused]"
         style={{
-          animation: "scroll 25s linear infinite",
+          animation: `scroll ${SCROLL_ANIMATION_DURATION}s linear infinite`,
         }}
       >
         {duplicatedCompanies.map((company, index) => (

@@ -8,6 +8,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+// Layout constants for PDF preview sizing
+const PDF_CONTAINER_PADDING = 64; // px - accounts for container padding
+const PDF_MAX_WIDTH = 600; // px - maximum width for PDF page
+
 interface CVPreviewPaneProps {
   pendingCV: PendingCV;
 }
@@ -26,8 +30,11 @@ export default function CVPreviewPane({ pendingCV }: CVPreviewPaneProps) {
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
-        // Calculate width to fit with some padding
-        const width = Math.min(containerRef.current.clientWidth - 64, 600);
+        // Calculate width to fit with padding, capped at max width
+        const width = Math.min(
+          containerRef.current.clientWidth - PDF_CONTAINER_PADDING,
+          PDF_MAX_WIDTH
+        );
         setContainerWidth(width);
       }
     };

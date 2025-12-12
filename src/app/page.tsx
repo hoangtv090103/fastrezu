@@ -200,7 +200,12 @@ export default function LandingPage() {
                   }}
                   tabIndex={0}
                   role="button"
-                  aria-label={t("landing.uploadWidget.button")}
+                  aria-label={
+                    isUploading
+                      ? t("upload.processing")
+                      : t("landing.uploadWidget.button")
+                  }
+                  aria-disabled={isUploading}
                   className={`border-2 border-dashed rounded-xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     isDragging
                       ? "border-blue-600 bg-blue-100"
@@ -247,14 +252,12 @@ export default function LandingPage() {
                       )}
                     </div>
 
-                    <button
-                      className="btn-primary mb-3 text-base sm:text-lg px-6 py-3"
-                      disabled={isUploading}
-                    >
+                    {/* Visual label - not a nested button */}
+                    <span className="btn-primary mb-3 text-base sm:text-lg px-6 py-3 pointer-events-none">
                       {isUploading
                         ? t("upload.processing")
                         : t("landing.uploadWidget.button")}
-                    </button>
+                    </span>
 
                     {/* Drag text */}
                     <p className="small-text text-gray-500">

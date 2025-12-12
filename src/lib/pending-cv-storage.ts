@@ -3,10 +3,17 @@
  * 
  * Stores uploaded CV files in localStorage temporarily
  * so they can be retrieved after login redirect.
+ * 
+ * Note: Base64 encoding increases file size by ~33%, so a 3.5MB file becomes ~4.6MB.
+ * Default limit is 3.5MB to stay within typical browser localStorage limits (5-10MB).
  */
 
 const STORAGE_KEY = "fastrezu_pending_cv";
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit for localStorage
+// Max file size in bytes - configurable via env, default 3.5MB (accounts for base64 overhead ~33%)
+const MAX_FILE_SIZE = parseInt(
+  process.env.NEXT_PUBLIC_MAX_CV_FILE_SIZE || String(3.5 * 1024 * 1024),
+  10
+);
 
 export interface PendingCV {
   name: string;
