@@ -35,23 +35,97 @@ _Mục tiêu: Thiết lập xong toàn bộ schema Supabase V2 và các Type def
 
 ## EPIC 2: The Vault (Kho Dữ Liệu Gốc)
 
-_Mục tiêu: Xây dựng giao diện và logic để user nhập liệu một lần dùng mãi mãi._
+_Mục tiêu: Xây dựng một cơ sở dữ liệu sự nghiệp không giới hạn — user nhập liệu một lần, AI dùng mãi mãi. Khác với tờ A4, The Vault chứa được mọi "vũ khí" của ứng viên._
 
-### Story 2.1: Giao diện Nhập liệu Master Profile (UI)
+### Thiết kế phân nhóm Tab (Section Architecture)
 
-- **Mô tả:** Là một Người dùng, tôi muốn có một trang `/dashboard/vault` để nhập các thông tin sự nghiệp thô (Thông tin cá nhân, Học vấn, Kinh nghiệm, Kỹ năng) mà không cần quan tâm đến định dạng in ấn.
+Vault được chia làm 3 nhóm theo độ ưu tiên và tần suất sử dụng:
+
+| Nhóm       | Tên                    | Tabs                                                    | Hiển thị                          |
+| ---------- | ---------------------- | ------------------------------------------------------- | --------------------------------- |
+| **Nhóm 1** | The Big 4 ⭐           | Personal Info, Summary, Experience, Education           | **Mặc định**                      |
+| **Nhóm 2** | The Deal-Breakers 🔑   | Skills, Projects, Certifications                        | Mặc định                          |
+| **Nhóm 3** | Culture Fit & Niche 🎯 | Awards, Volunteering, Hobbies, References, Publications | **Ẩn** — Chỉ hiện khi user tự add |
+
+**Chiến lược UX (Progressive Disclosure):**
+
+- Màn hình mặc định: nhóm 1 + Skills (tổng 5 tabs), không bị "ngợp".
+- Nút **`+ Thêm mục khác`** xổ Dropdown cho phép chọn thêm tab nhóm 2 (Projects, Certifications) và nhóm 3.
+- Tab đã chọn sẽ lưu vào `localStorage` hoặc cột `enabled_sections` trong DB để next session nhớ trạng thái.
+
+---
+
+### Story 2.1: The Big 4 — Giao diện nhập liệu cốt lõi ✅
+
+- **Mô tả:** Là một Người dùng, tôi muốn có trang `/dashboard/vault` để nhập 4 loại dữ liệu nền tảng (Personal Info, Summary, Experience, Education) theo dạng từng tab riêng biệt.
 - **Tiêu chí hoàn thành (AC):**
-  - [x] Tạo UI cho trang `/dashboard/vault` (sử dụng Shadcn UI/Tailwind).
-  - [x] Có các Form/Modal để thêm/sửa/xóa từng mục (ví dụ: Thêm 1 công ty cũ, thêm 1 kỹ năng).
-  - [x] Giao diện trực quan, lưu state ở Client (useState/useReducer) trước khi bấm Lưu.
+  - [x] Tạo UI trang `/dashboard/vault` với tab navigation.
+  - [x] **Personal Info:** Form 7+ trường (Họ tên, Email, SĐT, LinkedIn, GitHub, Website, Địa chỉ).
+  - [x] **Experience:** Danh sách inline-edit với Add / Edit / Delete từng công ty.
+  - [x] **Education:** Danh sách inline-edit với Add / Edit / Delete từng trường.
+  - [x] **Skills:** Tag-input cho Hard Skills & Soft Skills, vừa nhập vừa tự lưu.
+  - [x] Server Actions `upsertVaultSection` lưu dữ liệu vào `master_profiles` (bảng Supabase V2).
+  - [x] Toast notification "Lưu thành công / Lỗi".
+  - [x] Server Component fetch dữ liệu vào lại khi user reload trang.
 
-### Story 2.2: Tích hợp Supabase cho The Vault (Logic)
+### Story 2.2: Tích hợp Supabase đầy đủ & Test E2E ✅
 
-- **Mô tả:** Là một Hệ thống, tôi muốn lưu dữ liệu từ UI của Story 2.1 vào bảng `master_profiles` trên Supabase dưới dạng JSON.
+- **Mô tả:** Là một Hệ thống, toàn bộ dữ liệu từ UI Story 2.1 phải lưu/đọc chính xác từ Supabase dưới dạng JSON.
 - **Tiêu chí hoàn thành (AC):**
-  - [x] Viết Server Actions (hoặc API routes) để thực hiện CRUD cho `master_profiles`.
-  - [x] Khi user vào lại trang `/dashboard/vault`, dữ liệu cũ phải được fetch và hiển thị (Server Components ưu tiên).
-  - [x] Hiển thị Toast notification báo "Lưu thành công".
+  - [x] `UNIQUE(user_id, section_type)` constraint đảm bảo upsert không tạo bản ghi trùng.
+  - [x] Dữ liệu persist sau khi refresh trình duyệt.
+  - [x] Navigation header có link "The Vault".
+  - [x] RLS đảm bảo user A không đọc được dữ liệu user B.
+
+### Story 2.3: Tab Summary (Tóm tắt sự nghiệp gốc) ✅
+
+- **Mô tả:** Là một Người dùng, tôi muốn có tab "Summary" để ghi chú định hướng sự nghiệp gốc của mình (AI sẽ dùng đây làm điểm neo khi "thiên biến vạn hóa" cho từng JD).
+- **Tiêu chí hoàn thành (AC):**
+  - [x] Tab "Tóm tắt" (icon `faFileLines`) xuất hiện ở vị trí thứ 2 trong The Vault.
+  - [x] Textarea với đếm ký tự real-time (target 300–600, max 800), hiển thị gợi ý trạng thái màu.
+  - [x] Nút "AI gợi ý" gọi `/api/vault/generate-summary`, truyền Experience & Skills đã nhập, điền kết quả vào textarea.
+  - [x] Nút "Lưu tóm tắt" gọi `upsertVaultSection('summary', ...)` — Toast "Đã lưu tóm tắt sự nghiệp ✓".
+  - [x] Dữ liệu persist sau reload (Server Component fetch + `sectionMap['summary']`).
+  - [x] API endpoint riêng `/api/vault/generate-summary` — không phụ thuộc JD/cvId.
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+
+### Story 2.4: Tab Projects (Dự án nổi bật)
+
+- **Mô tả:** Là một Người dùng (đặc biệt dân IT/Creative), tôi muốn liệt kê từng dự án đã làm, bao gồm link demo và kết quả đạt được.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Tab "Projects" ẩn theo mặc định, user bấm `+ Thêm mục khác` để kích hoạt.
+  - [ ] Mỗi project có các trường: Tên, Vai trò, Thời gian, Công nghệ (tags), Link demo (URL), Mô tả / Kết quả.
+  - [ ] Inline-edit + Add / Delete tương tự ExperienceSection.
+  - [ ] Lưu vào `master_profiles` với `section_type = 'projects'`.
+
+### Story 2.5: Tab Certifications (Chứng chỉ & Giấy phép)
+
+- **Mô tả:** Là một Người dùng, tôi muốn nhập danh sách chứng chỉ (IELTS, AWS, ACCA, TOEIC...) để AI có thể tự động đưa vào CV nếu phù hợp JD.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Tab "Certifications" ẩn theo mặc định, kích hoạt qua `+ Thêm mục khác`.
+  - [ ] Mỗi cert có: Tên chứng chỉ, Tổ chức cấp, Ngày cấp (month/year picker), Ngày hết hạn (optional), Mã chứng chỉ (optional), Link xác thực (optional).
+  - [ ] Lưu vào `master_profiles` với `section_type = 'certifications'`.
+
+### Story 2.6: Progressive Disclosure — Nút "Add Section"
+
+- **Mô tả:** Là một Người dùng, tôi muốn một điểm duy nhất để khám phá và bật các tab mở rộng (Projects, Certifications, Awards, Volunteering, Hobbies, References, Publications) mà không bị "ngợp" từ lúc mới vào.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Nút `+ Thêm mục khác` xuất hiện cuối danh sách tab.
+  - [ ] Bấm vào mở Dropdown (hoặc Modal) liệt kê tất cả sections chưa được kích hoạt, kèm mô tả ngắn và icon.
+  - [ ] Bấm chọn section → tab xuất hiện ngay lập tức.
+  - [ ] Trạng thái các tab đã bật/tắt được lưu vào cột `enabled_sections` (JSON array) trên Supabase.
+
+### Story 2.7: Nhóm 3 — Culture Fit Sections (Awards, Volunteering, Hobbies, References, Publications)
+
+- **Mô tả:** Là một Người dùng (đặc biệt Fresher hoặc ứng viên khối học thuật), tôi muốn có thêm chỗ để khai các thông tin "làm dày" hồ sơ.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] **Awards:** Tên giải thưởng, Tổ chức trao, Năm nhận, Mô tả ngắn.
+  - [ ] **Volunteering / Extracurricular:** Tên hoạt động, Tổ chức, Vai trò, Thời gian, Mô tả.
+  - [ ] **Hobbies:** Tag input đơn giản (tương tự Skills).
+  - [ ] **References:** Họ tên, Chức vụ, Công ty, SĐT/Email, Mối quan hệ (Sếp cũ / Giảng viên).
+  - [ ] **Publications:** Tiêu đề, Tạp chí/Hội nghị, Năm, Link DOI.
+  - [ ] Tất cả đều ẩn mặc định, kích hoạt qua Story 2.6.
+  - [ ] Lưu vào `master_profiles` với `section_type` tương ứng.
 
 ---
 

@@ -37,6 +37,7 @@ export default async function VaultPage() {
     <VaultContent
       initialData={{
         personal: sectionMap["personal"] as never,
+        summary: sectionMap["summary"] as never,
         experience: sectionMap["experience"] as never,
         education: sectionMap["education"] as never,
         skills: sectionMap["skills"] as never,

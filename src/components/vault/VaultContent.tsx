@@ -5,6 +5,7 @@ import PersonalInfoForm, { type PersonalInfo } from "./PersonalInfoForm";
 import ExperienceSection, { type ExperienceItem } from "./ExperienceSection";
 import EducationSection, { type EducationItem } from "./EducationSection";
 import SkillsSection, { type SkillsData } from "./SkillsSection";
+import SummarySection, { type SummaryData } from "./SummarySection";
 import { Toast, useToast } from "@/components/ui/Toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,14 +14,16 @@ import {
   faGraduationCap,
   faBolt,
   faBoxArchive,
+  faFileLines,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useTranslation } from "@/hooks/useTranslation";
 
-type TabId = "personal" | "experience" | "education" | "skills";
+type TabId = "personal" | "summary" | "experience" | "education" | "skills";
 
 interface VaultData {
   personal?: Partial<PersonalInfo>;
+  summary?: SummaryData;
   experience?: { items: ExperienceItem[] };
   education?: { items: EducationItem[] };
   skills?: SkillsData;
@@ -41,6 +44,12 @@ const TABS: {
     label: "Thông tin cá nhân",
     icon: faUser,
     description: "Liên lạc, tóm tắt bản thân",
+  },
+  {
+    id: "summary",
+    label: "Tóm tắt",
+    icon: faFileLines,
+    description: "Giới thiệu sự nghiệp gốc — AI dùng làm nền khi viết CV",
   },
   {
     id: "experience",
@@ -69,6 +78,7 @@ export default function VaultContent({ initialData }: VaultContentProps) {
 
   const toastMessages: Record<TabId, string> = {
     personal: "Đã lưu thông tin cá nhân ✓",
+    summary: "Đã lưu tóm tắt sự nghiệp ✓",
     experience: "Đã lưu kinh nghiệm ✓",
     education: "Đã lưu học vấn ✓",
     skills: "Đã lưu kỹ năng ✓",
@@ -132,6 +142,19 @@ export default function VaultContent({ initialData }: VaultContentProps) {
           <PersonalInfoForm
             initialData={initialData.personal}
             onSaved={() => handleSaved("personal")}
+            onError={handleError}
+          />
+        )}
+        {activeTab === "summary" && (
+          <SummarySection
+            initialData={initialData.summary}
+            experienceItems={
+              initialData.experience?.items as
+                | Record<string, unknown>[]
+                | undefined
+            }
+            skills={initialData.skills?.items}
+            onSaved={() => handleSaved("summary")}
             onError={handleError}
           />
         )}
