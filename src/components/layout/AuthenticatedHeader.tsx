@@ -79,6 +79,12 @@ export default function AuthenticatedHeader({
                 {t("navigation.manageCVs")}
               </Link>
               <Link
+                href="/dashboard/vault"
+                className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
+              >
+                {t("dashboard.theVault")}
+              </Link>
+              <Link
                 href="/check-cv"
                 className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
               >
@@ -136,7 +142,7 @@ export default function AuthenticatedHeader({
                     <p className="text-xs text-gray-500 mt-1">
                       {userProfile?.subscription_tier
                         ? formatSubscriptionTier(
-                            userProfile.subscription_tier
+                            userProfile.subscription_tier,
                           ) + " Plan"
                         : "Beta Free Plan"}
                     </p>

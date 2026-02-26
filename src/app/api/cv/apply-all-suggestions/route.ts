@@ -54,15 +54,17 @@ export async function POST(request: NextRequest) {
 
     // Get all active and unapplied suggestions
     const {
-      data: suggestions,
+      data: suggestionsData,
       error: suggestionsError,
-    }: { data: ATSuggestion[] | null; error: Error | null } = await supabase
+    } = await supabase
       .from("ats_suggestions")
       .select("*")
       .eq("cv_id", cvId)
       .eq("is_active", true)
       .eq("is_applied", false)
       .order("created_at", { ascending: true });
+      
+    const suggestions = suggestionsData as unknown as ATSuggestion[] | null;
 
     if (suggestionsError) {
       console.error("Error fetching suggestions:", suggestionsError);

@@ -41,17 +41,17 @@ _Mục tiêu: Xây dựng giao diện và logic để user nhập liệu một l
 
 - **Mô tả:** Là một Người dùng, tôi muốn có một trang `/dashboard/vault` để nhập các thông tin sự nghiệp thô (Thông tin cá nhân, Học vấn, Kinh nghiệm, Kỹ năng) mà không cần quan tâm đến định dạng in ấn.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tạo UI cho trang `/dashboard/vault` (sử dụng Shadcn UI/Tailwind).
-  - [ ] Có các Form/Modal để thêm/sửa/xóa từng mục (ví dụ: Thêm 1 công ty cũ, thêm 1 kỹ năng).
-  - [ ] Giao diện trực quan, lưu state ở Client (useState/useReducer) trước khi bấm Lưu.
+  - [x] Tạo UI cho trang `/dashboard/vault` (sử dụng Shadcn UI/Tailwind).
+  - [x] Có các Form/Modal để thêm/sửa/xóa từng mục (ví dụ: Thêm 1 công ty cũ, thêm 1 kỹ năng).
+  - [x] Giao diện trực quan, lưu state ở Client (useState/useReducer) trước khi bấm Lưu.
 
 ### Story 2.2: Tích hợp Supabase cho The Vault (Logic)
 
 - **Mô tả:** Là một Hệ thống, tôi muốn lưu dữ liệu từ UI của Story 2.1 vào bảng `master_profiles` trên Supabase dưới dạng JSON.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Viết Server Actions (hoặc API routes) để thực hiện CRUD cho `master_profiles`.
-  - [ ] Khi user vào lại trang `/dashboard/vault`, dữ liệu cũ phải được fetch và hiển thị (Server Components ưu tiên).
-  - [ ] Hiển thị Toast notification báo "Lưu thành công".
+  - [x] Viết Server Actions (hoặc API routes) để thực hiện CRUD cho `master_profiles`.
+  - [x] Khi user vào lại trang `/dashboard/vault`, dữ liệu cũ phải được fetch và hiển thị (Server Components ưu tiên).
+  - [x] Hiển thị Toast notification báo "Lưu thành công".
 
 ---
 

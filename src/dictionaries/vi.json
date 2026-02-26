@@ -96,6 +96,7 @@
   "dashboard": {
     "title": "Quản lý CV",
     "subtitle": "Tạo và quản lý CV của bạn với sự hỗ trợ của AI",
+    "theVault": "Hồ sơ gốc",
     "createNew": "Tạo CV mới",
     "createNewCV": "Tạo CV mới",
     "createFirstCV": "Tạo CV đầu tiên",
