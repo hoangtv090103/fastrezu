@@ -38,9 +38,11 @@ import {
   faHeart,
   faAddressCard,
   faBook,
+  faFileImport,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useTranslation } from "@/hooks/useTranslation";
+import Link from "next/link";
 import { upsertVaultSettings } from "@/app/(authenticated)/dashboard/vault/actions";
 import { useEffect, useRef, useTransition } from "react";
 
@@ -327,17 +329,26 @@ export default function VaultContent({
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 heading-feature flex items-center gap-2.5">
-          <FontAwesomeIcon
-            icon={faBoxArchive}
-            className="text-blue-600 w-6 h-6"
-          />
-          {t("dashboard.theVault")}
-        </h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          Nhập liệu một lần — AI sẽ dùng để tạo CV khớp mọi JD.
-        </p>
+      <div className="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 heading-feature flex items-center gap-2.5">
+            <FontAwesomeIcon
+              icon={faBoxArchive}
+              className="text-blue-600 w-6 h-6"
+            />
+            {t("dashboard.theVault")}
+          </h1>
+          <p className="text-gray-500 mt-1 text-sm">
+            Nhập liệu một lần — AI sẽ dùng để tạo CV khớp mọi JD.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/scanner"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-300 rounded-lg hover:bg-indigo-50 transition-colors whitespace-nowrap"
+        >
+          <FontAwesomeIcon icon={faFileImport} className="w-4 h-4" />
+          {t("vault.importFromCV")}
+        </Link>
       </div>
 
       {/* ── Sidebar + Content ── */}

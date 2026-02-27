@@ -91,6 +91,12 @@ export default function AuthenticatedHeader({
                 {t("navigation.warRoom")}
               </Link>
               <Link
+                href="/dashboard/scanner"
+                className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
+              >
+                {t("navigation.scanner")}
+              </Link>
+              <Link
                 href="/check-cv"
                 className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
               >

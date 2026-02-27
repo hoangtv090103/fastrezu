@@ -174,9 +174,9 @@ _Mục tiêu: Xây dựng trung tâm theo dõi các Job đang apply._
 - **Tiêu chí hoàn thành (AC):**
   - [x] Hover lên thẻ Job → xuất hiện nút 3-dots (⋯) ở góc phải trên của thẻ.
   - [x] Bấm nút 3-dots → dropdown menu hiển thị 3 tùy chọn, mỗi tùy chọn có icon và label:
-    -  **Sửa** — mở modal pre-filled cho phép cập nhật Title, Company, Job URL, Raw JD Text.
-    -  **Nhân bản** — tạo bản sao của job với status `saved`, thêm ngay vào board (optimistic).
-    -  **Xóa** — hiển thị popup xác nhận với tên job + cảnh báo "Không thể hoàn tác".
+    - **Sửa** — mở modal pre-filled cho phép cập nhật Title, Company, Job URL, Raw JD Text.
+    - **Nhân bản** — tạo bản sao của job với status `saved`, thêm ngay vào board (optimistic).
+    - **Xóa** — hiển thị popup xác nhận với tên job + cảnh báo "Không thể hoàn tác".
   - [x] Xác nhận xóa → thẻ biến mất ngay (optimistic update) và bị xóa khỏi Supabase.
   - [x] Dropdown tự đóng khi click ra ngoài hoặc sau khi chọn một tùy chọn.
   - [x] Drag & Drop vẫn hoạt động bình thường (không bị kích hoạt khi click vào 3-dots hoặc menu).
@@ -250,35 +250,46 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
 
 ## EPIC 6: The Scanner (Upload CV & AI Evaluation)
 
-_Mục tiêu: Người dùng upload CV sẵn có → nhận đánh giá AI toàn diện → tự động điền vào The Vault._
+_Mục tiêu: Người dùng upload CV sẵn có → AI có tầm nhìn (Vision) để nhận diện cả text, hình thức, bố cục → tự động điền vào The Vault và phản hồi chất lượng thiết kế._
 
-### Story 6.1: Upload CV & Trích xuất nội dung
+### Story 6.1: Upload CV & Trích xuất nội dung (Bao gồm Image Rendering)
 
-- **Mô tả:** Là một Người tìm việc, tôi muốn upload file CV (PDF hoặc DOCX) để hệ thống đọc và xử lý nội dung.
-- **Kỹ thuật:** Trang `/dashboard/scanner`. Tái dụng `FileUploadZone` component + `POST /api/cv/upload-check` (đã có, dùng `unpdf` + `mammoth`). Trích xuất raw text rồi gửi cho AI ở Story 6.2 và 6.3.
+- **Mô tả:** Là một Người tìm việc, tôi muốn upload file CV (PDF hoặc DOCX) để hệ thống đọc không chỉ nội dung mà còn chụp lại "ngoại hình" (layout) của CV để AI đánh giá.
+- **Kỹ thuật:** Trang `/dashboard/scanner`. Tái dụng `FileUploadZone` component.
+  - **Với PDF:** Sử dụng `pdfjs-dist` ở Client để render các trang thành mảng hình ảnh Base64 (giữ nguyên layout, format), đồng thời trích xuất text (qua `unpdf`).
+  - **Với DOCX:** Trích xuất raw text thông qua `mammoth` (không hỗ trợ đánh giá layout với DOCX).
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Trang `/dashboard/scanner` accessible từ nav header "The Scanner" và từ nút "Import từ CV" trong trang Vault.
-  - [ ] Hỗ trợ PDF và DOCX, tối đa 10MB. Validate file type và size phía client trước khi upload.
-  - [ ] Sau khi upload thành công: chuyển sang bước "Đang phân tích" (loading state).
+  - [x] Trang `/dashboard/scanner` accessible từ nav header "The Scanner" và từ nút "Import từ CV" trong trang Vault.
+  - [x] Hỗ trợ PDF và DOCX, tối đa 10MB. Validate file type và size phía client trước khi upload.
+  - [x] Sau khi upload thành công: Render PDF ra mảng Base64 JPEGs (hiển thị loading state "Đang phân tích cấu trúc...").
 
-### Story 6.2: AI Đánh giá chất lượng CV (Heavy Tier)
+### Story 6.2: AI Đánh giá chất lượng CV (Nội dung + Layout)
 
-- **Mô tả:** Là một Người tìm việc, tôi muốn nhận phản hồi chi tiết về chất lượng CV của mình từ AI, bao gồm điểm số và lời khuyên cụ thể.
-- **Kỹ thuật:** Endpoint `POST /api/ai/evaluate-cv`. AI model heavy tier. Input: raw CV text (cắt tối đa 15.000 ký tự). Chạy song song với Story 6.3 via `Promise.all`.
+- **Mô tả:** Là một Người tìm việc, tôi muốn nhận phản hồi chi tiết về chất lượng CV không chỉ về mặt từ ngữ mà còn về thiết kế, spacing, màu sắc và format.
+- **Kỹ thuật:** Endpoint `POST /api/ai/evaluate-cv`. OpenAI model heavy tier (Vision - `gpt-4o`). Input payload: Mảng Base64 Images kết hợp Raw Text. AI sẽ prompt để đánh giá trực quan hình ảnh được upload.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Endpoint trả về `overall_score` (0–100), `ats_score` (0–100), điểm từng section (`contact`, `summary`, `experience`, `skills`, `education`) kèm `feedback` text.
-  - [ ] Trả về `strengths` (mảng chuỗi), `improvements` (mảng chuỗi), `ats_tips` (mảng chuỗi).
-  - [ ] UI hiển thị: SVG circular gauge cho overall score, progress bars cho từng section, badges/bullets cho strengths/improvements/tips.
+  - [x] Endpoint phân tích cả nội dung chữ và hình dáng thiết kế của CV, trả về `overall_score`, `ats_score`, `design_score`, điểm từng section (`contact`, `summary`, `experience`, `skills`, `education`) kèm `feedback` text.
+  - [x] Trả về `strengths` (mảng chuỗi), `improvements` (mảng chuỗi - bao gồm cảnh báo về font, màu, căn lề nếu có), `ats_tips` (mảng chuỗi).
+  - [x] UI hiển thị: SVG circular gauge cho overall/design score, progress bars cho từng section, badges/bullets cho strengths/improvements/tips.
 
 ### Story 6.3: AI Trích xuất Profile có cấu trúc & Import vào Vault
 
 - **Mô tả:** Là một Người tìm việc, sau khi xem kết quả đánh giá, tôi muốn import dữ liệu CV vào The Vault để không phải nhập tay lại từ đầu.
-- **Kỹ thuật:** Endpoint `POST /api/ai/extract-profile-from-cv`. AI model heavy tier. Output JSON khớp với schema `master_profiles`. Server Action `importSectionsFromCV()` để batch upsert. Chỉ điền vào sections hiện đang trống trong Vault.
+- **Kỹ thuật:** Endpoint `POST /api/ai/extract-profile-from-cv`. AI model heavy tier. Input: Mảng Base64 Images + Raw Text. Output JSON khớp với schema `master_profiles`. Chạy song song với 6.2 qua Promise.all.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Endpoint trích xuất 6 sections: `personal`, `summary`, `experience`, `education`, `skills`, `certifications` (trả `null` cho sections không tìm thấy trong CV).
-  - [ ] UI hiển thị VaultImportPanel: checkbox per section — sections trống + có data extracted → checked mặc định; sections đã có data trong Vault → disabled + label "Đã có dữ liệu".
-  - [ ] User xác nhận → import → toast thành công → link navigate đến `/dashboard/vault`.
-  - [ ] Vault page sau import hiển thị đúng data đã extract.
+  - [x] Endpoint trích xuất đầy đủ sections của Vault: `personal`, `summary`, `experience`, `education`, `skills`, `certifications`, `projects`, `awards`, `volunteering`, `hobbies`, `references`, `publications` (trả `null` cho sections không tìm thấy trong CV).
+  - [x] UI hiển thị VaultImportPanel: checkbox per section — sections trống + có data extracted → checked mặc định; sections đã có data trong Vault → disabled + label "Đã có dữ liệu".
+  - [x] User xác nhận → import → toast thành công → link navigate đến `/dashboard/vault`.
+  - [x] Vault page sau import hiển thị đúng data đã extract.
+
+### Story 6.4: Lịch sử phân tích CV (Scan History)
+
+- **Mô tả:** Là một Người tìm việc, tôi muốn xem lại danh sách các CV tôi đã từng upload và kết quả phân tích AI trước đó (để xem chi tiết hoặc import Vault lại nếu cần).
+- **Kỹ thuật:** DB table `cv_scan_history`. API route `GET /api/cv/history`. Giao diện History Panel.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Hệ thống tự động đẩy kết quả đánh giá (sau Story 6.2 và 6.3) vào bảng `cv_scan_history`.
+  - [ ] UI cung cấp màn hình/dialog liệt kê các lịch sử scan trước đó: Ngày scan, Tên file CV, Điểm (Overall, ATS, Design).
+  - [ ] Bấm vào xem chi tiết sẽ hiển thị lại giao diện kết quả đánh giá giống hệt như lúc vừa upload xong.
 
 ---
 
