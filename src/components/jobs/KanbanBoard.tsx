@@ -9,6 +9,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import AddJobModal from "./AddJobModal";
+import JobDetailModal from "./JobDetailModal";
 import type { NewJobCard } from "@/app/(authenticated)/dashboard/jobs/actions";
 import {
   updateJobStatus,
@@ -24,6 +25,7 @@ export interface JobCard {
   status: string | null;
   created_at: string | null;
   job_url: string | null;
+  raw_jd_text?: string | null;
 }
 
 interface KanbanBoardProps {
@@ -223,6 +225,7 @@ interface KanbanColumnProps {
   onDragLeave: () => void;
   onDrop: (colId: string) => void;
   onMenuToggle: (id: string | null) => void;
+  onCardClick: (job: JobCard) => void;
   onEdit: (job: JobCard) => void;
   onDuplicate: (job: JobCard) => void;
   onDeleteRequest: (job: JobCard) => void;
@@ -240,6 +243,7 @@ function KanbanColumn({
   onDragLeave,
   onDrop,
   onMenuToggle,
+  onCardClick,
   onEdit,
   onDuplicate,
   onDeleteRequest,
@@ -276,8 +280,9 @@ function KanbanColumn({
               draggable
               onDragStart={() => onDragStart(job.id)}
               onDragEnd={onDragEnd}
+              onClick={() => onCardClick(job)}
               className={`bg-white border border-gray-200 rounded-xl p-3 transition-all select-none
-                cursor-grab active:cursor-grabbing hover:border-blue-200 hover:shadow-sm group relative
+                cursor-pointer hover:border-blue-200 hover:shadow-sm group relative
                 ${draggingId === job.id ? "opacity-40 scale-95" : ""}`}
             >
               <div className="flex items-start gap-2">
@@ -342,6 +347,7 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
   const [dragOverColId, setDragOverColId] = useState<string | null>(null);
   const [deletingJob, setDeletingJob] = useState<JobCard | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [viewingJob, setViewingJob] = useState<JobCard | null>(null);
 
   // Close menu on outside click
   useEffect(() => {
@@ -449,6 +455,18 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
           />
         )}
 
+        {/* Job detail modal */}
+        {viewingJob && (
+          <JobDetailModal
+            job={viewingJob}
+            onClose={() => setViewingJob(null)}
+            onEdit={(job) => {
+              setViewingJob(null);
+              setEditingJob(job);
+            }}
+          />
+        )}
+
         {/* Empty state */}
         {isEmpty && (
           <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-white mb-4">
@@ -495,6 +513,7 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
               onDragLeave={() => setDragOverColId(null)}
               onDrop={handleDrop}
               onMenuToggle={setOpenMenuId}
+              onCardClick={setViewingJob}
               onEdit={setEditingJob}
               onDuplicate={handleDuplicate}
               onDeleteRequest={setDeletingJob}

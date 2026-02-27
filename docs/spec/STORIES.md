@@ -172,14 +172,14 @@ _Mục tiêu: Xây dựng trung tâm theo dõi các Job đang apply._
 
 - **Mô tả:** Là một Người tìm việc, tôi muốn có thể sửa, nhân bản hoặc xóa job đã lưu một cách tiện lợi thông qua menu ngữ cảnh (context menu) trên thẻ Job.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Hover lên thẻ Job → xuất hiện nút 3-dots (⋯) ở góc phải trên của thẻ.
-  - [ ] Bấm nút 3-dots → dropdown menu hiển thị 3 tùy chọn, mỗi tùy chọn có icon và label:
-    - ✏️ **Sửa** — mở modal pre-filled cho phép cập nhật Title, Company, Job URL, Raw JD Text.
-    - 📋 **Nhân bản** — tạo bản sao của job với status `saved`, thêm ngay vào board (optimistic).
-    - 🗑️ **Xóa** — hiển thị popup xác nhận với tên job + cảnh báo "Không thể hoàn tác".
-  - [ ] Xác nhận xóa → thẻ biến mất ngay (optimistic update) và bị xóa khỏi Supabase.
-  - [ ] Dropdown tự đóng khi click ra ngoài hoặc sau khi chọn một tùy chọn.
-  - [ ] Drag & Drop vẫn hoạt động bình thường (không bị kích hoạt khi click vào 3-dots hoặc menu).
+  - [x] Hover lên thẻ Job → xuất hiện nút 3-dots (⋯) ở góc phải trên của thẻ.
+  - [x] Bấm nút 3-dots → dropdown menu hiển thị 3 tùy chọn, mỗi tùy chọn có icon và label:
+    -  **Sửa** — mở modal pre-filled cho phép cập nhật Title, Company, Job URL, Raw JD Text.
+    -  **Nhân bản** — tạo bản sao của job với status `saved`, thêm ngay vào board (optimistic).
+    -  **Xóa** — hiển thị popup xác nhận với tên job + cảnh báo "Không thể hoàn tác".
+  - [x] Xác nhận xóa → thẻ biến mất ngay (optimistic update) và bị xóa khỏi Supabase.
+  - [x] Dropdown tự đóng khi click ra ngoài hoặc sau khi chọn một tùy chọn.
+  - [x] Drag & Drop vẫn hoạt động bình thường (không bị kích hoạt khi click vào 3-dots hoặc menu).
 
 ---
 
