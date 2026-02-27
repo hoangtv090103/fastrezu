@@ -1046,7 +1046,10 @@
       "viewDetail": "Xem chi tiết",
       "overall": "Tổng thể",
       "ats": "ATS",
-      "design": "Thiết kế"
+      "design": "Thiết kế",
+      "viewOriginalCV": "Xem CV gốc",
+      "downloadCV": "Tải xuống CV",
+      "noFileAttached": "Không có file đính kèm"
     },
     "errors": {
       "processingFailed": "Không thể xử lý file. Vui lòng thử lại với file khác.",

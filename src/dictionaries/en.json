@@ -1049,7 +1049,10 @@
       "viewDetail": "View detail",
       "overall": "Overall",
       "ats": "ATS",
-      "design": "Design"
+      "design": "Design",
+      "viewOriginalCV": "View Original CV",
+      "downloadCV": "Download CV",
+      "noFileAttached": "No file attached"
     },
     "errors": {
       "processingFailed": "Could not process the file. Please try again with a different file.",

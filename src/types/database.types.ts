@@ -472,6 +472,7 @@ export type Database = {
           id: string
           user_id: string
           file_name: string
+          file_storage_path: string | null
           overall_score: number | null
           ats_score: number | null
           design_score: number | null
@@ -483,6 +484,7 @@ export type Database = {
           id?: string
           user_id: string
           file_name: string
+          file_storage_path?: string | null
           overall_score?: number | null
           ats_score?: number | null
           design_score?: number | null
@@ -494,6 +496,7 @@ export type Database = {
           id?: string
           user_id?: string
           file_name?: string
+          file_storage_path?: string | null
           overall_score?: number | null
           ats_score?: number | null
           design_score?: number | null
