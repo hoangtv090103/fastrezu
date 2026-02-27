@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faCircleNotch } from "@fortawesome/free-solid-svg-icons";
 import SmartTextarea from "@/components/ui/SmartTextarea";
 import AIAssistButton from "@/components/ui/AIAssistButton";
+import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 export interface SummaryData {
   content: string;
@@ -32,11 +33,17 @@ export default function SummarySection({
 }: SummarySectionProps) {
   const [text, setText] = useState(initialData?.content ?? "");
   const [isSaving, startSaving] = useTransition();
-  const [isDrafting, startDrafting] = useTransition();
+  const [isFetching, startFetching] = useTransition();
+
+  // Typewriter animation — fires after AI returns result
+  const { isTyping, startTyping } = useTypingEffect(setText);
 
   const charCount = text.length;
   const isGood = charCount >= TARGET_MIN && charCount <= TARGET_MAX;
   const isTooLong = charCount > MAX_CHARS;
+
+  // Combined: true if fetching from API OR animation is running
+  const isAIActive = isFetching || isTyping;
 
   function handleSave() {
     if (!text.trim()) return;
@@ -51,7 +58,7 @@ export default function SummarySection({
   }
 
   function handleAIDraft() {
-    startDrafting(async () => {
+    startFetching(async () => {
       try {
         const res = await fetch("/api/vault/generate-summary", {
           method: "POST",
@@ -70,7 +77,8 @@ export default function SummarySection({
           return;
         }
 
-        setText(data.summary ?? "");
+        // Kích hoạt typewriter animation thay vì set text ngay lập tức
+        startTyping(data.summary ?? "");
       } catch {
         onError?.("Lỗi kết nối khi gọi AI. Vui lòng thử lại.");
       }
@@ -89,14 +97,14 @@ export default function SummarySection({
         </p>
       </div>
 
-      {/* SmartTextarea with AI glow effect */}
+      {/* SmartTextarea with AI glow effect (active during fetch + typing) */}
       <SmartTextarea
         id="vault-summary-textarea"
         value={text}
         onChange={(e) => setText(e.target.value)}
         maxLength={MAX_CHARS}
         rows={6}
-        isRewriting={isDrafting}
+        isRewriting={isAIActive}
         placeholder="Ví dụ: Kỹ sư phần mềm với hơn 3 năm kinh nghiệm phát triển ứng dụng web sử dụng React và Node.js. Có kinh nghiệm thiết kế hệ thống RESTful API hiệu suất cao và triển khai CI/CD. Đam mê xây dựng sản phẩm hướng người dùng và tối ưu trải nghiệm kỹ thuật trong môi trường Agile."
         className="h-40"
       />
@@ -129,7 +137,7 @@ export default function SummarySection({
         <AIAssistButton
           id="vault-summary-ai-draft"
           onClick={handleAIDraft}
-          loading={isDrafting}
+          loading={isAIActive}
           label="AI gợi ý"
           disabled={false}
         />

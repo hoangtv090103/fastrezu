@@ -89,14 +89,18 @@ Vault được chia làm 3 nhóm theo độ ưu tiên và tần suất sử dụ
   - [x] API endpoint riêng `/api/vault/generate-summary` — không phụ thuộc JD/cvId.
   - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
 
-### Story 2.4: Tab Projects (Dự án nổi bật)
+### Story 2.4: Tab Projects (Dự án nổi bật) ✅
 
 - **Mô tả:** Là một Người dùng (đặc biệt dân IT/Creative), tôi muốn liệt kê từng dự án đã làm, bao gồm link demo và kết quả đạt được.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tab "Projects" ẩn theo mặc định, user bấm `+ Thêm mục khác` để kích hoạt.
-  - [ ] Mỗi project có các trường: Tên, Vai trò, Thời gian, Công nghệ (tags), Link demo (URL), Mô tả / Kết quả.
-  - [ ] Inline-edit + Add / Delete tương tự ExperienceSection.
-  - [ ] Lưu vào `master_profiles` với `section_type = 'projects'`.
+  - [x] Tab "Dự án" (icon `faCode`) xuất hiện ở cuối danh sách tab (sau Skills).
+  - [x] Mỗi project có 6 trường: Tên dự án, Vai trò, Thời gian (MonthYearPicker), Công nghệ (tag input), Link demo (URL), Mô tả kết quả.
+  - [x] Tag input: gõ + Enter/dấu phẩy để thêm tech stack; bấm × để xóa từng tag.
+  - [x] Inline-edit + Add / Delete theo đúng pattern của ExperienceSection.
+  - [x] Lưu vào `master_profiles` với `section_type = 'projects'`.
+  - [x] Dữ liệu persist sau reload (Server Component fetch).
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+  - [x] SQL migration: `20260227_vault_settings.sql` (bảng `vault_settings` với `enabled_sections` JSON — dùng cho Story 2.6).
 
 ### Story 2.5: Tab Certifications (Chứng chỉ & Giấy phép)
 

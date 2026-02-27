@@ -41,6 +41,7 @@ export default async function VaultPage() {
         experience: sectionMap["experience"] as never,
         education: sectionMap["education"] as never,
         skills: sectionMap["skills"] as never,
+        projects: sectionMap["projects"] as never,
       }}
     />
   );
