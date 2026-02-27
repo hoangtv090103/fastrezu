@@ -15,7 +15,7 @@ export default function MainLayoutWrapper({
       className={
         isEditor
           ? "flex-1 flex flex-col min-h-0 overflow-hidden"
-          : "flex-1 overflow-auto container mx-auto px-4 py-4"
+          : "flex-1"
       }
     >
       {children}

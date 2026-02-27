@@ -150,23 +150,36 @@ _Mục tiêu: Xây dựng trung tâm theo dõi các Job đang apply._
 
 - **Mô tả:** Là một Người tìm việc, tôi muốn trang chủ `/dashboard/jobs` hiển thị dưới dạng bảng Kanban với các cột: Saved, Optimized, Applied, Interviewing, Offer, Rejected.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Dựng UI Kanban board.
-  - [ ] Fetch danh sách `jobs` từ Supabase và phân loại thẻ (Card) vào đúng cột dựa trên trường `status`.
+  - [x] Dựng UI Kanban board.
+  - [x] Fetch danh sách `jobs` từ Supabase và phân loại thẻ (Card) vào đúng cột dựa trên trường `status`.
 
 ### Story 3.2: Tính năng Thêm Job mới (Modal)
 
 - **Mô tả:** Là một Người tìm việc, tôi muốn bấm nút "Add Job", dán text Mô tả công việc (JD) vào form để lưu vào hệ thống.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tạo Modal "Add Job". Có các trường: Title, Company, Job URL (optional), và Textarea lớn cho Raw JD Text.
-  - [ ] Submit form lưu vào bảng `jobs` với trạng thái mặc định là `saved`.
-  - [ ] Kanban board tự động cập nhật thẻ mới.
+  - [x] Tạo Modal "Add Job". Có các trường: Title, Company, Job URL (optional), và Textarea lớn cho Raw JD Text.
+  - [x] Submit form lưu vào bảng `jobs` với trạng thái mặc định là `saved`.
+  - [x] Kanban board tự động cập nhật thẻ mới.
 
 ### Story 3.3: Kéo thả cập nhật trạng thái (Drag & Drop)
 
 - **Mô tả:** Là một Người tìm việc, tôi muốn kéo một thẻ Job từ cột "Saved" sang cột "Applied" để hệ thống tự cập nhật trạng thái.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tích hợp thư viện DnD (ví dụ: `@hello-pangea/dnd` hoặc HTML5 DnD API).
-  - [ ] Khi thả thẻ vào cột mới, gọi API/Server Action update trường `status` trong Supabase.
+  - [x] Tích hợp thư viện DnD (ví dụ: `@hello-pangea/dnd` hoặc HTML5 DnD API).
+  - [x] Khi thả thẻ vào cột mới, gọi API/Server Action update trường `status` trong Supabase.
+
+### Story 3.4: Sửa, Nhân bản và Xóa Job
+
+- **Mô tả:** Là một Người tìm việc, tôi muốn có thể sửa, nhân bản hoặc xóa job đã lưu một cách tiện lợi thông qua menu ngữ cảnh (context menu) trên thẻ Job.
+- **Tiêu chí hoàn thành (AC):**
+  - [x] Hover lên thẻ Job → xuất hiện nút 3-dots (⋯) ở góc phải trên của thẻ.
+  - [x] Bấm nút 3-dots → dropdown menu hiển thị 3 tùy chọn, mỗi tùy chọn có icon và label:
+    -  **Sửa** — mở modal pre-filled cho phép cập nhật Title, Company, Job URL, Raw JD Text.
+    -  **Nhân bản** — tạo bản sao của job với status `saved`, thêm ngay vào board (optimistic).
+    -  **Xóa** — hiển thị popup xác nhận với tên job + cảnh báo "Không thể hoàn tác".
+  - [x] Xác nhận xóa → thẻ biến mất ngay (optimistic update) và bị xóa khỏi Supabase.
+  - [x] Dropdown tự đóng khi click ra ngoài hoặc sau khi chọn một tùy chọn.
+  - [x] Drag & Drop vẫn hoạt động bình thường (không bị kích hoạt khi click vào 3-dots hoặc menu).
 
 ---
 

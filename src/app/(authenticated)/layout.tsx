@@ -27,7 +27,7 @@ export default async function AuthenticatedLayout({
     .single();
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <AuthenticatedHeader user={user} userProfile={userProfile} />
       <MainLayoutWrapper>{children}</MainLayoutWrapper>
       <FeedbackButton />

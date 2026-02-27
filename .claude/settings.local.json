@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/dashboard/)",
+      "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/dashboard/vault/)",
+      "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/)"
+    ]
+  }
+}
