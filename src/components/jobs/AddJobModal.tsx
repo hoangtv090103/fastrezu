@@ -1,12 +1,19 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { addJob, type NewJobCard } from "@/app/(authenticated)/dashboard/jobs/actions";
+import {
+  addJob,
+  updateJob,
+  type NewJobCard,
+} from "@/app/(authenticated)/dashboard/jobs/actions";
+import type { JobCard } from "./KanbanBoard";
 
 interface AddJobModalProps {
   isOpen: boolean;
   onClose: () => void;
   onJobAdded: (job: NewJobCard) => void;
+  editJob?: JobCard;
+  onJobUpdated?: (job: JobCard) => void;
 }
 
 const inputClass =
@@ -17,7 +24,10 @@ export default function AddJobModal({
   isOpen,
   onClose,
   onJobAdded,
+  editJob,
+  onJobUpdated,
 }: AddJobModalProps) {
+  const isEditMode = Boolean(editJob);
   const [title, setTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [jobUrl, setJobUrl] = useState("");
@@ -25,16 +35,16 @@ export default function AddJobModal({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Reset form when modal opens
+  // Pre-fill or reset when modal opens
   useEffect(() => {
     if (isOpen) {
-      setTitle("");
-      setCompanyName("");
-      setJobUrl("");
+      setTitle(editJob?.title ?? "");
+      setCompanyName(editJob?.company_name ?? "");
+      setJobUrl(editJob?.job_url ?? "");
       setRawJdText("");
       setError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, editJob]);
 
   // Escape key handler
   useEffect(() => {
@@ -48,18 +58,39 @@ export default function AddJobModal({
   const handleSubmit = () => {
     if (!title.trim() || !companyName.trim()) return;
     setError(null);
+
     startTransition(async () => {
-      const result = await addJob({
-        title,
-        company_name: companyName,
-        job_url: jobUrl || undefined,
-        raw_jd_text: rawJdText || undefined,
-      });
-      if (!result.success) {
-        setError(result.error);
+      if (isEditMode && editJob) {
+        const result = await updateJob(editJob.id, {
+          title,
+          company_name: companyName,
+          job_url: jobUrl || undefined,
+          raw_jd_text: rawJdText || undefined,
+        });
+        if (!result.success) {
+          setError(result.error ?? "Lỗi khi lưu");
+        } else {
+          onJobUpdated?.({
+            ...editJob,
+            title: title.trim(),
+            company_name: companyName.trim(),
+            job_url: jobUrl.trim() || null,
+          });
+          onClose();
+        }
       } else {
-        onJobAdded(result.job);
-        onClose();
+        const result = await addJob({
+          title,
+          company_name: companyName,
+          job_url: jobUrl || undefined,
+          raw_jd_text: rawJdText || undefined,
+        });
+        if (!result.success) {
+          setError(result.error);
+        } else {
+          onJobAdded(result.job);
+          onClose();
+        }
       }
     });
   };
@@ -75,7 +106,9 @@ export default function AddJobModal({
         className="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold text-gray-900 mb-5">Thêm Job mới</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-5">
+          {isEditMode ? "Sửa thông tin Job" : "Thêm Job mới"}
+        </h2>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -122,7 +155,11 @@ export default function AddJobModal({
             <textarea
               value={rawJdText}
               onChange={(e) => setRawJdText(e.target.value)}
-              placeholder="Dán toàn bộ nội dung JD vào đây..."
+              placeholder={
+                isEditMode
+                  ? "Dán JD mới để cập nhật (để trống nếu không thay đổi)..."
+                  : "Dán toàn bộ nội dung JD vào đây..."
+              }
               rows={6}
               className={inputClass + " resize-none"}
             />
@@ -144,7 +181,11 @@ export default function AddJobModal({
             disabled={isPending || !title.trim() || !companyName.trim()}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-40"
           >
-            {isPending ? "Đang lưu…" : "Thêm Job"}
+            {isPending
+              ? "Đang lưu…"
+              : isEditMode
+                ? "Lưu thay đổi"
+                : "Thêm Job"}
           </button>
         </div>
       </div>
