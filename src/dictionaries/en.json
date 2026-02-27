@@ -96,6 +96,7 @@
   "dashboard": {
     "title": "Manage CVs",
     "subtitle": "Create and manage your CVs with AI assistance",
+    "theVault": "The Vault",
     "createNew": "Create New CV",
     "createNewCV": "Create New CV",
     "createFirstCV": "Create First CV",

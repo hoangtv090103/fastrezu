@@ -8,6 +8,7 @@ interface AIAssistButtonProps {
   label: string;
   disabled?: boolean;
   className?: string;
+  id?: string;
 }
 
 export default function AIAssistButton({
@@ -16,10 +17,12 @@ export default function AIAssistButton({
   label,
   disabled = false,
   className = "",
+  id,
 }: AIAssistButtonProps) {
   const { t } = useTranslation();
   return (
     <button
+      id={id}
       onClick={onClick}
       disabled={disabled || loading}
       className={`bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-sm hover:shadow-md ${className}`}

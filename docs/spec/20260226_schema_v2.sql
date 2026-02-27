@@ -120,3 +120,35 @@ CREATE POLICY "Users can manage resumes for their jobs" ON public.resumes FOR AL
             AND j.user_id = auth.uid ()
     )
 );
+
+-- ============================================================
+-- Trigger: Auto-create profile khi user mới đăng ký
+-- Bắt buộc vì master_profiles.user_id FK → public.profiles.id
+-- Nếu thiếu trigger này, mọi lần lưu vault data sẽ báo lỗi FK.
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name, subscription_tier, credits)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    NEW.raw_user_meta_data->>'full_name',
+    'free',
+    0
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
