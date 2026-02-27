@@ -920,7 +920,62 @@
     "subtitle": "Sign in to view your ATS score and CV improvement suggestions"
   },
   "vault": {
-    "importFromCV": "Import from CV"
+    "importFromCV": "Import from CV",
+    "subtitle": "Your career data, reusable anytime",
+    "basicProfile": "BASIC PROFILE",
+    "additionalSections": "ADDITIONAL SECTIONS",
+    "addSection": "Add section",
+    "securityNote": "Your data is encrypted and secured to banking standards.",
+    "tabs": {
+      "personal": {
+        "label": "Personal Info",
+        "desc": "Full name, email, phone, address and links"
+      },
+      "summary": {
+        "label": "Professional Summary",
+        "desc": "A short introduction about yourself"
+      },
+      "experience": {
+        "label": "Work Experience",
+        "desc": "Work history and key achievements"
+      },
+      "education": {
+        "label": "Education",
+        "desc": "Schools, degrees and majors"
+      },
+      "skills": {
+        "label": "Skills",
+        "desc": "Technical and soft skills"
+      },
+      "projects": {
+        "label": "Projects",
+        "desc": "Notable personal or professional projects"
+      },
+      "certifications": {
+        "label": "Certifications",
+        "desc": "Professional certifications and courses"
+      },
+      "awards": {
+        "label": "Awards",
+        "desc": "Awards and recognized achievements"
+      },
+      "volunteering": {
+        "label": "Volunteering",
+        "desc": "Volunteer and community experience"
+      },
+      "hobbies": {
+        "label": "Hobbies",
+        "desc": "Interests and personal activities"
+      },
+      "references": {
+        "label": "References",
+        "desc": "People who can vouch for your abilities"
+      },
+      "publications": {
+        "label": "Publications",
+        "desc": "Published articles, books or research"
+      }
+    }
   },
   "scanner": {
     "title": "The Scanner",
@@ -991,7 +1046,10 @@
     },
     "history": {
       "title": "CV Scan History",
-      "viewDetail": "View detail"
+      "viewDetail": "View detail",
+      "overall": "Overall",
+      "ats": "ATS",
+      "design": "Design"
     },
     "errors": {
       "processingFailed": "Could not process the file. Please try again with a different file.",
@@ -1086,6 +1144,38 @@
         "analysisFailed": "An error occurred during analysis. Please try again.",
         "connectionError": "Unable to connect to AI service. Please try again."
       }
-    }
+    },
+    "tailorResume": {
+      "button": "Tailor CV for this Job",
+      "viewResult": "View Tailored CV",
+      "rerun": "Re-tailor",
+      "tailoring": "AI is tailoring your CV...",
+      "noJDHint": "Add a JD first to tailor your CV",
+      "previewTitle": "Tailored CV",
+      "tailoringNotes": "Tailoring Notes",
+      "matchScore": "Estimated Match Score",
+      "keywordsIntegrated": "Keywords Integrated",
+      "close": "Close",
+      "downloadPDF": "Download PDF",
+      "generatingPDF": "Generating PDF...",
+      "pdfError": "Failed to generate PDF. Please try again.",
+      "sections": {
+        "summary": "Professional Summary",
+        "experience": "Work Experience",
+        "education": "Education",
+        "skills": "Skills",
+        "technicalSkills": "Technical Skills",
+        "softSkills": "Soft Skills",
+        "projects": "Projects",
+        "certifications": "Certifications"
+      },
+      "errors": {
+        "failed": "Failed to tailor CV. Please try again.",
+        "noVault": "Your Vault has no data yet. Please fill in your career profile first.",
+        "noJD": "Please add a job description (JD) first.",
+        "connectionError": "Connection error. Please try again."
+      }
+    },
+    "backToList": "Back to War Room"
   }
 }

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsis,
   faPen,
   faCopy,
   faTrash,
+  faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
 import AddJobModal from "./AddJobModal";
 import JobDetailModal from "./JobDetailModal";
@@ -27,6 +29,7 @@ export interface JobCard {
   created_at: string | null;
   job_url: string | null;
   raw_jd_text?: string | null;
+  has_resume?: boolean;
 }
 
 interface KanbanBoardProps {
@@ -240,8 +243,9 @@ function KanbanColumn({
               onDragStart={() => onDragStart(job.id)}
               onDragEnd={onDragEnd}
               onClick={() => onCardClick(job)}
-              className={`bg-white border border-gray-200 rounded-xl p-3 transition-all select-none
-                cursor-pointer hover:border-blue-200 hover:shadow-sm group relative
+              className={`bg-white border rounded-xl p-3 transition-all select-none
+                cursor-pointer hover:shadow-sm group relative
+                ${job.has_resume ? "border-purple-200 hover:border-purple-300" : "border-gray-200 hover:border-blue-200"}
                 ${draggingId === job.id ? "opacity-40 scale-95" : ""}`}
             >
               <div className="pr-6">
@@ -250,7 +254,23 @@ function KanbanColumn({
                   {job.title}
                 </p>
               </div>
-              <p className="text-xs text-gray-400 mt-2">{formatDate(job.created_at)}</p>
+
+              {/* CV badge + date row */}
+              <div className="flex items-center justify-between mt-2">
+                {job.has_resume ? (
+                  <Link
+                    href={`/dashboard/jobs/${job.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-600 text-xs font-medium hover:bg-purple-100 transition-colors"
+                  >
+                    <FontAwesomeIcon icon={faWandMagicSparkles} className="w-2.5 h-2.5" />
+                    CV đã may đo
+                  </Link>
+                ) : (
+                  <span />
+                )}
+                <p className="text-xs text-gray-400">{formatDate(job.created_at)}</p>
+              </div>
 
               <div className="absolute top-1.5 right-1.5">
                 <button
@@ -406,6 +426,11 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
             job={viewingJob}
             onClose={() => setViewingJob(null)}
             onEdit={(job) => { setViewingJob(null); setEditingJob(job); }}
+            onResumeCreated={(jobId) => {
+              setJobs((prev) =>
+                prev.map((j) => j.id === jobId ? { ...j, has_resume: true } : j)
+              );
+            }}
           />
         )}
 

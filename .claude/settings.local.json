@@ -4,7 +4,15 @@
       "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/dashboard/)",
       "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/dashboard/vault/)",
       "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/)",
-      "Bash(bun tsc --noEmit)"
+      "Bash(bun tsc --noEmit)",
+      "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/dashboard/jobs/)",
+      "Bash(ls -la /Users/hoangtv/fastrezu/src/app/\\\\\\(authenticated\\\\\\)/dashboard/jobs/[id\\\\\\)/)",
+      "Bash(ls -la \"/Users/hoangtv/fastrezu/src/app/\\(authenticated\\)/dashboard/jobs/[id]/\")",
+      "Bash(find /Users/hoangtv/fastrezu/supabase-sql -name \"*.sql\" -exec grep -l \"resumes\" {} ;)",
+      "Bash(grep -n \"CREATE TABLE.*resumes\" /Users/hoangtv/fastrezu/supabase-sql/*.sql)",
+      "Bash(find /Users/hoangtv/fastrezu/supabase-sql -type f -name \"*.sql\" -exec grep -l \"CREATE TABLE.*jobs\\\\|CREATE TABLE.*resumes\" {} ;)",
+      "Bash(grep -l \"jobs\\\\|resumes\" /Users/hoangtv/fastrezu/supabase-sql/archive/*.sql)",
+      "Bash(python3 -c \":*)"
     ]
   }
 }

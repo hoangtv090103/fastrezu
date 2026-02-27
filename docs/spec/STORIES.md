@@ -235,9 +235,9 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
 
 - **Mô tả:** Là Người dùng, ở trang chi tiết Job, tôi bấm nút "Tailor Resume for this Job". Sau đó tôi thấy bản Preview CV của mình.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Nút bấm gọi API Story 5.1 (Có hiệu ứng loading báo hiệu AI đang nghĩ).
-  - [ ] Fetch dữ liệu từ bảng `resumes` render lên giao diện HTML/CSS mô phỏng tờ giấy A4.
-  - [ ] (Tận dụng code V1): Cung cấp 1-2 UI template cơ bản (Minimalist).
+  - [x] Nút bấm gọi API Story 5.1 (Có hiệu ứng loading báo hiệu AI đang nghĩ).
+  - [x] Fetch dữ liệu từ bảng `resumes` render lên giao diện HTML/CSS mô phỏng tờ giấy A4.
+  - [x] (Tận dụng code V1): Cung cấp 1-2 UI template cơ bản (Minimalist).
 
 ### Story 5.3: Xuất file PDF (Export)
 

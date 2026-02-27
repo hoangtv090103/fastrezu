@@ -3,7 +3,6 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
   faBuilding,
   faCalendar,
   faLink,
@@ -11,6 +10,9 @@ import {
 import JobAnalysisSection from "@/components/jobs/JobAnalysisSection";
 import CrawlJDButton from "@/components/jobs/CrawlJDButton";
 import JobDetailEditButton from "@/components/jobs/JobDetailEditButton";
+import TailorResumeButton from "@/components/jobs/TailorResumeButton";
+import type { TailoredResumeData } from "@/components/cv/TailoredCVPreview";
+import BackToJobsLink from "@/components/jobs/BackToJobsLink";
 
 // ── Status config ────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<
@@ -65,6 +67,13 @@ export default async function JobDetailPage({ params }: PageProps) {
     .eq("job_id", id)
     .maybeSingle();
 
+  // Fetch existing tailored resume (may not exist yet)
+  const { data: resume } = await supabase
+    .from("resumes")
+    .select("id, content_snapshot, created_at")
+    .eq("job_id", id)
+    .maybeSingle();
+
   const status = job.status ?? "saved";
   const statusCfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.saved;
 
@@ -73,13 +82,7 @@ export default async function JobDetailPage({ params }: PageProps) {
       <div className="max-w-6xl mx-auto px-6 py-8">
 
         {/* ── Back navigation ── */}
-        <Link
-          href="/dashboard/jobs"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 transition-colors"
-        >
-          <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" />
-          Về War Room
-        </Link>
+        <BackToJobsLink />
 
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
@@ -159,9 +162,9 @@ export default async function JobDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Right: AI analysis (2/5) */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm sticky top-6">
+          {/* Right: AI analysis + Tailor Resume (2/5) */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm sticky top-6 space-y-6">
               <JobAnalysisSection
                 jobId={job.id}
                 hasJd={!!job.raw_jd_text}
@@ -175,6 +178,29 @@ export default async function JobDetailPage({ params }: PageProps) {
                     : null
                 }
               />
+
+              {/* Divider */}
+              <div className="border-t border-gray-100" />
+
+              {/* Tailor Resume section */}
+              <div className="space-y-2">
+                <h2 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                  ✨ May đo CV
+                </h2>
+                <TailorResumeButton
+                  jobId={job.id}
+                  hasJd={!!job.raw_jd_text}
+                  initialResume={
+                    resume
+                      ? {
+                          id: resume.id,
+                          content_snapshot: resume.content_snapshot as TailoredResumeData | null,
+                          created_at: resume.created_at,
+                        }
+                      : null
+                  }
+                />
+              </div>
             </div>
           </div>
 
