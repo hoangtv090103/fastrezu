@@ -157,6 +157,15 @@ export const analyzeJDSchema = z.object({
 });
 
 /**
+ * Schema for analyzing a job against master profile (Epic 4 - The Intel)
+ */
+export const analyzeJobSchema = z.object({
+  jobId: z.string().uuid({ message: 'Invalid job ID format' }),
+});
+
+export type AnalyzeJobInput = z.infer<typeof analyzeJobSchema>;
+
+/**
  * Schema for scoring CV
  */
 export const scoreCVSchema = z.object({

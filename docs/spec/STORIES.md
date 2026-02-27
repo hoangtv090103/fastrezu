@@ -191,9 +191,9 @@ _Mục tiêu: Dùng AI chấm điểm và phân tích lỗ hổng CV._
 
 - **Mô tả:** Là một Hệ thống, tôi cần một endpoint `/api/ai/analyze-jd` nhận vào `job_id`, dùng AI để chấm điểm độ khớp so với `master_profiles` của user đó.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Lấy `raw_jd_text` từ bảng `jobs`.
-  - [ ] Lấy `content` từ bảng `master_profiles`.
-  - [ ] Gọi OpenAI API (System Prompt: So sánh JD và Profile, trả về JSON chứa `keywords`, `match_score`, `gap_analysis`).
+  - [x] Lấy `raw_jd_text` từ bảng `jobs`.
+  - [x] Lấy `content` từ bảng `master_profiles`.
+  - [x] Gọi OpenAI API (System Prompt: So sánh JD và Profile, trả về JSON chứa `keywords`, `match_score`, `gap_analysis`).
   - [ ] Lưu kết quả trả về vào bảng `job_analyses`.
 
 ### Story 4.2: Giao diện Job Detail & Gap Analysis
