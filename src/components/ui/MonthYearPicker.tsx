@@ -60,7 +60,7 @@ export default function MonthYearPicker({
     } else if (open && !selected) {
       setViewYear(new Date().getFullYear());
     }
-  }, [open, selected?.year]);
+  }, [open, value]);
 
   const displayLabel = selected
     ? `Tháng ${selected.month + 1}/${selected.year}`

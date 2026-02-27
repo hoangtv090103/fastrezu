@@ -54,8 +54,14 @@ export default function ExperienceSection({
       const result = await upsertVaultSection("experience", {
         items: newItems,
       } as unknown as Parameters<typeof upsertVaultSection>[1]);
-      if (!result.success) setError(result.error ?? "Lỗi khi lưu");
-      else setError(null);
+      if (!result.success) {
+        const msg = result.error ?? "Lỗi khi lưu";
+        setError(msg);
+        onError?.(msg);
+      } else {
+        setError(null);
+        onSaved?.();
+      }
     });
   };
 
@@ -354,7 +360,6 @@ export default function ExperienceSection({
           </div>
         ),
       )}
-
 
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
