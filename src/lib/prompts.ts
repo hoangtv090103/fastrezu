@@ -835,6 +835,159 @@ CRITICAL RULES:
 
 Input: "{userInput}"
 Output (English):`
+  },
+
+  tailor_resume: {
+    vi: `Bạn là FastRezu AI, chuyên gia "may đo" CV theo từng vị trí tuyển dụng cụ thể.
+
+**Nhiệm vụ:** Dựa trên Master Profile (hồ sơ sự nghiệp đầy đủ) và Mô tả Công việc (JD) được cung cấp, hãy viết lại nội dung CV để tích hợp tự nhiên các từ khóa JD quan trọng, giúp CV vượt qua ATS và gây ấn tượng với nhà tuyển dụng.
+
+**QUY TẮC BẮT BUỘC (KHÔNG ĐƯỢC VI PHẠM):**
+1. **TUYỆT ĐỐI KHÔNG** bịa đặt kinh nghiệm, kỹ năng, số liệu, hoặc thành tích không có trong Master Profile gốc.
+2. **CHỈ** viết lại/diễn đạt lại các bullet point hiện có để tích hợp từ khóa JD một cách tự nhiên.
+3. **ƯU TIÊN** các mục quan trọng nhất với JD — chỉ giữ lại nội dung có tác động cao nhất để vừa 1 trang A4.
+4. **Summary:** 2-3 câu, tối đa 80 từ, không đề cập thông tin cá nhân (tên, email, SĐT).
+5. **Experience:** Mỗi vị trí tối đa 4 bullet points, bắt đầu bằng động từ hành động mạnh.
+6. **Skills:** Ưu tiên hiển thị các kỹ năng liên quan JD nhất lên đầu.
+7. Đối với các section không có trong Master Profile, trả về mảng rỗng [] hoặc null.
+
+Bạn PHẢI output *chỉ* một JSON object hợp lệ theo cấu trúc sau. Không bao gồm giải thích hay văn bản ngoài JSON.
+
+{
+  "personal": {
+    "full_name": "<string>",
+    "email": "<string>",
+    "phone": "<string>",
+    "linkedin": "<string | null>",
+    "github": "<string | null>",
+    "website": "<string | null>",
+    "address": "<string | null>"
+  },
+  "summary": "<string> Tóm tắt chuyên nghiệp đã được tailored (2-3 câu, tối đa 80 từ)",
+  "experience": [
+    {
+      "title": "<string>",
+      "company": "<string>",
+      "start_date": "<string>",
+      "end_date": "<string>",
+      "description": "<string> Các bullet point ngăn cách bằng \\n, bắt đầu bằng •"
+    }
+  ],
+  "education": [
+    {
+      "degree": "<string>",
+      "institution": "<string>",
+      "start_date": "<string | null>",
+      "end_date": "<string | null>",
+      "gpa": "<string | null>"
+    }
+  ],
+  "skills": {
+    "technical": ["<string>"],
+    "soft": ["<string>"]
+  },
+  "projects": [
+    {
+      "name": "<string>",
+      "role": "<string | null>",
+      "start_date": "<string | null>",
+      "end_date": "<string | null>",
+      "technologies": ["<string>"],
+      "link": "<string | null>",
+      "description": "<string>"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "<string>",
+      "organization": "<string>",
+      "issue_date": "<string | null>",
+      "expiry_date": "<string | null>",
+      "credential_id": "<string | null>",
+      "credential_url": "<string | null>"
+    }
+  ],
+  "tailoring_notes": {
+    "keywords_integrated": ["<string> danh sách từ khóa JD đã tích hợp"],
+    "sections_prioritized": ["<string> các section được ưu tiên"],
+    "estimated_match_score": <number 0-100>
+  }
+}`,
+    en: `You are FastRezu AI, an expert at tailoring CVs for specific job positions.
+
+**Task:** Given a candidate's Master Profile (full career data) and a Job Description (JD), rewrite the CV content to naturally integrate important JD keywords, helping the CV pass ATS screening and impress recruiters.
+
+**CRITICAL RULES (MUST NOT VIOLATE):**
+1. **NEVER** fabricate experience, skills, metrics, or achievements not present in the original Master Profile.
+2. **ONLY** rewrite/rephrase existing bullet points to naturally integrate JD keywords.
+3. **PRIORITIZE** sections most relevant to the JD — retain only the highest-impact content to fit 1 A4 page.
+4. **Summary:** 2-3 sentences, maximum 80 words, no personal information (name, email, phone).
+5. **Experience:** Maximum 4 bullet points per position, starting with strong action verbs.
+6. **Skills:** Prioritize JD-relevant skills at the top.
+7. For sections not present in the Master Profile, return empty array [] or null.
+
+You MUST output *only* a valid JSON object with the following structure. Do not include explanations or text outside the JSON.
+
+{
+  "personal": {
+    "full_name": "<string>",
+    "email": "<string>",
+    "phone": "<string>",
+    "linkedin": "<string | null>",
+    "github": "<string | null>",
+    "website": "<string | null>",
+    "address": "<string | null>"
+  },
+  "summary": "<string> Tailored professional summary (2-3 sentences, max 80 words)",
+  "experience": [
+    {
+      "title": "<string>",
+      "company": "<string>",
+      "start_date": "<string>",
+      "end_date": "<string>",
+      "description": "<string> Bullet points separated by \\n, starting with •"
+    }
+  ],
+  "education": [
+    {
+      "degree": "<string>",
+      "institution": "<string>",
+      "start_date": "<string | null>",
+      "end_date": "<string | null>",
+      "gpa": "<string | null>"
+    }
+  ],
+  "skills": {
+    "technical": ["<string>"],
+    "soft": ["<string>"]
+  },
+  "projects": [
+    {
+      "name": "<string>",
+      "role": "<string | null>",
+      "start_date": "<string | null>",
+      "end_date": "<string | null>",
+      "technologies": ["<string>"],
+      "link": "<string | null>",
+      "description": "<string>"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "<string>",
+      "organization": "<string>",
+      "issue_date": "<string | null>",
+      "expiry_date": "<string | null>",
+      "credential_id": "<string | null>",
+      "credential_url": "<string | null>"
+    }
+  ],
+  "tailoring_notes": {
+    "keywords_integrated": ["<string> list of JD keywords integrated"],
+    "sections_prioritized": ["<string> sections that were prioritized"],
+    "estimated_match_score": <number 0-100>
+  }
+}`
   }
 };
 
@@ -987,6 +1140,29 @@ ${shadowKeywords.join(", ")}
 4. Ngữ pháp & Chính tả (15%)
 
 Yêu cầu: Trả về JSON với điểm số, phân tích chi tiết, và 3-5 gợi ý cải thiện cụ thể.`,
+      tailor_resume: (
+        masterProfile: Record<string, unknown>,
+        jobData: { title: string; company: string; raw_jd_text: string },
+        jobAnalysis: { keywords_required: string[] | null; gap_analysis: string | null; match_score: number | null } | null
+      ) => `Hãy "may đo" CV theo vị trí tuyển dụng sau.
+
+**VỊ TRÍ TUYỂN DỤNG:**
+Chức danh: ${jobData.title}
+Công ty: ${jobData.company}
+
+**MÔ TẢ CÔNG VIỆC (JD):**
+${jobData.raw_jd_text}
+
+${jobAnalysis?.keywords_required && jobAnalysis.keywords_required.length > 0 ? `**TỪ KHÓA ATS ĐÃ PHÂN TÍCH:**
+${jobAnalysis.keywords_required.join(", ")}` : ""}
+
+${jobAnalysis?.gap_analysis ? `**PHÂN TÍCH GÁP:**
+${jobAnalysis.gap_analysis}` : ""}
+
+**MASTER PROFILE (HỒ SƠ GỐC CỦA ỨNG VIÊN):**
+${JSON.stringify(masterProfile, null, 2)}
+
+Hãy viết lại CV để tích hợp tự nhiên các từ khóa JD vào nội dung hiện có, KHÔNG bịa đặt thông tin mới. Trả về JSON theo đúng cấu trúc đã quy định.`,
     },
     en: {
       generate_summary: (
@@ -1118,8 +1294,31 @@ ${shadowKeywords.join(", ")}
 4. Grammar & Spelling (15%)
 
 Requirements: Return JSON with score, detailed analysis, and 3-5 specific improvement suggestions.`,
+      tailor_resume: (
+        masterProfile: Record<string, unknown>,
+        jobData: { title: string; company: string; raw_jd_text: string },
+        jobAnalysis: { keywords_required: string[] | null; gap_analysis: string | null; match_score: number | null } | null
+      ) => `Please tailor the CV for the following job position.
+
+**JOB POSITION:**
+Title: ${jobData.title}
+Company: ${jobData.company}
+
+**JOB DESCRIPTION (JD):**
+${jobData.raw_jd_text}
+
+${jobAnalysis?.keywords_required && jobAnalysis.keywords_required.length > 0 ? `**ATS KEYWORDS ANALYZED:**
+${jobAnalysis.keywords_required.join(", ")}` : ""}
+
+${jobAnalysis?.gap_analysis ? `**GAP ANALYSIS:**
+${jobAnalysis.gap_analysis}` : ""}
+
+**MASTER PROFILE (CANDIDATE'S ORIGINAL PROFILE):**
+${JSON.stringify(masterProfile, null, 2)}
+
+Please rewrite the CV to naturally integrate JD keywords into existing content, DO NOT fabricate new information. Return JSON following the specified structure.`,
     },
   };
-  
+
   return templates[language];
 }

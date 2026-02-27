@@ -227,9 +227,9 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
 
 - **Mô tả:** Là một Hệ thống, tôi cần endpoint `/api/ai/tailor-resume` để AI viết lại Master Profile sao cho chứa nhiều từ khóa của JD nhất một cách tự nhiên.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Kéo dữ liệu từ `master_profiles` và `job_analyses` (hoặc `raw_jd_text`).
-  - [ ] Gọi OpenAI API (Model lớn: GPT-4o). System Prompt: Bắt buộc giữ sự thật, nhưng viết lại bullet points dùng từ khóa JD. Giới hạn độ dài để vừa 1 trang A4.
-  - [ ] Trả về cấu trúc JSON CV và lưu vào bảng `resumes` cột `content_snapshot`.
+  - [x] Kéo dữ liệu từ `master_profiles` và `job_analyses` (hoặc `raw_jd_text`).
+  - [x] Gọi OpenAI API (Model lớn: GPT-4o). System Prompt: Bắt buộc giữ sự thật, nhưng viết lại bullet points dùng từ khóa JD. Giới hạn độ dài để vừa 1 trang A4.
+  - [x] Trả về cấu trúc JSON CV và lưu vào bảng `resumes` cột `content_snapshot`.
 
 ### Story 5.2: Giao diện Tailor & Preview PDF
 
