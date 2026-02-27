@@ -84,7 +84,7 @@ ${buildProfileText(profileSections)}`;
     let analysis: { keywords_required?: unknown; match_score?: unknown; gap_analysis?: unknown };
     try {
       analysis = await callOpenAI(SYSTEM_PROMPT_VI, userMessage, {
-        tier: 'light',
+        tier: 'heavy',
         responseFormat: 'json_object',
       });
     } catch (aiError) {
