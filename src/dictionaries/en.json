@@ -989,6 +989,10 @@
         "publications": "Publications"
       }
     },
+    "history": {
+      "title": "CV Scan History",
+      "viewDetail": "View detail"
+    },
     "errors": {
       "processingFailed": "Could not process the file. Please try again with a different file.",
       "evaluationFailed": "An error occurred while evaluating the CV. Please try again.",

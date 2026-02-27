@@ -986,6 +986,10 @@
         "publications": "Xuất bản / Nghiên cứu"
       }
     },
+    "history": {
+      "title": "Lịch sử phân tích CV",
+      "viewDetail": "Xem chi tiết"
+    },
     "errors": {
       "processingFailed": "Không thể xử lý file. Vui lòng thử lại với file khác.",
       "evaluationFailed": "Có lỗi xảy ra khi đánh giá CV. Vui lòng thử lại.",

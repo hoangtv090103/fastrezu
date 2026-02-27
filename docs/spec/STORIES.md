@@ -287,9 +287,9 @@ _Mục tiêu: Người dùng upload CV sẵn có → AI có tầm nhìn (Vision)
 - **Mô tả:** Là một Người tìm việc, tôi muốn xem lại danh sách các CV tôi đã từng upload và kết quả phân tích AI trước đó (để xem chi tiết hoặc import Vault lại nếu cần).
 - **Kỹ thuật:** DB table `cv_scan_history`. API route `GET /api/cv/history`. Giao diện History Panel.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Hệ thống tự động đẩy kết quả đánh giá (sau Story 6.2 và 6.3) vào bảng `cv_scan_history`.
-  - [ ] UI cung cấp màn hình/dialog liệt kê các lịch sử scan trước đó: Ngày scan, Tên file CV, Điểm (Overall, ATS, Design).
-  - [ ] Bấm vào xem chi tiết sẽ hiển thị lại giao diện kết quả đánh giá giống hệt như lúc vừa upload xong.
+  - [x] Hệ thống tự động đẩy kết quả đánh giá (sau Story 6.2 và 6.3) vào bảng `cv_scan_history`.
+  - [x] UI cung cấp màn hình/dialog liệt kê các lịch sử scan trước đó: Ngày scan, Tên file CV, Điểm (Overall, ATS, Design).
+  - [x] Bấm vào xem chi tiết sẽ hiển thị lại giao diện kết quả đánh giá giống hệt như lúc vừa upload xong.
 
 ---
 

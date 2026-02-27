@@ -467,6 +467,50 @@ export type Database = {
           },
         ]
       }
+      cv_scan_history: {
+        Row: {
+          id: string
+          user_id: string
+          file_name: string
+          overall_score: number | null
+          ats_score: number | null
+          design_score: number | null
+          evaluation: Json
+          extracted_profile: Json
+          scanned_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          file_name: string
+          overall_score?: number | null
+          ats_score?: number | null
+          design_score?: number | null
+          evaluation: Json
+          extracted_profile: Json
+          scanned_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          file_name?: string
+          overall_score?: number | null
+          ats_score?: number | null
+          design_score?: number | null
+          evaluation?: Json
+          extracted_profile?: Json
+          scanned_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_scan_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vault_settings: {
         Row: {
           created_at: string | null

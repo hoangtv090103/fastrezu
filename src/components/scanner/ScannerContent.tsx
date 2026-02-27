@@ -13,13 +13,14 @@ import {
   faFileWord,
   faFilePdf,
   faWandSparkles,
-  faThumbsUp,
-  faArrowUpRightFromSquare,
   faRobot,
 } from "@fortawesome/free-solid-svg-icons";
 import type { CVEvaluationResult } from "@/app/api/ai/evaluate-cv/route";
 import type { ExtractedProfile } from "@/app/api/ai/extract-profile-from-cv/route";
+import type { ScanHistoryItem } from "@/app/api/cv/scan-history/route";
+import EvaluationResultsView from "./EvaluationResultsView";
 import VaultImportPanel from "./VaultImportPanel";
+import ScanHistoryPanel from "./ScanHistoryPanel";
 
 // Configure PDF.js worker — mirrors PDFViewer.tsx
 if (typeof window !== "undefined") {
@@ -39,148 +40,18 @@ interface ScanResult {
   pageCount: number;
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-/** SVG circular gauge — displays a 0-100 score as an arc */
-function CircularGauge({
-  score,
-  label,
-  color = "#6366f1",
-  size = 120,
-}: {
-  score: number | null;
-  label: string;
-  color?: string;
-  size?: number;
-}) {
-  const radius = size / 2 - 10;
-  const circumference = 2 * Math.PI * radius;
-  const progress = score != null ? (score / 100) * circumference : 0;
-  const strokeColor =
-    score == null
-      ? "#d1d5db"
-      : score >= 75
-        ? "#22c55e"
-        : score >= 50
-          ? "#f59e0b"
-          : "#ef4444";
-
-  return (
-    <div className="flex flex-col items-center gap-2">
-      {/* Relative wrapper so the absolute score overlay is positioned inside the ring */}
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90">
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke="#e5e7eb"
-            strokeWidth={8}
-          />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            fill="none"
-            stroke={strokeColor}
-            strokeWidth={8}
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference - progress}
-            strokeLinecap="round"
-            style={{ transition: "stroke-dashoffset 0.8s ease" }}
-          />
-        </svg>
-        {/* Score number centred inside the ring */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span
-            className="text-2xl font-bold"
-            style={{ color: score != null ? strokeColor : "#9ca3af" }}
-          >
-            {score != null ? score : "—"}
-          </span>
-        </div>
-      </div>
-      <span className="text-xs text-gray-500 text-center">{label}</span>
-    </div>
-  );
-}
-
-/** Horizontal progress bar for a section score */
-function SectionBar({
-  label,
-  score,
-  feedback,
-}: {
-  label: string;
-  score: number;
-  feedback: string;
-}) {
-  const barColor =
-    score >= 75 ? "bg-green-500" : score >= 50 ? "bg-amber-400" : "bg-red-400";
-
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-gray-700">{label}</span>
-        <span className="font-semibold text-gray-800">{score}/100</span>
-      </div>
-      <div className="w-full bg-gray-100 rounded-full h-2">
-        <div
-          className={`${barColor} h-2 rounded-full transition-all duration-700`}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-      <p className="text-xs text-gray-500">{feedback}</p>
-    </div>
-  );
-}
-
-/** Collapsible bullet list for strengths / improvements / tips */
-function BulletList({
-  items,
-  variant,
-}: {
-  items: string[];
-  variant: "green" | "amber" | "blue";
-}) {
-  const dotColor =
-    variant === "green"
-      ? "bg-green-500"
-      : variant === "amber"
-        ? "bg-amber-400"
-        : "bg-blue-500";
-  const textColor =
-    variant === "green"
-      ? "text-green-700"
-      : variant === "amber"
-        ? "text-amber-700"
-        : "text-blue-700";
-
-  return (
-    <ul className="space-y-2">
-      {items.map((item, i) => (
-        <li key={i} className="flex items-start gap-2">
-          <span
-            className={`${dotColor} w-2 h-2 rounded-full mt-1.5 flex-shrink-0`}
-          />
-          <span className={`text-sm ${textColor}`}>{item}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 // ── Main Component ────────────────────────────────────────────────────────────
 
 interface ScannerContentProps {
   existingVaultSections?: Record<string, unknown>;
   existingEnabledSections?: string[];
+  initialHistory?: ScanHistoryItem[];
 }
 
 export default function ScannerContent({
   existingVaultSections = {},
   existingEnabledSections = [],
+  initialHistory = [],
 }: ScannerContentProps) {
   const { t, locale } = useTranslation();
 
@@ -196,6 +67,9 @@ export default function ScannerContent({
   const [evaluation, setEvaluation] = useState<CVEvaluationResult | null>(null);
   const [extractedProfile, setExtractedProfile] = useState<ExtractedProfile | null>(null);
   const [aiError, setAiError] = useState("");
+
+  // History — starts with server-fetched list, prepend on new save
+  const [history, setHistory] = useState<ScanHistoryItem[]>(initialHistory);
 
   const isPdf = file?.name.toLowerCase().endsWith(".pdf");
 
@@ -295,7 +169,7 @@ export default function ScannerContent({
     }
   };
 
-  /** Run 6.2 (evaluate) + 6.3 (extract profile) in parallel via Promise.all */
+  /** Run 6.2 (evaluate) + 6.3 (extract profile) in parallel, then save to history */
   const handleFullAnalysis = async () => {
     if (!scanResult) return;
     setAiStatus("running");
@@ -329,6 +203,35 @@ export default function ScannerContent({
       setEvaluation(evalResult);
       setExtractedProfile(profileResult);
       setAiStatus("done");
+
+      // Non-blocking: save to history (failure must not block the user)
+      fetch("/api/cv/scan-history", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          file_name: file?.name ?? "CV",
+          evaluation: evalResult,
+          extracted_profile: profileResult,
+        }),
+      })
+        .then((res) => res.json())
+        .then((saved: { id?: string }) => {
+          if (saved.id) {
+            // Prepend optimistic entry to history list
+            setHistory((prev) => [
+              {
+                id: saved.id!,
+                file_name: file?.name ?? "CV",
+                overall_score: evalResult.overall_score ?? null,
+                ats_score: evalResult.ats_score ?? null,
+                design_score: evalResult.design_score ?? null,
+                scanned_at: new Date().toISOString(),
+              },
+              ...prev,
+            ]);
+          }
+        })
+        .catch((err) => console.warn("Failed to save scan history:", err));
     } catch (err) {
       console.error("AI analysis error:", err);
       setAiError(
@@ -547,9 +450,7 @@ export default function ScannerContent({
         )}
       </div>
 
-      {/* ── STEP 3: AI Analysis (evaluation + extraction) ── */}
-
-      {/* Running spinner */}
+      {/* ── STEP 3: AI running spinner ── */}
       {aiStatus === "running" && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-6">
           <div className="flex flex-col items-center py-10 space-y-5">
@@ -585,113 +486,13 @@ export default function ScannerContent({
         </div>
       )}
 
-      {/* AI done: show evaluation results */}
+      {/* ── STEP 3: AI Evaluation results ── */}
       {aiStatus === "done" && evaluation && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-8 mb-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <FontAwesomeIcon
-                icon={faWandSparkles}
-                className="text-indigo-500 w-5 h-5"
-              />
-              {t("scanner.evaluationDone")}
-            </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={handleFullAnalysis}
-                className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                {t("scanner.evaluateAgain")}
-              </button>
-              <button
-                onClick={handleReset}
-                className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                {t("scanner.uploadAnother")}
-              </button>
-            </div>
-          </div>
-
-          {/* ── Score gauges ── */}
-          <div className="flex justify-center gap-8 sm:gap-16 flex-wrap">
-            <CircularGauge
-              score={evaluation.overall_score}
-              label={t("scanner.overallScore")}
-              size={128}
-            />
-            <CircularGauge
-              score={evaluation.ats_score}
-              label={t("scanner.atsScore")}
-              color="#3b82f6"
-              size={128}
-            />
-            {evaluation.design_score != null ? (
-              <CircularGauge
-                score={evaluation.design_score}
-                label={t("scanner.designScore")}
-                color="#8b5cf6"
-                size={128}
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className="relative flex items-center justify-center rounded-full border-4 border-gray-200"
-                  style={{ width: 128, height: 128 }}
-                >
-                  <span className="text-gray-400 text-2xl font-bold">—</span>
-                </div>
-                <span className="text-xs text-gray-400 text-center max-w-24">
-                  {t("scanner.designScoreUnavailable")}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* ── Section scores ── */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">
-              {t("scanner.sectionScores")}
-            </h3>
-            <div className="space-y-4">
-              {(["contact", "summary", "experience", "skills", "education"] as const).map(
-                (key) => (
-                  <SectionBar
-                    key={key}
-                    label={t(`scanner.sections.${key}`)}
-                    score={evaluation.sections[key].score}
-                    feedback={evaluation.sections[key].feedback}
-                  />
-                ),
-              )}
-            </div>
-          </div>
-
-          {/* ── Strengths / Improvements / Tips ── */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-              <h3 className="text-sm font-semibold text-green-800 flex items-center gap-1.5 mb-3">
-                <FontAwesomeIcon icon={faThumbsUp} className="w-3.5 h-3.5" />
-                {t("scanner.strengths")}
-              </h3>
-              <BulletList items={evaluation.strengths} variant="green" />
-            </div>
-            <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
-              <h3 className="text-sm font-semibold text-amber-800 flex items-center gap-1.5 mb-3">
-                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3.5 h-3.5" />
-                {t("scanner.improvements")}
-              </h3>
-              <BulletList items={evaluation.improvements} variant="amber" />
-            </div>
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-              <h3 className="text-sm font-semibold text-blue-800 flex items-center gap-1.5 mb-3">
-                <FontAwesomeIcon icon={faRobot} className="w-3.5 h-3.5" />
-                {t("scanner.atsTips")}
-              </h3>
-              <BulletList items={evaluation.ats_tips} variant="blue" />
-            </div>
-          </div>
-        </div>
+        <EvaluationResultsView
+          evaluation={evaluation}
+          onRerun={handleFullAnalysis}
+          onReset={handleReset}
+        />
       )}
 
       {/* ── STEP 4: Vault Import Panel (6.3) ── */}
@@ -702,6 +503,9 @@ export default function ScannerContent({
           existingEnabledSections={existingEnabledSections}
         />
       )}
+
+      {/* ── STEP 5: Scan History (6.4) ── */}
+      {history.length > 0 && <ScanHistoryPanel history={history} />}
     </div>
   );
 }
