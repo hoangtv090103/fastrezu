@@ -10,6 +10,15 @@ import ProjectsSection, { type ProjectsData } from "./ProjectsSection";
 import CertificationsSection, {
   type CertificationsData,
 } from "./CertificationsSection";
+import AwardsSection, { type AwardsData } from "./AwardsSection";
+import VolunteeringSection, {
+  type VolunteeringData,
+} from "./VolunteeringSection";
+import HobbiesSection, { type HobbiesData } from "./HobbiesSection";
+import ReferencesSection, { type ReferencesData } from "./ReferencesSection";
+import PublicationsSection, {
+  type PublicationsData,
+} from "./PublicationsSection";
 import { Toast, useToast } from "@/components/ui/Toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -23,8 +32,12 @@ import {
   faCertificate,
   faPlus,
   faCheck,
-  faChevronRight,
   faXmark,
+  faTrophy,
+  faHandshake,
+  faHeart,
+  faAddressCard,
+  faBook,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -39,7 +52,12 @@ type TabId =
   | "education"
   | "skills"
   | "projects"
-  | "certifications";
+  | "certifications"
+  | "awards"
+  | "volunteering"
+  | "hobbies"
+  | "references"
+  | "publications";
 
 interface VaultData {
   personal?: Partial<PersonalInfo>;
@@ -49,6 +67,11 @@ interface VaultData {
   skills?: SkillsData;
   projects?: ProjectsData;
   certifications?: CertificationsData;
+  awards?: AwardsData;
+  volunteering?: VolunteeringData;
+  hobbies?: HobbiesData;
+  references?: ReferencesData;
+  publications?: PublicationsData;
 }
 
 interface VaultContentProps {
@@ -116,6 +139,41 @@ const TAB_DEFS: {
     description: "Certificates & licenses",
     optional: true,
   },
+  {
+    id: "awards",
+    label: "Giải thưởng",
+    icon: faTrophy,
+    description: "Các giải thưởng & công nhận",
+    optional: true,
+  },
+  {
+    id: "volunteering",
+    label: "Tình nguyện",
+    icon: faHandshake,
+    description: "Hoạt động tình nguyện & ngoại khóa",
+    optional: true,
+  },
+  {
+    id: "hobbies",
+    label: "Sở thích",
+    icon: faHeart,
+    description: "Hobbies & đam mê",
+    optional: true,
+  },
+  {
+    id: "references",
+    label: "Người tham chiếu",
+    icon: faAddressCard,
+    description: "Liên lạc người có thể xác nhận",
+    optional: true,
+  },
+  {
+    id: "publications",
+    label: "Công bố & Bài viết",
+    icon: faBook,
+    description: "Articles, papers, blog posts",
+    optional: true,
+  },
 ];
 
 // ── AddSection inline panel (shown in sidebar) ────────────────────────
@@ -177,7 +235,7 @@ function AddSectionPanel({
               Chọn mục để thêm
             </p>
           </div>
-          <div className="py-1">
+          <div className="py-1 max-h-64 overflow-y-auto">
             {available.map((tab) => (
               <button
                 key={tab.id}
@@ -254,6 +312,11 @@ export default function VaultContent({
     skills: "Đã lưu kỹ năng ✓",
     projects: "Đã lưu dự án ✓",
     certifications: "Đã lưu chứng chỉ ✓",
+    awards: "Đã lưu giải thưởng ✓",
+    volunteering: "Đã lưu tình nguyện ✓",
+    hobbies: "Đã lưu sở thích ✓",
+    references: "Đã lưu người tham chiếu ✓",
+    publications: "Đã lưu công bố ✓",
   };
 
   const handleSaved = (tab: TabId) => showToast(toastMessages[tab]);
@@ -423,6 +486,41 @@ export default function VaultContent({
                 onError={handleError}
               />
             )}
+            {activeTab === "awards" && (
+              <AwardsSection
+                initialData={initialData.awards}
+                onSaved={() => handleSaved("awards")}
+                onError={handleError}
+              />
+            )}
+            {activeTab === "volunteering" && (
+              <VolunteeringSection
+                initialData={initialData.volunteering}
+                onSaved={() => handleSaved("volunteering")}
+                onError={handleError}
+              />
+            )}
+            {activeTab === "hobbies" && (
+              <HobbiesSection
+                initialData={initialData.hobbies}
+                onSaved={() => handleSaved("hobbies")}
+                onError={handleError}
+              />
+            )}
+            {activeTab === "references" && (
+              <ReferencesSection
+                initialData={initialData.references}
+                onSaved={() => handleSaved("references")}
+                onError={handleError}
+              />
+            )}
+            {activeTab === "publications" && (
+              <PublicationsSection
+                initialData={initialData.publications}
+                onSaved={() => handleSaved("publications")}
+                onError={handleError}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -469,12 +567,6 @@ function SidebarItem({
           />
         </span>
         <span className="flex-1 text-left leading-tight">{tab.label}</span>
-        {!onRemove && active && (
-          <FontAwesomeIcon
-            icon={faChevronRight}
-            className="w-3 h-3 text-blue-400 shrink-0"
-          />
-        )}
       </button>
       {onRemove && (
         <button

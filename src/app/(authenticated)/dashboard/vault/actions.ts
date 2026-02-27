@@ -4,7 +4,10 @@ import { createClient } from '@/lib/supabase-server';
 import { revalidatePath } from 'next/cache';
 import type { Json } from '@/types/database.types';
 
-export type SectionType = 'personal' | 'experience' | 'education' | 'skills' | 'summary' | 'projects' | 'certifications';
+export type SectionType =
+  | 'personal' | 'experience' | 'education' | 'skills' | 'summary'
+  | 'projects' | 'certifications'
+  | 'awards' | 'volunteering' | 'hobbies' | 'references' | 'publications';
 
 export type ActionResult = {
   success: boolean;

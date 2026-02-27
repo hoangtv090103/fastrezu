@@ -54,6 +54,11 @@ export default async function VaultPage() {
         skills: sectionMap["skills"] as never,
         projects: sectionMap["projects"] as never,
         certifications: sectionMap["certifications"] as never,
+        awards: sectionMap["awards"] as never,
+        volunteering: sectionMap["volunteering"] as never,
+        hobbies: sectionMap["hobbies"] as never,
+        references: sectionMap["references"] as never,
+        publications: sectionMap["publications"] as never,
       }}
       initialEnabledSections={enabledSections}
     />
