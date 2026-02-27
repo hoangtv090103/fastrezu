@@ -248,9 +248,43 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
 
 ---
 
-## EPIC 6: Dọn dẹp & Tối ưu (Cleanup)
+## EPIC 6: The Scanner (Upload CV & AI Evaluation)
 
-### Story 6.1: Gỡ bỏ mã nguồn V1 không cần thiết
+_Mục tiêu: Người dùng upload CV sẵn có → nhận đánh giá AI toàn diện → tự động điền vào The Vault._
+
+### Story 6.1: Upload CV & Trích xuất nội dung
+
+- **Mô tả:** Là một Người tìm việc, tôi muốn upload file CV (PDF hoặc DOCX) để hệ thống đọc và xử lý nội dung.
+- **Kỹ thuật:** Trang `/dashboard/scanner`. Tái dụng `FileUploadZone` component + `POST /api/cv/upload-check` (đã có, dùng `unpdf` + `mammoth`). Trích xuất raw text rồi gửi cho AI ở Story 6.2 và 6.3.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Trang `/dashboard/scanner` accessible từ nav header "The Scanner" và từ nút "Import từ CV" trong trang Vault.
+  - [ ] Hỗ trợ PDF và DOCX, tối đa 10MB. Validate file type và size phía client trước khi upload.
+  - [ ] Sau khi upload thành công: chuyển sang bước "Đang phân tích" (loading state).
+
+### Story 6.2: AI Đánh giá chất lượng CV (Heavy Tier)
+
+- **Mô tả:** Là một Người tìm việc, tôi muốn nhận phản hồi chi tiết về chất lượng CV của mình từ AI, bao gồm điểm số và lời khuyên cụ thể.
+- **Kỹ thuật:** Endpoint `POST /api/ai/evaluate-cv`. AI model heavy tier. Input: raw CV text (cắt tối đa 15.000 ký tự). Chạy song song với Story 6.3 via `Promise.all`.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Endpoint trả về `overall_score` (0–100), `ats_score` (0–100), điểm từng section (`contact`, `summary`, `experience`, `skills`, `education`) kèm `feedback` text.
+  - [ ] Trả về `strengths` (mảng chuỗi), `improvements` (mảng chuỗi), `ats_tips` (mảng chuỗi).
+  - [ ] UI hiển thị: SVG circular gauge cho overall score, progress bars cho từng section, badges/bullets cho strengths/improvements/tips.
+
+### Story 6.3: AI Trích xuất Profile có cấu trúc & Import vào Vault
+
+- **Mô tả:** Là một Người tìm việc, sau khi xem kết quả đánh giá, tôi muốn import dữ liệu CV vào The Vault để không phải nhập tay lại từ đầu.
+- **Kỹ thuật:** Endpoint `POST /api/ai/extract-profile-from-cv`. AI model heavy tier. Output JSON khớp với schema `master_profiles`. Server Action `importSectionsFromCV()` để batch upsert. Chỉ điền vào sections hiện đang trống trong Vault.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Endpoint trích xuất 6 sections: `personal`, `summary`, `experience`, `education`, `skills`, `certifications` (trả `null` cho sections không tìm thấy trong CV).
+  - [ ] UI hiển thị VaultImportPanel: checkbox per section — sections trống + có data extracted → checked mặc định; sections đã có data trong Vault → disabled + label "Đã có dữ liệu".
+  - [ ] User xác nhận → import → toast thành công → link navigate đến `/dashboard/vault`.
+  - [ ] Vault page sau import hiển thị đúng data đã extract.
+
+---
+
+## EPIC 7: Dọn dẹp & Tối ưu (Cleanup)
+
+### Story 7.1: Gỡ bỏ mã nguồn V1 không cần thiết
 
 - **Mô tả:** Là một Developer, tôi muốn xóa bỏ các luồng Wizard cũ, các API route AI cũ không còn hợp với luồng Career OS để giảm nợ kỹ thuật (Technical Debt).
 - **Tiêu chí hoàn thành (AC):**

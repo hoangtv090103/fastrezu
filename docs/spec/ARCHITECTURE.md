@@ -80,16 +80,20 @@ src/
 │   │   ├── vault/                # Giao diện The Vault (nhập liệu gốc)
 │   │   ├── jobs/                 # The War Room (Kanban Board)
 │   │   │   └── [id]/             # Chi tiết 1 Job (The Intel + The Tailor)
+│   │   ├── scanner/              # The Scanner (Upload CV & AI Evaluation)
 │   │   └── settings/
 │   └── api/
 │       ├── ai/
-│       │   ├── analyze-job/      # So khớp JD vs Master Profile (The Intel) ✅
-│       │   └── tailor-resume/    # Viết lại CV theo JD (The Tailor)
+│       │   ├── analyze-job/           # So khớp JD vs Master Profile (The Intel) ✅
+│       │   ├── evaluate-cv/           # Đánh giá chất lượng CV (The Scanner)
+│       │   ├── extract-profile-from-cv/ # Trích xuất profile có cấu trúc từ CV
+│       │   └── tailor-resume/         # Viết lại CV theo JD (The Tailor)
 │       └── jobs/
-│           └── crawl-jd/         # Crawl JD từ URL qua Jina.ai (The Scout)
+│           └── crawl-jd/              # Crawl JD từ URL qua Jina.ai (The Scout) ✅
 ├── components/
 │   ├── vault/                    # Form nhập liệu, list kinh nghiệm
 │   ├── jobs/                     # Kanban board, Job cards
+│   ├── scanner/                  # ScannerClient — upload, evaluate, vault import
 │   ├── tailor/                   # Nút bấm AI, Preview PDF, Gap Analysis
 │   └── ui/                       # Shadcn UI (Button, Input, Card...)
 ├── lib/
@@ -140,7 +144,38 @@ JINA_API_KEY=<optional>  # Tăng rate limit Jina.ai (free tier: ~10 req/min)
   4. Trả về JSON chứa `keywords`, `match_score`, `gap_analysis`.
 - **Save:** Lưu vào bảng `job_analyses`.
 
-### 4.2. Luồng "The Tailor" (May đo CV - Kỹ thuật Contextual Rewrite)
+### 4.2. Luồng "The Scanner" (Upload CV & AI Evaluation)
+
+Người dùng upload CV sẵn có → AI đánh giá chất lượng + trích xuất profile → (tùy chọn) điền vào The Vault.
+
+- **Trigger:** User truy cập `/dashboard/scanner` (nav header hoặc nút "Import từ CV" trong Vault).
+- **Bước 1 — Upload & Extract:** Client upload file → `POST /api/cv/upload-check` (tái dùng, đã có) → trả về `raw_text`.
+- **Bước 2 — AI Processing (chạy song song):**
+  - `POST /api/ai/evaluate-cv` — Heavy tier. Input: raw text (cắt 15.000 ký tự). Output:
+    ```json
+    {
+      "overall_score": 72, "ats_score": 68,
+      "sections": { "contact": { "score": 90, "feedback": "..." }, ... },
+      "strengths": [...], "improvements": [...], "ats_tips": [...]
+    }
+    ```
+  - `POST /api/ai/extract-profile-from-cv` — Heavy tier. Output JSON khớp schema `master_profiles`:
+    ```json
+    { "personal": {...}, "summary": {...}, "experience": {"items":[...]}, "education": {"items":[...]}, "skills": {...}, "certifications": {"items":[...]} }
+    ```
+    Trả `null` cho section không tìm thấy trong CV.
+- **Bước 3 — Hiển thị & Import:**
+  - Panel trái: evaluation results (SVG gauge, section scores, strengths/improvements/ATS tips).
+  - Panel phải: VaultImportPanel — checkbox per section (empty vault sections + có data → checked; sections đã có data → disabled). Confirm → gọi Server Action `importSectionsFromCV()` batch upsert.
+- **Không lưu evaluation vào DB:** Results giữ trong client state (MVP).
+
+**Reuse:**
+- `FileUploadZone` component + `unpdf`/`mammoth` libs (đã có).
+- `upsertVaultSection` → wrap thành `importSectionsFromCV(sections)` batch action.
+
+---
+
+### 4.3. Luồng "The Tailor" (May đo CV - Kỹ thuật Contextual Rewrite)
 
 - **Trigger:** User bấm nút "Tối ưu CV cho Job này".
 - **Action:** Client gọi POST `/api/ai/tailor-resume`.
