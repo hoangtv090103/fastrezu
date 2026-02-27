@@ -7,10 +7,10 @@ import {
   faBuilding,
   faCalendar,
   faLink,
-  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import JobAnalysisSection from "@/components/jobs/JobAnalysisSection";
 import CrawlJDButton from "@/components/jobs/CrawlJDButton";
+import JobDetailEditButton from "@/components/jobs/JobDetailEditButton";
 
 // ── Status config ────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<
@@ -119,13 +119,7 @@ export default async function JobDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          <Link
-            href={`/dashboard/jobs`}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-colors shrink-0"
-          >
-            <FontAwesomeIcon icon={faPen} className="w-3.5 h-3.5" />
-            Sửa job
-          </Link>
+          <JobDetailEditButton job={job} />
         </div>
 
         {/* ── Main grid ── */}
@@ -154,12 +148,11 @@ export default async function JobDetailPage({ params }: PageProps) {
                   {job.job_url ? (
                     <CrawlJDButton jobId={job.id} variant="primary" />
                   ) : (
-                    <Link
-                      href="/dashboard/jobs"
-                      className="text-sm text-blue-500 hover:underline"
-                    >
-                      Quay lại để thêm JD hoặc URL
-                    </Link>
+                    <JobDetailEditButton
+                      job={job}
+                      variant="link"
+                      label="Thêm JD hoặc URL"
+                    />
                   )}
                 </div>
               )}
