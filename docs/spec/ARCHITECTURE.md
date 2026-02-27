@@ -66,6 +66,16 @@ Lõi của hệ thống dựa trên mô hình dữ liệu lấy **Job (Cơ hội
 - `content_snapshot` (jsonb) - **ĐIỂM CHỐT:** Lưu cứng nội dung CV ngay tại thời điểm AI tạo ra. Nếu The Vault thay đổi sau này, CV này KHÔNG bị đổi theo (để lưu lịch sử).
 - `ats_score_final` (int)
 
+**Bảng `cv_scan_history` (The Scanner - Lịch sử quét CV)**
+
+- `id` (uuid, PK)
+- `user_id` (uuid, FK)
+- `file_name` (text)
+- `overall_score`, `ats_score`, `design_score` (int)
+- `evaluation_result` (jsonb) - JSON chứa toàn bộ strengths, improvements, section scores.
+- `extracted_profile` (jsonb) - Dữ liệu thô bóc tách được.
+- `created_at` (timestamp, default now())
+
 ---
 
 ## 3. Cấu trúc Thư mục Code (Directory Structure)
@@ -118,12 +128,13 @@ Người dùng chỉ cần dán `job_url` — hệ thống tự động crawl v�
      - Jina.ai xử lý JS-rendered pages, trả về Markdown sạch của toàn trang.
      - Free tier: không cần API key. Paid tier: thêm `Authorization: Bearer {JINA_API_KEY}`.
      - Timeout: 30 giây.
-  3. **AI Extract (Light Tier):** Gửi Markdown thô qua model nhẹ để trích xuất chỉ phần JD, loại bỏ nav/footer/quảng cáo. Prompt: *"Trích xuất CHỈ phần Mô tả Công việc từ nội dung này. Loại bỏ header, footer, navigation. Trả về text thuần."*
+  3. **AI Extract (Light Tier):** Gửi Markdown thô qua model nhẹ để trích xuất chỉ phần JD, loại bỏ nav/footer/quảng cáo. Prompt: _"Trích xuất CHỈ phần Mô tả Công việc từ nội dung này. Loại bỏ header, footer, navigation. Trả về text thuần."_
   4. **Save:** `UPDATE jobs SET raw_jd_text = ? WHERE id = ?`.
 - **Response:** `{ raw_jd_text: string }` — client cập nhật state ngay.
 - **Error cases:** Job board chặn crawl (403) → trả về lỗi rõ ràng; timeout → báo retry; nội dung không hợp lệ → trả về raw text để user tự xem.
 
 **Env vars (tùy chọn):**
+
 ```bash
 JINA_API_KEY=<optional>  # Tăng rate limit Jina.ai (free tier: ~10 req/min)
 ```
@@ -167,9 +178,10 @@ Người dùng upload CV sẵn có → AI đánh giá chất lượng + trích x
 - **Bước 3 — Hiển thị & Import:**
   - Panel trái: evaluation results (SVG gauge, section scores, strengths/improvements/ATS tips).
   - Panel phải: VaultImportPanel — checkbox per section (empty vault sections + có data → checked; sections đã có data → disabled). Confirm → gọi Server Action `importSectionsFromCV()` batch upsert.
-- **Không lưu evaluation vào DB:** Results giữ trong client state (MVP).
+- **Save (History):** Hệ thống gom `evaluation_result` và `extracted_profile` để insert vào bảng `cv_scan_history`. Result UI được load từ DB để tiện xem lại sau này.
 
 **Reuse:**
+
 - `FileUploadZone` component + `unpdf`/`mammoth` libs (đã có).
 - `upsertVaultSection` → wrap thành `importSectionsFromCV(sections)` batch action.
 

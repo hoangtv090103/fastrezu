@@ -9,6 +9,8 @@ import type { UserProfile } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
+const SHOW_CHECK_CV_LINK = false;
+
 interface AuthenticatedHeaderProps {
   user: User;
   userProfile?: UserProfile | null;
@@ -91,11 +93,19 @@ export default function AuthenticatedHeader({
                 {t("navigation.warRoom")}
               </Link>
               <Link
-                href="/check-cv"
+                href="/dashboard/scanner"
                 className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
               >
-                {t("navigation.checkCV")}
+                {t("navigation.scanner")}
               </Link>
+              {SHOW_CHECK_CV_LINK && (
+                <Link
+                  href="/check-cv"
+                  className="text-gray-600 hover:text-gray-900 small-text transition-colors duration-200"
+                >
+                  {t("navigation.checkCV")}
+                </Link>
+              )}
             </nav>
           </div>
 

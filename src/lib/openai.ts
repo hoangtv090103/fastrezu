@@ -75,12 +75,12 @@ function createAIClient(tier: AITier): OpenAI {
 let _lightClient: OpenAI | null = null;
 let _heavyClient: OpenAI | null = null;
 
-function getAIClient(tier: AITier): OpenAI {
+export function getAIClient(tier: AITier): OpenAI {
   if (tier === 'light') return (_lightClient ??= createAIClient('light'));
   return (_heavyClient ??= createAIClient('heavy'));
 }
 
-function getAIModel(tier: AITier): string {
+export function getAIModel(tier: AITier): string {
   return (
     (tier === 'light' ? process.env.AI_LIGHT_MODEL : process.env.AI_HEAVY_MODEL)
     || process.env.OPENAI_MODEL
@@ -150,6 +150,16 @@ async function retryWithBackoff<T>(
   throw lastError;
 }
 
+/**
+ * Prepend today's date to every system prompt so the model always knows the
+ * current date. This prevents hallucinations like "05/2025 is a future date"
+ * when the model's training cutoff predates the actual deployment date.
+ */
+export function injectDateContext(systemPrompt: string): string {
+  const today = new Date().toISOString().split("T")[0]; // e.g. "2026-02-28"
+  return `Today's date: ${today}\n\n${systemPrompt}`;
+}
+
 // Helper function để gọi OpenAI với error handling
 export async function callOpenAI(
   systemPrompt: string,
@@ -177,7 +187,7 @@ export async function callOpenAI(
           {
             model,
             messages: [
-              { role: "system", content: systemPrompt },
+              { role: "system", content: injectDateContext(systemPrompt) },
               { role: "user", content: userMessage }
             ],
             temperature,
@@ -288,7 +298,7 @@ export async function callOpenAIText(
           {
             model,
             messages: [
-              { role: "system", content: systemPrompt },
+              { role: "system", content: injectDateContext(systemPrompt) },
               { role: "user", content: userMessage }
             ],
             temperature,

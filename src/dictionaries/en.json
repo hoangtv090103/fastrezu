@@ -802,6 +802,7 @@
     "manageCVs": "Manage CVs",
     "warRoom": "War Room",
     "editor": "Editor",
+    "scanner": "The Scanner",
     "checkCV": "Check CV",
     "feedback": "Feedback",
     "sendFeedback": "Send Feedback",
@@ -917,6 +918,86 @@
   "loginSplitView": {
     "title": "Sign in to continue",
     "subtitle": "Sign in to view your ATS score and CV improvement suggestions"
+  },
+  "vault": {
+    "importFromCV": "Import from CV"
+  },
+  "scanner": {
+    "title": "The Scanner",
+    "subtitle": "Upload your CV — AI will evaluate both content and visual layout.",
+    "uploadLabel": "Upload CV file (PDF or DOCX)",
+    "analyzeButton": "Start Analysis",
+    "processing": "Analysing structure...",
+    "processingProgress": "Processing page {{progress}}%",
+    "pdfDetected": "PDF file — each page will be rendered as an image for AI layout evaluation.",
+    "docxDetected": "DOCX file — text content will be extracted.",
+    "docxLayoutNote": "Layout evaluation not available for DOCX",
+    "doneSuccessPdf": "Analysis complete — {{pages}} pages rendered.",
+    "doneSuccessDocx": "Text extraction complete.",
+    "doneSubtitle": "Continue to AI evaluation or import data into the Vault.",
+    "pagesPreview": "{{count}} pages rendered",
+    "page": "Page",
+    "extractedTextPreview": "Extracted content",
+    "noTextFound": "(No text found)",
+    "uploadAnother": "Upload another file",
+    "goToVault": "Go to The Vault",
+    "backToVault": "Back to The Vault",
+    "evaluateButton": "Evaluate with AI",
+    "evaluating": "AI is evaluating your CV...",
+    "evaluationSubtitle": "Analysing content and design. This may take 15–30 seconds...",
+    "evaluationDone": "Evaluation complete",
+    "overallScore": "Overall Score",
+    "atsScore": "ATS Score",
+    "designScore": "Design Score",
+    "designScoreUnavailable": "Not available (DOCX)",
+    "sectionScores": "Section Scores",
+    "sections": {
+      "contact": "Contact Info",
+      "summary": "Summary",
+      "experience": "Experience",
+      "skills": "Skills",
+      "education": "Education"
+    },
+    "strengths": "Strengths",
+    "improvements": "Areas to Improve",
+    "atsTips": "ATS Optimisation Tips",
+    "evaluateAgain": "Re-evaluate",
+    "importPanel": {
+      "title": "Import Data into The Vault",
+      "subtitle": "AI has extracted the following information from your CV. Select the sections to import:",
+      "extracting": "AI is extracting data...",
+      "hasExistingData": "Already has data",
+      "noDataExtracted": "No data found",
+      "itemsFound": "{{count}} item(s)",
+      "importButton": "Import to Vault",
+      "importing": "Importing...",
+      "importSuccess": "Import successful! Navigating to The Vault...",
+      "importError": "An error occurred during import. Please try again.",
+      "goToVaultNow": "Go to The Vault",
+      "sections": {
+        "personal": "Personal Info",
+        "summary": "Career Summary",
+        "experience": "Work Experience",
+        "education": "Education",
+        "skills": "Skills",
+        "certifications": "Certifications",
+        "projects": "Projects",
+        "awards": "Awards",
+        "volunteering": "Volunteering",
+        "hobbies": "Hobbies",
+        "references": "References",
+        "publications": "Publications"
+      }
+    },
+    "history": {
+      "title": "CV Scan History",
+      "viewDetail": "View detail"
+    },
+    "errors": {
+      "processingFailed": "Could not process the file. Please try again with a different file.",
+      "evaluationFailed": "An error occurred while evaluating the CV. Please try again.",
+      "extractionFailed": "An error occurred while extracting CV data. Please try again."
+    }
   },
   "warRoom": {
     "title": "War Room",

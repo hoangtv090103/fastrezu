@@ -799,6 +799,7 @@
     "manageCVs": "Quản lý CV",
     "warRoom": "War Room",
     "editor": "Soạn thảo",
+    "scanner": "The Scanner",
     "checkCV": "Kiểm tra CV",
     "feedback": "Phản hồi",
     "sendFeedback": "Gửi phản hồi",
@@ -914,6 +915,86 @@
   "loginSplitView": {
     "title": "Đăng nhập để tiếp tục",
     "subtitle": "Đăng nhập để xem điểm ATS và gợi ý cải thiện CV của bạn"
+  },
+  "vault": {
+    "importFromCV": "Import từ CV"
+  },
+  "scanner": {
+    "title": "The Scanner",
+    "subtitle": "Upload CV của bạn — AI sẽ nhận diện cả nội dung lẫn bố cục thiết kế.",
+    "uploadLabel": "Tải lên file CV (PDF hoặc DOCX)",
+    "analyzeButton": "Bắt đầu phân tích",
+    "processing": "Đang phân tích cấu trúc...",
+    "processingProgress": "Đang xử lý trang {{progress}}%",
+    "pdfDetected": "File PDF — sẽ render từng trang thành ảnh để AI đánh giá thiết kế.",
+    "docxDetected": "File DOCX — sẽ trích xuất nội dung văn bản.",
+    "docxLayoutNote": "Không đánh giá được bố cục với DOCX",
+    "doneSuccessPdf": "Phân tích hoàn tất — {{pages}} trang đã được render.",
+    "doneSuccessDocx": "Trích xuất văn bản hoàn tất.",
+    "doneSubtitle": "Tiếp tục sang bước đánh giá AI hoặc import vào Vault.",
+    "pagesPreview": "{{count}} trang đã render",
+    "page": "Trang",
+    "extractedTextPreview": "Nội dung trích xuất",
+    "noTextFound": "(Không tìm thấy văn bản)",
+    "uploadAnother": "Upload file khác",
+    "goToVault": "Đến The Vault",
+    "backToVault": "Quay lại The Vault",
+    "evaluateButton": "Đánh giá với AI",
+    "evaluating": "AI đang đánh giá CV...",
+    "evaluationSubtitle": "Đang phân tích nội dung và thiết kế. Có thể mất 15–30 giây...",
+    "evaluationDone": "Đánh giá hoàn tất",
+    "overallScore": "Điểm tổng thể",
+    "atsScore": "Điểm ATS",
+    "designScore": "Điểm thiết kế",
+    "designScoreUnavailable": "Không khả dụng (DOCX)",
+    "sectionScores": "Điểm từng phần",
+    "sections": {
+      "contact": "Thông tin liên lạc",
+      "summary": "Tóm tắt",
+      "experience": "Kinh nghiệm",
+      "skills": "Kỹ năng",
+      "education": "Học vấn"
+    },
+    "strengths": "Điểm mạnh",
+    "improvements": "Cần cải thiện",
+    "atsTips": "Mẹo tối ưu ATS",
+    "evaluateAgain": "Đánh giá lại",
+    "importPanel": {
+      "title": "Import dữ liệu vào The Vault",
+      "subtitle": "AI đã trích xuất được các thông tin sau từ CV. Chọn section muốn import:",
+      "extracting": "AI đang trích xuất dữ liệu...",
+      "hasExistingData": "Đã có dữ liệu",
+      "noDataExtracted": "Không tìm thấy dữ liệu",
+      "itemsFound": "{{count}} mục",
+      "importButton": "Import vào Vault",
+      "importing": "Đang import...",
+      "importSuccess": "Import thành công! Đang chuyển đến The Vault...",
+      "importError": "Có lỗi khi import. Vui lòng thử lại.",
+      "goToVaultNow": "Đến The Vault ngay",
+      "sections": {
+        "personal": "Thông tin cá nhân",
+        "summary": "Tóm tắt sự nghiệp",
+        "experience": "Kinh nghiệm làm việc",
+        "education": "Học vấn",
+        "skills": "Kỹ năng",
+        "certifications": "Chứng chỉ",
+        "projects": "Dự án",
+        "awards": "Giải thưởng",
+        "volunteering": "Hoạt động tình nguyện",
+        "hobbies": "Sở thích",
+        "references": "Người tham chiếu",
+        "publications": "Xuất bản / Nghiên cứu"
+      }
+    },
+    "history": {
+      "title": "Lịch sử phân tích CV",
+      "viewDetail": "Xem chi tiết"
+    },
+    "errors": {
+      "processingFailed": "Không thể xử lý file. Vui lòng thử lại với file khác.",
+      "evaluationFailed": "Có lỗi xảy ra khi đánh giá CV. Vui lòng thử lại.",
+      "extractionFailed": "Có lỗi khi trích xuất dữ liệu CV. Vui lòng thử lại."
+    }
   },
   "warRoom": {
     "title": "War Room",

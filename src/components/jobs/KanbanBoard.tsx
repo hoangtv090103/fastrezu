@@ -38,14 +38,14 @@ const COLUMNS: {
   id: string;
   badgeBg: string;
   badgeText: string;
-  dotColor: string;
+  accentColor: string;
 }[] = [
-  { id: "saved",        badgeBg: "bg-blue-100",   badgeText: "text-blue-700",   dotColor: "bg-blue-500" },
-  { id: "optimized",    badgeBg: "bg-purple-100",  badgeText: "text-purple-700", dotColor: "bg-purple-500" },
-  { id: "applied",      badgeBg: "bg-yellow-100",  badgeText: "text-yellow-700", dotColor: "bg-yellow-500" },
-  { id: "interviewing", badgeBg: "bg-orange-100",  badgeText: "text-orange-700", dotColor: "bg-orange-500" },
-  { id: "offer",        badgeBg: "bg-green-100",   badgeText: "text-green-700",  dotColor: "bg-green-500" },
-  { id: "rejected",     badgeBg: "bg-red-100",     badgeText: "text-red-700",    dotColor: "bg-red-500" },
+  { id: "saved",        badgeBg: "bg-blue-100",   badgeText: "text-blue-700",   accentColor: "border-blue-500" },
+  { id: "optimized",    badgeBg: "bg-purple-100",  badgeText: "text-purple-700", accentColor: "border-purple-500" },
+  { id: "applied",      badgeBg: "bg-yellow-100",  badgeText: "text-yellow-700", accentColor: "border-yellow-500" },
+  { id: "interviewing", badgeBg: "bg-orange-100",  badgeText: "text-orange-700", accentColor: "border-orange-500" },
+  { id: "offer",        badgeBg: "bg-green-100",   badgeText: "text-green-700",  accentColor: "border-green-500" },
+  { id: "rejected",     badgeBg: "bg-red-100",     badgeText: "text-red-700",    accentColor: "border-red-500" },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────
@@ -244,14 +244,11 @@ function KanbanColumn({
                 cursor-pointer hover:border-blue-200 hover:shadow-sm group relative
                 ${draggingId === job.id ? "opacity-40 scale-95" : ""}`}
             >
-              <div className="flex items-start gap-2">
-                <div className="flex-1 min-w-0 pr-6">
-                  <p className="text-xs text-gray-500 truncate">{job.company_name}</p>
-                  <p className="text-sm font-semibold text-gray-900 mt-0.5 line-clamp-2 leading-snug">
-                    {job.title}
-                  </p>
-                </div>
-                <span className={`shrink-0 w-2 h-2 rounded-full mt-1 ${col.dotColor}`} />
+              <div className="pr-6">
+                <p className="text-xs text-gray-500 truncate">{job.company_name}</p>
+                <p className="text-sm font-semibold text-gray-900 mt-0.5 line-clamp-2 leading-snug">
+                  {job.title}
+                </p>
               </div>
               <p className="text-xs text-gray-400 mt-2">{formatDate(job.created_at)}</p>
 
@@ -428,9 +425,12 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
           className="sticky z-20 bg-gray-50 pb-2 -mx-6 px-6"
           style={{ top: "var(--app-header-height, 64px)" }}
         >
-          <div className={`flex gap-4 pt-2 border-b border-gray-200 pb-2 ${isEmpty ? "opacity-40" : ""}`}>
+          <div className={`flex gap-4 pt-2 ${isEmpty ? "opacity-40" : ""}`}>
             {COLUMNS.map((col) => (
-              <div key={col.id} className="flex-1 min-w-[160px] flex items-center gap-2 px-1.5">
+              <div
+                key={col.id}
+                className={`flex-1 min-w-[160px] flex items-center gap-2 px-1.5 pb-2 border-b-2 ${col.accentColor}`}
+              >
                 <span className="text-sm font-semibold text-gray-700">
                   {t(`warRoom.columns.${col.id}`)}
                 </span>
