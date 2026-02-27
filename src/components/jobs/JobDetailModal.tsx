@@ -14,19 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { JobCard } from "./KanbanBoard";
 import JobAnalysisSection from "./JobAnalysisSection";
-
-// ── Status config ─────────────────────────────────────────────────────────
-const STATUS_CONFIG: Record<
-  string,
-  { label: string; bg: string; text: string; dot: string }
-> = {
-  saved:       { label: "Đã lưu",    bg: "bg-blue-100",   text: "text-blue-700",   dot: "bg-blue-500" },
-  optimized:   { label: "Đã tối ưu", bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
-  applied:     { label: "Đã nộp",    bg: "bg-yellow-100", text: "text-yellow-700", dot: "bg-yellow-500" },
-  interviewing:{ label: "Phỏng vấn", bg: "bg-orange-100", text: "text-orange-700", dot: "bg-orange-500" },
-  offer:       { label: "Offer",     bg: "bg-green-100",  text: "text-green-700",  dot: "bg-green-500" },
-  rejected:    { label: "Từ chối",   bg: "bg-red-100",    text: "text-red-700",    dot: "bg-red-500" },
-};
+import { useTranslation } from "@/hooks/useTranslation";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "—";
@@ -48,6 +36,18 @@ export default function JobDetailModal({
   onClose,
   onEdit,
 }: JobDetailModalProps) {
+  const { t } = useTranslation();
+
+  // Status config uses i18n keys
+  const STATUS_CONFIG: Record<string, { bg: string; text: string; dot: string }> = {
+    saved:        { bg: "bg-blue-100",   text: "text-blue-700",   dot: "bg-blue-500" },
+    optimized:    { bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
+    applied:      { bg: "bg-yellow-100", text: "text-yellow-700", dot: "bg-yellow-500" },
+    interviewing: { bg: "bg-orange-100", text: "text-orange-700", dot: "bg-orange-500" },
+    offer:        { bg: "bg-green-100",  text: "text-green-700",  dot: "bg-green-500" },
+    rejected:     { bg: "bg-red-100",    text: "text-red-700",    dot: "bg-red-500" },
+  };
+
   const status = job.status ?? "saved";
   const statusCfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.saved;
 
@@ -68,10 +68,10 @@ export default function JobDetailModal({
       if (res.ok && data.raw_jd_text) {
         setJdText(data.raw_jd_text);
       } else {
-        setCrawlError(data.error ?? "Không lấy được JD. Thử copy-paste thủ công.");
+        setCrawlError(data.error ?? t("warRoom.jobDetail.errors.crawlFailed"));
       }
     } catch {
-      setCrawlError("Lỗi kết nối. Vui lòng thử lại.");
+      setCrawlError(t("warRoom.jobDetail.errors.connectionError"));
     } finally {
       setIsCrawling(false);
     }
@@ -102,24 +102,24 @@ export default function JobDetailModal({
         {/* ── Toolbar ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 shrink-0">
           <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
-            Chi tiết Job
+            {t("warRoom.jobDetail.title")}
           </span>
           <div className="flex items-center gap-1">
             <Link
               href={`/dashboard/jobs/${job.id}`}
               onClick={onClose}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-lg transition-colors"
-              title="Mở trang đầy đủ"
+              title={t("warRoom.jobDetail.expand")}
             >
               <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
-              <span className="hidden sm:inline">Mở rộng</span>
+              <span className="hidden sm:inline">{t("warRoom.jobDetail.expand")}</span>
             </Link>
             <button
               onClick={() => { onEdit(job); onClose(); }}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <FontAwesomeIcon icon={faPen} className="w-3 h-3" />
-              Sửa
+              {t("warRoom.jobDetail.edit")}
             </button>
             <button
               onClick={onClose}
@@ -144,7 +144,7 @@ export default function JobDetailModal({
               className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${statusCfg.bg} ${statusCfg.text}`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
-              {statusCfg.label}
+              {t(`warRoom.columns.${status}`)}
             </span>
             <span className="flex items-center gap-1.5 text-gray-400">
               <FontAwesomeIcon icon={faCalendar} className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export default function JobDetailModal({
                 onClick={(e) => e.stopPropagation()}
               >
                 <FontAwesomeIcon icon={faLink} className="w-3.5 h-3.5" />
-                Xem job gốc
+                {t("warRoom.jobDetail.viewOriginal")}
               </a>
             )}
           </div>
@@ -173,7 +173,7 @@ export default function JobDetailModal({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Mô tả công việc
+                  {t("warRoom.jobDetail.jobDescription")}
                 </h2>
                 {jdText && job.job_url && (
                   <button
@@ -187,7 +187,7 @@ export default function JobDetailModal({
                     ) : (
                       <FontAwesomeIcon icon={faLink} className="w-3 h-3" />
                     )}
-                    {isCrawling ? "Đang cập nhật…" : "Cập nhật JD"}
+                    {isCrawling ? t("warRoom.jobDetail.updatingJD") : t("warRoom.jobDetail.updateJD")}
                   </button>
                 )}
               </div>
@@ -205,7 +205,7 @@ export default function JobDetailModal({
                   {job.job_url ? (
                     <div className="text-center">
                       <p className="text-sm text-gray-400 mb-3">
-                        Chưa có mô tả công việc.
+                        {t("warRoom.jobDetail.noJD")}
                       </p>
                       {crawlError && (
                         <p className="text-xs text-amber-600 mb-2">{crawlError}</p>
@@ -221,19 +221,19 @@ export default function JobDetailModal({
                         ) : (
                           <FontAwesomeIcon icon={faLink} className="w-3.5 h-3.5" />
                         )}
-                        {isCrawling ? "Đang lấy JD từ URL…" : "Lấy JD từ URL"}
+                        {isCrawling ? t("warRoom.jobDetail.fetchingFromUrl") : t("warRoom.jobDetail.fetchFromUrl")}
                       </button>
                     </div>
                   ) : (
                     <p className="text-sm text-gray-400 text-center">
-                      Chưa có mô tả công việc. Bấm{" "}
+                      {t("warRoom.jobDetail.noJD")} {t("warRoom.jobDetail.noJDNoUrl").split(t("warRoom.jobDetail.noJD")).pop()?.split(t("warRoom.jobDetail.edit"))[0]}
                       <button
                         onClick={() => { onEdit(job); onClose(); }}
                         className="text-blue-500 hover:underline"
                       >
-                        Sửa
+                        {t("warRoom.jobDetail.edit")}
                       </button>{" "}
-                      để thêm JD hoặc URL.
+                      {t("warRoom.addJobModal.jdText").split("(")[0].trim().toLowerCase().includes("để thêm") ? "" : t("warRoom.jobDetail.addJDorUrl").split(t("warRoom.jobDetail.edit")).pop()}
                     </p>
                   )}
                 </div>

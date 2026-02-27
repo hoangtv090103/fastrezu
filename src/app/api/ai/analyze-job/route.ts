@@ -18,6 +18,21 @@ Hướng dẫn:
 - match_score: Ước tính % phù hợp dựa trên kỹ năng/kinh nghiệm ứng viên so với JD (0 = không phù hợp, 100 = hoàn toàn phù hợp). Nếu hồ sơ trống thì trả về 0.
 - gap_analysis: 2-4 câu tiếng Việt, nêu rõ những điểm ứng viên còn thiếu và lời khuyên cụ thể để cải thiện`;
 
+const SYSTEM_PROMPT_EN = `You are FastRezu AI, a career advisor and recruitment analyst.
+Task: Compare the Job Description (JD) with the candidate's profile, return a match score and gap analysis.
+
+You MUST return EXACTLY the following JSON structure (do not add any text outside the JSON):
+{
+  "keywords_required": ["keyword1", "keyword2", ...],
+  "match_score": <integer 0-100>,
+  "gap_analysis": "<string>"
+}
+
+Guidelines:
+- keywords_required: Maximum 20 most important skills, tools, and requirements from the JD
+- match_score: Estimated match % based on candidate's skills/experience vs JD (0 = no match, 100 = perfect match). Return 0 if profile is empty.
+- gap_analysis: 2-4 sentences in English, clearly stating what the candidate is missing and specific advice for improvement`;
+
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
@@ -80,10 +95,13 @@ ${job.raw_jd_text}
 === HỒ SƠ ỨNG VIÊN ===
 ${buildProfileText(profileSections)}`;
 
+    const locale = body.locale === 'en' ? 'en' : 'vi';
+    const systemPrompt = locale === 'vi' ? SYSTEM_PROMPT_VI : SYSTEM_PROMPT_EN;
+
     // Call AI with light tier (The Intel uses fast/cheap model)
     let analysis: { keywords_required?: unknown; match_score?: unknown; gap_analysis?: unknown };
     try {
-      analysis = await callOpenAI(SYSTEM_PROMPT_VI, userMessage, {
+      analysis = await callOpenAI(systemPrompt, userMessage, {
         tier: 'heavy',
         responseFormat: 'json_object',
       });

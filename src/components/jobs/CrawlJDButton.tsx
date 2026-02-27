@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CrawlJDButtonProps {
   jobId: string;
@@ -15,6 +16,7 @@ export default function CrawlJDButton({
   variant = "primary",
 }: CrawlJDButtonProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isCrawling, setIsCrawling] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,10 +33,10 @@ export default function CrawlJDButton({
       if (res.ok) {
         router.refresh(); // Re-fetch Server Component data
       } else {
-        setError(data.error ?? "Không lấy được JD. Thử copy-paste thủ công.");
+        setError(data.error ?? t("warRoom.jobDetail.errors.crawlFailed"));
       }
     } catch {
-      setError("Lỗi kết nối. Vui lòng thử lại.");
+      setError(t("warRoom.jobDetail.errors.connectionError"));
     } finally {
       setIsCrawling(false);
     }
@@ -57,7 +59,9 @@ export default function CrawlJDButton({
         {isCrawling ? (
           <FontAwesomeIcon
             icon={faSpinner}
-            className={isPrimary ? "w-3.5 h-3.5 animate-spin" : "w-3 h-3 animate-spin"}
+            className={
+              isPrimary ? "w-3.5 h-3.5 animate-spin" : "w-3 h-3 animate-spin"
+            }
           />
         ) : (
           <FontAwesomeIcon
@@ -66,8 +70,12 @@ export default function CrawlJDButton({
           />
         )}
         {isCrawling
-          ? isPrimary ? "Đang lấy JD từ URL…" : "Đang cập nhật…"
-          : isPrimary ? "Lấy JD từ URL" : "Cập nhật JD"}
+          ? isPrimary
+            ? t("warRoom.jobDetail.fetchingFromUrl")
+            : t("warRoom.jobDetail.updatingJD")
+          : isPrimary
+            ? t("warRoom.jobDetail.fetchFromUrl")
+            : t("warRoom.jobDetail.updateJD")}
       </button>
       {error && <p className="text-xs text-amber-600 mt-1.5">{error}</p>}
     </div>
