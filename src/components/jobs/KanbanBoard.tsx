@@ -179,19 +179,28 @@ function CardMenu({
       icon: faPen,
       label: "Sửa",
       iconClass: "text-blue-500",
-      onClick: () => { onEdit(job); onClose(); },
+      onClick: () => {
+        onEdit(job);
+        onClose();
+      },
     },
     {
       icon: faCopy,
       label: "Nhân bản",
       iconClass: "text-gray-500",
-      onClick: () => { onDuplicate(job); onClose(); },
+      onClick: () => {
+        onDuplicate(job);
+        onClose();
+      },
     },
     {
       icon: faTrash,
       label: "Xóa",
       iconClass: "text-red-500",
-      onClick: () => { onDeleteRequest(job); onClose(); },
+      onClick: () => {
+        onDeleteRequest(job);
+        onClose();
+      },
     },
   ];
 
@@ -200,11 +209,17 @@ function CardMenu({
       {items.map((item) => (
         <button
           key={item.label}
-          onClick={(e) => { e.stopPropagation(); item.onClick(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            item.onClick();
+          }}
           onDragStart={(e) => e.stopPropagation()}
           className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
         >
-          <FontAwesomeIcon icon={item.icon} className={`w-3.5 h-3.5 ${item.iconClass}`} />
+          <FontAwesomeIcon
+            icon={item.icon}
+            className={`w-3.5 h-3.5 ${item.iconClass}`}
+          />
           {item.label}
         </button>
       ))}
@@ -311,9 +326,10 @@ function KanbanColumn({
                   }}
                   onDragStart={(e) => e.stopPropagation()}
                   className={`p-1.5 rounded-lg transition-colors
-                    ${openMenuId === job.id
-                      ? "text-gray-600 bg-gray-100"
-                      : "text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600 hover:bg-gray-100"
+                    ${
+                      openMenuId === job.id
+                        ? "text-gray-600 bg-gray-100"
+                        : "text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600 hover:bg-gray-100"
                     }`}
                   title="Tùy chọn"
                 >
@@ -404,7 +420,16 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
     );
     setDraggingId(null);
     setDragOverColId(null);
-    updateJobStatus(idToDrop, targetColId);
+    updateJobStatus(idToDrop, targetColId).then((res) => {
+      if (!res.success) {
+        // Revert optimistic update on failure
+        setJobs((prev) =>
+          prev.map((j) =>
+            j.id === idToDrop ? { ...j, status: currentStatus } : j,
+          ),
+        );
+      }
+    });
   };
 
   const handleDeleteConfirm = () => {
@@ -482,12 +507,24 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
         )}
 
         {/* Sticky column labels bar */}
-        <div className="sticky top-16 z-20 bg-gray-50 pb-2 -mx-6 px-6">
-          <div className={`flex gap-4 pt-2 border-b border-gray-200 pb-2 ${isEmpty ? "opacity-40" : ""}`}>
+        <div
+          className="sticky z-20 bg-gray-50 pb-2 -mx-6 px-6"
+          style={{ top: "var(--app-header-height, 64px)" }}
+        >
+          <div
+            className={`flex gap-4 pt-2 border-b border-gray-200 pb-2 ${isEmpty ? "opacity-40" : ""}`}
+          >
             {COLUMNS.map((col) => (
-              <div key={col.id} className="flex-1 min-w-[160px] flex items-center gap-2 px-1.5">
-                <span className="text-sm font-semibold text-gray-700">{col.label}</span>
-                <span className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-medium ${col.badgeBg} ${col.badgeText}`}>
+              <div
+                key={col.id}
+                className="flex-1 min-w-[160px] flex items-center gap-2 px-1.5"
+              >
+                <span className="text-sm font-semibold text-gray-700">
+                  {col.label}
+                </span>
+                <span
+                  className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-medium ${col.badgeBg} ${col.badgeText}`}
+                >
                   {(cardsByStatus[col.id] ?? []).length}
                 </span>
               </div>

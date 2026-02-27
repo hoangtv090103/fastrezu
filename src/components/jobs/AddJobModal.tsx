@@ -75,6 +75,9 @@ export default function AddJobModal({
             title: title.trim(),
             company_name: companyName.trim(),
             job_url: jobUrl.trim() || null,
+            raw_jd_text: rawJdText
+              ? rawJdText.trim()
+              : (editJob.raw_jd_text ?? null),
           });
           onClose();
         }
@@ -181,11 +184,7 @@ export default function AddJobModal({
             disabled={isPending || !title.trim() || !companyName.trim()}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-40"
           >
-            {isPending
-              ? "Đang lưu…"
-              : isEditMode
-                ? "Lưu thay đổi"
-                : "Thêm Job"}
+            {isPending ? "Đang lưu…" : isEditMode ? "Lưu thay đổi" : "Thêm Job"}
           </button>
         </div>
       </div>
