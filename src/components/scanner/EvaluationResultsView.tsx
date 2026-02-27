@@ -23,15 +23,23 @@ export function CircularGauge({
   color?: string;
   size?: number;
 }) {
+  const normalizedScore =
+    score != null && Number.isFinite(score) ? score : null;
+  const clampedScore =
+    normalizedScore != null
+      ? Math.min(100, Math.max(0, normalizedScore))
+      : null;
+
   const radius = size / 2 - 10;
   const circumference = 2 * Math.PI * radius;
-  const progress = score != null ? (score / 100) * circumference : 0;
+  const progress =
+    clampedScore != null ? (clampedScore / 100) * circumference : 0;
   const strokeColor =
-    score == null
+    clampedScore == null
       ? "#d1d5db"
-      : score >= 75
+      : clampedScore >= 75
         ? "#22c55e"
-        : score >= 50
+        : clampedScore >= 50
           ? "#f59e0b"
           : "#ef4444";
 
@@ -63,9 +71,9 @@ export function CircularGauge({
         <div className="absolute inset-0 flex items-center justify-center">
           <span
             className="text-2xl font-bold"
-            style={{ color: score != null ? strokeColor : "#9ca3af" }}
+            style={{ color: clampedScore != null ? strokeColor : "#9ca3af" }}
           >
-            {score != null ? score : "—"}
+            {clampedScore != null ? clampedScore : "—"}
           </span>
         </div>
       </div>
@@ -83,19 +91,25 @@ export function SectionBar({
   score: number;
   feedback: string;
 }) {
+  const normalizedScore = Number.isFinite(score) ? score : 0;
+  const clampedScore = Math.min(100, Math.max(0, normalizedScore));
   const barColor =
-    score >= 75 ? "bg-green-500" : score >= 50 ? "bg-amber-400" : "bg-red-400";
+    clampedScore >= 75
+      ? "bg-green-500"
+      : clampedScore >= 50
+        ? "bg-amber-400"
+        : "bg-red-400";
 
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-gray-700">{label}</span>
-        <span className="font-semibold text-gray-800">{score}/100</span>
+        <span className="font-semibold text-gray-800">{clampedScore}/100</span>
       </div>
       <div className="w-full bg-gray-100 rounded-full h-2">
         <div
           className={`${barColor} h-2 rounded-full transition-all duration-700`}
-          style={{ width: `${score}%` }}
+          style={{ width: `${clampedScore}%` }}
         />
       </div>
       <p className="text-xs text-gray-500">{feedback}</p>
@@ -127,7 +141,9 @@ export function BulletList({
     <ul className="space-y-2">
       {items.map((item, i) => (
         <li key={i} className="flex items-start gap-2">
-          <span className={`${dotColor} w-2 h-2 rounded-full mt-1.5 flex-shrink-0`} />
+          <span
+            className={`${dotColor} w-2 h-2 rounded-full mt-1.5 flex-shrink-0`}
+          />
           <span className={`text-sm ${textColor}`}>{item}</span>
         </li>
       ))}
@@ -157,7 +173,10 @@ export default function EvaluationResultsView({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-          <FontAwesomeIcon icon={faWandSparkles} className="text-indigo-500 w-5 h-5" />
+          <FontAwesomeIcon
+            icon={faWandSparkles}
+            className="text-indigo-500 w-5 h-5"
+          />
           {t("scanner.evaluationDone")}
         </h2>
         {(onRerun || onReset) && (
@@ -223,16 +242,16 @@ export default function EvaluationResultsView({
           {t("scanner.sectionScores")}
         </h3>
         <div className="space-y-4">
-          {(["contact", "summary", "experience", "skills", "education"] as const).map(
-            (key) => (
-              <SectionBar
-                key={key}
-                label={t(`scanner.sections.${key}`)}
-                score={evaluation.sections[key].score}
-                feedback={evaluation.sections[key].feedback}
-              />
-            ),
-          )}
+          {(
+            ["contact", "summary", "experience", "skills", "education"] as const
+          ).map((key) => (
+            <SectionBar
+              key={key}
+              label={t(`scanner.sections.${key}`)}
+              score={evaluation.sections[key].score}
+              feedback={evaluation.sections[key].feedback}
+            />
+          ))}
         </div>
       </div>
 
@@ -247,7 +266,10 @@ export default function EvaluationResultsView({
         </div>
         <div className="bg-amber-50 rounded-lg p-4 border border-amber-100">
           <h3 className="text-sm font-semibold text-amber-800 flex items-center gap-1.5 mb-3">
-            <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3.5 h-3.5" />
+            <FontAwesomeIcon
+              icon={faArrowUpRightFromSquare}
+              className="w-3.5 h-3.5"
+            />
             {t("scanner.improvements")}
           </h3>
           <BulletList items={evaluation.improvements} variant="amber" />

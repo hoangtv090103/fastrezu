@@ -65,7 +65,8 @@ export default function ScannerContent({
   // AI analysis (6.2 + 6.3) state — runs in parallel
   const [aiStatus, setAiStatus] = useState<AIStatus>("idle");
   const [evaluation, setEvaluation] = useState<CVEvaluationResult | null>(null);
-  const [extractedProfile, setExtractedProfile] = useState<ExtractedProfile | null>(null);
+  const [extractedProfile, setExtractedProfile] =
+    useState<ExtractedProfile | null>(null);
   const [aiError, setAiError] = useState("");
 
   // History — starts with server-fetched list, prepend on new save
@@ -90,8 +91,7 @@ export default function ScannerContent({
   const renderPdfPages = async (
     arrayBuffer: ArrayBuffer,
   ): Promise<{ images: string[]; text: string }> => {
-    const pdf = await pdfjs
-      .getDocument({ data: new Uint8Array(arrayBuffer) })
+    const pdf = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) })
       .promise;
     const images: string[] = [];
     const textParts: string[] = [];
@@ -99,15 +99,19 @@ export default function ScannerContent({
 
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale: SCALE });
-      const canvas = document.createElement("canvas");
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("Canvas context unavailable");
 
-      await page.render({ canvasContext: ctx, viewport, canvas }).promise;
-      images.push(canvas.toDataURL("image/jpeg", 0.85));
+      // Limit memory by only creating canvas/base64 for the first 10 pages
+      if (i <= 10) {
+        const viewport = page.getViewport({ scale: SCALE });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("Canvas context unavailable");
+
+        await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+        images.push(canvas.toDataURL("image/jpeg", 0.85));
+      }
 
       const textContent = await page.getTextContent();
       const pageText = textContent.items
@@ -163,7 +167,9 @@ export default function ScannerContent({
     } catch (err) {
       console.error("Scanner processing error:", err);
       setScanError(
-        err instanceof Error ? err.message : t("scanner.errors.processingFailed"),
+        err instanceof Error
+          ? err.message
+          : t("scanner.errors.processingFailed"),
       );
       setScanStatus("error");
     }
@@ -190,52 +196,93 @@ export default function ScannerContent({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || `HTTP ${res.status}`);
+        throw new Error(
+          (data as { error?: string }).error || `HTTP ${res.status}`,
+        );
       }
       return res.json() as Promise<T>;
     };
 
     try {
-      const [evalResult, profileResult] = await Promise.all([
+      let evalResult: CVEvaluationResult | null = null;
+      let profileResult: ExtractedProfile | null = null;
+      const errorMessages: string[] = [];
+
+      const [evalOutcome, profileOutcome] = await Promise.allSettled([
         fetchJson<CVEvaluationResult>("/api/ai/evaluate-cv"),
         fetchJson<ExtractedProfile>("/api/ai/extract-profile-from-cv"),
       ]);
-      setEvaluation(evalResult);
-      setExtractedProfile(profileResult);
+
+      if (evalOutcome.status === "fulfilled") {
+        evalResult = evalOutcome.value;
+        setEvaluation(evalOutcome.value);
+      } else {
+        const reason = evalOutcome.reason;
+        errorMessages.push(
+          reason instanceof Error
+            ? reason.message
+            : t("scanner.errors.evaluationFailed"),
+        );
+      }
+
+      if (profileOutcome.status === "fulfilled") {
+        profileResult = profileOutcome.value;
+        setExtractedProfile(profileOutcome.value);
+      } else {
+        const reason = profileOutcome.reason;
+        errorMessages.push(
+          reason instanceof Error
+            ? reason.message
+            : t("scanner.errors.evaluationFailed"),
+        );
+      }
+
+      if (!evalResult && !profileResult) {
+        // Both failed
+        throw new Error(errorMessages.join(" | "));
+      }
+
+      if (errorMessages.length > 0) {
+        setAiError(errorMessages.join(" | "));
+      }
+
       setAiStatus("done");
 
       // Non-blocking: save to history (failure must not block the user)
-      fetch("/api/cv/scan-history", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          file_name: file?.name ?? "CV",
-          evaluation: evalResult,
-          extracted_profile: profileResult,
-        }),
-      })
-        .then((res) => res.json())
-        .then((saved: { id?: string }) => {
-          if (saved.id) {
-            // Prepend optimistic entry to history list
-            setHistory((prev) => [
-              {
-                id: saved.id!,
-                file_name: file?.name ?? "CV",
-                overall_score: evalResult.overall_score ?? null,
-                ats_score: evalResult.ats_score ?? null,
-                design_score: evalResult.design_score ?? null,
-                scanned_at: new Date().toISOString(),
-              },
-              ...prev,
-            ]);
-          }
+      if (evalResult && profileResult) {
+        fetch("/api/cv/scan-history", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            file_name: file?.name ?? "CV",
+            evaluation: evalResult,
+            extracted_profile: profileResult,
+          }),
         })
-        .catch((err) => console.warn("Failed to save scan history:", err));
+          .then((res) => res.json())
+          .then((saved: { id?: string }) => {
+            if (saved.id && evalResult) {
+              setHistory((prev) => [
+                {
+                  id: saved.id!,
+                  file_name: file?.name ?? "CV",
+                  overall_score: evalResult!.overall_score ?? null,
+                  ats_score: evalResult!.ats_score ?? null,
+                  design_score: evalResult!.design_score ?? null,
+                  scanned_at: new Date().toISOString(),
+                },
+                ...prev,
+              ]);
+            }
+          })
+          .catch((err) => console.warn("Failed to save scan history:", err));
+      }
     } catch (err) {
       console.error("AI analysis error:", err);
       setAiError(
-        err instanceof Error ? err.message : t("scanner.errors.evaluationFailed"),
+        err instanceof Error
+          ? err.message
+          : t("scanner.errors.evaluationFailed"),
       );
       setAiStatus("error");
     }
@@ -306,9 +353,7 @@ export default function ScannerContent({
                   className={isPdf ? "text-red-500" : "text-blue-500"}
                 />
                 <span>
-                  {isPdf
-                    ? t("scanner.pdfDetected")
-                    : t("scanner.docxDetected")}
+                  {isPdf ? t("scanner.pdfDetected") : t("scanner.docxDetected")}
                 </span>
                 {!isPdf && (
                   <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
@@ -368,7 +413,7 @@ export default function ScannerContent({
             <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
               <FontAwesomeIcon
                 icon={faCheckCircle}
-                className="text-green-500 w-5 h-5 flex-shrink-0"
+                className="text-green-500 w-5 h-5 shrink-0"
               />
               <div>
                 <p className="font-medium text-green-800">
@@ -385,33 +430,34 @@ export default function ScannerContent({
             </div>
 
             {/* PDF page thumbnails */}
-            {scanResult.fileType === "pdf" && scanResult.pageImages.length > 0 && (
-              <div>
-                <h2 className="text-sm font-semibold text-gray-600 mb-3">
-                  {t("scanner.pagesPreview", {
-                    count: scanResult.pageImages.length.toString(),
-                  })}
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {scanResult.pageImages.map((src, idx) => (
-                    <div
-                      key={idx}
-                      className="relative border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={src}
-                        alt={`${t("scanner.page")} ${idx + 1}`}
-                        className="w-full object-contain bg-white"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs text-center py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {t("scanner.page")} {idx + 1}
+            {scanResult.fileType === "pdf" &&
+              scanResult.pageImages.length > 0 && (
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-600 mb-3">
+                    {t("scanner.pagesPreview", {
+                      count: scanResult.pageImages.length.toString(),
+                    })}
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {scanResult.pageImages.map((src, idx) => (
+                      <div
+                        key={idx}
+                        className="relative border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={src}
+                          alt={`${t("scanner.page")} ${idx + 1}`}
+                          className="w-full object-contain bg-white"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs text-center py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {t("scanner.page")} {idx + 1}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* DOCX text preview */}
             {scanResult.fileType === "docx" && (

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import OpenAI from "openai";
+import { z } from "zod";
+import { getAIClient, getAIModel, injectDateContext } from "@/lib/openai";
+
+export const maxDuration = 60;
+
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +29,28 @@ export interface CVEvaluationResult {
   improvements: string[];
   ats_tips: string[];
 }
+
+const SectionScoreSchema = z.object({
+  score: z.number(),
+  feedback: z.string(),
+});
+
+const CVEvaluationResultSchema = z.object({
+  overall_score: z.number(),
+  ats_score: z.number(),
+  design_score: z.number().nullable(),
+  sections: z.object({
+    contact: SectionScoreSchema,
+    summary: SectionScoreSchema,
+    experience: SectionScoreSchema,
+    skills: SectionScoreSchema,
+    education: SectionScoreSchema,
+  }),
+  strengths: z.array(z.string()),
+  improvements: z.array(z.string()),
+  ats_tips: z.array(z.string()),
+});
+
 
 // ── System Prompts (bilingual) ────────────────────────────────────────────────
 
@@ -186,20 +213,9 @@ export async function POST(request: NextRequest) {
     // Select the system prompt matching the UI locale
     const systemPrompt = EVALUATE_CV_PROMPT[locale] ?? EVALUATE_CV_PROMPT.vi;
 
-    // Prepend today's date so the model knows the current date
-    const today = new Date().toISOString().split("T")[0];
-    const systemPromptWithDate = `Today's date: ${today}\n\n${systemPrompt}`;
-
     // Use the heavy-tier OpenAI client (gpt-4o for vision support)
-    const apiKey = process.env.AI_HEAVY_API_KEY || process.env.OPENAI_API_KEY;
-    const baseURL =
-      process.env.AI_HEAVY_BASE_URL ||
-      process.env.OPENAI_BASE_URL ||
-      "https://api.openai.com/v1";
-    const model =
-      process.env.AI_HEAVY_MODEL || process.env.OPENAI_MODEL || "gpt-4o";
-
-    const client = new OpenAI({ apiKey, baseURL });
+    const client = getAIClient("heavy");
+    const model = getAIModel("heavy");
 
     // Build multimodal user message content
     const userContent: OpenAI.Chat.ChatCompletionContentPart[] = [];
@@ -227,22 +243,25 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const response = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: "system", content: systemPromptWithDate },
-        { role: "user", content: userContent },
-      ],
-      temperature: 0.2,
-      response_format: { type: "json_object" },
-    });
+    const response = await client.chat.completions.create(
+      {
+        model,
+        messages: [
+          { role: "system", content: injectDateContext(systemPrompt) },
+          { role: "user", content: userContent },
+        ],
+        temperature: 0.2,
+        response_format: { type: "json_object" },
+      },
+      { timeout: 50000 }
+    );
 
     const rawContent = response.choices[0]?.message?.content;
     if (!rawContent) {
       throw new Error("Empty response from AI");
     }
 
-    const evaluation = JSON.parse(rawContent) as CVEvaluationResult;
+    const evaluation = CVEvaluationResultSchema.parse(JSON.parse(rawContent)) as CVEvaluationResult;
 
     // For DOCX (no images), force design_score to null
     if (fileType === "docx") {

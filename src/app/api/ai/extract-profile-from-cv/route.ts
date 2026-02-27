@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import OpenAI from "openai";
+import { z } from "zod";
+import { getAIClient, getAIModel, injectDateContext } from "@/lib/openai";
+
+export const maxDuration = 60;
+
 
 // ── Output types (match vault section schemas exactly) ────────────────────────
 
@@ -115,6 +120,118 @@ export interface ExtractedProfile {
   references: { items: ExtractedReferenceItem[] } | null;
   publications: { items: ExtractedPublicationItem[] } | null;
 }
+
+const ExtractedPersonalSchema = z.object({
+  full_name: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  address: z.string(),
+  linkedin: z.string(),
+  github: z.string(),
+  portfolio: z.string(),
+}).nullable();
+
+const ExtractedExperienceItemSchema = z.object({
+  id: z.string(),
+  company: z.string(),
+  title: z.string(),
+  start_date: z.string(),
+  end_date: z.string(),
+  is_current: z.boolean(),
+  description: z.string(),
+});
+
+const ExtractedEducationItemSchema = z.object({
+  id: z.string(),
+  school: z.string(),
+  degree: z.string(),
+  major: z.string(),
+  start_date: z.string(),
+  end_date: z.string(),
+  is_current: z.boolean(),
+  gpa: z.string(),
+  description: z.string(),
+});
+
+const ExtractedSkillsSchema = z.object({
+  hard_skills: z.array(z.string()),
+  soft_skills: z.array(z.string()),
+}).nullable();
+
+const ExtractedCertificationItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  issuer: z.string(),
+  issue_date: z.string(),
+  expiry_date: z.string(),
+  has_expiry: z.boolean(),
+  credential_id: z.string(),
+  credential_url: z.string(),
+});
+
+const ExtractedProjectItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  role: z.string(),
+  start_date: z.string(),
+  end_date: z.string(),
+  is_ongoing: z.boolean(),
+  technologies: z.array(z.string()),
+  demo_url: z.string(),
+  description: z.string(),
+});
+
+const ExtractedAwardItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  issuer: z.string(),
+  year: z.string(),
+  description: z.string(),
+});
+
+const ExtractedVolunteerItemSchema = z.object({
+  id: z.string(),
+  activity: z.string(),
+  organization: z.string(),
+  role: z.string(),
+  start_date: z.string(),
+  end_date: z.string(),
+  is_ongoing: z.boolean(),
+  description: z.string(),
+});
+
+const ExtractedPublicationItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  publisher: z.string(),
+  year: z.string(),
+  doi_url: z.string(),
+});
+
+const ExtractedReferenceItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  title: z.string(),
+  organization: z.string(),
+  email: z.string(),
+  phone: z.string(),
+  relationship: z.string(),
+});
+
+const ExtractedProfileSchema = z.object({
+  personal: ExtractedPersonalSchema,
+  summary: z.object({ content: z.string() }).nullable(),
+  experience: z.object({ items: z.array(ExtractedExperienceItemSchema) }).nullable(),
+  education: z.object({ items: z.array(ExtractedEducationItemSchema) }).nullable(),
+  skills: ExtractedSkillsSchema,
+  certifications: z.object({ items: z.array(ExtractedCertificationItemSchema) }).nullable(),
+  projects: z.object({ items: z.array(ExtractedProjectItemSchema) }).nullable(),
+  awards: z.object({ items: z.array(ExtractedAwardItemSchema) }).nullable(),
+  volunteering: z.object({ items: z.array(ExtractedVolunteerItemSchema) }).nullable(),
+  hobbies: z.object({ items: z.array(z.string()) }).nullable(),
+  references: z.object({ items: z.array(ExtractedReferenceItemSchema) }).nullable(),
+  publications: z.object({ items: z.array(ExtractedPublicationItemSchema) }).nullable(),
+});
 
 // ── System Prompts (bilingual) ────────────────────────────────────────────────
 
@@ -485,18 +602,9 @@ export async function POST(request: NextRequest) {
     }
 
     const systemPrompt = EXTRACT_PROFILE_PROMPT[locale] ?? EXTRACT_PROFILE_PROMPT.vi;
-    const today = new Date().toISOString().split("T")[0];
-    const systemPromptWithDate = `Today's date: ${today}\n\n${systemPrompt}`;
 
-    const apiKey = process.env.AI_HEAVY_API_KEY || process.env.OPENAI_API_KEY;
-    const baseURL =
-      process.env.AI_HEAVY_BASE_URL ||
-      process.env.OPENAI_BASE_URL ||
-      "https://api.openai.com/v1";
-    const model =
-      process.env.AI_HEAVY_MODEL || process.env.OPENAI_MODEL || "gpt-4o";
-
-    const client = new OpenAI({ apiKey, baseURL });
+    const client = getAIClient("heavy");
+    const model = getAIModel("heavy");
 
     const userContent: OpenAI.Chat.ChatCompletionContentPart[] = [];
 
@@ -517,20 +625,23 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const response = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: "system", content: systemPromptWithDate },
-        { role: "user", content: userContent },
-      ],
-      temperature: 0.1,
-      response_format: { type: "json_object" },
-    });
+    const response = await client.chat.completions.create(
+      {
+        model,
+        messages: [
+          { role: "system", content: injectDateContext(systemPrompt) },
+          { role: "user", content: userContent },
+        ],
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+      },
+      { timeout: 50000 }
+    );
 
     const rawContent = response.choices[0]?.message?.content;
     if (!rawContent) throw new Error("Empty response from AI");
 
-    const rawProfile = JSON.parse(rawContent) as ExtractedProfile;
+    const rawProfile = ExtractedProfileSchema.parse(JSON.parse(rawContent)) as ExtractedProfile;
     const profile = injectIds(rawProfile);
 
     return NextResponse.json(profile, { status: 200 });
