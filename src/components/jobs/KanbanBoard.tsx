@@ -16,6 +16,7 @@ import {
   deleteJob,
   duplicateJob,
 } from "@/app/(authenticated)/dashboard/jobs/actions";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Types ──────────────────────────────────────────────────────────────
 export interface JobCard {
@@ -32,63 +33,19 @@ interface KanbanBoardProps {
   initialJobs: JobCard[];
 }
 
-// ── Column definitions ─────────────────────────────────────────────────
+// ── Column definitions (styling only — labels come from i18n) ──────────
 const COLUMNS: {
   id: string;
-  label: string;
   badgeBg: string;
   badgeText: string;
   dotColor: string;
-  emptyLabel: string;
 }[] = [
-  {
-    id: "saved",
-    label: "Đã lưu",
-    badgeBg: "bg-blue-100",
-    badgeText: "text-blue-700",
-    dotColor: "bg-blue-500",
-    emptyLabel: "Lưu job để bắt đầu",
-  },
-  {
-    id: "optimized",
-    label: "Đã tối ưu",
-    badgeBg: "bg-purple-100",
-    badgeText: "text-purple-700",
-    dotColor: "bg-purple-500",
-    emptyLabel: "Thả thẻ vào đây",
-  },
-  {
-    id: "applied",
-    label: "Đã nộp",
-    badgeBg: "bg-yellow-100",
-    badgeText: "text-yellow-700",
-    dotColor: "bg-yellow-500",
-    emptyLabel: "Thả thẻ vào đây",
-  },
-  {
-    id: "interviewing",
-    label: "Phỏng vấn",
-    badgeBg: "bg-orange-100",
-    badgeText: "text-orange-700",
-    dotColor: "bg-orange-500",
-    emptyLabel: "Thả thẻ vào đây",
-  },
-  {
-    id: "offer",
-    label: "Offer",
-    badgeBg: "bg-green-100",
-    badgeText: "text-green-700",
-    dotColor: "bg-green-500",
-    emptyLabel: "Thả thẻ vào đây",
-  },
-  {
-    id: "rejected",
-    label: "Từ chối",
-    badgeBg: "bg-red-100",
-    badgeText: "text-red-700",
-    dotColor: "bg-red-500",
-    emptyLabel: "Thả thẻ vào đây",
-  },
+  { id: "saved",        badgeBg: "bg-blue-100",   badgeText: "text-blue-700",   dotColor: "bg-blue-500" },
+  { id: "optimized",    badgeBg: "bg-purple-100",  badgeText: "text-purple-700", dotColor: "bg-purple-500" },
+  { id: "applied",      badgeBg: "bg-yellow-100",  badgeText: "text-yellow-700", dotColor: "bg-yellow-500" },
+  { id: "interviewing", badgeBg: "bg-orange-100",  badgeText: "text-orange-700", dotColor: "bg-orange-500" },
+  { id: "offer",        badgeBg: "bg-green-100",   badgeText: "text-green-700",  dotColor: "bg-green-500" },
+  { id: "rejected",     badgeBg: "bg-red-100",     badgeText: "text-red-700",    dotColor: "bg-red-500" },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────
@@ -112,6 +69,8 @@ function DeleteConfirmModal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -125,19 +84,17 @@ function DeleteConfirmModal({
           <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
             <FontAwesomeIcon icon={faTrash} className="w-4 h-4 text-red-600" />
           </div>
-          <h2 className="text-base font-bold text-gray-900">Xóa job này?</h2>
+          <h2 className="text-base font-bold text-gray-900">{t("warRoom.deleteConfirm.title")}</h2>
         </div>
 
         <div className="bg-gray-50 rounded-xl px-4 py-3 mb-4">
-          <p className="text-sm font-semibold text-gray-900 truncate">
-            {job.title}
-          </p>
+          <p className="text-sm font-semibold text-gray-900 truncate">{job.title}</p>
           <p className="text-xs text-gray-500 truncate">{job.company_name}</p>
         </div>
 
         <p className="text-sm text-gray-500 mb-6">
-          Job sẽ bị xóa vĩnh viễn khỏi hệ thống. Hành động này{" "}
-          <span className="font-semibold text-red-600">không thể hoàn tác</span>
+          {t("warRoom.deleteConfirm.message")}{" "}
+          <span className="font-semibold text-red-600">{t("warRoom.deleteConfirm.irreversible")}</span>
           .
         </p>
 
@@ -146,13 +103,13 @@ function DeleteConfirmModal({
             onClick={onCancel}
             className="flex-1 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
           >
-            Hủy
+            {t("warRoom.deleteConfirm.cancel")}
           </button>
           <button
             onClick={onConfirm}
             className="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors"
           >
-            Xóa
+            {t("warRoom.deleteConfirm.confirm")}
           </button>
         </div>
       </div>
@@ -174,33 +131,26 @@ function CardMenu({
   onDeleteRequest: (job: JobCard) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+
   const items = [
     {
       icon: faPen,
-      label: "Sửa",
+      label: t("warRoom.cardMenu.edit"),
       iconClass: "text-blue-500",
-      onClick: () => {
-        onEdit(job);
-        onClose();
-      },
+      onClick: () => { onEdit(job); onClose(); },
     },
     {
       icon: faCopy,
-      label: "Nhân bản",
+      label: t("warRoom.cardMenu.duplicate"),
       iconClass: "text-gray-500",
-      onClick: () => {
-        onDuplicate(job);
-        onClose();
-      },
+      onClick: () => { onDuplicate(job); onClose(); },
     },
     {
       icon: faTrash,
-      label: "Xóa",
+      label: t("warRoom.cardMenu.delete"),
       iconClass: "text-red-500",
-      onClick: () => {
-        onDeleteRequest(job);
-        onClose();
-      },
+      onClick: () => { onDeleteRequest(job); onClose(); },
     },
   ];
 
@@ -216,10 +166,7 @@ function CardMenu({
           onDragStart={(e) => e.stopPropagation()}
           className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
         >
-          <FontAwesomeIcon
-            icon={item.icon}
-            className={`w-3.5 h-3.5 ${item.iconClass}`}
-          />
+          <FontAwesomeIcon icon={item.icon} className={`w-3.5 h-3.5 ${item.iconClass}`} />
           {item.label}
         </button>
       ))}
@@ -263,21 +210,18 @@ function KanbanColumn({
   onDuplicate,
   onDeleteRequest,
 }: KanbanColumnProps) {
+  const { t } = useTranslation();
   const isOver = dragOverColId === col.id;
+  const emptyLabel = col.id === "saved"
+    ? t("warRoom.columns.emptyFirst")
+    : t("warRoom.columns.emptyOther");
 
   return (
     <div className="flex flex-col flex-1 min-w-[160px]">
-      {/* Drop zone */}
       <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          onDragOver(col.id);
-        }}
+        onDragOver={(e) => { e.preventDefault(); onDragOver(col.id); }}
         onDragLeave={onDragLeave}
-        onDrop={(e) => {
-          e.preventDefault();
-          onDrop(col.id);
-        }}
+        onDrop={(e) => { e.preventDefault(); onDrop(col.id); }}
         className={`flex flex-col gap-2 flex-1 rounded-xl p-1.5 min-h-[80px] transition-colors
           ${isOver ? "bg-blue-50 ring-2 ring-blue-300 ring-dashed" : ""}`}
       >
@@ -286,7 +230,7 @@ function KanbanColumn({
             className={`border-2 border-dashed rounded-xl p-4 text-center transition-colors
               ${isOver ? "border-blue-400" : "border-gray-200"}`}
           >
-            <p className="text-xs text-gray-400">{col.emptyLabel}</p>
+            <p className="text-xs text-gray-400">{emptyLabel}</p>
           </div>
         ) : (
           cards.map((job) => (
@@ -302,22 +246,15 @@ function KanbanColumn({
             >
               <div className="flex items-start gap-2">
                 <div className="flex-1 min-w-0 pr-6">
-                  <p className="text-xs text-gray-500 truncate">
-                    {job.company_name}
-                  </p>
+                  <p className="text-xs text-gray-500 truncate">{job.company_name}</p>
                   <p className="text-sm font-semibold text-gray-900 mt-0.5 line-clamp-2 leading-snug">
                     {job.title}
                   </p>
                 </div>
-                <span
-                  className={`shrink-0 w-2 h-2 rounded-full mt-1 ${col.dotColor}`}
-                />
+                <span className={`shrink-0 w-2 h-2 rounded-full mt-1 ${col.dotColor}`} />
               </div>
-              <p className="text-xs text-gray-400 mt-2">
-                {formatDate(job.created_at)}
-              </p>
+              <p className="text-xs text-gray-400 mt-2">{formatDate(job.created_at)}</p>
 
-              {/* 3-dots menu button */}
               <div className="absolute top-1.5 right-1.5">
                 <button
                   onClick={(e) => {
@@ -326,12 +263,11 @@ function KanbanColumn({
                   }}
                   onDragStart={(e) => e.stopPropagation()}
                   className={`p-1.5 rounded-lg transition-colors
-                    ${
-                      openMenuId === job.id
-                        ? "text-gray-600 bg-gray-100"
-                        : "text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600 hover:bg-gray-100"
+                    ${openMenuId === job.id
+                      ? "text-gray-600 bg-gray-100"
+                      : "text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600 hover:bg-gray-100"
                     }`}
-                  title="Tùy chọn"
+                  title={t("warRoom.cardMenu.options")}
                 >
                   <FontAwesomeIcon icon={faEllipsis} className="w-3.5 h-3.5" />
                 </button>
@@ -356,6 +292,7 @@ function KanbanColumn({
 
 // ── Main Board ───────────────────────────────────────────────────────────
 export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
+  const { t } = useTranslation();
   const [jobs, setJobs] = useState<JobCard[]>(initialJobs);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobCard | null>(null);
@@ -365,7 +302,6 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [viewingJob, setViewingJob] = useState<JobCard | null>(null);
 
-  // Close menu on outside click
   useEffect(() => {
     if (!openMenuId) return;
     const handler = () => setOpenMenuId(null);
@@ -407,8 +343,7 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
 
   const handleDrop = (targetColId: string) => {
     if (!draggingId) return;
-    const currentStatus =
-      jobs.find((j) => j.id === draggingId)?.status ?? "saved";
+    const currentStatus = jobs.find((j) => j.id === draggingId)?.status ?? "saved";
     if (targetColId === currentStatus) {
       setDraggingId(null);
       setDragOverColId(null);
@@ -422,11 +357,8 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
     setDragOverColId(null);
     updateJobStatus(idToDrop, targetColId).then((res) => {
       if (!res.success) {
-        // Revert optimistic update on failure
         setJobs((prev) =>
-          prev.map((j) =>
-            j.id === idToDrop ? { ...j, status: currentStatus } : j,
-          ),
+          prev.map((j) => (j.id === idToDrop ? { ...j, status: currentStatus } : j)),
         );
       }
     });
@@ -443,35 +375,27 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
   return (
     <div className="bg-gray-50">
       <div className="px-6 py-8">
-        {/* Page header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">War Room</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Theo dõi tiến trình ứng tuyển của bạn
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900">{t("warRoom.title")}</h1>
+            <p className="text-sm text-gray-500 mt-1">{t("warRoom.subtitle")}</p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
           >
-            + Thêm Job
+            {t("warRoom.addJob")}
           </button>
         </div>
 
-        {/* Add / Edit modal */}
         <AddJobModal
           isOpen={isModalOpen || editingJob !== null}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingJob(null);
-          }}
+          onClose={() => { setIsModalOpen(false); setEditingJob(null); }}
           onJobAdded={handleJobAdded}
           editJob={editingJob ?? undefined}
           onJobUpdated={handleJobUpdated}
         />
 
-        {/* Delete confirm popup */}
         {deletingJob && (
           <DeleteConfirmModal
             job={deletingJob}
@@ -480,47 +404,35 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
           />
         )}
 
-        {/* Job detail modal */}
         {viewingJob && (
           <JobDetailModal
             job={viewingJob}
             onClose={() => setViewingJob(null)}
-            onEdit={(job) => {
-              setViewingJob(null);
-              setEditingJob(job);
-            }}
+            onEdit={(job) => { setViewingJob(null); setEditingJob(job); }}
           />
         )}
 
-        {/* Empty state */}
         {isEmpty && (
           <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-white mb-4">
             <div className="text-4xl mb-4">📋</div>
             <h2 className="text-lg font-semibold text-gray-700 mb-1">
-              Chưa có job nào
+              {t("warRoom.emptyState.title")}
             </h2>
             <p className="text-sm text-gray-400 max-w-xs mx-auto">
-              Bấm &ldquo;+ Thêm Job&rdquo; để lưu JD đầu tiên và bắt đầu theo
-              dõi quá trình ứng tuyển.
+              {t("warRoom.emptyState.description")}
             </p>
           </div>
         )}
 
-        {/* Sticky column labels bar */}
         <div
           className="sticky z-20 bg-gray-50 pb-2 -mx-6 px-6"
           style={{ top: "var(--app-header-height, 64px)" }}
         >
-          <div
-            className={`flex gap-4 pt-2 border-b border-gray-200 pb-2 ${isEmpty ? "opacity-40" : ""}`}
-          >
+          <div className={`flex gap-4 pt-2 border-b border-gray-200 pb-2 ${isEmpty ? "opacity-40" : ""}`}>
             {COLUMNS.map((col) => (
-              <div
-                key={col.id}
-                className="flex-1 min-w-[160px] flex items-center gap-2 px-1.5"
-              >
+              <div key={col.id} className="flex-1 min-w-[160px] flex items-center gap-2 px-1.5">
                 <span className="text-sm font-semibold text-gray-700">
-                  {col.label}
+                  {t(`warRoom.columns.${col.id}`)}
                 </span>
                 <span
                   className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-medium ${col.badgeBg} ${col.badgeText}`}
@@ -532,7 +444,6 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
           </div>
         </div>
 
-        {/* Kanban board */}
         <div
           className={`flex gap-4 pt-3 pb-4 min-h-[calc(100vh-180px)] ${isEmpty ? "opacity-40 pointer-events-none select-none" : ""}`}
         >

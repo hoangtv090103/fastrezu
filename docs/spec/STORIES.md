@@ -181,6 +181,19 @@ _Mục tiêu: Xây dựng trung tâm theo dõi các Job đang apply._
   - [x] Dropdown tự đóng khi click ra ngoài hoặc sau khi chọn một tùy chọn.
   - [x] Drag & Drop vẫn hoạt động bình thường (không bị kích hoạt khi click vào 3-dots hoặc menu).
 
+### Story 3.5: Auto-crawl JD từ URL (The Scout)
+
+- **Mô tả:** Là một Người tìm việc, khi tôi dán link tuyển dụng vào trường "Job URL", tôi muốn hệ thống tự động lấy nội dung JD về thay vì phải copy-paste thủ công.
+- **Kỹ thuật:** Backend gọi [Jina.ai Reader API](https://jina.ai/reader/) (`GET https://r.jina.ai/{url}`) để crawl trang, sau đó dùng AI (light tier) trích xuất chỉ phần JD, bỏ nav/footer/quảng cáo. Cập nhật `jobs.raw_jd_text`.
+- **Tiêu chí hoàn thành (AC):**
+  - [x] Endpoint `POST /api/jobs/crawl-jd` nhận `{ jobId }`, fetch `job_url` từ DB, crawl qua Jina.ai, AI-extract JD, lưu vào `raw_jd_text`.
+  - [x] SSRF protection: chặn `localhost`, IP nội bộ (`10.x`, `192.168.x`, `127.x`), non-HTTP schemes.
+  - [x] Nút "Lấy JD từ URL" hiện trong `AddJobModal` (bên cạnh textarea JD) khi đã có `job_url`.
+  - [x] Nút tương tự hiện trong `JobDetailModal` / trang chi tiết khi job có URL nhưng chưa có JD text.
+  - [x] Loading state khi đang crawl. Kết quả điền tự động vào textarea/field (user có thể sửa trước khi save).
+  - [x] Xử lý lỗi: job board chặn (403) → thông báo rõ; timeout 30s → báo retry; URL không hợp lệ → validate ngay phía client.
+  - [x] Env var `JINA_API_KEY` (optional) để tăng rate limit Jina.ai.
+
 ---
 
 ## EPIC 4: The Intel (Trinh sát AI - Job Analysis)
@@ -191,18 +204,18 @@ _Mục tiêu: Dùng AI chấm điểm và phân tích lỗ hổng CV._
 
 - **Mô tả:** Là một Hệ thống, tôi cần một endpoint `/api/ai/analyze-jd` nhận vào `job_id`, dùng AI để chấm điểm độ khớp so với `master_profiles` của user đó.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Lấy `raw_jd_text` từ bảng `jobs`.
-  - [ ] Lấy `content` từ bảng `master_profiles`.
-  - [ ] Gọi OpenAI API (System Prompt: So sánh JD và Profile, trả về JSON chứa `keywords`, `match_score`, `gap_analysis`).
-  - [ ] Lưu kết quả trả về vào bảng `job_analyses`.
+  - [x] Lấy `raw_jd_text` từ bảng `jobs`.
+  - [x] Lấy `content` từ bảng `master_profiles`.
+  - [x] Gọi OpenAI API (System Prompt: So sánh JD và Profile, trả về JSON chứa `keywords`, `match_score`, `gap_analysis`).
+  - [x] Lưu kết quả trả về vào bảng `job_analyses`.
 
 ### Story 4.2: Giao diện Job Detail & Gap Analysis
 
 - **Mô tả:** Là Người dùng, khi tôi click vào 1 thẻ Job trên Kanban, tôi được chuyển đến trang `/dashboard/jobs/[id]`. Tại đây tôi có nút "Analyze Job" và xem được kết quả phân tích.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] UI trang chi tiết Job.
-  - [ ] Nút "Analyze with AI" (gọi API ở Story 4.1, có loading state).
-  - [ ] Hiển thị biểu đồ tròn/thanh ngang cho `match_score` và danh sách text `gap_analysis`, `keywords`.
+  - [x] UI trang chi tiết Job (modal inline + full page `/dashboard/jobs/[id]` với nút "Mở rộng" kiểu Notion).
+  - [x] Nút "Analyze with AI" (gọi API ở Story 4.1, có loading state).
+  - [x] Hiển thị biểu đồ tròn/thanh ngang cho `match_score` và danh sách text `gap_analysis`, `keywords`.
 
 ---
 
@@ -235,9 +248,43 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
 
 ---
 
-## EPIC 6: Dọn dẹp & Tối ưu (Cleanup)
+## EPIC 6: The Scanner (Upload CV & AI Evaluation)
 
-### Story 6.1: Gỡ bỏ mã nguồn V1 không cần thiết
+_Mục tiêu: Người dùng upload CV sẵn có → nhận đánh giá AI toàn diện → tự động điền vào The Vault._
+
+### Story 6.1: Upload CV & Trích xuất nội dung
+
+- **Mô tả:** Là một Người tìm việc, tôi muốn upload file CV (PDF hoặc DOCX) để hệ thống đọc và xử lý nội dung.
+- **Kỹ thuật:** Trang `/dashboard/scanner`. Tái dụng `FileUploadZone` component + `POST /api/cv/upload-check` (đã có, dùng `unpdf` + `mammoth`). Trích xuất raw text rồi gửi cho AI ở Story 6.2 và 6.3.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Trang `/dashboard/scanner` accessible từ nav header "The Scanner" và từ nút "Import từ CV" trong trang Vault.
+  - [ ] Hỗ trợ PDF và DOCX, tối đa 10MB. Validate file type và size phía client trước khi upload.
+  - [ ] Sau khi upload thành công: chuyển sang bước "Đang phân tích" (loading state).
+
+### Story 6.2: AI Đánh giá chất lượng CV (Heavy Tier)
+
+- **Mô tả:** Là một Người tìm việc, tôi muốn nhận phản hồi chi tiết về chất lượng CV của mình từ AI, bao gồm điểm số và lời khuyên cụ thể.
+- **Kỹ thuật:** Endpoint `POST /api/ai/evaluate-cv`. AI model heavy tier. Input: raw CV text (cắt tối đa 15.000 ký tự). Chạy song song với Story 6.3 via `Promise.all`.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Endpoint trả về `overall_score` (0–100), `ats_score` (0–100), điểm từng section (`contact`, `summary`, `experience`, `skills`, `education`) kèm `feedback` text.
+  - [ ] Trả về `strengths` (mảng chuỗi), `improvements` (mảng chuỗi), `ats_tips` (mảng chuỗi).
+  - [ ] UI hiển thị: SVG circular gauge cho overall score, progress bars cho từng section, badges/bullets cho strengths/improvements/tips.
+
+### Story 6.3: AI Trích xuất Profile có cấu trúc & Import vào Vault
+
+- **Mô tả:** Là một Người tìm việc, sau khi xem kết quả đánh giá, tôi muốn import dữ liệu CV vào The Vault để không phải nhập tay lại từ đầu.
+- **Kỹ thuật:** Endpoint `POST /api/ai/extract-profile-from-cv`. AI model heavy tier. Output JSON khớp với schema `master_profiles`. Server Action `importSectionsFromCV()` để batch upsert. Chỉ điền vào sections hiện đang trống trong Vault.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Endpoint trích xuất 6 sections: `personal`, `summary`, `experience`, `education`, `skills`, `certifications` (trả `null` cho sections không tìm thấy trong CV).
+  - [ ] UI hiển thị VaultImportPanel: checkbox per section — sections trống + có data extracted → checked mặc định; sections đã có data trong Vault → disabled + label "Đã có dữ liệu".
+  - [ ] User xác nhận → import → toast thành công → link navigate đến `/dashboard/vault`.
+  - [ ] Vault page sau import hiển thị đúng data đã extract.
+
+---
+
+## EPIC 7: Dọn dẹp & Tối ưu (Cleanup)
+
+### Story 7.1: Gỡ bỏ mã nguồn V1 không cần thiết
 
 - **Mô tả:** Là một Developer, tôi muốn xóa bỏ các luồng Wizard cũ, các API route AI cũ không còn hợp với luồng Career OS để giảm nợ kỹ thuật (Technical Debt).
 - **Tiêu chí hoàn thành (AC):**

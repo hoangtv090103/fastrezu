@@ -11,33 +11,82 @@ interface APIError extends Error {
 }
 
 /**
- * OpenAI API Client Configuration
- * 
+ * OpenAI-compatible API Client Configuration
+ *
+ * Supports multiple AI providers via model tiering:
+ * - 'light' tier: fast & cheap models (e.g. Gemini Flash, GPT-4o-mini) — for analysis tasks
+ * - 'heavy' tier: high-quality models (e.g. Gemini Pro, GPT-4o) — for CV tailoring
+ *
+ * Each tier can use a different provider (different API key + base URL).
+ * Fallback chain: AI_<TIER>_* → OPENAI_* → hardcoded defaults
+ *
  * Features:
  * - Automatic retry with exponential backoff + jitter for transient errors (503, 429, 500, network issues)
  * - Configurable timeout and retry attempts
  * - JSON response parsing with error handling
  * - Support for both JSON and text responses
  * - Enhanced error messages for better debugging
- * 
+ *
  * Default retry behavior:
  * - Max retries: 5 attempts (increased for Google Gemini API stability)
  * - Base delay: 1000ms with jitter (exponential backoff: ~1s, ~2s, ~4s, ~8s, ~16s)
  * - Default timeout: 180 seconds (3 minutes)
- * 
+ *
  * Compatible with:
  * - OpenAI API (https://api.openai.com/v1)
  * - Google Gemini API (https://generativelanguage.googleapis.com/v1beta/openai)
  * - Other OpenAI-compatible APIs
  */
 
-// Cấu hình OpenAI client
+// Default client (backward-compatible — used when no tier is specified)
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1', // Có thể dùng proxy hoặc custom endpoint
+  baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
 });
 
 export default openai;
+
+// ============================================================================
+// Multi-Provider Model Tiering
+// ============================================================================
+
+/**
+ * AI tier — 'light' for fast/cheap tasks, 'heavy' for high-quality tasks.
+ *
+ * Configure per-tier env vars:
+ *   AI_LIGHT_API_KEY, AI_LIGHT_BASE_URL, AI_LIGHT_MODEL
+ *   AI_HEAVY_API_KEY, AI_HEAVY_BASE_URL, AI_HEAVY_MODEL
+ *
+ * If tier-specific vars are not set, falls back to OPENAI_API_KEY / OPENAI_BASE_URL / OPENAI_MODEL.
+ */
+export type AITier = 'light' | 'heavy';
+
+function createAIClient(tier: AITier): OpenAI {
+  const apiKey =
+    (tier === 'light' ? process.env.AI_LIGHT_API_KEY : process.env.AI_HEAVY_API_KEY)
+    || process.env.OPENAI_API_KEY;
+  const baseURL =
+    (tier === 'light' ? process.env.AI_LIGHT_BASE_URL : process.env.AI_HEAVY_BASE_URL)
+    || process.env.OPENAI_BASE_URL
+    || 'https://api.openai.com/v1';
+  return new OpenAI({ apiKey, baseURL });
+}
+
+let _lightClient: OpenAI | null = null;
+let _heavyClient: OpenAI | null = null;
+
+function getAIClient(tier: AITier): OpenAI {
+  if (tier === 'light') return (_lightClient ??= createAIClient('light'));
+  return (_heavyClient ??= createAIClient('heavy'));
+}
+
+function getAIModel(tier: AITier): string {
+  return (
+    (tier === 'light' ? process.env.AI_LIGHT_MODEL : process.env.AI_HEAVY_MODEL)
+    || process.env.OPENAI_MODEL
+    || (tier === 'light' ? 'gpt-4o-mini' : 'gpt-4o')
+  );
+}
 
 // Helper function for retry with exponential backoff
 async function retryWithBackoff<T>(
@@ -105,25 +154,28 @@ async function retryWithBackoff<T>(
 export async function callOpenAI(
   systemPrompt: string,
   userMessage: string,
-  options: { 
+  options: {
+    tier?: AITier,          // 'light' | 'heavy' — routes to the correct provider/model
     responseFormat?: 'json_object' | 'text',
     temperature?: number,
-    timeout?: number, // Timeout in milliseconds
-    maxRetries?: number // Max retry attempts for transient errors
+    timeout?: number,       // Timeout in milliseconds
+    maxRetries?: number     // Max retry attempts for transient errors
   } = {}
 ) {
-  const { responseFormat = 'json_object', temperature = 0.3, timeout = 180000, maxRetries = 5 } = options;
-  
+  const { tier, responseFormat = 'json_object', temperature = 0.3, timeout = 180000, maxRetries = 5 } = options;
+  const client = tier ? getAIClient(tier) : openai;
+  const model  = tier ? getAIModel(tier) : (process.env.OPENAI_MODEL || 'gpt-4o');
+
   return retryWithBackoff(async () => {
     try {
       // Create AbortController for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
-      
+
       try {
-        const response = await openai.chat.completions.create(
+        const response = await client.chat.completions.create(
           {
-            model: process.env.OPENAI_MODEL || 'gpt-4o',
+            model,
             messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: userMessage }
@@ -216,22 +268,25 @@ export async function callOpenAIText(
   systemPrompt: string,
   userMessage: string,
   options: {
+    tier?: AITier,          // 'light' | 'heavy' — routes to the correct provider/model
     temperature?: number,
     maxRetries?: number,
     timeout?: number
   } = {}
 ) {
-  const { temperature = 0.3, maxRetries = 5, timeout = 180000 } = options;
-  
+  const { tier, temperature = 0.3, maxRetries = 5, timeout = 180000 } = options;
+  const client = tier ? getAIClient(tier) : openai;
+  const model  = tier ? getAIModel(tier) : (process.env.OPENAI_MODEL || 'gpt-4o');
+
   return retryWithBackoff(async () => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
-      
+
       try {
-        const response = await openai.chat.completions.create(
+        const response = await client.chat.completions.create(
           {
-            model: process.env.OPENAI_MODEL || 'gpt-4o',
+            model,
             messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: userMessage }

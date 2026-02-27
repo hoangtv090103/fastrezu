@@ -917,5 +917,94 @@
   "loginSplitView": {
     "title": "Sign in to continue",
     "subtitle": "Sign in to view your ATS score and CV improvement suggestions"
+  },
+  "warRoom": {
+    "title": "War Room",
+    "subtitle": "Track your job application progress",
+    "addJob": "+ Add Job",
+    "backToWarRoom": "Back to War Room",
+    "emptyState": {
+      "title": "No jobs yet",
+      "description": "Click \"+ Add Job\" to save your first JD and start tracking your applications."
+    },
+    "columns": {
+      "saved": "Saved",
+      "optimized": "Optimized",
+      "applied": "Applied",
+      "interviewing": "Interviewing",
+      "offer": "Offer",
+      "rejected": "Rejected",
+      "emptyFirst": "Save a job to get started",
+      "emptyOther": "Drop cards here"
+    },
+    "cardMenu": {
+      "options": "Options",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "deleteConfirm": {
+      "title": "Delete this job?",
+      "message": "This job will be permanently deleted from the system. This action",
+      "irreversible": "cannot be undone",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "addJobModal": {
+      "titleAdd": "Add New Job",
+      "titleEdit": "Edit Job",
+      "jobTitle": "Job Title",
+      "companyName": "Company Name",
+      "jobUrl": "Job URL",
+      "jdText": "Job Description (JD)",
+      "optional": "optional",
+      "fetchJD": "Fetch JD from URL",
+      "fetchingJD": "Fetching JD…",
+      "jdPlaceholderAdd": "Paste the full JD here or use the 'Fetch JD from URL' button...",
+      "jdPlaceholderEdit": "Paste new JD to update (leave empty to keep current)...",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "saveChanges": "Save Changes",
+      "addJob": "Add Job",
+      "errors": {
+        "saveFailed": "Error saving",
+        "crawlFailed": "Could not fetch JD. Try copy-pasting manually.",
+        "connectionError": "Connection error. Please try again."
+      }
+    },
+    "jobDetail": {
+      "title": "Job Detail",
+      "expand": "Expand",
+      "edit": "Edit",
+      "jobDescription": "Job Description",
+      "jobDescriptionFull": "Job Description (JD)",
+      "updateJD": "Update JD",
+      "updatingJD": "Updating…",
+      "noJD": "No job description yet.",
+      "fetchFromUrl": "Fetch JD from URL",
+      "fetchingFromUrl": "Fetching JD from URL…",
+      "noJDNoUrl": "No job description yet. Click Edit to add JD or URL.",
+      "viewOriginal": "View original job",
+      "editJob": "Edit job",
+      "addJDorUrl": "Add JD or URL",
+      "errors": {
+        "crawlFailed": "Could not fetch JD. Try copy-pasting manually.",
+        "connectionError": "Connection error. Please try again."
+      }
+    },
+    "aiAnalysis": {
+      "title": "AI Analysis",
+      "analyze": "Analyze with AI",
+      "reanalyze": "Re-analyze",
+      "analyzing": "Analyzing...",
+      "noJDHint": "Add a job description to start analysis",
+      "matchScore": "Match Score",
+      "gapAnalysis": "Gap Analysis",
+      "keywords": "Required Keywords",
+      "errors": {
+        "analysisFailed": "An error occurred during analysis. Please try again.",
+        "connectionError": "Unable to connect to AI service. Please try again."
+      }
+    }
   }
 }

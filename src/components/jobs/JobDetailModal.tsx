@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faXmark,
@@ -8,52 +9,12 @@ import {
   faBuilding,
   faLink,
   faCalendar,
-  faFileText,
+  faArrowUpRightFromSquare,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import type { JobCard } from "./KanbanBoard";
-
-// ── Status config ────────────────────────────────────────────────────────
-const STATUS_CONFIG: Record<
-  string,
-  { label: string; bg: string; text: string; dot: string }
-> = {
-  saved: {
-    label: "Đã lưu",
-    bg: "bg-blue-100",
-    text: "text-blue-700",
-    dot: "bg-blue-500",
-  },
-  optimized: {
-    label: "Đã tối ưu",
-    bg: "bg-purple-100",
-    text: "text-purple-700",
-    dot: "bg-purple-500",
-  },
-  applied: {
-    label: "Đã nộp",
-    bg: "bg-yellow-100",
-    text: "text-yellow-700",
-    dot: "bg-yellow-500",
-  },
-  interviewing: {
-    label: "Phỏng vấn",
-    bg: "bg-orange-100",
-    text: "text-orange-700",
-    dot: "bg-orange-500",
-  },
-  offer: {
-    label: "Offer",
-    bg: "bg-green-100",
-    text: "text-green-700",
-    dot: "bg-green-500",
-  },
-  rejected: {
-    label: "Từ chối",
-    bg: "bg-red-100",
-    text: "text-red-700",
-    dot: "bg-red-500",
-  },
-};
+import JobAnalysisSection from "./JobAnalysisSection";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "—";
@@ -62,24 +23,6 @@ function formatDate(iso: string | null): string {
     month: "2-digit",
     year: "numeric",
   });
-}
-
-interface PropertyRowProps {
-  icon: typeof faPen;
-  label: string;
-  children: React.ReactNode;
-}
-
-function PropertyRow({ icon, label, children }: PropertyRowProps) {
-  return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-gray-50 last:border-0">
-      <div className="flex items-center gap-2 w-36 shrink-0 pt-0.5">
-        <FontAwesomeIcon icon={icon} className="w-3.5 h-3.5 text-gray-400" />
-        <span className="text-sm text-gray-500">{label}</span>
-      </div>
-      <div className="flex-1 text-sm text-gray-800">{children}</div>
-    </div>
-  );
 }
 
 interface JobDetailModalProps {
@@ -93,16 +36,58 @@ export default function JobDetailModal({
   onClose,
   onEdit,
 }: JobDetailModalProps) {
+  const { t } = useTranslation();
+
+  // Status config uses i18n keys
+  const STATUS_CONFIG: Record<string, { bg: string; text: string; dot: string }> = {
+    saved:        { bg: "bg-blue-100",   text: "text-blue-700",   dot: "bg-blue-500" },
+    optimized:    { bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
+    applied:      { bg: "bg-yellow-100", text: "text-yellow-700", dot: "bg-yellow-500" },
+    interviewing: { bg: "bg-orange-100", text: "text-orange-700", dot: "bg-orange-500" },
+    offer:        { bg: "bg-green-100",  text: "text-green-700",  dot: "bg-green-500" },
+    rejected:     { bg: "bg-red-100",    text: "text-red-700",    dot: "bg-red-500" },
+  };
+
   const status = job.status ?? "saved";
   const statusCfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.saved;
 
-  // Escape key
+  const [jdText, setJdText] = useState(job.raw_jd_text ?? "");
+  const [isCrawling, setIsCrawling] = useState(false);
+  const [crawlError, setCrawlError] = useState<string | null>(null);
+
+  const handleCrawl = async () => {
+    setIsCrawling(true);
+    setCrawlError(null);
+    try {
+      const res = await fetch("/api/jobs/crawl-jd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId: job.id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.raw_jd_text) {
+        setJdText(data.raw_jd_text);
+      } else {
+        setCrawlError(data.error ?? t("warRoom.jobDetail.errors.crawlFailed"));
+      }
+    } catch {
+      setCrawlError(t("warRoom.jobDetail.errors.connectionError"));
+    } finally {
+      setIsCrawling(false);
+    }
+  };
+
+  // Escape key + lock body scroll
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handler);
+      document.body.style.overflow = "";
+    };
   }, [onClose]);
 
   return (
@@ -111,21 +96,30 @@ export default function JobDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Top toolbar ── */}
+        {/* ── Toolbar ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 shrink-0">
           <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">
-            Chi tiết Job
+            {t("warRoom.jobDetail.title")}
           </span>
           <div className="flex items-center gap-1">
+            <Link
+              href={`/dashboard/jobs/${job.id}`}
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-lg transition-colors"
+              title={t("warRoom.jobDetail.expand")}
+            >
+              <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
+              <span className="hidden sm:inline">{t("warRoom.jobDetail.expand")}</span>
+            </Link>
             <button
               onClick={() => { onEdit(job); onClose(); }}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <FontAwesomeIcon icon={faPen} className="w-3 h-3" />
-              Sửa
+              {t("warRoom.jobDetail.edit")}
             </button>
             <button
               onClick={onClose}
@@ -136,73 +130,127 @@ export default function JobDetailModal({
           </div>
         </div>
 
-        {/* ── Title ── */}
-        <div className="px-6 pb-5 shrink-0">
-          <h1 className="text-2xl font-bold text-gray-900 leading-snug">
+        {/* ── Title + compact meta ── */}
+        <div className="px-6 pb-4 shrink-0 border-b border-gray-100">
+          <h1 className="text-xl font-bold text-gray-900 leading-snug mb-2">
             {job.title}
           </h1>
-        </div>
-
-        {/* ── Scrollable body ── */}
-        <div className="overflow-y-auto flex-1 px-6">
-          {/* Properties */}
-          <div className="bg-gray-50 rounded-xl px-4 py-1 mb-5">
-            <PropertyRow icon={faBuilding} label="Công ty">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <FontAwesomeIcon icon={faBuilding} className="w-3.5 h-3.5 text-gray-400" />
               {job.company_name}
-            </PropertyRow>
-
-            <PropertyRow icon={faFileText} label="Trạng thái">
-              <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusCfg.bg} ${statusCfg.text}`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
-                {statusCfg.label}
-              </span>
-            </PropertyRow>
-
-            <PropertyRow icon={faCalendar} label="Ngày thêm">
-              <span className="text-gray-600">{formatDate(job.created_at)}</span>
-            </PropertyRow>
-
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${statusCfg.bg} ${statusCfg.text}`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
+              {t(`warRoom.columns.${status}`)}
+            </span>
+            <span className="flex items-center gap-1.5 text-gray-400">
+              <FontAwesomeIcon icon={faCalendar} className="w-3.5 h-3.5" />
+              {formatDate(job.created_at)}
+            </span>
             {job.job_url && (
-              <PropertyRow icon={faLink} label="Job URL">
-                <a
-                  href={job.job_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline truncate block max-w-xs"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {job.job_url}
-                </a>
-              </PropertyRow>
+              <a
+                href={job.job_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-blue-600 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <FontAwesomeIcon icon={faLink} className="w-3.5 h-3.5" />
+                {t("warRoom.jobDetail.viewOriginal")}
+              </a>
             )}
           </div>
+        </div>
 
-          {/* JD content */}
-          {job.raw_jd_text ? (
-            <div className="mb-6">
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">
-                Mô tả công việc (JD)
-              </h2>
-              <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed bg-gray-50 rounded-xl px-4 py-4">
-                {job.raw_jd_text}
+        {/* ── Body: single scroll area, right column sticky ── */}
+        <div className="flex-1 overflow-y-auto min-h-0 px-6 pb-6 pt-5">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_288px] gap-5">
+
+            {/* Left: JD content */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  {t("warRoom.jobDetail.jobDescription")}
+                </h2>
+                {jdText && job.job_url && (
+                  <button
+                    type="button"
+                    onClick={handleCrawl}
+                    disabled={isCrawling}
+                    className="flex items-center gap-1.5 px-2.5 py-1 text-xs text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {isCrawling ? (
+                      <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <FontAwesomeIcon icon={faLink} className="w-3 h-3" />
+                    )}
+                    {isCrawling ? t("warRoom.jobDetail.updatingJD") : t("warRoom.jobDetail.updateJD")}
+                  </button>
+                )}
+              </div>
+
+              {crawlError && (
+                <p className="text-xs text-amber-600 mb-2">{crawlError}</p>
+              )}
+
+              {jdText ? (
+                <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed bg-gray-50 rounded-xl px-4 py-4">
+                  {jdText}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-10">
+                  {job.job_url ? (
+                    <div className="text-center">
+                      <p className="text-sm text-gray-400 mb-3">
+                        {t("warRoom.jobDetail.noJD")}
+                      </p>
+                      {crawlError && (
+                        <p className="text-xs text-amber-600 mb-2">{crawlError}</p>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleCrawl}
+                        disabled={isCrawling}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {isCrawling ? (
+                          <FontAwesomeIcon icon={faSpinner} className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <FontAwesomeIcon icon={faLink} className="w-3.5 h-3.5" />
+                        )}
+                        {isCrawling ? t("warRoom.jobDetail.fetchingFromUrl") : t("warRoom.jobDetail.fetchFromUrl")}
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-400 text-center">
+                      {t("warRoom.jobDetail.noJD")} {t("warRoom.jobDetail.noJDNoUrl").split(t("warRoom.jobDetail.noJD")).pop()?.split(t("warRoom.jobDetail.edit"))[0]}
+                      <button
+                        onClick={() => { onEdit(job); onClose(); }}
+                        className="text-blue-500 hover:underline"
+                      >
+                        {t("warRoom.jobDetail.edit")}
+                      </button>{" "}
+                      {t("warRoom.addJobModal.jdText").split("(")[0].trim().toLowerCase().includes("để thêm") ? "" : t("warRoom.jobDetail.addJDorUrl").split(t("warRoom.jobDetail.edit")).pop()}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Right: AI analysis — sticky so it stays visible while scrolling JD */}
+            <div className="lg:sticky lg:top-0 self-start">
+              <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4">
+                <JobAnalysisSection
+                  jobId={job.id}
+                  hasJd={!!jdText}
+                />
               </div>
             </div>
-          ) : (
-            <div className="mb-6 text-center py-8 border-2 border-dashed border-gray-200 rounded-xl">
-              <p className="text-sm text-gray-400">
-                Chưa có mô tả công việc. Bấm{" "}
-                <button
-                  onClick={() => { onEdit(job); onClose(); }}
-                  className="text-blue-500 hover:underline"
-                >
-                  Sửa
-                </button>{" "}
-                để thêm JD.
-              </p>
-            </div>
-          )}
+
+          </div>
         </div>
       </div>
     </div>

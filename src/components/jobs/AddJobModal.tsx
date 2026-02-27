@@ -7,6 +7,9 @@ import {
   type NewJobCard,
 } from "@/app/(authenticated)/dashboard/jobs/actions";
 import type { JobCard } from "./KanbanBoard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AddJobModalProps {
   isOpen: boolean;
@@ -27,15 +30,17 @@ export default function AddJobModal({
   editJob,
   onJobUpdated,
 }: AddJobModalProps) {
+  const { t } = useTranslation();
   const isEditMode = Boolean(editJob);
   const [title, setTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [jobUrl, setJobUrl] = useState("");
   const [rawJdText, setRawJdText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isCrawling, setIsCrawling] = useState(false);
+  const [crawlError, setCrawlError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Pre-fill or reset when modal opens
   useEffect(() => {
     if (isOpen) {
       setTitle(editJob?.title ?? "");
@@ -46,7 +51,6 @@ export default function AddJobModal({
     }
   }, [isOpen, editJob]);
 
-  // Escape key handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) onClose();
@@ -54,6 +58,29 @@ export default function AddJobModal({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
+
+  const handleCrawl = async () => {
+    if (!jobUrl.trim()) return;
+    setIsCrawling(true);
+    setCrawlError(null);
+    try {
+      const res = await fetch("/api/jobs/crawl-jd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: jobUrl.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.raw_jd_text) {
+        setRawJdText(data.raw_jd_text);
+      } else {
+        setCrawlError(data.error ?? t("warRoom.addJobModal.errors.crawlFailed"));
+      }
+    } catch {
+      setCrawlError(t("warRoom.addJobModal.errors.connectionError"));
+    } finally {
+      setIsCrawling(false);
+    }
+  };
 
   const handleSubmit = () => {
     if (!title.trim() || !companyName.trim()) return;
@@ -68,16 +95,14 @@ export default function AddJobModal({
           raw_jd_text: rawJdText || undefined,
         });
         if (!result.success) {
-          setError(result.error ?? "Lỗi khi lưu");
+          setError(result.error ?? t("warRoom.addJobModal.errors.saveFailed"));
         } else {
           onJobUpdated?.({
             ...editJob,
             title: title.trim(),
             company_name: companyName.trim(),
             job_url: jobUrl.trim() || null,
-            raw_jd_text: rawJdText
-              ? rawJdText.trim()
-              : (editJob.raw_jd_text ?? null),
+            raw_jd_text: rawJdText ? rawJdText.trim() : (editJob.raw_jd_text ?? null),
           });
           onClose();
         }
@@ -110,13 +135,15 @@ export default function AddJobModal({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold text-gray-900 mb-5">
-          {isEditMode ? "Sửa thông tin Job" : "Thêm Job mới"}
+          {isEditMode ? t("warRoom.addJobModal.titleEdit") : t("warRoom.addJobModal.titleAdd")}
         </h2>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={labelClass}>Tên vị trí *</label>
+              <label className={labelClass}>
+                {t("warRoom.addJobModal.jobTitle")} *
+              </label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -126,7 +153,9 @@ export default function AddJobModal({
               />
             </div>
             <div>
-              <label className={labelClass}>Tên công ty *</label>
+              <label className={labelClass}>
+                {t("warRoom.addJobModal.companyName")} *
+              </label>
               <input
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
@@ -138,8 +167,8 @@ export default function AddJobModal({
 
           <div>
             <label className={labelClass}>
-              Job URL{" "}
-              <span className="text-gray-400 font-normal">(tùy chọn)</span>
+              {t("warRoom.addJobModal.jobUrl")}{" "}
+              <span className="text-gray-400 font-normal">({t("warRoom.addJobModal.optional")})</span>
             </label>
             <input
               type="url"
@@ -151,17 +180,37 @@ export default function AddJobModal({
           </div>
 
           <div>
-            <label className={labelClass}>
-              Mô tả công việc (JD){" "}
-              <span className="text-gray-400 font-normal">(tùy chọn)</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className={labelClass + " mb-0"}>
+                {t("warRoom.addJobModal.jdText")}{" "}
+                <span className="text-gray-400 font-normal">({t("warRoom.addJobModal.optional")})</span>
+              </label>
+              {jobUrl.trim() && (
+                <button
+                  type="button"
+                  onClick={handleCrawl}
+                  disabled={isCrawling}
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isCrawling ? (
+                    <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <FontAwesomeIcon icon={faLink} className="w-3 h-3" />
+                  )}
+                  {isCrawling ? t("warRoom.addJobModal.fetchingJD") : t("warRoom.addJobModal.fetchJD")}
+                </button>
+              )}
+            </div>
+            {crawlError && (
+              <p className="text-xs text-amber-600 mb-1.5">{crawlError}</p>
+            )}
             <textarea
               value={rawJdText}
               onChange={(e) => setRawJdText(e.target.value)}
               placeholder={
                 isEditMode
-                  ? "Dán JD mới để cập nhật (để trống nếu không thay đổi)..."
-                  : "Dán toàn bộ nội dung JD vào đây..."
+                  ? t("warRoom.addJobModal.jdPlaceholderEdit")
+                  : t("warRoom.addJobModal.jdPlaceholderAdd")
               }
               rows={6}
               className={inputClass + " resize-none"}
@@ -177,14 +226,18 @@ export default function AddJobModal({
             disabled={isPending}
             className="px-4 py-2 text-sm text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
           >
-            Hủy
+            {t("warRoom.addJobModal.cancel")}
           </button>
           <button
             onClick={handleSubmit}
             disabled={isPending || !title.trim() || !companyName.trim()}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-40"
           >
-            {isPending ? "Đang lưu…" : isEditMode ? "Lưu thay đổi" : "Thêm Job"}
+            {isPending
+              ? t("warRoom.addJobModal.saving")
+              : isEditMode
+              ? t("warRoom.addJobModal.saveChanges")
+              : t("warRoom.addJobModal.addJob")}
           </button>
         </div>
       </div>

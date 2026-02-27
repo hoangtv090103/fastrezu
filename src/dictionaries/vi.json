@@ -914,5 +914,94 @@
   "loginSplitView": {
     "title": "Đăng nhập để tiếp tục",
     "subtitle": "Đăng nhập để xem điểm ATS và gợi ý cải thiện CV của bạn"
+  },
+  "warRoom": {
+    "title": "War Room",
+    "subtitle": "Theo dõi tiến trình ứng tuyển của bạn",
+    "addJob": "+ Thêm Job",
+    "backToWarRoom": "Về War Room",
+    "emptyState": {
+      "title": "Chưa có job nào",
+      "description": "Bấm \"+ Thêm Job\" để lưu JD đầu tiên và bắt đầu theo dõi quá trình ứng tuyển."
+    },
+    "columns": {
+      "saved": "Đã lưu",
+      "optimized": "Đã tối ưu",
+      "applied": "Đã nộp",
+      "interviewing": "Phỏng vấn",
+      "offer": "Offer",
+      "rejected": "Từ chối",
+      "emptyFirst": "Lưu job để bắt đầu",
+      "emptyOther": "Thả thẻ vào đây"
+    },
+    "cardMenu": {
+      "options": "Tùy chọn",
+      "edit": "Sửa",
+      "duplicate": "Nhân bản",
+      "delete": "Xóa"
+    },
+    "deleteConfirm": {
+      "title": "Xóa job này?",
+      "message": "Job sẽ bị xóa vĩnh viễn khỏi hệ thống. Hành động này",
+      "irreversible": "không thể hoàn tác",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
+    },
+    "addJobModal": {
+      "titleAdd": "Thêm Job mới",
+      "titleEdit": "Sửa thông tin Job",
+      "jobTitle": "Tên vị trí",
+      "companyName": "Tên công ty",
+      "jobUrl": "Job URL",
+      "jdText": "Mô tả công việc (JD)",
+      "optional": "tùy chọn",
+      "fetchJD": "Lấy JD từ URL",
+      "fetchingJD": "Đang lấy JD…",
+      "jdPlaceholderAdd": "Dán toàn bộ nội dung JD vào đây hoặc dùng nút 'Lấy JD từ URL'...",
+      "jdPlaceholderEdit": "Dán JD mới để cập nhật (để trống nếu không thay đổi)...",
+      "cancel": "Hủy",
+      "saving": "Đang lưu…",
+      "saveChanges": "Lưu thay đổi",
+      "addJob": "Thêm Job",
+      "errors": {
+        "saveFailed": "Lỗi khi lưu",
+        "crawlFailed": "Không lấy được JD. Thử copy-paste thủ công.",
+        "connectionError": "Lỗi kết nối. Vui lòng thử lại."
+      }
+    },
+    "jobDetail": {
+      "title": "Chi tiết Job",
+      "expand": "Mở rộng",
+      "edit": "Sửa",
+      "jobDescription": "Mô tả công việc",
+      "jobDescriptionFull": "Mô tả công việc (JD)",
+      "updateJD": "Cập nhật JD",
+      "updatingJD": "Đang cập nhật…",
+      "noJD": "Chưa có mô tả công việc.",
+      "fetchFromUrl": "Lấy JD từ URL",
+      "fetchingFromUrl": "Đang lấy JD từ URL…",
+      "noJDNoUrl": "Chưa có mô tả công việc. Bấm Sửa để thêm JD hoặc URL.",
+      "viewOriginal": "Xem job gốc",
+      "editJob": "Sửa job",
+      "addJDorUrl": "Thêm JD hoặc URL",
+      "errors": {
+        "crawlFailed": "Không lấy được JD. Thử copy-paste thủ công.",
+        "connectionError": "Lỗi kết nối. Vui lòng thử lại."
+      }
+    },
+    "aiAnalysis": {
+      "title": "Phân tích AI",
+      "analyze": "Phân tích với AI",
+      "reanalyze": "Phân tích lại",
+      "analyzing": "Đang phân tích...",
+      "noJDHint": "Thêm mô tả công việc để bắt đầu phân tích",
+      "matchScore": "Điểm phù hợp",
+      "gapAnalysis": "Phân tích lỗ hổng",
+      "keywords": "Từ khóa yêu cầu",
+      "errors": {
+        "analysisFailed": "Có lỗi xảy ra khi phân tích. Vui lòng thử lại.",
+        "connectionError": "Không thể kết nối dịch vụ AI. Vui lòng thử lại."
+      }
+    }
   }
 }
