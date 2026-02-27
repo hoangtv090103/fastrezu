@@ -7,6 +7,9 @@ import EducationSection, { type EducationItem } from "./EducationSection";
 import SkillsSection, { type SkillsData } from "./SkillsSection";
 import SummarySection, { type SummaryData } from "./SummarySection";
 import ProjectsSection, { type ProjectsData } from "./ProjectsSection";
+import CertificationsSection, {
+  type CertificationsData,
+} from "./CertificationsSection";
 import { Toast, useToast } from "@/components/ui/Toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,6 +20,7 @@ import {
   faBoxArchive,
   faFileLines,
   faCode,
+  faCertificate,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -27,7 +31,8 @@ type TabId =
   | "experience"
   | "education"
   | "skills"
-  | "projects";
+  | "projects"
+  | "certifications";
 
 interface VaultData {
   personal?: Partial<PersonalInfo>;
@@ -36,6 +41,7 @@ interface VaultData {
   education?: { items: EducationItem[] };
   skills?: SkillsData;
   projects?: ProjectsData;
+  certifications?: CertificationsData;
 }
 
 interface VaultContentProps {
@@ -84,6 +90,12 @@ const TABS: {
     icon: faCode,
     description: "Dự án nổi bật — IT, Creative, Freelance",
   },
+  {
+    id: "certifications",
+    label: "Chứng chỉ",
+    icon: faCertificate,
+    description: "Chứng chỉ, bằng cấp, giấy phép hành nghề",
+  },
 ];
 
 export default function VaultContent({ initialData }: VaultContentProps) {
@@ -98,6 +110,7 @@ export default function VaultContent({ initialData }: VaultContentProps) {
     education: "Đã lưu học vấn ✓",
     skills: "Đã lưu kỹ năng ✓",
     projects: "Đã lưu dự án ✓",
+    certifications: "Đã lưu chứng chỉ ✓",
   };
 
   const handleSaved = (tab: TabId) => showToast(toastMessages[tab]);
@@ -199,6 +212,13 @@ export default function VaultContent({ initialData }: VaultContentProps) {
           <ProjectsSection
             initialData={initialData.projects}
             onSaved={() => handleSaved("projects")}
+            onError={handleError}
+          />
+        )}
+        {activeTab === "certifications" && (
+          <CertificationsSection
+            initialData={initialData.certifications}
+            onSaved={() => handleSaved("certifications")}
             onError={handleError}
           />
         )}

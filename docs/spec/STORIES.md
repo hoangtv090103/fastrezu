@@ -102,13 +102,17 @@ Vault được chia làm 3 nhóm theo độ ưu tiên và tần suất sử dụ
   - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
   - [x] SQL migration: `20260227_vault_settings.sql` (bảng `vault_settings` với `enabled_sections` JSON — dùng cho Story 2.6).
 
-### Story 2.5: Tab Certifications (Chứng chỉ & Giấy phép)
+### Story 2.5: Tab Certifications (Chứng chỉ & Giấy phép) ✅
 
 - **Mô tả:** Là một Người dùng, tôi muốn nhập danh sách chứng chỉ (IELTS, AWS, ACCA, TOEIC...) để AI có thể tự động đưa vào CV nếu phù hợp JD.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tab "Certifications" ẩn theo mặc định, kích hoạt qua `+ Thêm mục khác`.
-  - [ ] Mỗi cert có: Tên chứng chỉ, Tổ chức cấp, Ngày cấp (month/year picker), Ngày hết hạn (optional), Mã chứng chỉ (optional), Link xác thực (optional).
-  - [ ] Lưu vào `master_profiles` với `section_type = 'certifications'`.
+  - [x] Tab "Chứng chỉ" (icon `faCertificate`) xuất hiện sau tab "Dự án".
+  - [x] Mỗi cert có 6 trường: Tên chứng chỉ*, Tổ chức cấp*, Ngày cấp (MonthYearPicker), Ngày hết hạn (toggle checkbox "Có hạn sử dụng"), Mã chứng chỉ (optional), Link xác thực (optional).
+  - [x] Card display hiển thị icon `faAward` màu amber + link xác thực clickable.
+  - [x] Inline-edit + Add / Delete theo đúng pattern ExperienceSection.
+  - [x] Lưu vào `master_profiles` với `section_type = 'certifications'`.
+  - [x] Dữ liệu persist sau reload (Server Component fetch).
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
 
 ### Story 2.6: Progressive Disclosure — Nút "Add Section"
 
