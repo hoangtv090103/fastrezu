@@ -150,16 +150,16 @@ _Mục tiêu: Xây dựng trung tâm theo dõi các Job đang apply._
 
 - **Mô tả:** Là một Người tìm việc, tôi muốn trang chủ `/dashboard/jobs` hiển thị dưới dạng bảng Kanban với các cột: Saved, Optimized, Applied, Interviewing, Offer, Rejected.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Dựng UI Kanban board.
-  - [ ] Fetch danh sách `jobs` từ Supabase và phân loại thẻ (Card) vào đúng cột dựa trên trường `status`.
+  - [x] Dựng UI Kanban board.
+  - [x] Fetch danh sách `jobs` từ Supabase và phân loại thẻ (Card) vào đúng cột dựa trên trường `status`.
 
 ### Story 3.2: Tính năng Thêm Job mới (Modal)
 
 - **Mô tả:** Là một Người tìm việc, tôi muốn bấm nút "Add Job", dán text Mô tả công việc (JD) vào form để lưu vào hệ thống.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tạo Modal "Add Job". Có các trường: Title, Company, Job URL (optional), và Textarea lớn cho Raw JD Text.
-  - [ ] Submit form lưu vào bảng `jobs` với trạng thái mặc định là `saved`.
-  - [ ] Kanban board tự động cập nhật thẻ mới.
+  - [x] Tạo Modal "Add Job". Có các trường: Title, Company, Job URL (optional), và Textarea lớn cho Raw JD Text.
+  - [x] Submit form lưu vào bảng `jobs` với trạng thái mặc định là `saved`.
+  - [x] Kanban board tự động cập nhật thẻ mới.
 
 ### Story 3.3: Kéo thả cập nhật trạng thái (Drag & Drop)
 

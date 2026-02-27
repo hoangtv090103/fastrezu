@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS public.master_profiles (
     section_type text NOT NULL,
     content jsonb DEFAULT '{}'::jsonb,
     created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    updated_at timestamp with time zone DEFAULT now(),
+    UNIQUE (user_id, section_type)
 );
 
 -- 3. Create jobs table (The War Room)
