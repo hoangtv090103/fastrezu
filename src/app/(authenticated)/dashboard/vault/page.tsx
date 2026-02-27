@@ -33,6 +33,17 @@ export default async function VaultPage() {
     {},
   );
 
+  // Fetch vault settings (enabled optional sections)
+  const { data: vaultSettings } = await supabase
+    .from("vault_settings")
+    .select("enabled_sections")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const enabledSections = Array.isArray(vaultSettings?.enabled_sections)
+    ? (vaultSettings?.enabled_sections as string[])
+    : [];
+
   return (
     <VaultContent
       initialData={{
@@ -44,6 +55,7 @@ export default async function VaultPage() {
         projects: sectionMap["projects"] as never,
         certifications: sectionMap["certifications"] as never,
       }}
+      initialEnabledSections={enabledSections}
     />
   );
 }

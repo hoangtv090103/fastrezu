@@ -49,3 +49,39 @@ export async function upsertVaultSection(
   revalidatePath('/dashboard/vault');
   return { success: true };
 }
+
+/**
+ * Upsert vault settings (enabled_sections) for the current user.
+ * Saves to vault_settings table (UNIQUE user_id).
+ */
+export async function upsertVaultSettings(
+  enabledSections: string[]
+): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return { success: false, error: 'Unauthorised' };
+  }
+
+  const { error } = await supabase
+    .from('vault_settings')
+    .upsert(
+      {
+        user_id: user.id,
+        enabled_sections: enabledSections,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id',
+      }
+    );
+
+  if (error) {
+    console.error('[upsertVaultSettings] error:', error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}

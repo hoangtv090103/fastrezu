@@ -114,14 +114,19 @@ Vault được chia làm 3 nhóm theo độ ưu tiên và tần suất sử dụ
   - [x] Dữ liệu persist sau reload (Server Component fetch).
   - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
 
-### Story 2.6: Progressive Disclosure — Nút "Add Section"
+### Story 2.6: Progressive Disclosure — Nút "Add Section" ✅
 
-- **Mô tả:** Là một Người dùng, tôi muốn một điểm duy nhất để khám phá và bật các tab mở rộng (Projects, Certifications, Awards, Volunteering, Hobbies, References, Publications) mà không bị "ngợp" từ lúc mới vào.
+- **Mô tả:** Là một Người dùng, tôi muốn một điểm duy nhất để khám phá và bật các tab mở rộng (Projects, Certifications) mà không bị "ngợp" từ lúc mới vào.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Nút `+ Thêm mục khác` xuất hiện cuối danh sách tab.
-  - [ ] Bấm vào mở Dropdown (hoặc Modal) liệt kê tất cả sections chưa được kích hoạt, kèm mô tả ngắn và icon.
-  - [ ] Bấm chọn section → tab xuất hiện ngay lập tức.
-  - [ ] Trạng thái các tab đã bật/tắt được lưu vào cột `enabled_sections` (JSON array) trên Supabase.
+  - [x] Nút `+ Thêm mục` xuất hiện cuối danh sách tab (chỉ hiện khi còn section chưa bật).
+  - [x] Bấm vào mở Dropdown liệt kê tất cả sections chưa kích hoạt, kèm icon và mô tả ngắn.
+  - [x] Dropdown đóng khi click ngoài (event listener cleanup).
+  - [x] Bấm chọn section → tab xuất hiện ngay lập tức (optimistic) + nhảy đến tab mới.
+  - [x] Trạng thái đã bật lưu vào `vault_settings.enabled_sections` (jsonb) qua server action `upsertVaultSettings`.
+  - [x] Sau reload, các tab đã bật được khôi phục (page.tsx fetch vault_settings + truyền `initialEnabledSections`).
+  - [x] Big 4 tabs (Personal, Summary, Experience, Education, Skills) luôn hiển thị, không bị ẩn.
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+  - [x] `database.types.ts` đã thêm `vault_settings` table type.
 
 ### Story 2.7: Nhóm 3 — Culture Fit Sections (Awards, Volunteering, Hobbies, References, Publications)
 
