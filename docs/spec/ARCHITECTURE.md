@@ -83,10 +83,10 @@ src/
 │   │   └── settings/
 │   └── api/
 │       ├── ai/
-│       │   ├── parse-cv/         # Trích xuất PDF cũ -> JSON (The Vault)
-│       │   ├── analyze-jd/       # Phân tích JD (The Intel)
-│       │   └── tailor-resume/    # Cốt lõi: Viết lại CV (The Tailor)
-│       └── jobs/                 # CRUD cho Jobs
+│       │   ├── analyze-job/      # So khớp JD vs Master Profile (The Intel) ✅
+│       │   └── tailor-resume/    # Viết lại CV theo JD (The Tailor)
+│       └── jobs/
+│           └── crawl-jd/         # Crawl JD từ URL qua Jina.ai (The Scout)
 ├── components/
 │   ├── vault/                    # Form nhập liệu, list kinh nghiệm
 │   ├── jobs/                     # Kanban board, Job cards
@@ -101,6 +101,32 @@ src/
 ```
 
 ## 4. Thiết kế Luồng AI Cốt lõi (AI Workflows)
+
+### 4.0. Luồng "The Scout" (Thu thập JD từ URL)
+
+Người dùng chỉ cần dán `job_url` — hệ thống tự động crawl và điền `raw_jd_text` mà không cần copy-paste thủ công.
+
+- **Trigger:** User bấm nút "Lấy JD từ URL" (trong AddJobModal hoặc trang chi tiết Job).
+- **Action:** Client gọi `POST /api/jobs/crawl-jd` với `{ jobId }`.
+- **Luồng xử lý (server):**
+  1. **SSRF Guard:** Validate `job_url` — chỉ chấp nhận `http://`/`https://`, chặn private IPs (`localhost`, `127.x`, `10.x`, `192.168.x`).
+  2. **Crawl via Jina.ai Reader:** `GET https://r.jina.ai/{encoded_url}`
+     - Jina.ai xử lý JS-rendered pages, trả về Markdown sạch của toàn trang.
+     - Free tier: không cần API key. Paid tier: thêm `Authorization: Bearer {JINA_API_KEY}`.
+     - Timeout: 30 giây.
+  3. **AI Extract (Light Tier):** Gửi Markdown thô qua model nhẹ để trích xuất chỉ phần JD, loại bỏ nav/footer/quảng cáo. Prompt: *"Trích xuất CHỈ phần Mô tả Công việc từ nội dung này. Loại bỏ header, footer, navigation. Trả về text thuần."*
+  4. **Save:** `UPDATE jobs SET raw_jd_text = ? WHERE id = ?`.
+- **Response:** `{ raw_jd_text: string }` — client cập nhật state ngay.
+- **Error cases:** Job board chặn crawl (403) → trả về lỗi rõ ràng; timeout → báo retry; nội dung không hợp lệ → trả về raw text để user tự xem.
+
+**Env vars (tùy chọn):**
+```bash
+JINA_API_KEY=<optional>  # Tăng rate limit Jina.ai (free tier: ~10 req/min)
+```
+
+**Tech note:** Jina.ai Reader là zero-dependency — chỉ là HTTP GET. Nếu cần swap sang Firecrawl (paid, chất lượng cao hơn) thì chỉ cần đổi URL gọi, không ảnh hưởng interface.
+
+---
 
 ### 4.1. Luồng "The Intel" (Phân tích JD)
 

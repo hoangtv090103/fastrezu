@@ -7,6 +7,8 @@ import {
   type NewJobCard,
 } from "@/app/(authenticated)/dashboard/jobs/actions";
 import type { JobCard } from "./KanbanBoard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 interface AddJobModalProps {
   isOpen: boolean;
@@ -33,6 +35,8 @@ export default function AddJobModal({
   const [jobUrl, setJobUrl] = useState("");
   const [rawJdText, setRawJdText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isCrawling, setIsCrawling] = useState(false);
+  const [crawlError, setCrawlError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Pre-fill or reset when modal opens
@@ -54,6 +58,29 @@ export default function AddJobModal({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
+
+  const handleCrawl = async () => {
+    if (!jobUrl.trim()) return;
+    setIsCrawling(true);
+    setCrawlError(null);
+    try {
+      const res = await fetch("/api/jobs/crawl-jd", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: jobUrl.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok && data.raw_jd_text) {
+        setRawJdText(data.raw_jd_text);
+      } else {
+        setCrawlError(data.error ?? "Không lấy được JD. Thử copy-paste thủ công.");
+      }
+    } catch {
+      setCrawlError("Lỗi kết nối. Vui lòng thử lại.");
+    } finally {
+      setIsCrawling(false);
+    }
+  };
 
   const handleSubmit = () => {
     if (!title.trim() || !companyName.trim()) return;
@@ -151,17 +178,37 @@ export default function AddJobModal({
           </div>
 
           <div>
-            <label className={labelClass}>
-              Mô tả công việc (JD){" "}
-              <span className="text-gray-400 font-normal">(tùy chọn)</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className={labelClass + " mb-0"}>
+                Mô tả công việc (JD){" "}
+                <span className="text-gray-400 font-normal">(tùy chọn)</span>
+              </label>
+              {jobUrl.trim() && (
+                <button
+                  type="button"
+                  onClick={handleCrawl}
+                  disabled={isCrawling}
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isCrawling ? (
+                    <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <FontAwesomeIcon icon={faLink} className="w-3 h-3" />
+                  )}
+                  {isCrawling ? "Đang lấy JD…" : "Lấy JD từ URL"}
+                </button>
+              )}
+            </div>
+            {crawlError && (
+              <p className="text-xs text-amber-600 mb-1.5">{crawlError}</p>
+            )}
             <textarea
               value={rawJdText}
               onChange={(e) => setRawJdText(e.target.value)}
               placeholder={
                 isEditMode
                   ? "Dán JD mới để cập nhật (để trống nếu không thay đổi)..."
-                  : "Dán toàn bộ nội dung JD vào đây..."
+                  : "Dán toàn bộ nội dung JD vào đây hoặc dùng nút 'Lấy JD từ URL'..."
               }
               rows={6}
               className={inputClass + " resize-none"}
