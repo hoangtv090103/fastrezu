@@ -103,7 +103,7 @@ export default function EducationSection({
     const exists = items.some((i) => i.id === draft.id);
     const next = exists
       ? items.map((i) => (i.id === draft.id ? draft : i))
-      : [...items, draft];
+      : [draft, ...items];
     setItems(next);
     setEditingId(null);
     setDraft(null);
@@ -232,6 +232,20 @@ export default function EducationSection({
 
   return (
     <div className="space-y-4">
+      {/* Add button / new item form — TOP */}
+      {editingId === null ? (
+        <button
+          id="add-education-btn"
+          onClick={handleAddNew}
+          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
+        >
+          + Thêm học vấn
+        </button>
+      ) : !items.some((i) => i.id === editingId) && draft ? (
+        renderForm(draft)
+      ) : null}
+
+      {/* Empty state */}
       {items.length === 0 && editingId === null && (
         <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
           Chưa có học vấn nào. Bấm &ldquo;+ Thêm học vấn&rdquo; để bắt đầu.
@@ -286,21 +300,6 @@ export default function EducationSection({
         ),
       )}
 
-      {/* New item form */}
-      {editingId !== null &&
-        !items.some((i) => i.id === editingId) &&
-        draft &&
-        renderForm(draft)}
-
-      {editingId === null && (
-        <button
-          id="add-education-btn"
-          onClick={handleAddNew}
-          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
-        >
-          + Thêm học vấn
-        </button>
-      )}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>

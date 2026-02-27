@@ -3,7 +3,12 @@
 import { useState, useTransition } from "react";
 import { upsertVaultSection } from "@/app/(authenticated)/dashboard/vault/actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faTrash, faBook, faLink } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faTrash,
+  faBook,
+  faLink,
+} from "@fortawesome/free-solid-svg-icons";
 
 // ── Types ──────────────────────────────────────────────────────────────
 export interface PublicationItem {
@@ -110,7 +115,7 @@ export default function PublicationsSection({
   const labelClass = "block text-xs font-medium text-gray-600 mb-1";
 
   // ── Inline edit form ───────────────────────────────────────────────
-  const EditForm = ({ p }: { p: PublicationItem }) => (
+  const renderForm = (p: PublicationItem) => (
     <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
       <div>
         <label className={labelClass}>Tiêu đề *</label>
@@ -189,7 +194,7 @@ export default function PublicationsSection({
 
       {items.map((item) =>
         editingId === item.id && draft ? (
-          <EditForm key={item.id} p={draft} />
+          <div key={item.id}>{renderForm(draft)}</div>
         ) : (
           <div
             key={item.id}
@@ -202,7 +207,9 @@ export default function PublicationsSection({
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900">{item.title}</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {item.title}
+              </p>
               <p className="text-sm text-gray-600">
                 {[item.publisher, item.year].filter(Boolean).join(" · ")}
               </p>
@@ -249,7 +256,7 @@ export default function PublicationsSection({
           + Thêm bài báo
         </button>
       ) : draft && !items.some((i) => i.id === draft.id) ? (
-        <EditForm p={draft} />
+        renderForm(draft)
       ) : null}
 
       {error && <p className="text-sm text-red-600">{error}</p>}

@@ -132,13 +132,13 @@ Vault được chia làm 3 nhóm theo độ ưu tiên và tần suất sử dụ
 
 - **Mô tả:** Là một Người dùng (đặc biệt Fresher hoặc ứng viên khối học thuật), tôi muốn có thêm chỗ để khai các thông tin "làm dày" hồ sơ.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] **Awards:** Tên giải thưởng, Tổ chức trao, Năm nhận, Mô tả ngắn.
-  - [ ] **Volunteering / Extracurricular:** Tên hoạt động, Tổ chức, Vai trò, Thời gian, Mô tả.
-  - [ ] **Hobbies:** Tag input đơn giản (tương tự Skills).
-  - [ ] **References:** Họ tên, Chức vụ, Công ty, SĐT/Email, Mối quan hệ (Sếp cũ / Giảng viên).
-  - [ ] **Publications:** Tiêu đề, Tạp chí/Hội nghị, Năm, Link DOI.
-  - [ ] Tất cả đều ẩn mặc định, kích hoạt qua Story 2.6.
-  - [ ] Lưu vào `master_profiles` với `section_type` tương ứng.
+  - [x] **Awards:** Tên giải thưởng, Tổ chức trao, Năm nhận, Mô tả ngắn.
+  - [x] **Volunteering / Extracurricular:** Tên hoạt động, Tổ chức, Vai trò, Thời gian, Mô tả.
+  - [x] **Hobbies:** Tag input đơn giản (tương tự Skills).
+  - [x] **References:** Họ tên, Chức vụ, Công ty, SĐT/Email, Mối quan hệ (Sếp cũ / Giảng viên).
+  - [x] **Publications:** Tiêu đề, Tạp chí/Hội nghị, Năm, Link DOI.
+  - [x] Tất cả đều ẩn mặc định, kích hoạt qua Story 2.6.
+  - [x] Lưu vào `master_profiles` với `section_type` tương ứng.
 
 ---
 

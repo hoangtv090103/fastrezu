@@ -95,7 +95,7 @@ export default function ExperienceSection({
     const exists = items.some((i) => i.id === draft.id);
     const next = exists
       ? items.map((i) => (i.id === draft.id ? draft : i))
-      : [...items, draft];
+      : [draft, ...items];
     setItems(next);
     setEditingId(null);
     setDraft(null);
@@ -119,7 +119,100 @@ export default function ExperienceSection({
 
   return (
     <div className="space-y-4">
-      {/* List */}
+      {/* Add button / new item form — TOP */}
+      {editingId === null ? (
+        <button
+          id="add-experience-btn"
+          onClick={handleAddNew}
+          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
+        >
+          + Thêm kinh nghiệm
+        </button>
+      ) : editingId === draft?.id && !items.some((i) => i.id === draft?.id) ? (
+        /* New item edit form */
+        <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Tên công ty *</label>
+              <input
+                name="company"
+                value={draft?.company ?? ""}
+                onChange={handleDraftChange}
+                placeholder="Google Vietnam"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Chức vụ *</label>
+              <input
+                name="title"
+                value={draft?.title ?? ""}
+                onChange={handleDraftChange}
+                placeholder="Software Engineer"
+                className={inputClass}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+            <div>
+              <label className={labelClass}>Bắt đầu</label>
+              <MonthYearPicker
+                value={draft?.start_date ?? ""}
+                onChange={(v) => handleDraftDateChange("start_date", v)}
+                placeholder="Chọn tháng bắt đầu"
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Kết thúc</label>
+              <MonthYearPicker
+                value={draft?.end_date ?? ""}
+                onChange={(v) => handleDraftDateChange("end_date", v)}
+                placeholder="Chọn tháng kết thúc"
+                disabled={draft?.is_current}
+              />
+            </div>
+            <label className="flex items-center gap-2 text-sm text-gray-700 pb-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="is_current"
+                checked={draft?.is_current ?? false}
+                onChange={handleDraftChange}
+                className="rounded"
+              />
+              Đang làm
+            </label>
+          </div>
+          <div>
+            <label className={labelClass}>Mô tả công việc</label>
+            <textarea
+              name="description"
+              value={draft?.description ?? ""}
+              onChange={handleDraftChange}
+              rows={4}
+              placeholder="• Xây dựng tính năng X..."
+              className={inputClass + " resize-none"}
+            />
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button
+              id="save-new-experience-btn"
+              onClick={handleSaveDraft}
+              disabled={isPending || !draft?.company || !draft?.title}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-40"
+            >
+              {isPending ? "Đang lưu…" : "Lưu"}
+            </button>
+            <button
+              onClick={handleCancelDraft}
+              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Empty state */}
       {items.length === 0 && editingId === null && (
         <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
           Chưa có kinh nghiệm nào. Bấm &ldquo;+ Thêm kinh nghiệm&rdquo; để bắt
@@ -262,98 +355,6 @@ export default function ExperienceSection({
         ),
       )}
 
-      {/* Add new form (when no item is being edited) */}
-      {editingId === null ? (
-        <button
-          id="add-experience-btn"
-          onClick={handleAddNew}
-          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
-        >
-          + Thêm kinh nghiệm
-        </button>
-      ) : editingId === draft?.id && !items.some((i) => i.id === draft?.id) ? (
-        /* New item edit form */
-        <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label className={labelClass}>Tên công ty *</label>
-              <input
-                name="company"
-                value={draft?.company ?? ""}
-                onChange={handleDraftChange}
-                placeholder="Google Vietnam"
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Chức vụ *</label>
-              <input
-                name="title"
-                value={draft?.title ?? ""}
-                onChange={handleDraftChange}
-                placeholder="Software Engineer"
-                className={inputClass}
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-            <div>
-              <label className={labelClass}>Bắt đầu</label>
-              <MonthYearPicker
-                value={draft?.start_date ?? ""}
-                onChange={(v) => handleDraftDateChange("start_date", v)}
-                placeholder="Chọn tháng bắt đầu"
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Kết thúc</label>
-              <MonthYearPicker
-                value={draft?.end_date ?? ""}
-                onChange={(v) => handleDraftDateChange("end_date", v)}
-                placeholder="Chọn tháng kết thúc"
-                disabled={draft?.is_current}
-              />
-            </div>
-            <label className="flex items-center gap-2 text-sm text-gray-700 pb-2 cursor-pointer">
-              <input
-                type="checkbox"
-                name="is_current"
-                checked={draft?.is_current ?? false}
-                onChange={handleDraftChange}
-                className="rounded"
-              />
-              Đang làm
-            </label>
-          </div>
-          <div>
-            <label className={labelClass}>Mô tả công việc</label>
-            <textarea
-              name="description"
-              value={draft?.description ?? ""}
-              onChange={handleDraftChange}
-              rows={4}
-              placeholder="• Xây dựng tính năng X..."
-              className={inputClass + " resize-none"}
-            />
-          </div>
-          <div className="flex gap-2 pt-1">
-            <button
-              id="save-new-experience-btn"
-              onClick={handleSaveDraft}
-              disabled={isPending || !draft?.company || !draft?.title}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-40"
-            >
-              {isPending ? "Đang lưu…" : "Lưu"}
-            </button>
-            <button
-              onClick={handleCancelDraft}
-              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              Hủy
-            </button>
-          </div>
-        </div>
-      ) : null}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>

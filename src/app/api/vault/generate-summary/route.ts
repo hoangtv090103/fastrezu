@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     const expLines = experience
       .map((exp) =>
-        `- ${exp.position || 'N/A'} tại ${exp.company || 'N/A'} (${exp.start_date || ''} → ${exp.is_current ? 'Hiện tại' : exp.end_date || ''})`
+        `- ${exp.title || 'N/A'} tại ${exp.company || 'N/A'} (${exp.start_date || ''} → ${exp.is_current ? 'Hiện tại' : exp.end_date || ''})`
       )
       .join('\n');
 

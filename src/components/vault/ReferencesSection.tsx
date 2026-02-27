@@ -47,9 +47,7 @@ export default function ReferencesSection({
   onSaved,
   onError,
 }: ReferencesSectionProps) {
-  const [items, setItems] = useState<ReferenceItem[]>(
-    initialData?.items ?? [],
-  );
+  const [items, setItems] = useState<ReferenceItem[]>(initialData?.items ?? []);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<ReferenceItem | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -118,7 +116,7 @@ export default function ReferencesSection({
   const labelClass = "block text-xs font-medium text-gray-600 mb-1";
 
   // ── Inline edit form ───────────────────────────────────────────────
-  const EditForm = ({ p }: { p: ReferenceItem }) => (
+  const renderForm = (p: ReferenceItem) => (
     <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
@@ -214,13 +212,14 @@ export default function ReferencesSection({
     <div className="space-y-4">
       {items.length === 0 && editingId === null && (
         <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
-          Chưa có người tham chiếu nào. Bấm &ldquo;+ Thêm người tham chiếu&rdquo; để bắt đầu.
+          Chưa có người tham chiếu nào. Bấm &ldquo;+ Thêm người tham
+          chiếu&rdquo; để bắt đầu.
         </p>
       )}
 
       {items.map((item) =>
         editingId === item.id && draft ? (
-          <EditForm key={item.id} p={draft} />
+          <div key={item.id}>{renderForm(draft)}</div>
         ) : (
           <div
             key={item.id}
@@ -282,7 +281,7 @@ export default function ReferencesSection({
           + Thêm người tham chiếu
         </button>
       ) : draft && !items.some((i) => i.id === draft.id) ? (
-        <EditForm p={draft} />
+        renderForm(draft)
       ) : null}
 
       {error && <p className="text-sm text-red-600">{error}</p>}

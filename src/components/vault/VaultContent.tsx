@@ -446,7 +446,10 @@ export default function VaultContent({
                     | Record<string, unknown>[]
                     | undefined
                 }
-                skills={initialData.skills?.items}
+                skills={[
+                  ...(initialData.skills?.hard_skills ?? initialData.skills?.items ?? []),
+                  ...(initialData.skills?.soft_skills ?? []),
+                ]}
                 onSaved={() => handleSaved("summary")}
                 onError={handleError}
               />

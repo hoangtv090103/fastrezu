@@ -86,7 +86,7 @@ export default function AwardsSection({
     const exists = items.some((i) => i.id === draft.id);
     const next = exists
       ? items.map((i) => (i.id === draft.id ? draft : i))
-      : [...items, draft];
+      : [draft, ...items];
     setItems(next);
     setEditingId(null);
     setDraft(null);
@@ -110,7 +110,7 @@ export default function AwardsSection({
   const labelClass = "block text-xs font-medium text-gray-600 mb-1";
 
   // ── Inline edit form ───────────────────────────────────────────────
-  const EditForm = ({ p }: { p: AwardItem }) => (
+  const renderForm = (p: AwardItem) => (
     <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
@@ -181,15 +181,28 @@ export default function AwardsSection({
   // ── Render ─────────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
+      {editingId === null ? (
+        <button
+          id="add-award-btn"
+          onClick={handleAddNew}
+          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
+        >
+          + Thêm giải thưởng
+        </button>
+      ) : draft && !items.some((i) => i.id === draft.id) ? (
+        renderForm(draft)
+      ) : null}
+
       {items.length === 0 && editingId === null && (
         <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
-          Chưa có giải thưởng nào. Bấm &ldquo;+ Thêm giải thưởng&rdquo; để bắt đầu.
+          Chưa có giải thưởng nào. Bấm &ldquo;+ Thêm giải thưởng&rdquo; để bắt
+          đầu.
         </p>
       )}
 
       {items.map((item) =>
         editingId === item.id && draft ? (
-          <EditForm key={item.id} p={draft} />
+          <div key={item.id}>{renderForm(draft)}</div>
         ) : (
           <div
             key={item.id}
@@ -233,18 +246,6 @@ export default function AwardsSection({
           </div>
         ),
       )}
-
-      {editingId === null ? (
-        <button
-          id="add-award-btn"
-          onClick={handleAddNew}
-          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
-        >
-          + Thêm giải thưởng
-        </button>
-      ) : draft && !items.some((i) => i.id === draft.id) ? (
-        <EditForm p={draft} />
-      ) : null}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>

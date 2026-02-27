@@ -5,6 +5,7 @@ import { upsertVaultSection } from "@/app/(authenticated)/dashboard/vault/action
 
 export interface PersonalInfo {
   full_name: string;
+  email: string;
   phone: string;
   address: string;
   linkedin: string;
@@ -15,6 +16,7 @@ export interface PersonalInfo {
 
 const defaultPersonalInfo: PersonalInfo = {
   full_name: "",
+  email: "",
   phone: "",
   address: "",
   linkedin: "",
@@ -83,6 +85,20 @@ export default function PersonalInfoForm({
           />
         </div>
         <div>
+          <label className={labelClass}>Email</label>
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="yourname@email.com"
+            className={inputClass}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
           <label className={labelClass}>Số điện thoại</label>
           <input
             name="phone"
@@ -92,17 +108,16 @@ export default function PersonalInfoForm({
             className={inputClass}
           />
         </div>
-      </div>
-
-      <div>
-        <label className={labelClass}>Địa chỉ / Khu vực</label>
-        <input
-          name="address"
-          value={form.address}
-          onChange={handleChange}
-          placeholder="Hồ Chí Minh, Việt Nam"
-          className={inputClass}
-        />
+        <div>
+          <label className={labelClass}>Địa chỉ / Khu vực</label>
+          <input
+            name="address"
+            value={form.address}
+            onChange={handleChange}
+            placeholder="Hồ Chí Minh, Việt Nam"
+            className={inputClass}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

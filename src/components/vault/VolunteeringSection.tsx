@@ -46,9 +46,7 @@ export default function VolunteeringSection({
   onSaved,
   onError,
 }: VolunteeringSectionProps) {
-  const [items, setItems] = useState<VolunteerItem[]>(
-    initialData?.items ?? [],
-  );
+  const [items, setItems] = useState<VolunteerItem[]>(initialData?.items ?? []);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<VolunteerItem | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +106,7 @@ export default function VolunteeringSection({
     const exists = items.some((i) => i.id === draft.id);
     const next = exists
       ? items.map((i) => (i.id === draft.id ? draft : i))
-      : [...items, draft];
+      : [draft, ...items];
     setItems(next);
     setEditingId(null);
     setDraft(null);
@@ -132,7 +130,7 @@ export default function VolunteeringSection({
   const labelClass = "block text-xs font-medium text-gray-600 mb-1";
 
   // ── Inline edit form ───────────────────────────────────────────────
-  const EditForm = ({ p }: { p: VolunteerItem }) => (
+  const renderForm = (p: VolunteerItem) => (
     <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
@@ -232,6 +230,18 @@ export default function VolunteeringSection({
   // ── Render ─────────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
+      {editingId === null ? (
+        <button
+          id="add-volunteer-btn"
+          onClick={handleAddNew}
+          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
+        >
+          + Thêm hoạt động
+        </button>
+      ) : draft && !items.some((i) => i.id === draft.id) ? (
+        renderForm(draft)
+      ) : null}
+
       {items.length === 0 && editingId === null && (
         <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
           Chưa có hoạt động nào. Bấm &ldquo;+ Thêm hoạt động&rdquo; để bắt đầu.
@@ -240,7 +250,7 @@ export default function VolunteeringSection({
 
       {items.map((item) =>
         editingId === item.id && draft ? (
-          <EditForm key={item.id} p={draft} />
+          <div key={item.id}>{renderForm(draft)}</div>
         ) : (
           <div
             key={item.id}
@@ -296,18 +306,6 @@ export default function VolunteeringSection({
           </div>
         ),
       )}
-
-      {editingId === null ? (
-        <button
-          id="add-volunteer-btn"
-          onClick={handleAddNew}
-          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
-        >
-          + Thêm hoạt động
-        </button>
-      ) : draft && !items.some((i) => i.id === draft.id) ? (
-        <EditForm p={draft} />
-      ) : null}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>

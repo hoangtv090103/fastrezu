@@ -141,7 +141,7 @@ export default function ProjectsSection({
     const exists = items.some((i) => i.id === draft.id);
     const next = exists
       ? items.map((i) => (i.id === draft.id ? draft : i))
-      : [...items, draft];
+      : [draft, ...items];
     setItems(next);
     setEditingId(null);
     setDraft(null);
@@ -167,7 +167,7 @@ export default function ProjectsSection({
   const labelClass = "block text-xs font-medium text-gray-600 mb-1";
 
   // ── Inline edit form ───────────────────────────────────────────────
-  const EditForm = ({ p }: { p: ProjectItem }) => (
+  const renderForm = (p: ProjectItem) => (
     <div className="border border-blue-300 bg-blue-50 rounded-xl p-4 space-y-3">
       {/* Row 1: Name + Role */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -307,6 +307,19 @@ export default function ProjectsSection({
   // ── Render ─────────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
+      {/* Add button / new item form — TOP */}
+      {editingId === null ? (
+        <button
+          id="add-project-btn"
+          onClick={handleAddNew}
+          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
+        >
+          + Thêm dự án
+        </button>
+      ) : draft && !items.some((i) => i.id === draft.id) ? (
+        renderForm(draft)
+      ) : null}
+
       {/* Empty state */}
       {items.length === 0 && editingId === null && (
         <p className="text-sm text-gray-400 py-4 text-center border-2 border-dashed border-gray-200 rounded-lg">
@@ -317,7 +330,7 @@ export default function ProjectsSection({
       {/* List */}
       {items.map((item) =>
         editingId === item.id && draft ? (
-          <EditForm key={item.id} p={draft} />
+          <div key={item.id}>{renderForm(draft)}</div>
         ) : (
           <div
             key={item.id}
@@ -383,19 +396,6 @@ export default function ProjectsSection({
           </div>
         ),
       )}
-
-      {/* New item form (only when no existing item is being edited) */}
-      {editingId === null ? (
-        <button
-          id="add-project-btn"
-          onClick={handleAddNew}
-          className="w-full py-3 border-2 border-dashed border-gray-300 hover:border-blue-400 text-sm text-gray-500 hover:text-blue-600 rounded-xl transition-colors font-medium"
-        >
-          + Thêm dự án
-        </button>
-      ) : draft && !items.some((i) => i.id === draft.id) ? (
-        <EditForm p={draft} />
-      ) : null}
 
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
