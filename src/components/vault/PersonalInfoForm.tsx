@@ -90,7 +90,10 @@ export default function PersonalInfoForm({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/cv/photo-upload", { method: "POST", body: fd });
+      const res = await fetch("/api/cv/photo-upload", {
+        method: "POST",
+        body: fd,
+      });
       const json = await res.json();
       if (!res.ok) {
         setUploadError(json.error ?? "Lỗi khi tải ảnh lên");
@@ -115,7 +118,10 @@ export default function PersonalInfoForm({
     setUploadError(null);
     setIsUploading(true);
     try {
-      await fetch("/api/cv/photo-upload", { method: "DELETE" });
+      const res = await fetch("/api/cv/photo-upload", { method: "DELETE" });
+      if (!res.ok) {
+        throw new Error("DELETE failed");
+      }
       setForm((prev) => ({ ...prev, photo_url: undefined }));
     } catch {
       setUploadError("Lỗi khi xóa ảnh. Vui lòng thử lại.");
@@ -162,9 +168,18 @@ export default function PersonalInfoForm({
               />
             ) : (
               <div className="w-20 h-20 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg
+                  className="w-8 h-8 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
               </div>
             )}
@@ -181,9 +196,10 @@ export default function PersonalInfoForm({
                 relative flex flex-col items-center justify-center gap-1
                 rounded-lg border-2 border-dashed px-4 py-4 cursor-pointer
                 transition-all duration-200 text-center
-                ${isDragging
-                  ? "border-blue-400 bg-blue-50"
-                  : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"
+                ${
+                  isDragging
+                    ? "border-blue-400 bg-blue-50"
+                    : "border-gray-300 bg-gray-50 hover:border-blue-400 hover:bg-blue-50"
                 }
                 ${isUploading ? "cursor-not-allowed opacity-60" : ""}
               `}
@@ -195,12 +211,23 @@ export default function PersonalInfoForm({
                 </>
               ) : (
                 <>
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                   <span className="text-xs text-gray-500">
-                    {form.photo_url ? "Bấm hoặc kéo thả để đổi ảnh" : "Bấm hoặc kéo thả ảnh vào đây"}
+                    {form.photo_url
+                      ? "Bấm hoặc kéo thả để đổi ảnh"
+                      : "Bấm hoặc kéo thả ảnh vào đây"}
                   </span>
                 </>
               )}
