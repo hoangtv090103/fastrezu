@@ -438,24 +438,30 @@ export type Database = {
       resumes: {
         Row: {
           ats_score_final: number | null
+          color_theme: string
           content_snapshot: Json | null
           created_at: string | null
           id: string
           job_id: string
+          template_id: string
         }
         Insert: {
           ats_score_final?: number | null
+          color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
           id?: string
           job_id: string
+          template_id?: string
         }
         Update: {
           ats_score_final?: number | null
+          color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
           id?: string
           job_id?: string
+          template_id?: string
         }
         Relationships: [
           {

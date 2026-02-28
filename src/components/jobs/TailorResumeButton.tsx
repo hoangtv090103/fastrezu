@@ -9,12 +9,17 @@ import {
   faTag,
   faRotateRight,
   faDownload,
+  faPalette,
+  faChevronDown,
+  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import TailoredCVPreview, {
   TailoredResumeData,
 } from "@/components/cv/TailoredCVPreview";
+import TemplateSelector from "@/components/cv/TemplateSelector";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
+import type { TemplateId, ColorTheme } from "@/components/cv/templates/shared/types";
 
 // ── PDF Download hook ──────────────────────────────────────────────────────
 function usePDFDownload() {
@@ -26,7 +31,9 @@ function usePDFDownload() {
       data: TailoredResumeData,
       language: "vi" | "en",
       fileName: string,
-      errorMsg: string
+      errorMsg: string,
+      templateId: TemplateId,
+      colorTheme: ColorTheme
     ) => {
       setIsGenerating(true);
       setPdfError(null);
@@ -36,7 +43,12 @@ function usePDFDownload() {
           import("@react-pdf/renderer"),
         ]);
         const blob = await pdf(
-          <TailoredCVTemplatePDF data={data} language={language} />
+          <TailoredCVTemplatePDF
+            data={data}
+            language={language}
+            templateId={templateId}
+            colorTheme={colorTheme}
+          />
         ).toBlob();
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -64,6 +76,8 @@ interface TailorResumeButtonProps {
   initialResume?: {
     id: string;
     content_snapshot: TailoredResumeData | null;
+    template_id?: string | null;
+    color_theme?: string | null;
     created_at: string | null;
   } | null;
   /** Compact mode for toolbar use (modal toolbar) */
@@ -126,30 +140,51 @@ function TailoringNotesBanner({
 function PreviewModal({
   data,
   language,
+  resumeId,
   onClose,
   onRetailor,
   isRetailoring,
   t,
+  initialTemplateId,
+  initialColorTheme,
 }: {
   data: TailoredResumeData;
   language: "vi" | "en";
+  resumeId: string | null;
   onClose: () => void;
   onRetailor: () => void;
   isRetailoring: boolean;
   t: (key: string) => string;
+  initialTemplateId: TemplateId;
+  initialColorTheme: ColorTheme;
 }) {
   const { isGenerating: isPDFGenerating, pdfError, downloadPDF } = usePDFDownload();
+  const [templateId, setTemplateId] = useState<TemplateId>(initialTemplateId);
+  const [colorTheme, setColorTheme] = useState<ColorTheme>(initialColorTheme);
+  const [showSelector, setShowSelector] = useState(false);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     const name = data.personal?.full_name?.trim().replace(/\s+/g, "_") ?? "cv";
     const date = new Date().toISOString().slice(0, 10);
-    downloadPDF(
+    await downloadPDF(
       data,
       language,
-      `${name}_tailored_${date}.pdf`,
-      t("warRoom.tailorResume.pdfError")
+      `${name}_${templateId}_${date}.pdf`,
+      t("warRoom.tailorResume.pdfError"),
+      templateId,
+      colorTheme
     );
-  }, [data, language, downloadPDF, t]);
+    // Persist template/color choice to DB (best-effort)
+    if (resumeId) {
+      supabase
+        .from("resumes")
+        .update({ template_id: templateId, color_theme: colorTheme })
+        .eq("id", resumeId)
+        .then(({ error }) => {
+          if (error) console.warn("Could not persist template choice:", error.message);
+        });
+    }
+  }, [data, language, downloadPDF, t, templateId, colorTheme, resumeId]);
 
   // Escape key + scroll lock
   useEffect(() => {
@@ -185,6 +220,19 @@ function PreviewModal({
             </span>
           </div>
           <div className="flex items-center gap-2">
+            {/* Template/Color toggle */}
+            <button
+              onClick={() => setShowSelector((v) => !v)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <FontAwesomeIcon icon={faPalette} className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Template</span>
+              <FontAwesomeIcon
+                icon={showSelector ? faChevronUp : faChevronDown}
+                className="w-2.5 h-2.5 opacity-60"
+              />
+            </button>
+
             {/* Download PDF button */}
             <button
               onClick={handleDownload}
@@ -227,6 +275,18 @@ function PreviewModal({
           </div>
         </div>
 
+        {/* Template selector (collapsible) */}
+        {showSelector && (
+          <div className="px-5 py-3 border-b border-gray-100 bg-gray-50 shrink-0">
+            <TemplateSelector
+              selectedTemplate={templateId}
+              selectedColor={colorTheme}
+              onTemplateChange={setTemplateId}
+              onColorChange={setColorTheme}
+            />
+          </div>
+        )}
+
         {/* PDF error */}
         {pdfError && (
           <div className="px-5 py-2 bg-red-50 border-b border-red-100 shrink-0">
@@ -244,7 +304,12 @@ function PreviewModal({
           {/* A4 shadow wrapper */}
           <div className="bg-gray-100 rounded-xl p-4">
             <div className="shadow-lg rounded-sm overflow-hidden">
-              <TailoredCVPreview data={data} language={language} />
+              <TailoredCVPreview
+                data={data}
+                language={language}
+                templateId={templateId}
+                colorTheme={colorTheme}
+              />
             </div>
           </div>
         </div>
@@ -267,21 +332,31 @@ export default function TailorResumeButton({
   const [resume, setResume] = useState<TailoredResumeData | null>(
     (initialResume?.content_snapshot as TailoredResumeData) ?? null
   );
+  const [resumeId, setResumeId] = useState<string | null>(null);
+  const [templateId, setTemplateId] = useState<TemplateId>(
+    (initialResume?.template_id as TemplateId) ?? "classic"
+  );
+  const [colorTheme, setColorTheme] = useState<ColorTheme>(
+    (initialResume?.color_theme as ColorTheme) ?? "blue"
+  );
   const [isTailoring, setIsTailoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
   // Fetch existing resume from DB on mount (client-side, for modal usage)
   useEffect(() => {
-    if (resume || initialResume !== undefined) return; // already have data or explicitly checked
+    if (resume || initialResume !== undefined) return;
     supabase
       .from("resumes")
-      .select("id, content_snapshot, created_at")
+      .select("id, content_snapshot, template_id, color_theme, created_at")
       .eq("job_id", jobId)
       .maybeSingle()
       .then(({ data }) => {
         if (data?.content_snapshot) {
           setResume(data.content_snapshot as TailoredResumeData);
+          setResumeId(data.id);
+          if (data.template_id) setTemplateId(data.template_id as TemplateId);
+          if (data.color_theme) setColorTheme(data.color_theme as ColorTheme);
         }
       });
   }, [jobId, resume, initialResume]);
@@ -297,9 +372,9 @@ export default function TailorResumeButton({
       });
       const data = await res.json();
       if (res.ok) {
-        // data contains the full content_snapshot + resume_id + job_id
-        const { resume_id: _r, job_id: _j, ...cvSnapshot } = data;
+        const { resume_id, job_id: _j, ...cvSnapshot } = data;
         setResume(cvSnapshot as TailoredResumeData);
+        if (resume_id) setResumeId(resume_id as string);
         setShowPreview(true);
         onTailoredSuccess?.();
       } else {
@@ -318,7 +393,6 @@ export default function TailorResumeButton({
   const hasResume = !!resume;
 
   if (compact) {
-    // Compact version for toolbar in modal
     return (
       <>
         <button
@@ -345,20 +419,21 @@ export default function TailorResumeButton({
           <PreviewModal
             data={resume}
             language={language}
+            resumeId={resumeId}
             onClose={() => setShowPreview(false)}
             onRetailor={handleTailor}
             isRetailoring={isTailoring}
             t={t}
+            initialTemplateId={templateId}
+            initialColorTheme={colorTheme}
           />
         )}
       </>
     );
   }
 
-  // Full version for the job detail page right sidebar
   return (
     <div className="space-y-3">
-      {/* Primary action */}
       <button
         onClick={hasResume ? () => setShowPreview(true) : handleTailor}
         disabled={isTailoring || !hasJd}
@@ -369,7 +444,7 @@ export default function TailorResumeButton({
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : hasResume
               ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm hover:shadow-md"
-              : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm hover:shadow-md"
+              : "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm hover:shadow-md"
           }`}
       >
         {isTailoring ? (
@@ -384,7 +459,6 @@ export default function TailorResumeButton({
           : t("warRoom.tailorResume.button")}
       </button>
 
-      {/* Re-tailor secondary button (only if resume already exists) */}
       {hasResume && !isTailoring && (
         <button
           onClick={handleTailor}
@@ -396,29 +470,29 @@ export default function TailorResumeButton({
         </button>
       )}
 
-      {/* No JD hint */}
       {!hasJd && (
         <p className="text-xs text-gray-400 text-center">
           {t("warRoom.tailorResume.noJDHint")}
         </p>
       )}
 
-      {/* Error */}
       {error && (
         <p className="text-xs text-red-500 bg-red-50 rounded-lg px-3 py-2">
           {error}
         </p>
       )}
 
-      {/* Preview modal */}
       {showPreview && resume && (
         <PreviewModal
           data={resume}
           language={language}
+          resumeId={resumeId}
           onClose={() => setShowPreview(false)}
           onRetailor={handleTailor}
           isRetailoring={isTailoring}
           t={t}
+          initialTemplateId={templateId}
+          initialColorTheme={colorTheme}
         />
       )}
     </div>
