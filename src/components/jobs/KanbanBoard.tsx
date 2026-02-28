@@ -43,12 +43,42 @@ const COLUMNS: {
   badgeText: string;
   accentColor: string;
 }[] = [
-  { id: "saved",        badgeBg: "bg-blue-100",   badgeText: "text-blue-700",   accentColor: "border-blue-500" },
-  { id: "optimized",    badgeBg: "bg-purple-100",  badgeText: "text-purple-700", accentColor: "border-purple-500" },
-  { id: "applied",      badgeBg: "bg-yellow-100",  badgeText: "text-yellow-700", accentColor: "border-yellow-500" },
-  { id: "interviewing", badgeBg: "bg-orange-100",  badgeText: "text-orange-700", accentColor: "border-orange-500" },
-  { id: "offer",        badgeBg: "bg-green-100",   badgeText: "text-green-700",  accentColor: "border-green-500" },
-  { id: "rejected",     badgeBg: "bg-red-100",     badgeText: "text-red-700",    accentColor: "border-red-500" },
+  {
+    id: "saved",
+    badgeBg: "bg-blue-100",
+    badgeText: "text-blue-700",
+    accentColor: "border-blue-500",
+  },
+  {
+    id: "optimized",
+    badgeBg: "bg-purple-100",
+    badgeText: "text-purple-700",
+    accentColor: "border-purple-500",
+  },
+  {
+    id: "applied",
+    badgeBg: "bg-yellow-100",
+    badgeText: "text-yellow-700",
+    accentColor: "border-yellow-500",
+  },
+  {
+    id: "interviewing",
+    badgeBg: "bg-orange-100",
+    badgeText: "text-orange-700",
+    accentColor: "border-orange-500",
+  },
+  {
+    id: "offer",
+    badgeBg: "bg-green-100",
+    badgeText: "text-green-700",
+    accentColor: "border-green-500",
+  },
+  {
+    id: "rejected",
+    badgeBg: "bg-red-100",
+    badgeText: "text-red-700",
+    accentColor: "border-red-500",
+  },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────
@@ -87,17 +117,23 @@ function DeleteConfirmModal({
           <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
             <FontAwesomeIcon icon={faTrash} className="w-4 h-4 text-red-600" />
           </div>
-          <h2 className="text-base font-bold text-gray-900">{t("warRoom.deleteConfirm.title")}</h2>
+          <h2 className="text-base font-bold text-gray-900">
+            {t("warRoom.deleteConfirm.title")}
+          </h2>
         </div>
 
         <div className="bg-gray-50 rounded-xl px-4 py-3 mb-4">
-          <p className="text-sm font-semibold text-gray-900 truncate">{job.title}</p>
+          <p className="text-sm font-semibold text-gray-900 truncate">
+            {job.title}
+          </p>
           <p className="text-xs text-gray-500 truncate">{job.company_name}</p>
         </div>
 
         <p className="text-sm text-gray-500 mb-6">
           {t("warRoom.deleteConfirm.message")}{" "}
-          <span className="font-semibold text-red-600">{t("warRoom.deleteConfirm.irreversible")}</span>
+          <span className="font-semibold text-red-600">
+            {t("warRoom.deleteConfirm.irreversible")}
+          </span>
           .
         </p>
 
@@ -141,19 +177,28 @@ function CardMenu({
       icon: faPen,
       label: t("warRoom.cardMenu.edit"),
       iconClass: "text-blue-500",
-      onClick: () => { onEdit(job); onClose(); },
+      onClick: () => {
+        onEdit(job);
+        onClose();
+      },
     },
     {
       icon: faCopy,
       label: t("warRoom.cardMenu.duplicate"),
       iconClass: "text-gray-500",
-      onClick: () => { onDuplicate(job); onClose(); },
+      onClick: () => {
+        onDuplicate(job);
+        onClose();
+      },
     },
     {
       icon: faTrash,
       label: t("warRoom.cardMenu.delete"),
       iconClass: "text-red-500",
-      onClick: () => { onDeleteRequest(job); onClose(); },
+      onClick: () => {
+        onDeleteRequest(job);
+        onClose();
+      },
     },
   ];
 
@@ -169,7 +214,10 @@ function CardMenu({
           onDragStart={(e) => e.stopPropagation()}
           className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
         >
-          <FontAwesomeIcon icon={item.icon} className={`w-3.5 h-3.5 ${item.iconClass}`} />
+          <FontAwesomeIcon
+            icon={item.icon}
+            className={`w-3.5 h-3.5 ${item.iconClass}`}
+          />
           {item.label}
         </button>
       ))}
@@ -215,16 +263,23 @@ function KanbanColumn({
 }: KanbanColumnProps) {
   const { t } = useTranslation();
   const isOver = dragOverColId === col.id;
-  const emptyLabel = col.id === "saved"
-    ? t("warRoom.columns.emptyFirst")
-    : t("warRoom.columns.emptyOther");
+  const emptyLabel =
+    col.id === "saved"
+      ? t("warRoom.columns.emptyFirst")
+      : t("warRoom.columns.emptyOther");
 
   return (
     <div className="flex flex-col flex-1 min-w-[160px]">
       <div
-        onDragOver={(e) => { e.preventDefault(); onDragOver(col.id); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          onDragOver(col.id);
+        }}
         onDragLeave={onDragLeave}
-        onDrop={(e) => { e.preventDefault(); onDrop(col.id); }}
+        onDrop={(e) => {
+          e.preventDefault();
+          onDrop(col.id);
+        }}
         className={`flex flex-col gap-2 flex-1 rounded-xl p-1.5 min-h-[80px] transition-colors
           ${isOver ? "bg-blue-50 ring-2 ring-blue-300 ring-dashed" : ""}`}
       >
@@ -249,7 +304,9 @@ function KanbanColumn({
                 ${draggingId === job.id ? "opacity-40 scale-95" : ""}`}
             >
               <div className="pr-6">
-                <p className="text-xs text-gray-500 truncate">{job.company_name}</p>
+                <p className="text-xs text-gray-500 truncate">
+                  {job.company_name}
+                </p>
                 <p className="text-sm font-semibold text-gray-900 mt-0.5 line-clamp-2 leading-snug">
                   {job.title}
                 </p>
@@ -263,13 +320,18 @@ function KanbanColumn({
                     onClick={(e) => e.stopPropagation()}
                     className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-600 text-xs font-medium hover:bg-purple-100 transition-colors"
                   >
-                    <FontAwesomeIcon icon={faWandMagicSparkles} className="w-2.5 h-2.5" />
-                    CV đã may đo
+                    <FontAwesomeIcon
+                      icon={faWandMagicSparkles}
+                      className="w-2.5 h-2.5"
+                    />
+                    {t("warRoom.cvBadge")}
                   </Link>
                 ) : (
                   <span />
                 )}
-                <p className="text-xs text-gray-400">{formatDate(job.created_at)}</p>
+                <p className="text-xs text-gray-400">
+                  {formatDate(job.created_at)}
+                </p>
               </div>
 
               <div className="absolute top-1.5 right-1.5">
@@ -280,9 +342,10 @@ function KanbanColumn({
                   }}
                   onDragStart={(e) => e.stopPropagation()}
                   className={`p-1.5 rounded-lg transition-colors
-                    ${openMenuId === job.id
-                      ? "text-gray-600 bg-gray-100"
-                      : "text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600 hover:bg-gray-100"
+                    ${
+                      openMenuId === job.id
+                        ? "text-gray-600 bg-gray-100"
+                        : "text-gray-400 opacity-0 group-hover:opacity-100 hover:text-gray-600 hover:bg-gray-100"
                     }`}
                   title={t("warRoom.cardMenu.options")}
                 >
@@ -360,7 +423,8 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
 
   const handleDrop = (targetColId: string) => {
     if (!draggingId) return;
-    const currentStatus = jobs.find((j) => j.id === draggingId)?.status ?? "saved";
+    const currentStatus =
+      jobs.find((j) => j.id === draggingId)?.status ?? "saved";
     if (targetColId === currentStatus) {
       setDraggingId(null);
       setDragOverColId(null);
@@ -375,7 +439,9 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
     updateJobStatus(idToDrop, targetColId).then((res) => {
       if (!res.success) {
         setJobs((prev) =>
-          prev.map((j) => (j.id === idToDrop ? { ...j, status: currentStatus } : j)),
+          prev.map((j) =>
+            j.id === idToDrop ? { ...j, status: currentStatus } : j,
+          ),
         );
       }
     });
@@ -394,8 +460,12 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
       <div className="px-6 py-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t("warRoom.title")}</h1>
-            <p className="text-sm text-gray-500 mt-1">{t("warRoom.subtitle")}</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {t("warRoom.title")}
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {t("warRoom.subtitle")}
+            </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -407,7 +477,10 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
 
         <AddJobModal
           isOpen={isModalOpen || editingJob !== null}
-          onClose={() => { setIsModalOpen(false); setEditingJob(null); }}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingJob(null);
+          }}
           onJobAdded={handleJobAdded}
           editJob={editingJob ?? undefined}
           onJobUpdated={handleJobUpdated}
@@ -425,10 +498,15 @@ export default function KanbanBoard({ initialJobs }: KanbanBoardProps) {
           <JobDetailModal
             job={viewingJob}
             onClose={() => setViewingJob(null)}
-            onEdit={(job) => { setViewingJob(null); setEditingJob(job); }}
+            onEdit={(job) => {
+              setViewingJob(null);
+              setEditingJob(job);
+            }}
             onResumeCreated={(jobId) => {
               setJobs((prev) =>
-                prev.map((j) => j.id === jobId ? { ...j, has_resume: true } : j)
+                prev.map((j) =>
+                  j.id === jobId ? { ...j, has_resume: true } : j,
+                ),
               );
             }}
           />
