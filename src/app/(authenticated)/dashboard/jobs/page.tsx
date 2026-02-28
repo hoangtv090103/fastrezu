@@ -19,10 +19,17 @@ export default async function JobsPage() {
   const jobList = jobs ?? [];
 
   // Fetch which jobs already have a tailored resume
-  const { data: resumeRows } = await supabase
-    .from("resumes")
-    .select("job_id")
-    .in("job_id", jobList.map((j) => j.id));
+  let resumeRows = null as { job_id: string }[] | null;
+  if (jobList.length > 0) {
+    const { data } = await supabase
+      .from("resumes")
+      .select("job_id")
+      .in(
+        "job_id",
+        jobList.map((j) => j.id),
+      );
+    resumeRows = data;
+  }
 
   const resumeJobIds = new Set(resumeRows?.map((r) => r.job_id) ?? []);
   const enrichedJobs = jobList.map((j) => ({
