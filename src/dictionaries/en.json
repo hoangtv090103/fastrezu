@@ -975,6 +975,20 @@
         "label": "Publications",
         "desc": "Published articles, books or research"
       }
+    },
+    "toastSaved": {
+      "personal": "Personal info saved ✓",
+      "summary": "Summary saved ✓",
+      "experience": "Work experience saved ✓",
+      "education": "Education saved ✓",
+      "skills": "Skills saved ✓",
+      "projects": "Projects saved ✓",
+      "certifications": "Certifications saved ✓",
+      "awards": "Awards saved ✓",
+      "volunteering": "Volunteering saved ✓",
+      "hobbies": "Hobbies saved ✓",
+      "references": "References saved ✓",
+      "publications": "Publications saved ✓"
     }
   },
   "scanner": {

@@ -972,6 +972,20 @@
         "label": "Công trình / Ấn phẩm",
         "desc": "Bài báo, sách hoặc nghiên cứu đã xuất bản"
       }
+    },
+    "toastSaved": {
+      "personal": "Đã lưu thông tin cá nhân ✓",
+      "summary": "Đã lưu tóm tắt sự nghiệp ✓",
+      "experience": "Đã lưu kinh nghiệm làm việc ✓",
+      "education": "Đã lưu học vấn ✓",
+      "skills": "Đã lưu kỹ năng ✓",
+      "projects": "Đã lưu dự án ✓",
+      "certifications": "Đã lưu chứng chỉ ✓",
+      "awards": "Đã lưu giải thưởng ✓",
+      "volunteering": "Đã lưu hoạt động tình nguyện ✓",
+      "hobbies": "Đã lưu sở thích ✓",
+      "references": "Đã lưu người tham chiếu ✓",
+      "publications": "Đã lưu công trình / ấn phẩm ✓"
     }
   },
   "scanner": {

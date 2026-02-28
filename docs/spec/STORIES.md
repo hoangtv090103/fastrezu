@@ -264,9 +264,9 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
     - **Minimal** — 1 cột, ultra-clean thin dividers, ATS ★★★★★ (không ảnh)
   - [x] Hiển thị cảnh báo ATS cho template `creative` và `modern`: _"Template này có thể bị ATS scan không đầy đủ. Chỉ dùng khi nộp trực tiếp hoặc qua email."_
   - [x] Khi user bấm "Download PDF", lưu lại `template_id` + `color_theme` vào `resumes` table (PATCH request).
-  - [ ] Preview HTML và PDF đều render đúng template + màu đã chọn.
-  - [ ] Template Selection state không bị mất khi đóng/mở lại PreviewModal trong cùng session.
-  - [ ] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+  - [x] Preview HTML và PDF đều render đúng template + màu đã chọn.
+  - [x] Template Selection state không bị mất khi đóng/mở lại PreviewModal trong cùng session.
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
 
 ### Story 5.5: Upload Ảnh Đại Diện (Profile Photo) ✨
 
