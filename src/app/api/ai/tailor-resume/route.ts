@@ -164,6 +164,7 @@ export async function POST(request: NextRequest) {
       .upsert(
         {
           job_id: jobId,
+          user_id: user.id,
           content_snapshot: tailoredCV,
         },
         { onConflict: "job_id" }
