@@ -1159,7 +1159,9 @@
         "connectionError": "Không thể kết nối dịch vụ AI. Vui lòng thử lại."
       }
     },
+    "cvBadge": "CV đã may đo",
     "tailorResume": {
+      "template": "Giao diện",
       "button": "May đo CV cho job này",
       "viewResult": "Xem CV đã may đo",
       "rerun": "May đo lại",
@@ -1173,6 +1175,9 @@
       "downloadPDF": "Tải xuống PDF",
       "generatingPDF": "Đang tạo PDF...",
       "pdfError": "Không thể tạo PDF. Vui lòng thử lại.",
+      "downloadDOCX": "Tải xuống Word",
+      "generatingDOCX": "Đang tạo file Word...",
+      "docxError": "Không thể tạo file Word. Vui lòng thử lại.",
       "sections": {
         "summary": "Tóm tắt nghề nghiệp",
         "experience": "Kinh nghiệm làm việc",

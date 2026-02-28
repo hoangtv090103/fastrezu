@@ -13,6 +13,7 @@ import {
   faPalette,
   faChevronDown,
   faChevronUp,
+  faFileWord,
 } from "@fortawesome/free-solid-svg-icons";
 import TailoredCVPreview, {
   TailoredResumeData,
@@ -20,7 +21,10 @@ import TailoredCVPreview, {
 import TemplateSelector from "@/components/cv/TemplateSelector";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
-import type { TemplateId, ColorTheme } from "@/components/cv/templates/shared/types";
+import type {
+  TemplateId,
+  ColorTheme,
+} from "@/components/cv/templates/shared/types";
 
 // ── PDF Download hook ──────────────────────────────────────────────────────
 function usePDFDownload() {
@@ -34,22 +38,24 @@ function usePDFDownload() {
       fileName: string,
       errorMsg: string,
       templateId: TemplateId,
-      colorTheme: ColorTheme
+      colorTheme: ColorTheme,
     ) => {
       setIsGenerating(true);
       setPdfError(null);
       try {
-        const [{ default: TailoredCVTemplatePDF }, { pdf }] = await Promise.all([
-          import("@/components/cv/TailoredCVTemplatePDF"),
-          import("@react-pdf/renderer"),
-        ]);
+        const [{ default: TailoredCVTemplatePDF }, { pdf }] = await Promise.all(
+          [
+            import("@/components/cv/TailoredCVTemplatePDF"),
+            import("@react-pdf/renderer"),
+          ],
+        );
         const blob = await pdf(
           <TailoredCVTemplatePDF
             data={data}
             language={language}
             templateId={templateId}
             colorTheme={colorTheme}
-          />
+          />,
         ).toBlob();
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -64,10 +70,73 @@ function usePDFDownload() {
         setIsGenerating(false);
       }
     },
-    []
+    [],
   );
 
   return { isGenerating, pdfError, downloadPDF };
+}
+
+// ── DOCX Download hook ─────────────────────────────────────────────────────
+function useDOCXDownload() {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [docxError, setDocxError] = useState<string | null>(null);
+
+  const downloadDOCX = useCallback(
+    async (
+      data: TailoredResumeData,
+      language: "vi" | "en",
+      fileName: string,
+      errorMsg: string,
+      templateId: TemplateId,
+      colorTheme: ColorTheme,
+    ) => {
+      setIsGenerating(true);
+      setDocxError(null);
+      try {
+        const [{ Packer }, { buildDOCX }] = await Promise.all([
+          import("docx"),
+          import("@/components/cv/TailoredCVTemplateDOCX"),
+        ]);
+
+        // Pre-fetch photo as ArrayBuffer for templates that support it
+        let photoBuffer: ArrayBuffer | undefined;
+        const needsPhoto = ["modern", "executive", "creative"].includes(
+          templateId,
+        );
+        if (needsPhoto && data.personal.photo_url) {
+          try {
+            const res = await fetch(data.personal.photo_url);
+            if (res.ok) photoBuffer = await res.arrayBuffer();
+          } catch {
+            // Photo fetch failed — proceed without photo
+          }
+        }
+
+        const doc = buildDOCX(
+          data,
+          language,
+          templateId,
+          colorTheme,
+          photoBuffer,
+        );
+        const blob = await Packer.toBlob(doc);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+      } catch (err) {
+        console.error("DOCX generation error:", err);
+        setDocxError(errorMsg);
+      } finally {
+        setIsGenerating(false);
+      }
+    },
+    [],
+  );
+
+  return { isGenerating, docxError, downloadDOCX };
 }
 
 interface TailorResumeButtonProps {
@@ -98,9 +167,11 @@ function TailoringNotesBanner({
   if (!notes) return null;
   const score = notes.estimated_match_score;
   const color =
-    score >= 70 ? "bg-green-50 border-green-200 text-green-800" :
-    score >= 40 ? "bg-amber-50 border-amber-200 text-amber-800" :
-    "bg-red-50 border-red-200 text-red-800";
+    score >= 70
+      ? "bg-green-50 border-green-200 text-green-800"
+      : score >= 40
+        ? "bg-amber-50 border-amber-200 text-amber-800"
+        : "bg-red-50 border-red-200 text-red-800";
 
   return (
     <div className={`border rounded-xl px-4 py-3 mb-4 ${color}`}>
@@ -159,7 +230,16 @@ function PreviewModal({
   initialTemplateId: TemplateId;
   initialColorTheme: ColorTheme;
 }) {
-  const { isGenerating: isPDFGenerating, pdfError, downloadPDF } = usePDFDownload();
+  const {
+    isGenerating: isPDFGenerating,
+    pdfError,
+    downloadPDF,
+  } = usePDFDownload();
+  const {
+    isGenerating: isDOCXGenerating,
+    docxError,
+    downloadDOCX,
+  } = useDOCXDownload();
   const [templateId, setTemplateId] = useState<TemplateId>(initialTemplateId);
   const [colorTheme, setColorTheme] = useState<ColorTheme>(initialColorTheme);
   const [showSelector, setShowSelector] = useState(false);
@@ -173,7 +253,7 @@ function PreviewModal({
       `${name}_${templateId}_${date}.pdf`,
       t("warRoom.tailorResume.pdfError"),
       templateId,
-      colorTheme
+      colorTheme,
     );
     // Persist template/color choice to DB (best-effort)
     if (resumeId) {
@@ -182,10 +262,24 @@ function PreviewModal({
         .update({ template_id: templateId, color_theme: colorTheme })
         .eq("id", resumeId)
         .then(({ error }) => {
-          if (error) console.warn("Could not persist template choice:", error.message);
+          if (error)
+            console.warn("Could not persist template choice:", error.message);
         });
     }
   }, [data, language, downloadPDF, t, templateId, colorTheme, resumeId]);
+
+  const handleDownloadDOCX = useCallback(async () => {
+    const name = data.personal?.full_name?.trim().replace(/\s+/g, "_") ?? "cv";
+    const date = new Date().toISOString().slice(0, 10);
+    await downloadDOCX(
+      data,
+      language,
+      `${name}_${templateId}_${date}.docx`,
+      t("warRoom.tailorResume.docxError"),
+      templateId,
+      colorTheme,
+    );
+  }, [data, language, downloadDOCX, t, templateId, colorTheme]);
 
   // Escape key + scroll lock
   useEffect(() => {
@@ -227,7 +321,9 @@ function PreviewModal({
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <FontAwesomeIcon icon={faPalette} className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Template</span>
+              <span className="hidden sm:inline">
+                {t("warRoom.tailorResume.template")}
+              </span>
               <FontAwesomeIcon
                 icon={showSelector ? faChevronUp : faChevronDown}
                 className="w-2.5 h-2.5 opacity-60"
@@ -242,7 +338,10 @@ function PreviewModal({
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
             >
               {isPDFGenerating ? (
-                <FontAwesomeIcon icon={faSpinner} className="w-3.5 h-3.5 animate-spin" />
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  className="w-3.5 h-3.5 animate-spin"
+                />
               ) : (
                 <FontAwesomeIcon icon={faDownload} className="w-3.5 h-3.5" />
               )}
@@ -253,6 +352,28 @@ function PreviewModal({
               </span>
             </button>
 
+            {/* Download DOCX button */}
+            <button
+              onClick={handleDownloadDOCX}
+              disabled={isDOCXGenerating}
+              title={t("warRoom.tailorResume.downloadDOCX")}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 border border-blue-300 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isDOCXGenerating ? (
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  className="w-3.5 h-3.5 animate-spin"
+                />
+              ) : (
+                <FontAwesomeIcon icon={faFileWord} className="w-3.5 h-3.5" />
+              )}
+              <span className="hidden sm:inline">
+                {isDOCXGenerating
+                  ? t("warRoom.tailorResume.generatingDOCX")
+                  : t("warRoom.tailorResume.downloadDOCX")}
+              </span>
+            </button>
+
             {/* Re-tailor button */}
             <button
               onClick={onRetailor}
@@ -260,11 +381,16 @@ function PreviewModal({
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
             >
               {isRetailoring ? (
-                <FontAwesomeIcon icon={faSpinner} className="w-3.5 h-3.5 animate-spin" />
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  className="w-3.5 h-3.5 animate-spin"
+                />
               ) : (
                 <FontAwesomeIcon icon={faRotateRight} className="w-3.5 h-3.5" />
               )}
-              <span className="hidden sm:inline">{t("warRoom.tailorResume.rerun")}</span>
+              <span className="hidden sm:inline">
+                {t("warRoom.tailorResume.rerun")}
+              </span>
             </button>
 
             <button
@@ -292,6 +418,13 @@ function PreviewModal({
         {pdfError && (
           <div className="px-5 py-2 bg-red-50 border-b border-red-100 shrink-0">
             <p className="text-xs text-red-600">{pdfError}</p>
+          </div>
+        )}
+
+        {/* DOCX error */}
+        {docxError && (
+          <div className="px-5 py-2 bg-red-50 border-b border-red-100 shrink-0">
+            <p className="text-xs text-red-600">{docxError}</p>
           </div>
         )}
 
@@ -335,14 +468,14 @@ export default function TailorResumeButton({
   const language = locale === "en" ? "en" : "vi";
 
   const [resume, setResume] = useState<TailoredResumeData | null>(
-    (initialResume?.content_snapshot as TailoredResumeData) ?? null
+    (initialResume?.content_snapshot as TailoredResumeData) ?? null,
   );
   const [resumeId, setResumeId] = useState<string | null>(null);
   const [templateId, setTemplateId] = useState<TemplateId>(
-    (initialResume?.template_id as TemplateId) ?? "classic"
+    (initialResume?.template_id as TemplateId) ?? "classic",
   );
   const [colorTheme, setColorTheme] = useState<ColorTheme>(
-    (initialResume?.color_theme as ColorTheme) ?? "blue"
+    (initialResume?.color_theme as ColorTheme) ?? "blue",
   );
   const [isTailoring, setIsTailoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -383,10 +516,7 @@ export default function TailorResumeButton({
         setShowPreview(true);
         onTailoredSuccess?.();
       } else {
-        setError(
-          data.error ??
-            t("warRoom.tailorResume.errors.failed")
-        );
+        setError(data.error ?? t("warRoom.tailorResume.errors.failed"));
       }
     } catch {
       setError(t("warRoom.tailorResume.errors.connectionError"));
@@ -403,21 +533,22 @@ export default function TailorResumeButton({
         <button
           onClick={hasResume ? () => setShowPreview(true) : handleTailor}
           disabled={isTailoring || !hasJd}
-          title={
-            !hasJd ? t("warRoom.tailorResume.noJDHint") : undefined
-          }
+          title={!hasJd ? t("warRoom.tailorResume.noJDHint") : undefined}
           className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {isTailoring ? (
-            <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
+            <FontAwesomeIcon
+              icon={faSpinner}
+              className="w-3 h-3 animate-spin"
+            />
           ) : (
             <FontAwesomeIcon icon={faWandMagicSparkles} className="w-3 h-3" />
           )}
           {isTailoring
             ? t("warRoom.tailorResume.tailoring")
             : hasResume
-            ? t("warRoom.tailorResume.viewResult")
-            : t("warRoom.tailorResume.button")}
+              ? t("warRoom.tailorResume.viewResult")
+              : t("warRoom.tailorResume.button")}
         </button>
 
         {showPreview && resume && (
@@ -448,20 +579,23 @@ export default function TailorResumeButton({
             isTailoring || !hasJd
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
               : hasResume
-              ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm hover:shadow-md"
-              : "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm hover:shadow-md"
+                ? "bg-purple-600 hover:bg-purple-700 text-white shadow-sm hover:shadow-md"
+                : "bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-sm hover:shadow-md"
           }`}
       >
         {isTailoring ? (
-          <FontAwesomeIcon icon={faSpinner} className="w-3.5 h-3.5 animate-spin" />
+          <FontAwesomeIcon
+            icon={faSpinner}
+            className="w-3.5 h-3.5 animate-spin"
+          />
         ) : (
           <FontAwesomeIcon icon={faWandMagicSparkles} className="w-3.5 h-3.5" />
         )}
         {isTailoring
           ? t("warRoom.tailorResume.tailoring")
           : hasResume
-          ? t("warRoom.tailorResume.viewResult")
-          : t("warRoom.tailorResume.button")}
+            ? t("warRoom.tailorResume.viewResult")
+            : t("warRoom.tailorResume.button")}
       </button>
 
       {hasResume && !isTailoring && (

@@ -1162,7 +1162,9 @@
         "connectionError": "Unable to connect to AI service. Please try again."
       }
     },
+    "cvBadge": "Tailored CV",
     "tailorResume": {
+      "template": "Template",
       "button": "Tailor CV for this Job",
       "viewResult": "View Tailored CV",
       "rerun": "Re-tailor",
@@ -1176,6 +1178,9 @@
       "downloadPDF": "Download PDF",
       "generatingPDF": "Generating PDF...",
       "pdfError": "Failed to generate PDF. Please try again.",
+      "downloadDOCX": "Download Word",
+      "generatingDOCX": "Generating Word...",
+      "docxError": "Failed to generate Word file. Please try again.",
       "sections": {
         "summary": "Professional Summary",
         "experience": "Work Experience",
