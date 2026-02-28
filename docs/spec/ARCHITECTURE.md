@@ -1,16 +1,19 @@
 # System Architecture Document (ARCHITECTURE)
 
 **Project Name:** FastRezu 2.0 - The Career OS
-**Document Status:** Approved / V1.0
+**Document Status:** Approved / V1.1 (Updated: 2026-02)
 
 ## 1. Tổng quan Kiến trúc Hệ thống (High-Level Architecture)
 
 Hệ thống FastRezu 2.0 sử dụng kiến trúc **Serverless** và **Edge Computing** để đảm bảo tốc độ phản hồi nhanh, dễ dàng mở rộng và tối ưu chi phí.
 
-- **Frontend/Client:** Next.js 14+ (App Router), React, Tailwind CSS, Shadcn UI. Xử lý UI/UX, State Management và render PDF tại client-side.
-- **Backend as a Service (BaaS):** Supabase. Quản lý Authentication (Magic Link), Database (PostgreSQL), và Row Level Security (RLS).
-- **AI Orchestration & API Layer:** Next.js Route Handlers (`/api/*`). Xử lý logic kết nối với LLM Providers (OpenAI/Gemini) và thực thi các luồng (workflows) phức tạp.
-- **Export Engine:** `html2canvas` + `jsPDF` (Client-side) để giảm tải cho server, hoặc Puppeteer (Server-side) nếu yêu cầu PDF độ phân giải cực cao (MVP ưu tiên Client-side).
+- **Frontend/Client:** Next.js 16 (App Router), React 19, Tailwind CSS 4, TypeScript 5. Xử lý UI/UX, State Management và render PDF tại client-side.
+- **Backend as a Service (BaaS):** Supabase. Quản lý Authentication, Database (PostgreSQL + RLS), và Storage (File buckets).
+- **AI Orchestration & API Layer:** Next.js Route Handlers (`/api/*`). Xử lý logic kết nối với LLM Providers (OpenAI với Gemini fallback qua OpenAI-compatible endpoint).
+- **Export Engine:**
+  - **PDF:** `@react-pdf/renderer` (Client-side) — render React components trực tiếp ra PDF. Text có thể bôi đen/copy được. Hỗ trợ đa template và ảnh đại diện qua `<Image src={url}>`.
+  - **DOCX:** `docx` npm package (Client-side) — pure TypeScript Document builders, không dùng React/JSX. `Packer.toBlob()` → browser download. 5 template builders song song với 5 PDF templates. Ảnh đại diện: pre-fetch `photo_url` → `ArrayBuffer` → `ImageRun` (chỉ Modern, Executive, Creative).
+- **Rich Text Editor:** BlockNote (outputs Markdown) — dùng trong V1 CV editor, vẫn được giữ lại.
 
 ---
 
@@ -20,199 +23,365 @@ Lõi của hệ thống dựa trên mô hình dữ liệu lấy **Job (Cơ hội
 
 ### 2.1. Sơ đồ Quan hệ (ERD)
 
-- `profiles` (1) --- (1) `master_profiles` (The Vault)
-- `profiles` (1) --- (N) `jobs` (The War Room)
-- `jobs` (1) --- (1) `job_analyses` (The Intel)
-- `jobs` (1) --- (1) `resumes` (The Tailored Snapshot)
+```
+profiles (1) ──────── (1) master_profiles    [The Vault]
+profiles (1) ──────── (N) jobs               [The War Room]
+jobs     (1) ──────── (1) job_analyses       [The Intel]
+jobs     (1) ──────── (1) resumes            [The Tailor — Tailored Snapshot]
+profiles (1) ──────── (N) cv_scan_history    [The Scanner]
+```
 
 ### 2.2. Chi tiết các Bảng cốt lõi
 
 **Bảng `profiles` (Người dùng & Phân quyền)**
 
-- `id` (uuid, PK, references auth.users)
-- `email` (text)
-- `full_name` (text)
-- `subscription_tier` (enum: 'free', 'sprint_pass')
-- `credits` (int) - Dành cho các tác vụ AI nặng.
+| Cột                 | Kiểu    | Ghi chú               |
+| ------------------- | ------- | --------------------- |
+| `id`                | uuid PK | references auth.users |
+| `email`             | text    |                       |
+| `full_name`         | text    |                       |
+| `subscription_tier` | enum    | 'free', 'sprint_pass' |
+| `credits`           | int     | Cho tác vụ AI nặng    |
 
-**Bảng `master_profiles` (The Vault - Dữ liệu gốc)**
+---
 
-- `id` (uuid, PK)
-- `user_id` (uuid, FK)
-- `section_type` (text) - Ví dụ: 'personal', 'experience', 'education', 'skills'.
-- `content` (jsonb) - Lưu dữ liệu dạng mảng object linh hoạt (tránh cứng nhắc số lượng cột).
+**Bảng `master_profiles` (The Vault — Dữ liệu gốc)**
 
-**Bảng `jobs` (The War Room - Kanban Tracker)**
+| Cột            | Kiểu    | Ghi chú                                                                                                                                          |
+| -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`           | uuid PK |                                                                                                                                                  |
+| `user_id`      | uuid FK |                                                                                                                                                  |
+| `section_type` | text    | 'personal', 'experience', 'education', 'skills', 'projects', 'certifications', 'awards', 'volunteering', 'hobbies', 'references', 'publications' |
+| `content`      | jsonb   | Dữ liệu linh hoạt. Với `section_type = 'personal'`, bao gồm trường `photo_url?: string` (URL công khai trong bucket `profile-photos`).           |
 
-- `id` (uuid, PK)
-- `user_id` (uuid, FK)
-- `title`, `company_name`, `job_url` (text)
-- `raw_jd_text` (text) - Lưu toàn bộ text JD để AI đọc.
-- `status` (enum: 'saved', 'analyzing', 'optimized', 'applied', 'interviewing', 'rejected', 'offer')
-- `created_at` (timestamp)
+Constraint: `UNIQUE(user_id, section_type)`
 
-**Bảng `job_analyses` (The Intel - Kết quả phân tích)**
+---
 
-- `id` (uuid, PK)
-- `job_id` (uuid, FK)
-- `keywords_required` (text[]) - VD: ['React', 'TypeScript', 'Agile']
-- `match_score` (int) - Thang 0-100.
-- `gap_analysis` (text) - Lời khuyên của AI về những điểm thiếu hụt.
+**Bảng `jobs` (The War Room — Kanban Tracker)**
 
-**Bảng `resumes` (The Tailor - Bản CV đã được may đo)**
+| Cột                                | Kiểu        | Ghi chú                                                                   |
+| ---------------------------------- | ----------- | ------------------------------------------------------------------------- |
+| `id`                               | uuid PK     |                                                                           |
+| `user_id`                          | uuid FK     |                                                                           |
+| `title`, `company_name`, `job_url` | text        |                                                                           |
+| `raw_jd_text`                      | text        | Toàn bộ JD để AI đọc                                                      |
+| `status`                           | enum        | 'saved' → 'optimized' → 'applied' → 'interviewing' → 'offer' / 'rejected' |
+| `created_at`                       | timestamptz |                                                                           |
 
-- `id` (uuid, PK)
-- `job_id` (uuid, FK) - Link với Job để biết CV này nộp cho ai.
-- `content_snapshot` (jsonb) - **ĐIỂM CHỐT:** Lưu cứng nội dung CV ngay tại thời điểm AI tạo ra. Nếu The Vault thay đổi sau này, CV này KHÔNG bị đổi theo (để lưu lịch sử).
-- `ats_score_final` (int)
+---
 
-**Bảng `cv_scan_history` (The Scanner - Lịch sử quét CV)**
+**Bảng `job_analyses` (The Intel — Kết quả phân tích)**
 
-- `id` (uuid, PK)
-- `user_id` (uuid, FK)
-- `file_name` (text)
-- `overall_score`, `ats_score`, `design_score` (int)
-- `evaluation_result` (jsonb) - JSON chứa toàn bộ strengths, improvements, section scores.
-- `extracted_profile` (jsonb) - Dữ liệu thô bóc tách được.
-- `created_at` (timestamp, default now())
+| Cột                 | Kiểu    | Ghi chú                              |
+| ------------------- | ------- | ------------------------------------ |
+| `id`                | uuid PK |                                      |
+| `job_id`            | uuid FK |                                      |
+| `keywords_required` | text[]  | VD: ['React', 'TypeScript', 'Agile'] |
+| `match_score`       | int     | Thang 0–100                          |
+| `gap_analysis`      | text    | Lời khuyên AI                        |
+
+---
+
+**Bảng `resumes` (The Tailor — Bản CV đã được may đo)**
+
+| Cột                | Kiểu                   | Ghi chú                                                                                                                              |
+| ------------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`               | uuid PK                |                                                                                                                                      |
+| `job_id`           | uuid FK UNIQUE         | Mỗi Job có tối đa 1 bản CV may đo (upsert target)                                                                                    |
+| `user_id`          | uuid FK                |                                                                                                                                      |
+| `content_snapshot` | jsonb                  | **Snapshot bất biến.** Lưu toàn bộ CV JSON tại thời điểm AI tạo, kể cả `personal.photo_url`. Thay đổi Vault sau này không ảnh hưởng. |
+| `ats_score_final`  | int                    |                                                                                                                                      |
+| `template_id`      | text DEFAULT 'classic' | Một trong: 'classic', 'modern', 'executive', 'creative', 'minimal'                                                                   |
+| `color_theme`      | text DEFAULT 'blue'    | Một trong: 'blue', 'slate', 'emerald', 'rose'                                                                                        |
+| `created_at`       | timestamptz            |                                                                                                                                      |
+| `updated_at`       | timestamptz            | Auto-updated via trigger                                                                                                             |
+
+---
+
+**Bảng `cv_scan_history` (The Scanner — Lịch sử quét CV)**
+
+| Cột                                          | Kiểu          | Ghi chú                                                                              |
+| -------------------------------------------- | ------------- | ------------------------------------------------------------------------------------ |
+| `id`                                         | uuid PK       |                                                                                      |
+| `user_id`                                    | uuid FK       |                                                                                      |
+| `file_name`                                  | text          | Tên file gốc người dùng upload                                                       |
+| `file_storage_path`                          | text nullable | Path trong bucket `cv-scan-files`. NULL nếu upload trước khi tính năng này được bật. |
+| `overall_score`, `ats_score`, `design_score` | int nullable  |                                                                                      |
+| `evaluation`                                 | jsonb         | JSON chứa strengths, improvements, section scores, ats_tips                          |
+| `extracted_profile`                          | jsonb         | Dữ liệu thô bóc tách được (khớp schema master_profiles)                              |
+| `scanned_at`                                 | timestamptz   |                                                                                      |
 
 ---
 
 ## 3. Cấu trúc Thư mục Code (Directory Structure)
 
-Áp dụng Domain-Driven Design (DDD) trong thư mục `src` của Next.js:
-
-```text
+```
 src/
 ├── app/
-│   ├── (auth)/login/             # Luồng Magic Link
-│   ├── (dashboard)/
-│   │   ├── vault/                # Giao diện The Vault (nhập liệu gốc)
-│   │   ├── jobs/                 # The War Room (Kanban Board)
-│   │   │   └── [id]/             # Chi tiết 1 Job (The Intel + The Tailor)
-│   │   ├── scanner/              # The Scanner (Upload CV & AI Evaluation)
-│   │   └── settings/
+│   ├── (authenticated)/
+│   │   ├── dashboard/
+│   │   │   ├── vault/                 # The Vault (nhập liệu gốc, upload ảnh)
+│   │   │   ├── jobs/                  # The War Room (Kanban Board)
+│   │   │   │   └── [id]/              # Chi tiết Job (The Intel + The Tailor)
+│   │   │   └── scanner/               # The Scanner
+│   │   │       └── history/[id]/      # Chi tiết lần scan
+│   │   └── editor/[cvId]/             # V1 CV editor (giữ lại)
 │   └── api/
 │       ├── ai/
-│       │   ├── analyze-job/           # So khớp JD vs Master Profile (The Intel) ✅
-│       │   ├── evaluate-cv/           # Đánh giá chất lượng CV (The Scanner)
-│       │   ├── extract-profile-from-cv/ # Trích xuất profile có cấu trúc từ CV
-│       │   └── tailor-resume/         # Viết lại CV theo JD (The Tailor)
-│       └── jobs/
-│           └── crawl-jd/              # Crawl JD từ URL qua Jina.ai (The Scout) ✅
+│       │   ├── analyze-jd/            # Phân tích JD vs Master Profile
+│       │   ├── evaluate-cv/           # Đánh giá chất lượng CV (Scanner)
+│       │   ├── extract-profile-from-cv/
+│       │   └── tailor-resume/         # May đo CV theo JD
+│       ├── cv/
+│       │   ├── scan-history/          # GET list / POST save scan
+│       │   └── photo-upload/          # POST upload ảnh đại diện → profile-photos bucket
+│       ├── jobs/
+│       │   └── crawl-jd/              # Crawl JD từ URL qua Jina.ai
+│       └── vault/
+│           └── generate-summary/
 ├── components/
-│   ├── vault/                    # Form nhập liệu, list kinh nghiệm
-│   ├── jobs/                     # Kanban board, Job cards
-│   ├── scanner/                  # ScannerClient — upload, evaluate, vault import
-│   ├── tailor/                   # Nút bấm AI, Preview PDF, Gap Analysis
-│   └── ui/                       # Shadcn UI (Button, Input, Card...)
+│   ├── cv/
+│   │   ├── templates/                 # Template Engine (xem Section 5)
+│   │   │   ├── shared/
+│   │   │   │   ├── types.ts           # TemplateId, ColorTheme, TemplateProps
+│   │   │   │   ├── utils.ts           # dateRange, parseBullets, SECTION_LABELS
+│   │   │   │   └── docxUtils.ts       # DOCX shared helpers (hexToDocxColor, sectionHeading, ...)
+│   │   │   ├── classic/
+│   │   │   │   ├── ClassicPreview.tsx
+│   │   │   │   ├── ClassicPDF.tsx
+│   │   │   │   └── ClassicDOCX.ts     # DOCX builder (pure TS, no React)
+│   │   │   ├── modern/
+│   │   │   │   ├── ModernPreview.tsx
+│   │   │   │   ├── ModernPDF.tsx
+│   │   │   │   └── ModernDOCX.ts      # 2-column Table layout
+│   │   │   ├── executive/
+│   │   │   │   ├── ExecutivePreview.tsx
+│   │   │   │   ├── ExecutivePDF.tsx
+│   │   │   │   └── ExecutiveDOCX.ts   # Full-width header band
+│   │   │   ├── creative/
+│   │   │   │   ├── CreativePreview.tsx
+│   │   │   │   ├── CreativePDF.tsx
+│   │   │   │   └── CreativeDOCX.ts    # Header band + left-border items
+│   │   │   ├── minimal/
+│   │   │   │   ├── MinimalPreview.tsx
+│   │   │   │   ├── MinimalPDF.tsx
+│   │   │   │   └── MinimalDOCX.ts     # Ultra-clean, dash bullets
+│   │   │   └── index.ts              # TEMPLATE_REGISTRY + loadDOCXBuilder()
+│   │   ├── TemplateSelector.tsx       # UI chọn template + màu
+│   │   ├── TailoredCVPreview.tsx      # Routes → template Preview
+│   │   ├── TailoredCVTemplatePDF.tsx  # Routes → template PDF
+│   │   └── TailoredCVTemplateDOCX.ts  # Routes → template DOCX builder
+│   ├── vault/
+│   │   ├── VaultContent.tsx
+│   │   ├── PhotoUpload.tsx            # Upload ảnh đại diện trong Personal tab
+│   │   └── ...
+│   ├── jobs/
+│   │   ├── KanbanBoard.tsx
+│   │   ├── TailorResumeButton.tsx     # Preview modal + template selector
+│   │   └── ...
+│   └── scanner/
+│       ├── ScannerContent.tsx
+│       ├── ScanHistoryPanel.tsx
+│       ├── ScanFileViewer.tsx         # Xem file CV gốc (signed URL)
+│       └── ...
 ├── lib/
-│   ├── supabase/                 # Client & Server clients
-│   ├── ai/                       # Prompts (.ts), cấu hình OpenAI
-│   └── utils.ts
+│   ├── supabase.ts                    # Browser client
+│   ├── supabase-server.ts             # Server client
+│   ├── openai.ts                      # AI wrapper (heavy/light tier)
+│   ├── prompts.ts                     # All AI prompts (VI + EN)
+│   └── validation-schemas.ts          # Zod schemas
+├── contexts/
+│   ├── CVEditorContext.tsx
+│   └── LanguageContext.tsx
+├── hooks/
+│   ├── useTranslation.ts
+│   ├── useMediaQuery.ts
+│   └── useTypingEffect.ts
+├── dictionaries/
+│   ├── vi.json
+│   └── en.json
 └── types/
-    └── database.types.ts         # Sinh tự động từ Supabase CLI
+    └── database.types.ts
 ```
+
+---
 
 ## 4. Thiết kế Luồng AI Cốt lõi (AI Workflows)
 
 ### 4.0. Luồng "The Scout" (Thu thập JD từ URL)
 
-Người dùng chỉ cần dán `job_url` — hệ thống tự động crawl và điền `raw_jd_text` mà không cần copy-paste thủ công.
-
-- **Trigger:** User bấm nút "Lấy JD từ URL" (trong AddJobModal hoặc trang chi tiết Job).
-- **Action:** Client gọi `POST /api/jobs/crawl-jd` với `{ jobId }`.
+- **Trigger:** User bấm "Lấy JD từ URL" trong AddJobModal hoặc trang chi tiết Job.
+- **Action:** Client → `POST /api/jobs/crawl-jd` với `{ jobId }`.
 - **Luồng xử lý (server):**
-  1. **SSRF Guard:** Validate `job_url` — chỉ chấp nhận `http://`/`https://`, chặn private IPs (`localhost`, `127.x`, `10.x`, `192.168.x`).
-  2. **Crawl via Jina.ai Reader:** `GET https://r.jina.ai/{encoded_url}`
-     - Jina.ai xử lý JS-rendered pages, trả về Markdown sạch của toàn trang.
-     - Free tier: không cần API key. Paid tier: thêm `Authorization: Bearer {JINA_API_KEY}`.
-     - Timeout: 30 giây.
-  3. **AI Extract (Light Tier):** Gửi Markdown thô qua model nhẹ để trích xuất chỉ phần JD, loại bỏ nav/footer/quảng cáo. Prompt: _"Trích xuất CHỈ phần Mô tả Công việc từ nội dung này. Loại bỏ header, footer, navigation. Trả về text thuần."_
-  4. **Save:** `UPDATE jobs SET raw_jd_text = ? WHERE id = ?`.
-- **Response:** `{ raw_jd_text: string }` — client cập nhật state ngay.
-- **Error cases:** Job board chặn crawl (403) → trả về lỗi rõ ràng; timeout → báo retry; nội dung không hợp lệ → trả về raw text để user tự xem.
+  1. **SSRF Guard:** Validate `job_url` — chỉ chấp nhận `http://`/`https://`, chặn private IPs.
+  2. **Crawl via Jina.ai Reader:** `GET https://r.jina.ai/{encoded_url}` — trả Markdown sạch.
+  3. **AI Extract (Light Tier):** Trích xuất chỉ phần JD, bỏ nav/footer/quảng cáo.
+  4. **Save:** `UPDATE jobs SET raw_jd_text = ?`.
+- **Response:** `{ raw_jd_text: string }`.
 
-**Env vars (tùy chọn):**
-
-```bash
-JINA_API_KEY=<optional>  # Tăng rate limit Jina.ai (free tier: ~10 req/min)
-```
-
-**Tech note:** Jina.ai Reader là zero-dependency — chỉ là HTTP GET. Nếu cần swap sang Firecrawl (paid, chất lượng cao hơn) thì chỉ cần đổi URL gọi, không ảnh hưởng interface.
+**Env vars (tùy chọn):** `JINA_API_KEY` để tăng rate limit.
 
 ---
 
 ### 4.1. Luồng "The Intel" (Phân tích JD)
 
-- **Trigger:** User tạo Job mới và dán link/text JD.
-- **Action:** Client gọi POST `/api/ai/analyze-jd`.
-- **Payload:** `{ jobId, jdText }`
-- **AI Task (GPT-4o-mini / Gemini Flash):**
-  1. Trích xuất danh sách Hard Skills, Soft Skills.
-  2. Query `master_profiles` của User hiện tại.
-  3. So khớp: `match_score = (Số skill User có / Số skill JD yêu cầu) * 100`.
-  4. Trả về JSON chứa `keywords`, `match_score`, `gap_analysis`.
-- **Save:** Lưu vào bảng `job_analyses`.
+- **Trigger:** User bấm "Analyze with AI" trên trang chi tiết Job.
+- **Action:** Client → `POST /api/ai/analyze-jd` với `{ jobId }`.
+- **AI Task (Light Tier — GPT-4o-mini):**
+  1. Đọc `raw_jd_text` + `master_profiles` của user.
+  2. Trả về JSON: `{ keywords_required, match_score, gap_analysis }`.
+- **Save:** Upsert vào `job_analyses`.
+
+---
 
 ### 4.2. Luồng "The Scanner" (Upload CV & AI Evaluation)
 
-Người dùng upload CV sẵn có → AI đánh giá chất lượng + trích xuất profile → (tùy chọn) điền vào The Vault.
-
-- **Trigger:** User truy cập `/dashboard/scanner` (nav header hoặc nút "Import từ CV" trong Vault).
-- **Bước 1 — Upload & Extract:** Client upload file → `POST /api/cv/upload-check` (tái dùng, đã có) → trả về `raw_text`.
-- **Bước 2 — AI Processing (chạy song song):**
-  - `POST /api/ai/evaluate-cv` — Heavy tier. Input: raw text (cắt 15.000 ký tự). Output:
-    ```json
-    {
-      "overall_score": 72, "ats_score": 68,
-      "sections": { "contact": { "score": 90, "feedback": "..." }, ... },
-      "strengths": [...], "improvements": [...], "ats_tips": [...]
-    }
-    ```
-  - `POST /api/ai/extract-profile-from-cv` — Heavy tier. Output JSON khớp schema `master_profiles`:
-    ```json
-    { "personal": {...}, "summary": {...}, "experience": {"items":[...]}, "education": {"items":[...]}, "skills": {...}, "certifications": {"items":[...]} }
-    ```
-    Trả `null` cho section không tìm thấy trong CV.
-- **Bước 3 — Hiển thị & Import:**
-  - Panel trái: evaluation results (SVG gauge, section scores, strengths/improvements/ATS tips).
-  - Panel phải: VaultImportPanel — checkbox per section (empty vault sections + có data → checked; sections đã có data → disabled). Confirm → gọi Server Action `importSectionsFromCV()` batch upsert.
-- **Save (History):** Hệ thống gom `evaluation_result` và `extracted_profile` để insert vào bảng `cv_scan_history`. Result UI được load từ DB để tiện xem lại sau này.
-
-**Reuse:**
-
-- `FileUploadZone` component + `unpdf`/`mammoth` libs (đã có).
-- `upsertVaultSection` → wrap thành `importSectionsFromCV(sections)` batch action.
+- **Trigger:** User truy cập `/dashboard/scanner` hoặc bấm "Import từ CV" trong Vault.
+- **Bước 1 — Client-side processing:**
+  - **PDF:** `pdfjs-dist` render trang → Base64 JPEG images + `unpdf` extract text.
+  - **DOCX:** `mammoth` extract raw text (không có image rendering).
+- **Bước 2 — AI Processing (song song):**
+  - `POST /api/ai/evaluate-cv` → Heavy tier (GPT-4o Vision). Input: images + text. Output: `overall_score`, `ats_score`, `design_score`, section scores, strengths, improvements, ats_tips.
+  - `POST /api/ai/extract-profile-from-cv` → Heavy tier. Output JSON khớp schema `master_profiles`.
+- **Bước 3 — Save (non-blocking):** `POST /api/cv/scan-history` với `multipart/form-data` (file + evaluation JSON + extracted_profile JSON). Server upload file → bucket `cv-scan-files`, lưu kết quả vào `cv_scan_history`.
+- **Bước 4 — Import Vault:** User xác nhận → `importSectionsFromCV()` Server Action batch upsert.
 
 ---
 
-### 4.3. Luồng "The Tailor" (May đo CV - Kỹ thuật Contextual Rewrite)
+### 4.3. Luồng "The Tailor" (May đo CV)
 
-- **Trigger:** User bấm nút "Tối ưu CV cho Job này".
-- **Action:** Client gọi POST `/api/ai/tailor-resume`.
-- **Payload:** `{ jobId, userId }`
-- **AI Task (GPT-4o - Model cao cấp):**
-  - Kéo dữ liệu `job_analyses` (để lấy Keywords).
-  - Kéo dữ liệu `master_profiles` (Lấy toàn bộ kinh nghiệm thô).
-  - **Prompt Kỹ thuật (System):** "Bạn là một AI Headhunter. Dựa trên JD này (A) và Kinh nghiệm gốc này (B), hãy chọn lọc tối đa 4 bullet points cho mỗi kinh nghiệm. Viết lại các bullet points đó sao cho tự nhiên chứa các từ khóa của JD. Không bịa đặt kinh nghiệm. Giữ nguyên những kinh nghiệm không liên quan nhưng có giá trị."
-  - Trả về một cấu trúc JSON CV hoàn chỉnh (`content_snapshot`).
-- **Save:** Lưu JSON vào bảng `resumes`. Cập nhật trạng thái Job thành `optimized`.
+- **Trigger:** User bấm "Tailor Resume for this Job" trong trang chi tiết Job.
+- **Action:** Client → `POST /api/ai/tailor-resume` với `{ jobId, language }`.
+- **AI Task (Heavy Tier — GPT-4o):**
+  1. Đọc `master_profiles` (bao gồm `personal.photo_url` nếu có).
+  2. Đọc `job_analyses` (keywords, gap).
+  3. Viết lại CV tích hợp từ khóa JD. **KHÔNG bịa đặt** thông tin.
+  4. Trả về JSON hoàn chỉnh theo `TailoredResumeData` schema (bao gồm `personal.photo_url`).
+- **Save:** Upsert vào `resumes` (`onConflict: 'job_id'`). Lưu `template_id` và `color_theme` từ lựa chọn user.
+- **Template Selection:** User chọn template và màu trong PreviewModal → lưu vào `resumes.template_id` + `resumes.color_theme` sau khi download.
 
-## 5. Quản lý State (State Management)
+---
+
+## 5. Template Engine (CV Templates)
+
+### 5.1. Kiến trúc tổng thể
+
+Mỗi template có **ba** implementations song song:
+
+- **Preview (HTML/CSS):** React component render trực tiếp trong trình duyệt (trong modal preview).
+- **PDF:** `@react-pdf/renderer` Document component export ra file PDF.
+- **DOCX:** Pure TypeScript function → `docx` Document object → file Word. Không dùng React/JSX. Signature: `(data, language, colorTheme, photoBuffer?) → Document`.
+
+Cả ba cùng nhận chung `TemplateProps`:
+
+```typescript
+interface TemplateProps {
+  data: TailoredResumeData; // CV data (bao gồm personal.photo_url)
+  theme: ColorTheme; // 'blue' | 'slate' | 'emerald' | 'rose'
+  language: "vi" | "en";
+}
+```
+
+### 5.2. Template Registry
+
+File `src/components/cv/templates/index.ts` export một registry:
+
+```typescript
+const TEMPLATE_REGISTRY: Record<
+  TemplateId,
+  {
+    label: { vi: string; en: string };
+    supportsPhoto: boolean;
+    layout: "single-column" | "two-column";
+    atsLevel: 1 | 2 | 3 | 4 | 5; // 5 = ATS-safe nhất
+    Preview: ComponentType<TemplateProps>;
+    PDF: ComponentType<TemplateProps>;
+  }
+>;
+```
+
+### 5.3. Danh sách 5 Templates
+
+| ID          | Tên       | Layout                              | Ảnh             | ATS   | Phù hợp                         |
+| ----------- | --------- | ----------------------------------- | --------------- | ----- | ------------------------------- |
+| `classic`   | Classic   | 1 cột, header căn giữa              | Không           | ★★★★★ | Ngân hàng, Hành chính, Tập đoàn |
+| `modern`    | Modern    | 2 cột (sidebar 30% + main 70%)      | Có (sidebar)    | ★★★☆☆ | IT, Startup, Product            |
+| `executive` | Executive | 1 cột, header band màu đầy          | Tùy chọn        | ★★★★☆ | Senior, Quản lý, Giám đốc       |
+| `creative`  | Creative  | 1 cột, hero gradient + icon contact | Có (tròn, hero) | ★★☆☆☆ | Design, Marketing, UX           |
+| `minimal`   | Minimal   | 1 cột, ultra-clean, thin dividers   | Không           | ★★★★★ | Tư vấn, Tài chính, Nghiên cứu   |
+
+> ⚠️ **ATS Warning:** Templates `creative` và `modern` có thể bị ATS parse không chính xác. Hiển thị cảnh báo trong `TemplateSelector` để người dùng chọn có thông tin.
+
+### 5.4. Color Themes
+
+```typescript
+const COLOR_THEMES = {
+  blue: { primary: "#2563eb", dark: "#1d4ed8", light: "#dbeafe" },
+  slate: { primary: "#475569", dark: "#334155", light: "#f1f5f9" },
+  emerald: { primary: "#059669", dark: "#047857", light: "#d1fae5" },
+  rose: { primary: "#e11d48", dark: "#be123c", light: "#ffe4e6" },
+};
+```
+
+### 5.5. Font Registration (`@react-pdf/renderer`)
+
+```typescript
+// Roboto (hiện tại) — dùng cho tất cả templates
+Font.register({ family: 'Roboto', fonts: [...] })
+
+// Inter (thêm mới) — dùng cho Modern, Minimal
+Font.register({ family: 'Inter', fonts: [...] })
+
+// Montserrat (thêm mới) — dùng cho Executive, Creative
+Font.register({ family: 'Montserrat', fonts: [...] })
+```
+
+### 5.6. Profile Photo trong PDF
+
+- Template `modern`, `executive`, `creative`: Render `<Image src={data.personal.photo_url} />` từ `@react-pdf/renderer`.
+- Sử dụng **HTTPS URL công khai** (từ Supabase Storage bucket `profile-photos`) — **không dùng base64** để tránh lỗi biết của react-pdf.
+- Template `classic`, `minimal`: Không render ảnh (ưu tiên ATS).
+
+---
+
+## 6. Supabase Storage Buckets
+
+| Bucket           | Quyền      | Max Size | Mục đích                                                |
+| ---------------- | ---------- | -------- | ------------------------------------------------------- |
+| `cv-uploads`     | Private    | 10MB     | File CV upload qua `/api/cv/upload-check` (V1 flow)     |
+| `cv-scan-files`  | Private    | 10MB     | File CV gốc từ Scanner (signed URL 1h để xem lại)       |
+| `profile-photos` | **Public** | 5MB      | Ảnh đại diện trong Vault → xuất hiện trong CV templates |
+
+### RLS Storage Policies (chuẩn cho cả 3 buckets)
+
+```sql
+-- INSERT: user chỉ upload vào folder có tên là uid của họ
+CREATE POLICY "Users upload to own folder" ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = '<bucket>' AND (storage.foldername(name))[1] = auth.uid()::text);
+
+-- SELECT: user chỉ đọc được file của mình
+CREATE POLICY "Users read own files" ON storage.objects FOR SELECT TO authenticated
+  USING (bucket_id = '<bucket>' AND (storage.foldername(name))[1] = auth.uid()::text);
+```
+
+> `profile-photos` là bucket **public** — images được truy cập qua URL công khai không cần auth (cần thiết để `@react-pdf/renderer` load ảnh khi generate PDF phía client).
+
+---
+
+## 7. Quản lý State (State Management)
 
 - **Tránh Over-engineering:** Không dùng Redux.
-- **Server State:** Dùng React Server Components (RSC) để fetch data ban đầu (như list Jobs, The Vault) nhằm tối ưu SEO và tốc độ load. Client mutation dùng Server Actions hoặc SWR/React Query để revalidate data.
-- **Client State (Cục bộ):** Dùng `useState` và `useReducer` cho các form nhập liệu phức tạp trong The Vault trước khi submit lên server.
-
-## 6. Bảo mật (Security & Privacy)
-
-- **Supabase RLS:** Bật Row Level Security cho TẤT CẢ các bảng.
-- **Policy chuẩn:** `(auth.uid() = user_id)`. Không ai được phép select/update dữ liệu của người khác.
-- **API Protection:** Các route `/api/ai/*` phải check `auth.getUser()` trước khi thực thi để tránh việc user gọi API qua Postman làm cạn kiệt API Quota.
+- **Server State:** React Server Components fetch data ban đầu. Client mutation dùng Server Actions + `revalidatePath()`.
+- **Client State:** `useState` / `useReducer` cho form phức tạp, template selection, color picker.
+- **Language:** `LanguageContext` (React Context) + `useTranslation` hook → đọc từ `vi.json` / `en.json`.
 
 ---
 
-```
+## 8. Bảo mật (Security & Privacy)
 
-```
+- **Supabase RLS:** Bật Row Level Security cho **tất cả** bảng và storage buckets.
+- **Policy chuẩn:** `(auth.uid() = user_id)`. User A không thể truy cập dữ liệu User B.
+- **API Protection:** Các route `/api/ai/*` và `/api/cv/*` bắt buộc check `auth.getUser()` trước khi thực thi.
+- **SSRF Protection:** Route crawl-jd chặn private IPs và non-HTTP schemes.
+- **File Validation:** Kiểm tra MIME type và file size phía server trước khi upload Storage.

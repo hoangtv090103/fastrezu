@@ -250,22 +250,21 @@ export default function ScannerContent({
 
       // Non-blocking: save to history (failure must not block the user)
       if (evalResult && profileResult) {
-        fetch("/api/cv/scan-history", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            file_name: file?.name ?? "CV",
-            evaluation: evalResult,
-            extracted_profile: profileResult,
-          }),
-        })
+        const historyForm = new FormData();
+        if (file) historyForm.append("file", file);
+        historyForm.append("file_name", file?.name ?? "CV");
+        historyForm.append("evaluation", JSON.stringify(evalResult));
+        historyForm.append("extracted_profile", JSON.stringify(profileResult));
+
+        fetch("/api/cv/scan-history", { method: "POST", body: historyForm })
           .then((res) => res.json())
-          .then((saved: { id?: string }) => {
+          .then((saved: { id?: string; file_storage_path?: string | null }) => {
             if (saved.id && evalResult) {
               setHistory((prev) => [
                 {
                   id: saved.id!,
                   file_name: file?.name ?? "CV",
+                  file_storage_path: saved.file_storage_path ?? null,
                   overall_score: evalResult!.overall_score ?? null,
                   ats_score: evalResult!.ats_score ?? null,
                   design_score: evalResult!.design_score ?? null,

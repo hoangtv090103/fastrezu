@@ -488,6 +488,14 @@ export function validateOrThrow<T>(schema: z.ZodSchema<T>, data: unknown): T {
 // Type Exports (for use in components/API routes)
 // ============================================================================
 
+/**
+ * Schema for tailoring resume to a specific job
+ */
+export const tailorResumeSchema = z.object({
+  jobId: z.string().uuid({ message: 'Invalid job ID format' }),
+  language: languageSchema,
+});
+
 export type CreateCVInput = z.infer<typeof createCVSchema>;
 export type UpdateCVInput = z.infer<typeof updateCVSchema>;
 export type ApplySuggestionInput = z.infer<typeof applySuggestionSchema>;
@@ -506,3 +514,4 @@ export type SaveJDInput = z.infer<typeof saveJDSchema>;
 export type JDListQueryInput = z.infer<typeof jdListQuerySchema>;
 export type JDDeleteQueryInput = z.infer<typeof jdDeleteQuerySchema>;
 export type GenerateShadowJDInput = z.infer<typeof generateShadowJDSchema>;
+export type TailorResumeInput = z.infer<typeof tailorResumeSchema>;

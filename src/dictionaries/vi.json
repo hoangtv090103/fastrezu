@@ -797,9 +797,9 @@
     "home": "Trang chủ",
     "dashboard": "Bảng điều khiển",
     "manageCVs": "Quản lý CV",
-    "warRoom": "War Room",
+    "warRoom": "Phòng ứng tuyển",
     "editor": "Soạn thảo",
-    "scanner": "The Scanner",
+    "scanner": "Đánh giá CV",
     "checkCV": "Kiểm tra CV",
     "feedback": "Phản hồi",
     "sendFeedback": "Gửi phản hồi",
@@ -917,10 +917,79 @@
     "subtitle": "Đăng nhập để xem điểm ATS và gợi ý cải thiện CV của bạn"
   },
   "vault": {
-    "importFromCV": "Import từ CV"
+    "importFromCV": "Import từ CV",
+    "subtitle": "Dữ liệu sự nghiệp của bạn, dùng lại mọi lúc",
+    "basicProfile": "HỒ SƠ CƠ BẢN",
+    "additionalSections": "MỤC BỔ SUNG",
+    "addSection": "Thêm mục",
+    "securityNote": "Dữ liệu của bạn được mã hóa và bảo mật theo tiêu chuẩn ngân hàng.",
+    "tabs": {
+      "personal": {
+        "label": "Thông tin cá nhân",
+        "desc": "Họ tên, email, điện thoại, địa chỉ và liên kết"
+      },
+      "summary": {
+        "label": "Tóm tắt bản thân",
+        "desc": "Đoạn giới thiệu ngắn gọn về bản thân"
+      },
+      "experience": {
+        "label": "Kinh nghiệm làm việc",
+        "desc": "Lịch sử công việc và thành tích nổi bật"
+      },
+      "education": {
+        "label": "Học vấn",
+        "desc": "Trường học, bằng cấp và chuyên ngành"
+      },
+      "skills": {
+        "label": "Kỹ năng",
+        "desc": "Kỹ năng chuyên môn và mềm"
+      },
+      "projects": {
+        "label": "Dự án",
+        "desc": "Các dự án cá nhân hoặc công việc tiêu biểu"
+      },
+      "certifications": {
+        "label": "Chứng chỉ",
+        "desc": "Chứng chỉ chuyên môn và khóa học"
+      },
+      "awards": {
+        "label": "Giải thưởng",
+        "desc": "Giải thưởng và thành tích được công nhận"
+      },
+      "volunteering": {
+        "label": "Hoạt động tình nguyện",
+        "desc": "Kinh nghiệm tình nguyện và cộng đồng"
+      },
+      "hobbies": {
+        "label": "Sở thích",
+        "desc": "Sở thích và hoạt động cá nhân"
+      },
+      "references": {
+        "label": "Người tham chiếu",
+        "desc": "Thông tin người có thể xác nhận năng lực"
+      },
+      "publications": {
+        "label": "Công trình / Ấn phẩm",
+        "desc": "Bài báo, sách hoặc nghiên cứu đã xuất bản"
+      }
+    },
+    "toastSaved": {
+      "personal": "Đã lưu thông tin cá nhân ✓",
+      "summary": "Đã lưu tóm tắt sự nghiệp ✓",
+      "experience": "Đã lưu kinh nghiệm làm việc ✓",
+      "education": "Đã lưu học vấn ✓",
+      "skills": "Đã lưu kỹ năng ✓",
+      "projects": "Đã lưu dự án ✓",
+      "certifications": "Đã lưu chứng chỉ ✓",
+      "awards": "Đã lưu giải thưởng ✓",
+      "volunteering": "Đã lưu hoạt động tình nguyện ✓",
+      "hobbies": "Đã lưu sở thích ✓",
+      "references": "Đã lưu người tham chiếu ✓",
+      "publications": "Đã lưu công trình / ấn phẩm ✓"
+    }
   },
   "scanner": {
-    "title": "The Scanner",
+    "title": "Đánh giá CV",
     "subtitle": "Upload CV của bạn — AI sẽ nhận diện cả nội dung lẫn bố cục thiết kế.",
     "uploadLabel": "Tải lên file CV (PDF hoặc DOCX)",
     "analyzeButton": "Bắt đầu phân tích",
@@ -988,7 +1057,13 @@
     },
     "history": {
       "title": "Lịch sử phân tích CV",
-      "viewDetail": "Xem chi tiết"
+      "viewDetail": "Xem chi tiết",
+      "overall": "Tổng thể",
+      "ats": "ATS",
+      "design": "Thiết kế",
+      "viewOriginalCV": "Xem CV gốc",
+      "downloadCV": "Tải xuống CV",
+      "noFileAttached": "Không có file đính kèm"
     },
     "errors": {
       "processingFailed": "Không thể xử lý file. Vui lòng thử lại với file khác.",
@@ -997,7 +1072,7 @@
     }
   },
   "warRoom": {
-    "title": "War Room",
+    "title": "Phòng ứng tuyển",
     "subtitle": "Theo dõi tiến trình ứng tuyển của bạn",
     "addJob": "+ Thêm Job",
     "backToWarRoom": "Về War Room",
@@ -1083,6 +1158,44 @@
         "analysisFailed": "Có lỗi xảy ra khi phân tích. Vui lòng thử lại.",
         "connectionError": "Không thể kết nối dịch vụ AI. Vui lòng thử lại."
       }
-    }
+    },
+    "cvBadge": "CV đã may đo",
+    "tailorResume": {
+      "template": "Giao diện",
+      "button": "May đo CV cho job này",
+      "viewResult": "Xem CV đã may đo",
+      "rerun": "May đo lại",
+      "tailoring": "AI đang may đo CV...",
+      "noJDHint": "Thêm JD trước để may đo CV",
+      "previewTitle": "CV đã may đo",
+      "tailoringNotes": "Ghi chú may đo",
+      "matchScore": "Điểm khớp ước tính",
+      "keywordsIntegrated": "Từ khóa đã tích hợp",
+      "close": "Đóng",
+      "download": "Tải xuống",
+      "downloadPDF": "Tải xuống PDF",
+      "generatingPDF": "Đang tạo PDF...",
+      "pdfError": "Không thể tạo PDF. Vui lòng thử lại.",
+      "downloadDOCX": "Tải xuống Word",
+      "generatingDOCX": "Đang tạo file Word...",
+      "docxError": "Không thể tạo file Word. Vui lòng thử lại.",
+      "sections": {
+        "summary": "Tóm tắt nghề nghiệp",
+        "experience": "Kinh nghiệm làm việc",
+        "education": "Học vấn",
+        "skills": "Kỹ năng",
+        "technicalSkills": "Kỹ năng chuyên môn",
+        "softSkills": "Kỹ năng mềm",
+        "projects": "Dự án",
+        "certifications": "Chứng chỉ"
+      },
+      "errors": {
+        "failed": "Không thể may đo CV. Vui lòng thử lại.",
+        "noVault": "The Vault chưa có dữ liệu. Vui lòng điền hồ sơ sự nghiệp trước.",
+        "noJD": "Vui lòng thêm mô tả công việc (JD) trước.",
+        "connectionError": "Lỗi kết nối. Vui lòng thử lại."
+      }
+    },
+    "backToList": "Về Phòng ứng tuyển"
   }
 }

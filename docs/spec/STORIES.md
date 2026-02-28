@@ -60,7 +60,7 @@ Vault được chia làm 3 nhóm theo độ ưu tiên và tần suất sử dụ
 - **Mô tả:** Là một Người dùng, tôi muốn có trang `/dashboard/vault` để nhập 4 loại dữ liệu nền tảng (Personal Info, Summary, Experience, Education) theo dạng từng tab riêng biệt.
 - **Tiêu chí hoàn thành (AC):**
   - [x] Tạo UI trang `/dashboard/vault` với tab navigation.
-  - [x] **Personal Info:** Form 7+ trường (Họ tên, Email, SĐT, LinkedIn, GitHub, Website, Địa chỉ).
+  - [x] **Personal Info:** Form 7+ trường (Họ tên, Email, SĐT, LinkedIn, GitHub, Website, Địa chỉ). Trường `photo_url` được thêm qua Story 5.5.
   - [x] **Experience:** Danh sách inline-edit với Add / Edit / Delete từng công ty.
   - [x] **Education:** Danh sách inline-edit với Add / Edit / Delete từng trường.
   - [x] **Skills:** Tag-input cho Hard Skills & Soft Skills, vừa nhập vừa tự lưu.
@@ -227,24 +227,90 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
 
 - **Mô tả:** Là một Hệ thống, tôi cần endpoint `/api/ai/tailor-resume` để AI viết lại Master Profile sao cho chứa nhiều từ khóa của JD nhất một cách tự nhiên.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Kéo dữ liệu từ `master_profiles` và `job_analyses` (hoặc `raw_jd_text`).
-  - [ ] Gọi OpenAI API (Model lớn: GPT-4o). System Prompt: Bắt buộc giữ sự thật, nhưng viết lại bullet points dùng từ khóa JD. Giới hạn độ dài để vừa 1 trang A4.
-  - [ ] Trả về cấu trúc JSON CV và lưu vào bảng `resumes` cột `content_snapshot`.
+  - [x] Kéo dữ liệu từ `master_profiles` và `job_analyses` (hoặc `raw_jd_text`).
+  - [x] Gọi OpenAI API (Model lớn: GPT-4o). System Prompt: Bắt buộc giữ sự thật, nhưng viết lại bullet points dùng từ khóa JD. Giới hạn độ dài để vừa 1 trang A4.
+  - [x] Trả về cấu trúc JSON CV và lưu vào bảng `resumes` cột `content_snapshot`.
 
 ### Story 5.2: Giao diện Tailor & Preview PDF
 
 - **Mô tả:** Là Người dùng, ở trang chi tiết Job, tôi bấm nút "Tailor Resume for this Job". Sau đó tôi thấy bản Preview CV của mình.
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Nút bấm gọi API Story 5.1 (Có hiệu ứng loading báo hiệu AI đang nghĩ).
-  - [ ] Fetch dữ liệu từ bảng `resumes` render lên giao diện HTML/CSS mô phỏng tờ giấy A4.
-  - [ ] (Tận dụng code V1): Cung cấp 1-2 UI template cơ bản (Minimalist).
+  - [x] Nút bấm gọi API Story 5.1 (Có hiệu ứng loading báo hiệu AI đang nghĩ).
+  - [x] Fetch dữ liệu từ bảng `resumes` render lên giao diện HTML/CSS mô phỏng tờ giấy A4.
+  - [x] (Tận dụng code V1): Cung cấp 1-2 UI template cơ bản (Minimalist).
 
-### Story 5.3: Xuất file PDF (Export)
+### Story 5.3: Xuất file PDF (Export) ✅
 
 - **Mô tả:** Là Người dùng, tôi muốn bấm nút "Download PDF" bản CV đã được Tailor để đi nộp.
+- **Kỹ thuật:** Sử dụng `@react-pdf/renderer` (diegomura) — render React components trực tiếp ra PDF phía client. **Không dùng** `html2canvas` hay `jsPDF` (V1 approach đã bị loại bỏ).
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tái sử dụng logic `html2canvas` + `jsPDF` từ codebase cũ.
-  - [ ] File xuất ra rõ nét, text có thể bôi đen/copy được (nếu cấu hình jsPDF hỗ trợ, hoặc render text over canvas).
+  - [x] Nút "Download PDF" trong PreviewModal gọi `pdf(<TailoredCVTemplatePDF />).toBlob()` → trigger browser download.
+  - [x] File PDF xuất ra với font Roboto đã đăng ký, text có thể bôi đen/copy được.
+  - [x] PDF render đúng layout của template đang được chọn.
+  - [x] Loading state "Đang tạo PDF..." trong khi generate.
+  - [x] Error handling nếu generate thất bại.
+
+### Story 5.4: Chọn Template & Màu sắc ✨
+
+- **Mô tả:** Là Người dùng, sau khi AI tạo xong CV, tôi muốn chọn một trong 5 template thiết kế và tùy chỉnh màu sắc trước khi download, để CV phù hợp với phong cách cá nhân và ngành nghề.
+- **Tiêu chí hoàn thành (AC):**
+  - [x] `TemplateSelector` component hiển thị trong PreviewModal: grid 5 card template, mỗi card có tên, thumbnail minh họa và badge ATS compatibility (★1–5).
+  - [x] Mỗi template có 4 nút chọn màu (blue, slate, emerald, rose). Màu hiển thị ngay trong preview không cần reload.
+  - [x] **5 templates:**
+    - **Classic** — 1 cột, header căn giữa, ATS ★★★★★ (không ảnh)
+    - **Modern** — 2 cột sidebar, ảnh đại diện ở sidebar, ATS ★★★☆☆
+    - **Executive** — 1 cột, header band màu full-width, ATS ★★★★☆
+    - **Creative** — 1 cột, hero gradient + icon contact, ảnh tròn, ATS ★★☆☆☆
+    - **Minimal** — 1 cột, ultra-clean thin dividers, ATS ★★★★★ (không ảnh)
+  - [x] Hiển thị cảnh báo ATS cho template `creative` và `modern`: _"Template này có thể bị ATS scan không đầy đủ. Chỉ dùng khi nộp trực tiếp hoặc qua email."_
+  - [x] Khi user bấm "Download PDF", lưu lại `template_id` + `color_theme` vào `resumes` table (PATCH request).
+  - [x] Preview HTML và PDF đều render đúng template + màu đã chọn.
+  - [x] Template Selection state không bị mất khi đóng/mở lại PreviewModal trong cùng session.
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+
+### Story 5.5: Upload Ảnh Đại Diện (Profile Photo) ✨
+
+- **Mô tả:** Là Người dùng, tôi muốn tải lên ảnh đại diện trong trang Hồ Sơ Gốc (The Vault), để ảnh tự động xuất hiện trong các template CV hỗ trợ ảnh (Modern, Executive, Creative).
+- **Kỹ thuật:**
+  - API `POST /api/cv/photo-upload` nhận `multipart/form-data`, upload lên Supabase Storage bucket `profile-photos` (public) tại path `{user_id}/avatar.{ext}`.
+  - URL công khai được lưu vào `master_profiles.personal.photo_url`.
+  - `photo_url` được đưa vào prompt AI `tailor_resume` và xuất hiện trong `content_snapshot.personal.photo_url`.
+  - Template `modern`, `executive`, `creative`: render ảnh qua `<img>` (HTML preview) và `<Image src={photo_url}>` (PDF).
+  - Template `classic`, `minimal`: KHÔNG render ảnh (ưu tiên ATS compatibility).
+- **Tiêu chí hoàn thành (AC):**
+  - [x] Tab "Thông tin cá nhân" trong Vault có khu vực upload ảnh: drag-drop hoặc click chọn file. Hỗ trợ JPG/PNG/WebP, tối đa 5MB.
+  - [x] Hiển thị preview ảnh ngay sau khi upload thành công. Có nút xóa ảnh.
+  - [x] API `POST /api/cv/photo-upload`: validate file type/size, upload đến `profile-photos/{userId}/avatar.{ext}` (upsert — ghi đè ảnh cũ), trả về `{ publicUrl }`.
+  - [x] `publicUrl` được lưu vào `master_profiles` section `personal` cột `content.photo_url` (upsert).
+  - [x] Khi tailor CV, `photo_url` trong master profile được đưa vào JSON output của AI và lưu trong `content_snapshot`.
+  - [x] Templates Modern, Executive, Creative render ảnh đại diện trong HTML preview và PDF.
+  - [x] Templates Classic, Minimal không hiển thị ảnh (theo thiết kế — ATS-first).
+  - [x] Supabase Storage bucket `profile-photos` được tạo với policy: authenticated users có thể upload/đọc folder của mình; bucket public cho phép URL công khai.
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+
+### Story 5.6: Xuất file Word (DOCX Export)
+
+- **Mô tả:** Là Người dùng, sau khi AI tạo xong CV may đo, tôi muốn bấm nút "Tải xuống Word" để nhận file `.docx` có thể mở bằng Microsoft Word, Google Docs hoặc LibreOffice và tùy chỉnh thêm trước khi nộp. Mỗi template có cách trình bày DOCX riêng phù hợp với phong cách thiết kế.
+- **Kỹ thuật:**
+  - Sử dụng thư viện `docx` (npm) — pure TypeScript, chạy hoàn toàn phía client, không cần server.
+  - Pattern tương tự `usePDFDownload`: dynamic import `docx` + builder module → `Packer.toBlob()` → browser download.
+  - Mỗi template có file builder riêng (`ClassicDOCX.ts`, `ModernDOCX.ts`, v.v.) — pure TS functions, không dùng React/JSX.
+  - Template `modern`, `executive`, `creative`: Pre-fetch `photo_url` trong hook → `ArrayBuffer` → `ImageRun`. Template `classic`, `minimal`: bỏ qua ảnh.
+  - `TailoredCVTemplateDOCX.ts` đóng vai trò router (tương tự `TailoredCVTemplatePDF.tsx`).
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] `bun add docx` — thư viện xuất hiện trong `package.json`.
+  - [ ] Nút "Tải xuống Word" (icon Word, outline style) xuất hiện trong PreviewModal cạnh nút "Tải xuống PDF". Nút PDF là primary (blue filled), nút DOCX là secondary (outline).
+  - [ ] Bấm nút → loading state "Đang tạo file Word..." → file `{tên}_{template}_{ngày}.docx` tải về.
+  - [ ] File mở đúng trong Word/Google Docs: text readable, headings có style, bullets hiển thị.
+  - [ ] Classic và Minimal: layout 1 cột, section headings có border-bottom, không có ảnh.
+  - [ ] Modern: layout 2 cột dùng `Table` — sidebar trái có background màu, main column phải trắng. Ảnh đại diện (nếu có) render trong sidebar bằng `ImageRun`.
+  - [ ] Executive: header band màu full-width dùng `Table` shading, ảnh tùy chọn bên trái tên.
+  - [ ] Creative: header band + accent bar màu đậm, item blocks có left border, dates dùng text bold thay pill.
+  - [ ] Error handling: nếu generate thất bại → hiển thị thông báo lỗi nhỏ (giống pdfError). Photo fetch failure không block download.
+  - [ ] i18n: keys `downloadDOCX`, `generatingDOCX`, `docxError` có trong cả `vi.json` và `en.json`.
+  - [ ] `TailoredCVTemplateDOCX.ts` (router) và 5 file builder trong thư mục template tương ứng.
+  - [ ] `src/components/cv/templates/shared/docxUtils.ts` chứa shared helpers.
+  - [ ] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi). Dynamic import — `docx` không vào initial bundle.
 
 ---
 
@@ -282,14 +348,16 @@ _Mục tiêu: Người dùng upload CV sẵn có → AI có tầm nhìn (Vision)
   - [x] User xác nhận → import → toast thành công → link navigate đến `/dashboard/vault`.
   - [x] Vault page sau import hiển thị đúng data đã extract.
 
-### Story 6.4: Lịch sử phân tích CV (Scan History)
+### Story 6.4: Lịch sử phân tích CV (Scan History) ✅
 
-- **Mô tả:** Là một Người tìm việc, tôi muốn xem lại danh sách các CV tôi đã từng upload và kết quả phân tích AI trước đó (để xem chi tiết hoặc import Vault lại nếu cần).
-- **Kỹ thuật:** DB table `cv_scan_history`. API route `GET /api/cv/history`. Giao diện History Panel.
+- **Mô tả:** Là một Người tìm việc, tôi muốn xem lại danh sách các CV tôi đã từng upload và kết quả phân tích AI trước đó, kèm file CV gốc để tham khảo.
+- **Kỹ thuật:** DB table `cv_scan_history` + cột `file_storage_path`. API `POST /api/cv/scan-history` nhận `multipart/form-data` (file + JSON). File lưu vào bucket `cv-scan-files` (private). Trang chi tiết tạo signed URL 1 giờ để xem/tải file.
 - **Tiêu chí hoàn thành (AC):**
-  - [x] Hệ thống tự động đẩy kết quả đánh giá (sau Story 6.2 và 6.3) vào bảng `cv_scan_history`.
-  - [x] UI cung cấp màn hình/dialog liệt kê các lịch sử scan trước đó: Ngày scan, Tên file CV, Điểm (Overall, ATS, Design).
-  - [x] Bấm vào xem chi tiết sẽ hiển thị lại giao diện kết quả đánh giá giống hệt như lúc vừa upload xong.
+  - [x] Hệ thống tự động đẩy kết quả đánh giá (sau 6.2 và 6.3) vào `cv_scan_history`, đồng thời upload file CV gốc lên `cv-scan-files` và lưu `file_storage_path`.
+  - [x] UI liệt kê lịch sử scan: Ngày scan, Tên file, Điểm (Overall, ATS, Design).
+  - [x] Bấm "Xem chi tiết" → trang `/dashboard/scanner/history/[id]` hiển thị lại kết quả đánh giá.
+  - [x] Trang chi tiết có khu vực xem file CV gốc: nút "Tải xuống CV" và nút toggle xem PDF inline (nếu là file PDF).
+  - [x] File CV cũ (scan trước khi có tính năng này) hiển thị gracefully nếu không có `file_storage_path`.
 
 ---
 

@@ -2,11 +2,16 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faClockRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faClockRotateLeft,
+  faFileAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import type { CVEvaluationResult } from "@/app/api/ai/evaluate-cv/route";
 import type { ExtractedProfile } from "@/app/api/ai/extract-profile-from-cv/route";
 import EvaluationResultsView from "@/components/scanner/EvaluationResultsView";
 import VaultImportPanel from "@/components/scanner/VaultImportPanel";
+import ScanFileViewer from "@/components/scanner/ScanFileViewer";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -32,7 +37,7 @@ export default async function ScanHistoryDetailPage({ params }: PageProps) {
   // Fetch this specific scan record (RLS ensures user can only see their own)
   const { data: scan, error } = await supabase
     .from("cv_scan_history")
-    .select("id, file_name, scanned_at, evaluation, extracted_profile")
+    .select("id, file_name, file_storage_path, scanned_at, evaluation, extracted_profile")
     .eq("id", id)
     .single();
 
@@ -40,6 +45,7 @@ export default async function ScanHistoryDetailPage({ params }: PageProps) {
 
   const evaluation = scan.evaluation as unknown as CVEvaluationResult;
   const extractedProfile = scan.extracted_profile as unknown as ExtractedProfile;
+  const fileStoragePath = scan.file_storage_path as string | null;
 
   const scannedAt = new Date(scan.scanned_at as string).toLocaleDateString(undefined, {
     day: "2-digit",
@@ -48,6 +54,15 @@ export default async function ScanHistoryDetailPage({ params }: PageProps) {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  // Generate signed URL for the CV file (1 hour expiry)
+  let signedFileUrl: string | null = null;
+  if (fileStoragePath) {
+    const { data: urlData } = await supabase.storage
+      .from("cv-scan-files")
+      .createSignedUrl(fileStoragePath, 3600);
+    signedFileUrl = urlData?.signedUrl ?? null;
+  }
 
   // Fetch existing vault data so VaultImportPanel can mark duplicates
   const { data: sections } = await supabase
@@ -93,6 +108,15 @@ export default async function ScanHistoryDetailPage({ params }: PageProps) {
         </div>
         <p className="text-gray-500 text-sm ml-9">{scannedAt}</p>
       </div>
+
+      {/* CV file viewer — shown only if a file was saved */}
+      {fileStoragePath && (
+        <ScanFileViewer
+          signedUrl={signedFileUrl}
+          fileName={scan.file_name as string}
+          fileStoragePath={fileStoragePath}
+        />
+      )}
 
       {/* Evaluation results — re-uses the exact same component as live scan */}
       <EvaluationResultsView evaluation={evaluation} />

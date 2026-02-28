@@ -14,6 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import type { JobCard } from "./KanbanBoard";
 import JobAnalysisSection from "./JobAnalysisSection";
+import TailorResumeButton from "./TailorResumeButton";
 import { useTranslation } from "@/hooks/useTranslation";
 
 function formatDate(iso: string | null): string {
@@ -29,12 +30,14 @@ interface JobDetailModalProps {
   job: JobCard;
   onClose: () => void;
   onEdit: (job: JobCard) => void;
+  onResumeCreated?: (jobId: string) => void;
 }
 
 export default function JobDetailModal({
   job,
   onClose,
   onEdit,
+  onResumeCreated,
 }: JobDetailModalProps) {
   const { t } = useTranslation();
 
@@ -105,6 +108,12 @@ export default function JobDetailModal({
             {t("warRoom.jobDetail.title")}
           </span>
           <div className="flex items-center gap-1">
+            <TailorResumeButton
+              jobId={job.id}
+              hasJd={!!job.raw_jd_text}
+              compact
+              onTailoredSuccess={onResumeCreated ? () => onResumeCreated(job.id) : undefined}
+            />
             <Link
               href={`/dashboard/jobs/${job.id}`}
               onClick={onClose}

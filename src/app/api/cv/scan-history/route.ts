@@ -3,11 +3,14 @@ import { createClient } from "@/lib/supabase-server";
 import type { CVEvaluationResult } from "@/app/api/ai/evaluate-cv/route";
 import type { ExtractedProfile } from "@/app/api/ai/extract-profile-from-cv/route";
 
+const SCAN_FILES_BUCKET = "cv-scan-files";
+
 // ── Shared type (re-exported so panel/page can import it) ─────────────────────
 
 export interface ScanHistoryItem {
   id: string;
   file_name: string;
+  file_storage_path: string | null;
   overall_score: number | null;
   ats_score: number | null;
   design_score: number | null;
@@ -34,7 +37,7 @@ export async function GET() {
 
     const { data, error } = await supabase
       .from("cv_scan_history")
-      .select("id, file_name, overall_score, ats_score, design_score, scanned_at")
+      .select("id, file_name, file_storage_path, overall_score, ats_score, design_score, scanned_at")
       .eq("user_id", user.id)
       .order("scanned_at", { ascending: false })
       .limit(20);
@@ -49,6 +52,10 @@ export async function GET() {
 }
 
 // ── POST /api/cv/scan-history — save a new scan ───────────────────────────────
+// Accepts multipart/form-data with:
+//   file            – the original CV file (optional)
+//   evaluation      – JSON string of CVEvaluationResult
+//   extracted_profile – JSON string of ExtractedProfile
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,24 +68,53 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const body = (await request.json()) as {
-      file_name: string;
-      evaluation: CVEvaluationResult;
-      extracted_profile: ExtractedProfile;
-    };
+    type FormDataGet = { get: (key: string) => string | File | null };
+    const formData = (await request.formData()) as unknown as FormDataGet;
+    const file = formData.get("file") as File | null;
+    const evaluationRaw = formData.get("evaluation") as string | null;
+    const extractedProfileRaw = formData.get("extracted_profile") as string | null;
 
-    const { file_name, evaluation, extracted_profile } = body;
-
-    if (!file_name || !evaluation || !extracted_profile) {
+    if (!evaluationRaw || !extractedProfileRaw) {
       return NextResponse.json(
-        { error: "file_name, evaluation, and extracted_profile are required" },
+        { error: "evaluation and extracted_profile are required" },
         { status: 400 },
       );
+    }
+
+    const evaluation = JSON.parse(evaluationRaw) as CVEvaluationResult;
+    const extracted_profile = JSON.parse(extractedProfileRaw) as ExtractedProfile;
+    const file_name = ((formData.get("file_name") as string | null) ?? file?.name ?? "CV");
+
+    // Upload file to Supabase Storage (best-effort — failure does not block save)
+    let file_storage_path: string | null = null;
+    if (file && file.size > 0) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        return NextResponse.json({ error: "File exceeds 10MB limit" }, { status: 400 });
+      }
+      const allowedMimeTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+      if (!allowedMimeTypes.includes(file.type)) {
+        return NextResponse.json({ error: "Only PDF and DOCX files are allowed" }, { status: 400 });
+      }
+
+      const ext = file.name.split(".").pop() ?? "pdf";
+      const storagePath = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from(SCAN_FILES_BUCKET)
+        .upload(storagePath, file, { contentType: file.type, upsert: false });
+      if (uploadError) {
+        console.warn("[scan-history] file upload failed (non-fatal):", uploadError.message);
+      } else {
+        file_storage_path = storagePath;
+      }
     }
 
     const insertRow = {
       user_id: user.id,
       file_name,
+      file_storage_path,
       overall_score: evaluation.overall_score ?? null,
       ats_score: evaluation.ats_score ?? null,
       design_score: evaluation.design_score ?? null,
@@ -94,7 +130,7 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ id: data.id }, { status: 201 });
+    return NextResponse.json({ id: data.id, file_storage_path }, { status: 201 });
   } catch (err) {
     console.error("[scan-history POST]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

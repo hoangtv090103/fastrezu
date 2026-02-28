@@ -438,24 +438,30 @@ export type Database = {
       resumes: {
         Row: {
           ats_score_final: number | null
+          color_theme: string
           content_snapshot: Json | null
           created_at: string | null
           id: string
           job_id: string
+          template_id: string
         }
         Insert: {
           ats_score_final?: number | null
+          color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
           id?: string
           job_id: string
+          template_id?: string
         }
         Update: {
           ats_score_final?: number | null
+          color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
           id?: string
           job_id?: string
+          template_id?: string
         }
         Relationships: [
           {
@@ -472,6 +478,7 @@ export type Database = {
           id: string
           user_id: string
           file_name: string
+          file_storage_path: string | null
           overall_score: number | null
           ats_score: number | null
           design_score: number | null
@@ -483,6 +490,7 @@ export type Database = {
           id?: string
           user_id: string
           file_name: string
+          file_storage_path?: string | null
           overall_score?: number | null
           ats_score?: number | null
           design_score?: number | null
@@ -494,6 +502,7 @@ export type Database = {
           id?: string
           user_id?: string
           file_name?: string
+          file_storage_path?: string | null
           overall_score?: number | null
           ats_score?: number | null
           design_score?: number | null
