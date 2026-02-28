@@ -43,11 +43,11 @@ export default function ExecutivePreview({
             src={personal.photo_url}
             alt={personal.full_name}
             style={{
-              width: "60px",
-              height: "60px",
+              width: "80px",
+              height: "80px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "2px solid rgba(255,255,255,0.4)",
+              border: "3px solid rgba(255,255,255,0.5)",
               flexShrink: 0,
             }}
           />

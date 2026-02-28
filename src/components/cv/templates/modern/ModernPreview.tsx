@@ -50,16 +50,17 @@ export default function ModernPreview({
       >
         {/* Photo */}
         {personal.photo_url && (
-          <div style={{ textAlign: "center", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
             <img
               src={personal.photo_url}
               alt={personal.full_name}
               style={{
-                width: "72px",
-                height: "72px",
+                width: "96px",
+                height: "96px",
                 borderRadius: "50%",
                 objectFit: "cover",
-                border: "2px solid rgba(255,255,255,0.5)",
+                border: "3px solid rgba(255,255,255,0.6)",
+                flexShrink: 0,
               }}
             />
           </div>

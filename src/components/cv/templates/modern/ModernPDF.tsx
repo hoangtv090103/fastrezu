@@ -34,7 +34,7 @@ export default function ModernPDF({ data, language = "vi", colorTheme = "blue" }
     page: { fontFamily: "Roboto", fontSize: 9, backgroundColor: "#fff", flexDirection: "row" },
     sidebar: { width: "30%", backgroundColor: c.primary, padding: "28pt 16pt", color: "#fff" },
     main: { flex: 1, padding: "28pt 22pt" },
-    photo: { width: 72, height: 72, borderRadius: 36, alignSelf: "center", marginBottom: 12, borderWidth: 2, borderColor: "rgba(255,255,255,0.5)", borderStyle: "solid" },
+    photo: { width: 96, height: 96, borderRadius: 48, objectFit: "cover", alignSelf: "center", marginBottom: 12, borderWidth: 3, borderColor: "rgba(255,255,255,0.6)", borderStyle: "solid" },
     sideName: { fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 8, textAlign: "center" },
     sideSectionTitle: { fontSize: 8, fontWeight: 700, color: "rgba(255,255,255,0.75)", textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 6 },
     sideDivider: { borderTopWidth: 0.8, borderTopColor: "rgba(255,255,255,0.25)", marginTop: 12, paddingTop: 10, marginBottom: 0 },

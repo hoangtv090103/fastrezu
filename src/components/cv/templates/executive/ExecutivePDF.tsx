@@ -14,6 +14,7 @@ Font.register({
   family: "Roboto",
   fonts: [
     { src: "https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf", fontWeight: 400 },
+
     { src: "https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmSU5vAx05IsDqlA.ttf", fontWeight: 600 },
     { src: "https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlvAx05IsDqlA.ttf", fontWeight: 700 },
   ],
@@ -33,7 +34,7 @@ export default function ExecutivePDF({ data, language = "vi", colorTheme = "blue
   const styles = StyleSheet.create({
     page: { fontFamily: "Roboto", fontSize: 9.5, backgroundColor: "#fff" },
     headerBand: { backgroundColor: c.primary, padding: "22pt 38pt", flexDirection: "row", alignItems: "center" },
-    photo: { width: 60, height: 60, borderRadius: 30, marginRight: 16, borderWidth: 2, borderColor: "rgba(255,255,255,0.4)", borderStyle: "solid" },
+    photo: { width: 80, height: 80, borderRadius: 40, objectFit: "cover", marginRight: 16, borderWidth: 3, borderColor: "rgba(255,255,255,0.5)", borderStyle: "solid" },
     headerName: { fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 5 },
     headerContact: { fontSize: 8.5, color: "rgba(255,255,255,0.85)", flexDirection: "row", flexWrap: "wrap", gap: 10 },
     headerContactItem: { fontSize: 8.5, color: "rgba(255,255,255,0.85)" },
@@ -46,7 +47,7 @@ export default function ExecutivePDF({ data, language = "vi", colorTheme = "blue
     itemRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
     itemTitle: { fontSize: 10, fontWeight: 700, color: "#111827" },
     itemSub: { fontSize: 9, color: "#6b7280" },
-    dateText: { fontSize: 8.5, color: "#9ca3af", flexShrink: 0, fontStyle: "italic" },
+    dateText: { fontSize: 8.5, color: "#9ca3af", flexShrink: 0 },
     summaryText: { fontSize: 9.5, color: "#374151", lineHeight: 1.65 },
     bulletList: { marginTop: 4 },
     bulletItem: { flexDirection: "row", alignItems: "flex-start", marginBottom: 3 },
@@ -65,7 +66,9 @@ export default function ExecutivePDF({ data, language = "vi", colorTheme = "blue
       <Page size="A4" style={styles.page}>
         {/* Header Band */}
         <View style={styles.headerBand}>
-          {personal.photo_url ? <Image src={personal.photo_url} style={styles.photo} /> : null}
+          {personal.photo_url ? (
+            <Image src={personal.photo_url} style={styles.photo} />
+          ) : null}
           <View style={{ flex: 1 }}>
             <Text style={styles.headerName}>{personal.full_name}</Text>
             <View style={styles.headerContact}>

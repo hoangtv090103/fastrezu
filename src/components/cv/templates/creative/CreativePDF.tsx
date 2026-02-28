@@ -33,7 +33,7 @@ export default function CreativePDF({ data, language = "vi", colorTheme = "blue"
   const styles = StyleSheet.create({
     page: { fontFamily: "Roboto", fontSize: 9.5, backgroundColor: "#fff" },
     headerBand: { backgroundColor: c.primary, padding: "24pt 38pt 20pt", flexDirection: "row", alignItems: "center" },
-    photo: { width: 68, height: 68, borderRadius: 34, marginRight: 18, borderWidth: 3, borderColor: "rgba(255,255,255,0.45)", borderStyle: "solid" },
+    photo: { width: 88, height: 88, borderRadius: 44, objectFit: "cover", marginRight: 18, borderWidth: 3, borderColor: "rgba(255,255,255,0.55)", borderStyle: "solid" },
     headerName: { fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 5 },
     contactRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
     contactItem: { fontSize: 8, color: "rgba(255,255,255,0.85)" },
@@ -68,7 +68,9 @@ export default function CreativePDF({ data, language = "vi", colorTheme = "blue"
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.headerBand}>
-          {personal.photo_url ? <Image src={personal.photo_url} style={styles.photo} /> : null}
+          {personal.photo_url ? (
+            <Image src={personal.photo_url} style={styles.photo} />
+          ) : null}
           <View style={{ flex: 1 }}>
             <Text style={styles.headerName}>{personal.full_name}</Text>
             <View style={styles.contactRow}>

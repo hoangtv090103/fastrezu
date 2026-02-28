@@ -850,6 +850,7 @@ Output (English):`
 5. **Experience:** Mỗi vị trí tối đa 4 bullet points, bắt đầu bằng động từ hành động mạnh.
 6. **Skills:** Ưu tiên hiển thị các kỹ năng liên quan JD nhất lên đầu.
 7. Đối với các section không có trong Master Profile, trả về mảng rỗng [] hoặc null.
+8. **photo_url:** Giữ nguyên giá trị photo_url từ Master Profile (personal.photo_url) — KHÔNG sửa đổi, KHÔNG bỏ qua.
 
 Bạn PHẢI output *chỉ* một JSON object hợp lệ theo cấu trúc sau. Không bao gồm giải thích hay văn bản ngoài JSON.
 
@@ -861,7 +862,8 @@ Bạn PHẢI output *chỉ* một JSON object hợp lệ theo cấu trúc sau. K
     "linkedin": "<string | null>",
     "github": "<string | null>",
     "website": "<string | null>",
-    "address": "<string | null>"
+    "address": "<string | null>",
+    "photo_url": "<string | null> Giữ nguyên từ Master Profile"
   },
   "summary": "<string> Tóm tắt chuyên nghiệp đã được tailored (2-3 câu, tối đa 80 từ)",
   "experience": [
@@ -925,6 +927,7 @@ Bạn PHẢI output *chỉ* một JSON object hợp lệ theo cấu trúc sau. K
 5. **Experience:** Maximum 4 bullet points per position, starting with strong action verbs.
 6. **Skills:** Prioritize JD-relevant skills at the top.
 7. For sections not present in the Master Profile, return empty array [] or null.
+8. **photo_url:** Preserve the photo_url value from the Master Profile (personal.photo_url) — do NOT modify or omit it.
 
 You MUST output *only* a valid JSON object with the following structure. Do not include explanations or text outside the JSON.
 
@@ -936,7 +939,8 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
     "linkedin": "<string | null>",
     "github": "<string | null>",
     "website": "<string | null>",
-    "address": "<string | null>"
+    "address": "<string | null>",
+    "photo_url": "<string | null> Preserve from Master Profile"
   },
   "summary": "<string> Tailored professional summary (2-3 sentences, max 80 words)",
   "experience": [

@@ -51,11 +51,11 @@ export default function CreativePreview({
             src={personal.photo_url}
             alt={personal.full_name}
             style={{
-              width: "68px",
-              height: "68px",
+              width: "88px",
+              height: "88px",
               borderRadius: "50%",
               objectFit: "cover",
-              border: "3px solid rgba(255,255,255,0.45)",
+              border: "3px solid rgba(255,255,255,0.55)",
               flexShrink: 0,
             }}
           />
