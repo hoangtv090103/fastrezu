@@ -1175,6 +1175,7 @@
       "matchScore": "Estimated Match Score",
       "keywordsIntegrated": "Keywords Integrated",
       "close": "Close",
+      "download": "Download",
       "downloadPDF": "Download PDF",
       "generatingPDF": "Generating PDF...",
       "pdfError": "Failed to generate PDF. Please try again.",

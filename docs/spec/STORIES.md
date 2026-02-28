@@ -288,6 +288,30 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
   - [x] Supabase Storage bucket `profile-photos` được tạo với policy: authenticated users có thể upload/đọc folder của mình; bucket public cho phép URL công khai.
   - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
 
+### Story 5.6: Xuất file Word (DOCX Export)
+
+- **Mô tả:** Là Người dùng, sau khi AI tạo xong CV may đo, tôi muốn bấm nút "Tải xuống Word" để nhận file `.docx` có thể mở bằng Microsoft Word, Google Docs hoặc LibreOffice và tùy chỉnh thêm trước khi nộp. Mỗi template có cách trình bày DOCX riêng phù hợp với phong cách thiết kế.
+- **Kỹ thuật:**
+  - Sử dụng thư viện `docx` (npm) — pure TypeScript, chạy hoàn toàn phía client, không cần server.
+  - Pattern tương tự `usePDFDownload`: dynamic import `docx` + builder module → `Packer.toBlob()` → browser download.
+  - Mỗi template có file builder riêng (`ClassicDOCX.ts`, `ModernDOCX.ts`, v.v.) — pure TS functions, không dùng React/JSX.
+  - Template `modern`, `executive`, `creative`: Pre-fetch `photo_url` trong hook → `ArrayBuffer` → `ImageRun`. Template `classic`, `minimal`: bỏ qua ảnh.
+  - `TailoredCVTemplateDOCX.ts` đóng vai trò router (tương tự `TailoredCVTemplatePDF.tsx`).
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] `bun add docx` — thư viện xuất hiện trong `package.json`.
+  - [ ] Nút "Tải xuống Word" (icon Word, outline style) xuất hiện trong PreviewModal cạnh nút "Tải xuống PDF". Nút PDF là primary (blue filled), nút DOCX là secondary (outline).
+  - [ ] Bấm nút → loading state "Đang tạo file Word..." → file `{tên}_{template}_{ngày}.docx` tải về.
+  - [ ] File mở đúng trong Word/Google Docs: text readable, headings có style, bullets hiển thị.
+  - [ ] Classic và Minimal: layout 1 cột, section headings có border-bottom, không có ảnh.
+  - [ ] Modern: layout 2 cột dùng `Table` — sidebar trái có background màu, main column phải trắng. Ảnh đại diện (nếu có) render trong sidebar bằng `ImageRun`.
+  - [ ] Executive: header band màu full-width dùng `Table` shading, ảnh tùy chọn bên trái tên.
+  - [ ] Creative: header band + accent bar màu đậm, item blocks có left border, dates dùng text bold thay pill.
+  - [ ] Error handling: nếu generate thất bại → hiển thị thông báo lỗi nhỏ (giống pdfError). Photo fetch failure không block download.
+  - [ ] i18n: keys `downloadDOCX`, `generatingDOCX`, `docxError` có trong cả `vi.json` và `en.json`.
+  - [ ] `TailoredCVTemplateDOCX.ts` (router) và 5 file builder trong thư mục template tương ứng.
+  - [ ] `src/components/cv/templates/shared/docxUtils.ts` chứa shared helpers.
+  - [ ] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi). Dynamic import — `docx` không vào initial bundle.
+
 ---
 
 ## EPIC 6: The Scanner (Upload CV & AI Evaluation)

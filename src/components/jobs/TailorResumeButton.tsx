@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -243,6 +243,8 @@ function PreviewModal({
   const [templateId, setTemplateId] = useState<TemplateId>(initialTemplateId);
   const [colorTheme, setColorTheme] = useState<ColorTheme>(initialColorTheme);
   const [showSelector, setShowSelector] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+  const downloadMenuRef = useRef<HTMLDivElement>(null);
 
   const handleDownload = useCallback(async () => {
     const name = data.personal?.full_name?.trim().replace(/\s+/g, "_") ?? "cv";
@@ -294,6 +296,18 @@ function PreviewModal({
     };
   }, [onClose]);
 
+  // Close download menu on outside click
+  useEffect(() => {
+    if (!showDownloadMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (downloadMenuRef.current && !downloadMenuRef.current.contains(e.target as Node)) {
+        setShowDownloadMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showDownloadMenu]);
+
   const modal = (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -330,49 +344,47 @@ function PreviewModal({
               />
             </button>
 
-            {/* Download PDF button */}
-            <button
-              onClick={handleDownload}
-              disabled={isPDFGenerating}
-              title={t("warRoom.tailorResume.downloadPDF")}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {isPDFGenerating ? (
-                <FontAwesomeIcon
-                  icon={faSpinner}
-                  className="w-3.5 h-3.5 animate-spin"
-                />
-              ) : (
-                <FontAwesomeIcon icon={faDownload} className="w-3.5 h-3.5" />
-              )}
-              <span className="hidden sm:inline">
-                {isPDFGenerating
-                  ? t("warRoom.tailorResume.generatingPDF")
-                  : t("warRoom.tailorResume.downloadPDF")}
-              </span>
-            </button>
+            {/* Download dropdown */}
+            <div className="relative" ref={downloadMenuRef}>
+              <button
+                onClick={() => setShowDownloadMenu((v) => !v)}
+                disabled={isPDFGenerating || isDOCXGenerating}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {isPDFGenerating || isDOCXGenerating ? (
+                  <FontAwesomeIcon icon={faSpinner} className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <FontAwesomeIcon icon={faDownload} className="w-3.5 h-3.5" />
+                )}
+                <span className="hidden sm:inline">
+                  {isPDFGenerating
+                    ? t("warRoom.tailorResume.generatingPDF")
+                    : isDOCXGenerating
+                    ? t("warRoom.tailorResume.generatingDOCX")
+                    : t("warRoom.tailorResume.download")}
+                </span>
+                <FontAwesomeIcon icon={faChevronDown} className="w-2.5 h-2.5 opacity-70" />
+              </button>
 
-            {/* Download DOCX button */}
-            <button
-              onClick={handleDownloadDOCX}
-              disabled={isDOCXGenerating}
-              title={t("warRoom.tailorResume.downloadDOCX")}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 border border-blue-300 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {isDOCXGenerating ? (
-                <FontAwesomeIcon
-                  icon={faSpinner}
-                  className="w-3.5 h-3.5 animate-spin"
-                />
-              ) : (
-                <FontAwesomeIcon icon={faFileWord} className="w-3.5 h-3.5" />
+              {showDownloadMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-10 min-w-[170px]">
+                  <button
+                    onClick={() => { setShowDownloadMenu(false); handleDownload(); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <FontAwesomeIcon icon={faDownload} className="w-3.5 h-3.5 text-red-500" />
+                    {t("warRoom.tailorResume.downloadPDF")}
+                  </button>
+                  <button
+                    onClick={() => { setShowDownloadMenu(false); handleDownloadDOCX(); }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <FontAwesomeIcon icon={faFileWord} className="w-3.5 h-3.5 text-blue-600" />
+                    {t("warRoom.tailorResume.downloadDOCX")}
+                  </button>
+                </div>
               )}
-              <span className="hidden sm:inline">
-                {isDOCXGenerating
-                  ? t("warRoom.tailorResume.generatingDOCX")
-                  : t("warRoom.tailorResume.downloadDOCX")}
-              </span>
-            </button>
+            </div>
 
             {/* Re-tailor button */}
             <button

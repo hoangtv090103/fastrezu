@@ -88,3 +88,14 @@ export async function loadPDFComponent(id: TemplateId) {
     default:          return (await import("./classic/ClassicPDF")).default;
   }
 }
+
+export async function loadDOCXBuilder(id: TemplateId) {
+  switch (id) {
+    case "classic":   return (await import("./classic/ClassicDOCX")).buildClassicDOCX;
+    case "modern":    return (await import("./modern/ModernDOCX")).buildModernDOCX;
+    case "executive": return (await import("./executive/ExecutiveDOCX")).buildExecutiveDOCX;
+    case "creative":  return (await import("./creative/CreativeDOCX")).buildCreativeDOCX;
+    case "minimal":   return (await import("./minimal/MinimalDOCX")).buildMinimalDOCX;
+    default:          return (await import("./classic/ClassicDOCX")).buildClassicDOCX;
+  }
+}
