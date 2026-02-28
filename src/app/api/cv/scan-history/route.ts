@@ -88,6 +88,17 @@ export async function POST(request: NextRequest) {
     // Upload file to Supabase Storage (best-effort — failure does not block save)
     let file_storage_path: string | null = null;
     if (file && file.size > 0) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        return NextResponse.json({ error: "File exceeds 10MB limit" }, { status: 400 });
+      }
+      const allowedMimeTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+      if (!allowedMimeTypes.includes(file.type)) {
+        return NextResponse.json({ error: "Only PDF and DOCX files are allowed" }, { status: 400 });
+      }
+
       const ext = file.name.split(".").pop() ?? "pdf";
       const storagePath = `${user.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
