@@ -278,15 +278,15 @@ _Mục tiêu: "Phép màu" của FastRezu - đẻ ra CV khớp 90% JD trong 1 cl
   - Template `modern`, `executive`, `creative`: render ảnh qua `<img>` (HTML preview) và `<Image src={photo_url}>` (PDF).
   - Template `classic`, `minimal`: KHÔNG render ảnh (ưu tiên ATS compatibility).
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Tab "Thông tin cá nhân" trong Vault có khu vực upload ảnh: drag-drop hoặc click chọn file. Hỗ trợ JPG/PNG/WebP, tối đa 5MB.
-  - [ ] Hiển thị preview ảnh ngay sau khi upload thành công. Có nút xóa ảnh.
-  - [ ] API `POST /api/cv/photo-upload`: validate file type/size, upload đến `profile-photos/{userId}/avatar.{ext}` (upsert — ghi đè ảnh cũ), trả về `{ publicUrl }`.
-  - [ ] `publicUrl` được lưu vào `master_profiles` section `personal` cột `content.photo_url` (upsert).
-  - [ ] Khi tailor CV, `photo_url` trong master profile được đưa vào JSON output của AI và lưu trong `content_snapshot`.
-  - [ ] Templates Modern, Executive, Creative render ảnh đại diện trong HTML preview và PDF.
-  - [ ] Templates Classic, Minimal không hiển thị ảnh (theo thiết kế — ATS-first).
-  - [ ] Supabase Storage bucket `profile-photos` được tạo với policy: authenticated users có thể upload/đọc folder của mình; bucket public cho phép URL công khai.
-  - [ ] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
+  - [x] Tab "Thông tin cá nhân" trong Vault có khu vực upload ảnh: drag-drop hoặc click chọn file. Hỗ trợ JPG/PNG/WebP, tối đa 5MB.
+  - [x] Hiển thị preview ảnh ngay sau khi upload thành công. Có nút xóa ảnh.
+  - [x] API `POST /api/cv/photo-upload`: validate file type/size, upload đến `profile-photos/{userId}/avatar.{ext}` (upsert — ghi đè ảnh cũ), trả về `{ publicUrl }`.
+  - [x] `publicUrl` được lưu vào `master_profiles` section `personal` cột `content.photo_url` (upsert).
+  - [x] Khi tailor CV, `photo_url` trong master profile được đưa vào JSON output của AI và lưu trong `content_snapshot`.
+  - [x] Templates Modern, Executive, Creative render ảnh đại diện trong HTML preview và PDF.
+  - [x] Templates Classic, Minimal không hiển thị ảnh (theo thiết kế — ATS-first).
+  - [x] Supabase Storage bucket `profile-photos` được tạo với policy: authenticated users có thể upload/đọc folder của mình; bucket public cho phép URL công khai.
+  - [x] TypeScript clean (`bun tsc --noEmit` pass 0 lỗi).
 
 ---
 
