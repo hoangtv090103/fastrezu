@@ -19,12 +19,42 @@ const STATUS_CONFIG: Record<
   string,
   { label: string; bg: string; text: string; dot: string }
 > = {
-  saved: { label: "Đã lưu", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
-  optimized: { label: "Đã tối ưu", bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
-  applied: { label: "Đã nộp", bg: "bg-yellow-100", text: "text-yellow-700", dot: "bg-yellow-500" },
-  interviewing: { label: "Phỏng vấn", bg: "bg-orange-100", text: "text-orange-700", dot: "bg-orange-500" },
-  offer: { label: "Offer", bg: "bg-green-100", text: "text-green-700", dot: "bg-green-500" },
-  rejected: { label: "Từ chối", bg: "bg-red-100", text: "text-red-700", dot: "bg-red-500" },
+  saved: {
+    label: "Đã lưu",
+    bg: "bg-blue-100",
+    text: "text-blue-700",
+    dot: "bg-blue-500",
+  },
+  optimized: {
+    label: "Đã tối ưu",
+    bg: "bg-purple-100",
+    text: "text-purple-700",
+    dot: "bg-purple-500",
+  },
+  applied: {
+    label: "Đã nộp",
+    bg: "bg-yellow-100",
+    text: "text-yellow-700",
+    dot: "bg-yellow-500",
+  },
+  interviewing: {
+    label: "Phỏng vấn",
+    bg: "bg-orange-100",
+    text: "text-orange-700",
+    dot: "bg-orange-500",
+  },
+  offer: {
+    label: "Offer",
+    bg: "bg-green-100",
+    text: "text-green-700",
+    dot: "bg-green-500",
+  },
+  rejected: {
+    label: "Từ chối",
+    bg: "bg-red-100",
+    text: "text-red-700",
+    dot: "bg-red-500",
+  },
 };
 
 function formatDate(iso: string | null): string {
@@ -70,7 +100,7 @@ export default async function JobDetailPage({ params }: PageProps) {
   // Fetch existing tailored resume (may not exist yet)
   const { data: resume } = await supabase
     .from("resumes")
-    .select("id, content_snapshot, created_at")
+    .select("id, content_snapshot, created_at, template_id, color_theme")
     .eq("job_id", id)
     .maybeSingle();
 
@@ -80,7 +110,6 @@ export default async function JobDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 py-8">
-
         {/* ── Back navigation ── */}
         <BackToJobsLink />
 
@@ -101,11 +130,17 @@ export default async function JobDetailPage({ params }: PageProps) {
 
             <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500">
               <span className="flex items-center gap-1.5">
-                <FontAwesomeIcon icon={faBuilding} className="w-3.5 h-3.5 text-gray-400" />
+                <FontAwesomeIcon
+                  icon={faBuilding}
+                  className="w-3.5 h-3.5 text-gray-400"
+                />
                 {job.company_name}
               </span>
               <span className="flex items-center gap-1.5">
-                <FontAwesomeIcon icon={faCalendar} className="w-3.5 h-3.5 text-gray-400" />
+                <FontAwesomeIcon
+                  icon={faCalendar}
+                  className="w-3.5 h-3.5 text-gray-400"
+                />
                 {formatDate(job.created_at)}
               </span>
               {job.job_url && (
@@ -127,7 +162,6 @@ export default async function JobDetailPage({ params }: PageProps) {
 
         {/* ── Main grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-
           {/* Left: JD text (3/5) */}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
@@ -194,7 +228,8 @@ export default async function JobDetailPage({ params }: PageProps) {
                     resume
                       ? {
                           id: resume.id,
-                          content_snapshot: resume.content_snapshot as TailoredResumeData | null,
+                          content_snapshot:
+                            resume.content_snapshot as TailoredResumeData | null,
                           created_at: resume.created_at,
                         }
                       : null
@@ -203,7 +238,6 @@ export default async function JobDetailPage({ params }: PageProps) {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
