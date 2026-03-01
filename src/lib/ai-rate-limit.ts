@@ -55,20 +55,35 @@ export async function checkAndRecordAIUsage(
 
   // Count usage in the rolling 24-hour window
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+  // Record this call first to mitigate race condition
+  const { data: insertedLog, error: insertError } = await supabase
+    .from("ai_usage_logs")
+    .insert({ user_id: userId, feature })
+    .select("id")
+    .single();
+
+  if (insertError) {
+    console.error("Error logging AI usage for rate limit check:", insertError);
+  }
+
   const { count } = await supabase
     .from("ai_usage_logs")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
+    .eq("feature", feature)
     .gte("created_at", since);
 
   const used = count ?? 0;
-  if (used >= limit) {
-    return { allowed: false, used, limit };
+  if (used > limit) {
+    // Best effort rollback to prevent spam from permanently locking the user's limit higher than allowed
+    if (insertedLog?.id) {
+      supabase.from("ai_usage_logs").delete().eq("id", insertedLog.id).then();
+    }
+    return { allowed: false, used: limit, limit };
   }
 
-  // Record this call
-  await supabase.from("ai_usage_logs").insert({ user_id: userId, feature });
-  return { allowed: true, used: used + 1, limit };
+  return { allowed: true, used, limit };
 }
 
 /**

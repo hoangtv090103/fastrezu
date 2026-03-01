@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase-server'
 import { requirePermission } from '@/lib/admin-auth'
+import { z } from 'zod'
+
+const rateLimitSchema = z.object({
+  rows: z.array(
+    z.object({
+      tier: z.string(),
+      feature: z.string(),
+      daily_limit: z.number().int().min(-1),
+    })
+  ).nonempty(),
+})
 
 export async function GET() {
   try {
@@ -33,17 +44,19 @@ export async function PATCH(request: NextRequest) {
     const service = createServiceClient()
     await requirePermission(service, user.id, 'rate_limits', 'write')
 
-    const body = await request.json() as {
-      rows: Array<{ tier: string; feature: string; daily_limit: number }>
-    }
+    const body = await request.json()
+    const parsed = rateLimitSchema.safeParse(body)
 
-    if (!Array.isArray(body.rows) || body.rows.length === 0) {
-      return NextResponse.json({ error: 'rows must be a non-empty array' }, { status: 400 })
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid payload', details: parsed.error.format() },
+        { status: 400 }
+      )
     }
 
     const { error } = await service
       .from('ai_rate_limit_config')
-      .upsert(body.rows.map((r) => ({
+      .upsert(parsed.data.rows.map((r) => ({
         tier: r.tier,
         feature: r.feature,
         daily_limit: r.daily_limit,

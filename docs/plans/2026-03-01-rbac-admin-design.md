@@ -11,6 +11,7 @@
 Mục tiêu: Xây dựng hệ thống phân quyền RBAC theo phong cách Odoo và trang Admin tại `/admin` để quản lý user, monitoring AI usage, cấu hình rate limits và xem dashboard metrics.
 
 **4 nhóm tính năng Admin cần thiết:**
+
 1. Quản lý User (list, đổi tier, gán group, suspend/restore)
 2. Monitoring AI Usage (`ai_usage_logs`)
 3. Cấu hình Rate Limits (`ai_rate_limit_config`)
@@ -85,21 +86,21 @@ CREATE TABLE IF NOT EXISTS group_permissions (
 
 ### 2.3. System Groups (Seed Data)
 
-| Group | display_name | is_system | Implied |
-|-------|-------------|-----------|---------|
-| `system.administrator` | Quản trị viên | true | implies `system.support` |
-| `system.support` | Hỗ trợ kỹ thuật | true | implies `system.analyst` |
-| `system.analyst` | Phân tích dữ liệu | true | — |
+| Group                  | display_name      | is_system | Implied                  |
+| ---------------------- | ----------------- | --------- | ------------------------ |
+| `system.administrator` | Quản trị viên     | true      | implies `system.support` |
+| `system.support`       | Hỗ trợ kỹ thuật   | true      | implies `system.analyst` |
+| `system.analyst`       | Phân tích dữ liệu | true      | —                        |
 
 **Permissions matrix:**
 
-| Resource | Administrator | Support | Analyst |
-|----------|:---:|:---:|:---:|
-| `users` | CRUD | R+W | — |
-| `ai_usage` | CRUD | R | R |
-| `rate_limits` | CRUD | R | — |
-| `metrics` | CRUD | R | R |
-| `groups` | CRUD | R | — |
+| Resource      | Administrator | Support | Analyst |
+| ------------- | :-----------: | :-----: | :-----: |
+| `users`       |     CRUD      |   R+W   |    —    |
+| `ai_usage`    |     CRUD      |    R    |    R    |
+| `rate_limits` |     CRUD      |    R    |    —    |
+| `metrics`     |     CRUD      |    R    |    R    |
+| `groups`      |     CRUD      |    R    |    —    |
 
 > Implied groups: Administrator kế thừa tất cả permissions của Support, Support kế thừa Analyst.
 
@@ -129,12 +130,12 @@ deleted_by  UUID REFERENCES auth.users(id)         -- audit: ai thực hiện
 
 ### 3.3. Hành vi
 
-| Actor | Hành động | Kết quả |
-|-------|-----------|---------|
-| User tự xóa job | DELETE | `active=false`, `deleted_at=NOW()`, `deleted_by=NULL` |
-| Admin suspend account | PATCH user | `user_profiles.active=false`, `deleted_at=NOW()`, `deleted_by=admin_id` |
-| Admin restore | PATCH user | `active=true`, `deleted_at=NULL`, `deleted_by=NULL` |
-| Admin purge | DELETE (chỉ administrator) | Hard delete vĩnh viễn |
+| Actor                 | Hành động                  | Kết quả                                                                 |
+| --------------------- | -------------------------- | ----------------------------------------------------------------------- |
+| User tự xóa job       | DELETE                     | `active=false`, `deleted_at=NOW()`, `deleted_by=NULL`                   |
+| Admin suspend account | PATCH user                 | `user_profiles.active=false`, `deleted_at=NOW()`, `deleted_by=admin_id` |
+| Admin restore         | PATCH user                 | `active=true`, `deleted_at=NULL`, `deleted_by=NULL`                     |
+| Admin purge           | DELETE (chỉ administrator) | Hard delete vĩnh viễn                                                   |
 
 ### 3.4. RLS updates
 
@@ -149,7 +150,7 @@ CREATE POLICY "users_see_active_only" ON jobs
 
 ### 3.5. Suspended Account Flow
 
-Khi `user_profiles.active = true`: Middleware redirect user về trang `/account-suspended` thay vì dashboard.
+Khi `user_profiles.active = false`: Middleware redirect user về trang `/account-suspended` thay vì dashboard.
 
 ---
 
@@ -177,24 +178,28 @@ src/app/
 ### 4.2. Admin Pages
 
 #### `/admin` — Dashboard
+
 - Số user theo từng tier (free / sprint_pass / pro_pass / beta_free)
 - Tổng AI calls hôm nay, 7 ngày, 30 ngày
 - Top 10 features được gọi nhiều nhất
 - Số account bị suspend
 
 #### `/admin/users` — Danh sách User
+
 - Table: avatar, email, full_name, subscription_tier, groups, created_at, active
 - Filter: tier, group, status (active / suspended)
 - Search: email, full_name
 - Actions inline: đổi tier, gán group, suspend/restore
 
 #### `/admin/users/[id]` — Chi tiết User
+
 - Full profile info
 - AI usage history (chart 30 ngày)
 - Lịch sử thay đổi tier + group (audit log)
 - Actions: đổi tier, manage groups, suspend, purge (chỉ administrator)
 
 #### `/admin/groups` — Quản lý Groups
+
 - List groups + số users trong mỗi group
 - Permission matrix UI (checkbox CRUD per resource)
 - Tạo group mới, thêm/xóa members
@@ -202,12 +207,14 @@ src/app/
 - System groups: disable delete button
 
 #### `/admin/ai-usage` — AI Usage Monitor
+
 - Aggregated table: user, feature, calls (24h / 7d / 30d)
 - Filter by feature name, tier, date range
 - Highlight super-users (vượt limit nhưng vẫn được bypass do tier)
 - Export CSV
 
 #### `/admin/rate-limits` — Rate Limit Config
+
 - Hiển thị `ai_rate_limit_config` dưới dạng inline-edit table
 - Tier × Feature matrix, mỗi ô là input số (`-1` = unlimited)
 - Save button gọi API PATCH
@@ -235,8 +242,8 @@ export async function requirePermission(
   supabase: SupabaseClient,
   userId: string,
   resource: string,
-  action: 'read' | 'write' | 'create' | 'delete'
-): Promise<void | never>  // throws 403 if not permitted
+  action: "read" | "write" | "create" | "delete",
+): Promise<void | never>; // throws 403 if not permitted
 ```
 
 ---
@@ -245,7 +252,7 @@ export async function requirePermission(
 
 ```typescript
 // src/middleware.ts — thêm vào matcher
-export const config = { matcher: ['/admin/:path*', '/(authenticated)/:path*'] }
+export const config = { matcher: ["/admin/:path*", "/(authenticated)/:path*"] };
 
 // Logic:
 // 1. Check session

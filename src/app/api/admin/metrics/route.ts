@@ -16,17 +16,31 @@ export async function GET() {
     const day30ago = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
     // User counts by tier
-    const { data: profiles } = await service
-      .from('user_profiles')
-      .select('subscription_tier, active')
-
+    const TIERS = ['free', 'sprint_pass', 'pro_pass', 'beta_free']
     const byTier: Record<string, number> = {}
-    let suspendedCount = 0
-    profiles?.forEach((p) => {
-      if (!p.active) { suspendedCount++; return }
-      const t = p.subscription_tier ?? 'free'
-      byTier[t] = (byTier[t] ?? 0) + 1
-    })
+
+    await Promise.all(
+      TIERS.map(async (t) => {
+        let query = service
+          .from('user_profiles')
+          .select('id', { count: 'exact', head: true })
+          .eq('active', true)
+
+        if (t === 'free') {
+          query = query.or('subscription_tier.eq.free,subscription_tier.is.null')
+        } else {
+          query = query.eq('subscription_tier', t)
+        }
+
+        const { count } = await query
+        byTier[t] = count ?? 0
+      })
+    )
+
+    const { count: suspendedCount } = await service
+      .from('user_profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('active', false)
 
     // AI calls today
     const { count: callsToday } = await service
@@ -34,11 +48,12 @@ export async function GET() {
       .select('id', { count: 'exact', head: true })
       .gte('created_at', today.toISOString())
 
-    // Top features last 30 days
+    // Top features last 30 days (limit payload size to prevent RAM issues)
     const { data: featureLogs } = await service
       .from('ai_usage_logs')
       .select('feature')
       .gte('created_at', day30ago)
+      .limit(5000)
 
     const featureCounts: Record<string, number> = {}
     featureLogs?.forEach((row) => {
