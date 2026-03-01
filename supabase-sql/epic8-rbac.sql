@@ -82,7 +82,7 @@ INSERT INTO group_implied (from_group_id, to_group_id)
 SELECT a.id, b.id FROM groups a, groups b
 WHERE (a.name = 'system.administrator' AND b.name = 'system.support')
    OR (a.name = 'system.support'       AND b.name = 'system.analyst')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (from_group_id, to_group_id) DO NOTHING;
 
 -- ── Seed: permissions ────────────────────────────────────────────────────────
 -- system.analyst: metrics:R, ai_usage:R
@@ -90,7 +90,7 @@ INSERT INTO group_permissions (group_id, resource, can_read, can_write, can_crea
 SELECT id, 'metrics',   true, false, false, false FROM groups WHERE name = 'system.analyst'
 UNION ALL
 SELECT id, 'ai_usage',  true, false, false, false FROM groups WHERE name = 'system.analyst'
-ON CONFLICT DO NOTHING;
+ON CONFLICT (group_id, resource) DO NOTHING;
 
 -- system.support: users:RW, ai_usage:R, metrics:R, groups:R (+ implied analyst)
 INSERT INTO group_permissions (group_id, resource, can_read, can_write, can_create, can_delete)
@@ -101,7 +101,7 @@ UNION ALL
 SELECT id, 'metrics',   true, false, false, false FROM groups WHERE name = 'system.support'
 UNION ALL
 SELECT id, 'groups',    true, false, false, false FROM groups WHERE name = 'system.support'
-ON CONFLICT DO NOTHING;
+ON CONFLICT (group_id, resource) DO NOTHING;
 
 -- system.administrator: all resources CRUD (+ implied support)
 INSERT INTO group_permissions (group_id, resource, can_read, can_write, can_create, can_delete)
@@ -109,4 +109,17 @@ SELECT id, r.resource, true, true, true, true
 FROM groups,
      (VALUES ('users'), ('ai_usage'), ('rate_limits'), ('metrics'), ('groups')) AS r(resource)
 WHERE name = 'system.administrator'
-ON CONFLICT DO NOTHING;
+ON CONFLICT (group_id, resource) DO NOTHING;
+
+-- ── updated_at trigger for groups ────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE TRIGGER trg_groups_updated_at
+  BEFORE UPDATE ON groups
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
