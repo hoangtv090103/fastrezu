@@ -1,9 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { callOpenAIText } from '@/lib/openai';
 import { SYSTEM_PROMPTS, CVLanguage } from '@/lib/prompts';
+import { createClient } from '@/lib/supabase-server';
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from '@/lib/ai-rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "rewrite-text",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
+    }
+
     const { text, language } = await req.json();
 
     // 1. Validate Input

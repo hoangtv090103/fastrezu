@@ -3,6 +3,8 @@ import { callOpenAI } from '@/lib/openai';
 import { CVLanguage } from '@/contexts/CVEditorContext';
 import { Suggestion } from '@/lib/suggestion-generator';
 import { suggestImprovementsSchema, validateSchema } from '@/lib/validation-schemas';
+import { createClient } from '@/lib/supabase-server';
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from '@/lib/ai-rate-limit';
 
 interface RequestBody {
   suggestions: Suggestion[];
@@ -63,6 +65,29 @@ Return JSON with structure:
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "suggest-improvements",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
+    }
+
     const body: RequestBody = await request.json();
     
     // Validate with Zod

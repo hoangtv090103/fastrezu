@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { callOpenAI } from "@/lib/openai";
 import { getSystemPrompt, CVLanguage } from '@/lib/prompts';
 import { scoreUploadedCVSchema, validateSchema } from "@/lib/validation-schemas";
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from '@/lib/ai-rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,6 +18,22 @@ export async function POST(request: NextRequest) {
         { error: "Authentication required" },
         { status: 401 }
       );
+    }
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "score-uploaded-cv",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
     }
 
     const body = await request.json();
