@@ -17,6 +17,7 @@ export default async function AdminDashboardPage() {
   const byTier: Record<string, number> = {}
   let suspendedCount = 0
   profiles?.forEach((p) => {
+    // Suspended users get their own bucket; excluded from tier counts
     if (!p.active) { suspendedCount++; return }
     const t = p.subscription_tier ?? 'free'
     byTier[t] = (byTier[t] ?? 0) + 1
@@ -71,7 +72,7 @@ export default async function AdminDashboardPage() {
           AI Calls
         </h2>
         <div className="bg-white rounded-lg p-4 shadow-sm border inline-block">
-          <p className="text-4xl font-bold text-blue-600">{callsToday}</p>
+          <p className="text-4xl font-bold text-blue-600">{callsToday ?? 0}</p>
           <p className="text-sm text-gray-500 mt-1">hôm nay</p>
         </div>
       </section>
