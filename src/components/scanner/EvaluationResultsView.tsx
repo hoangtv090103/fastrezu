@@ -15,6 +15,7 @@ import type { CVEvaluationResult } from "@/app/api/ai/evaluate-cv/route";
 export function CircularGauge({
   score,
   label,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   color = "#6366f1",
   size = 120,
 }: {

@@ -9,6 +9,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { handleAPIError, logError } from "@/lib/error-handler";
 import { analyzeJDSchema, validateSchema } from "@/lib/validation-schemas";
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from "@/lib/ai-rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,33 +27,7 @@ export async function POST(request: NextRequest) {
     
     const { jdText, cvId, language } = validation.data;
 
-    // Get system prompt based on language
-    const systemPrompt = getSystemPrompt("analyze_jd", language as CVLanguage);
-
-    // Get user message template based on language
-    const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
-    const userMessage = userMessageTemplates.analyze_jd(jdText);
-
-    // Call OpenAI API
-    let analysis;
-    try {
-      analysis = await callOpenAI(systemPrompt, userMessage);
-    } catch (openaiError) {
-      const error = handleAPIError(
-        openaiError,
-        "analyze-jd OpenAI call",
-        language as "vi" | "en"
-      );
-      logError(error);
-      return NextResponse.json(
-        {
-          error: error.userMessage,
-        },
-        { status: 503 }
-      );
-    }
-
-    // Lưu JD analysis vào database
+    // Xác thực người dùng và kiểm tra rate limit
     const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -83,6 +58,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Rate limiting
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "analyze-jd",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
+    }
+
     // Verify CV belongs to user
     const { data: cv, error: cvError } = await supabase
       .from("cvs")
@@ -98,6 +90,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get system prompt based on language
+    const systemPrompt = getSystemPrompt("analyze_jd", language as CVLanguage);
+
+    // Get user message template based on language
+    const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
+    const userMessage = userMessageTemplates.analyze_jd(jdText);
+
+    // Call OpenAI API
+    let analysis;
+    try {
+      analysis = await callOpenAI(systemPrompt, userMessage);
+    } catch (openaiError) {
+      const error = handleAPIError(
+        openaiError,
+        "analyze-jd OpenAI call",
+        language as "vi" | "en"
+      );
+      logError(error);
+      return NextResponse.json(
+        {
+          error: error.userMessage,
+        },
+        { status: 503 }
+      );
+    }
+
+    // Lưu JD analysis vào database
     // Save JD analysis to database
     const { error: saveError } = await supabase.from("jd_analyses").insert({
       cv_id: cvId,

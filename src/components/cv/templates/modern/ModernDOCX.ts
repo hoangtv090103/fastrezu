@@ -22,8 +22,8 @@ import {
 } from "docx";
 import type { TailoredResumeData, ColorTheme } from "../shared/types";
 import { COLOR_THEMES, SECTION_LABELS } from "../shared/types";
-import { hexToDocxColor, spacer, sectionHeading, bulletParagraphs, skillsRow } from "../shared/docxUtils";
-import { parseBullets, dateRange } from "../shared/utils";
+import { hexToDocxColor, spacer, sectionHeading, bulletParagraphs } from "../shared/docxUtils";
+import { dateRange } from "../shared/utils";
 
 void Packer;
 

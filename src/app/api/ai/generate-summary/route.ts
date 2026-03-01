@@ -4,6 +4,7 @@ import { getSystemPrompt, getUserMessageTemplate, CVLanguage } from '@/lib/promp
 import { AppError, handleAPIError, logError, ERROR_MESSAGES } from '@/lib/error-handler'
 import { logAIOperation } from '@/lib/logger'
 import { createClient } from '@/lib/supabase-server'
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from '@/lib/ai-rate-limit'
 import { validateSchema, generateSummarySchema } from '@/lib/validation-schemas'
 
 export async function POST(request: NextRequest) {
@@ -11,6 +12,26 @@ export async function POST(request: NextRequest) {
     // Get user for tracking
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "generate-summary",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
+    }
     
     const body = await request.json();
     

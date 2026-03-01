@@ -9,6 +9,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { handleAPIError, logError } from "@/lib/error-handler";
 import { generateShadowJDSchema, validateSchema } from "@/lib/validation-schemas";
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from "@/lib/ai-rate-limit";
 
 export async function POST(request: NextRequest) {
   let language: CVLanguage = "vi"; // Default language for error handling
@@ -30,33 +31,7 @@ export async function POST(request: NextRequest) {
     language = validatedData.language as CVLanguage; // Update language from validated data
     const { jobTitle, level, cvId } = validatedData;
 
-    // Get system prompt based on language
-    const systemPrompt = getSystemPrompt("generate_shadow_jd", language as CVLanguage);
-
-    // Get user message template based on language
-    const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
-    const userMessage = userMessageTemplates.generate_shadow_jd(jobTitle, level);
-
-    // Call OpenAI API
-    let shadowJD;
-    try {
-      shadowJD = await callOpenAI(systemPrompt, userMessage);
-    } catch (openaiError) {
-      const error = handleAPIError(
-        openaiError,
-        "generate-shadow-jd OpenAI call",
-        language as "vi" | "en"
-      );
-      logError(error);
-      return NextResponse.json(
-        {
-          error: error.userMessage,
-        },
-        { status: 503 }
-      );
-    }
-
-    // Save Shadow JD analysis to database
+    // Verify auth and rate limit
     const cookieStore = await cookies();
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -87,6 +62,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "generate-shadow-jd",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
+    }
+
     // Verify CV belongs to user
     const { data: cv, error: cvError } = await supabase
       .from("cvs")
@@ -99,6 +90,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "CV not found or access denied" },
         { status: 404 }
+      );
+    }
+
+    // Get system prompt based on language
+    const systemPrompt = getSystemPrompt("generate_shadow_jd", language as CVLanguage);
+
+    // Get user message template based on language
+    const userMessageTemplates = getUserMessageTemplate(language as CVLanguage);
+    const userMessage = userMessageTemplates.generate_shadow_jd(jobTitle, level);
+
+    // Call OpenAI API
+    let shadowJD;
+    try {
+      shadowJD = await callOpenAI(systemPrompt, userMessage);
+    } catch (openaiError) {
+      const error = handleAPIError(
+        openaiError,
+        "generate-shadow-jd OpenAI call",
+        language as "vi" | "en"
+      );
+      logError(error);
+      return NextResponse.json(
+        {
+          error: error.userMessage,
+        },
+        { status: 503 }
       );
     }
 

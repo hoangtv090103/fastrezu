@@ -18,6 +18,34 @@ export default function EducationStep() {
     [key: number]: string | null;
   }>({});
 
+  const validateGraduationDate = (index: number, graduationDate: string) => {
+    if (graduationDate) {
+      const year = parseInt(graduationDate, 10);
+      const currentYear = new Date().getFullYear();
+
+      if (isNaN(year)) {
+        setDateErrors((prev) => ({
+          ...prev,
+          [index]: t("editor.education.graduationDateInvalid"),
+        }));
+      } else if (year < 1950) {
+        setDateErrors((prev) => ({
+          ...prev,
+          [index]: t("editor.education.graduationDatePast"),
+        }));
+      } else if (year > currentYear + 10) {
+        setDateErrors((prev) => ({
+          ...prev,
+          [index]: t("editor.education.graduationDateFuture"),
+        }));
+      } else {
+        setDateErrors((prev) => ({ ...prev, [index]: null }));
+      }
+    } else {
+      setDateErrors((prev) => ({ ...prev, [index]: null }));
+    }
+  };
+
   // Debounced validation (300ms delay)
   const debouncedValidateDate = useDebounce(
     (index: number, graduationDate: string) => {
@@ -57,34 +85,6 @@ export default function EducationStep() {
     // Debounced validation for graduation date
     if (field === "graduation_date") {
       debouncedValidateDate(index, value);
-    }
-  };
-
-  const validateGraduationDate = (index: number, graduationDate: string) => {
-    if (graduationDate) {
-      const year = parseInt(graduationDate, 10);
-      const currentYear = new Date().getFullYear();
-
-      if (isNaN(year)) {
-        setDateErrors((prev) => ({
-          ...prev,
-          [index]: t("editor.education.graduationDateInvalid"),
-        }));
-      } else if (year < 1950) {
-        setDateErrors((prev) => ({
-          ...prev,
-          [index]: t("editor.education.graduationDatePast"),
-        }));
-      } else if (year > currentYear + 10) {
-        setDateErrors((prev) => ({
-          ...prev,
-          [index]: t("editor.education.graduationDateFuture"),
-        }));
-      } else {
-        setDateErrors((prev) => ({ ...prev, [index]: null }));
-      }
-    } else {
-      setDateErrors((prev) => ({ ...prev, [index]: null }));
     }
   };
 

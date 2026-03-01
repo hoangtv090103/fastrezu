@@ -1,7 +1,7 @@
 # System Architecture Document (ARCHITECTURE)
 
 **Project Name:** FastRezu 2.0 - The Career OS
-**Document Status:** Approved / V1.1 (Updated: 2026-02)
+**Document Status:** Approved / V1.2 (Updated: 2026-03)
 
 ## 1. Tổng quan Kiến trúc Hệ thống (High-Level Architecture)
 
@@ -24,24 +24,36 @@ Lõi của hệ thống dựa trên mô hình dữ liệu lấy **Job (Cơ hội
 ### 2.1. Sơ đồ Quan hệ (ERD)
 
 ```
-profiles (1) ──────── (1) master_profiles    [The Vault]
-profiles (1) ──────── (N) jobs               [The War Room]
-jobs     (1) ──────── (1) job_analyses       [The Intel]
-jobs     (1) ──────── (1) resumes            [The Tailor — Tailored Snapshot]
-profiles (1) ──────── (N) cv_scan_history    [The Scanner]
+user_profiles (1) ──────── (1) master_profiles    [The Vault]
+user_profiles (1) ──────── (N) jobs               [The War Room]
+jobs          (1) ──────── (1) job_analyses       [The Intel]
+jobs          (1) ──────── (1) resumes            [The Tailor — Tailored Snapshot]
+user_profiles (1) ──────── (N) cv_scan_history    [The Scanner]
+
+-- RBAC --
+auth.users    (N) ──────── (M) groups             [via user_groups]
+groups        (N) ──────── (M) groups             [via group_implied — kế thừa]
+groups        (1) ──────── (N) group_permissions  [CRUD per resource]
+
+-- Rate Limiting --
+ai_usage_logs (N) ──────── (1) auth.users
+ai_rate_limit_config: tier × feature → daily_limit
 ```
 
 ### 2.2. Chi tiết các Bảng cốt lõi
 
-**Bảng `profiles` (Người dùng & Phân quyền)**
+**Bảng `user_profiles` (Người dùng & Phân quyền)**
 
-| Cột                 | Kiểu    | Ghi chú               |
-| ------------------- | ------- | --------------------- |
-| `id`                | uuid PK | references auth.users |
-| `email`             | text    |                       |
-| `full_name`         | text    |                       |
-| `subscription_tier` | enum    | 'free', 'sprint_pass' |
-| `credits`           | int     | Cho tác vụ AI nặng    |
+| Cột                 | Kiểu        | Ghi chú                                                              |
+| ------------------- | ----------- | -------------------------------------------------------------------- |
+| `id`                | uuid PK     | references auth.users                                                |
+| `email`             | text        |                                                                      |
+| `full_name`         | text        |                                                                      |
+| `subscription_tier` | text        | `'free'` \| `'sprint_pass'` \| `'pro_pass'` \| `'beta_free'`        |
+| `credits`           | int         | Cho tác vụ AI nặng (Future — Payment Sprint)                         |
+| `active`        | boolean     | `true` = account hoạt động bình thường; `false` = bị suspend / soft-deleted |
+| `deleted_at`        | timestamptz | Audit: thời điểm soft-delete                                         |
+| `deleted_by`        | uuid FK     | Audit: ai thực hiện (NULL nếu user tự xóa)                          |
 
 ---
 
@@ -111,6 +123,75 @@ Constraint: `UNIQUE(user_id, section_type)`
 | `evaluation`                                 | jsonb         | JSON chứa strengths, improvements, section scores, ats_tips                          |
 | `extracted_profile`                          | jsonb         | Dữ liệu thô bóc tách được (khớp schema master_profiles)                              |
 | `scanned_at`                                 | timestamptz   |                                                                                      |
+| `active`                                 | boolean       | Soft delete flag                                                                     |
+| `deleted_at`                                 | timestamptz   | Audit                                                                                |
+| `deleted_by`                                 | uuid FK       | Audit                                                                                |
+
+> **Soft Delete Convention:** Các bảng `master_profiles`, `jobs`, `job_analyses`, `resumes`, `cv_scan_history`, `user_profiles` đều có 3 cột soft delete: `active BOOLEAN NOT NULL DEFAULT true` (true = còn tồn tại, false = bị xóa mềm), `deleted_at TIMESTAMPTZ`, `deleted_by UUID FK`. RLS SELECT policies filter `active = true` cho regular users. Admin API dùng service role để thấy tất cả record kể cả đã xóa.
+
+---
+
+### 2.3. Bảng Rate Limiting
+
+**Bảng `ai_rate_limit_config` (Admin-configurable limits)**
+
+| Cột           | Kiểu    | Ghi chú                                               |
+| ------------- | ------- | ----------------------------------------------------- |
+| `tier`        | text    | 'free' \| 'sprint_pass' \| 'pro_pass' \| 'beta_free'  |
+| `feature`     | text    | Tên feature hoặc 'default' áp dụng cho mọi feature   |
+| `daily_limit` | int     | Số lượt/ngày. `-1` = unlimited. Admin có thể UPDATE.  |
+
+**Bảng `ai_usage_logs` (Rolling 24h counter)**
+
+| Cột        | Kiểu        | Ghi chú                      |
+| ---------- | ----------- | ---------------------------- |
+| `user_id`  | uuid FK     |                              |
+| `feature`  | text        | e.g. 'tailor-resume'         |
+| `created_at` | timestamptz | Index: (user_id, created_at DESC) |
+
+---
+
+### 2.4. Bảng RBAC (Odoo-inspired)
+
+**Triết lý:** User thuộc nhiều **Groups** (M2M). Group có thể kế thừa (imply) Group khác. Permission được định nghĩa per-Group per-Resource (CRUD flags) và lưu trong DB — admin chỉnh từ UI, không cần redeploy.
+
+**Bảng `groups`**
+
+| Cột            | Kiểu    | Ghi chú                                          |
+| -------------- | ------- | ------------------------------------------------ |
+| `id`           | uuid PK |                                                  |
+| `name`         | text    | UNIQUE. e.g. `'system.administrator'`            |
+| `display_name` | text    | Tên hiển thị                                     |
+| `category`     | text    | `'system'` \| `'custom'`                         |
+| `is_system`    | boolean | System groups không thể xóa                      |
+
+**Bảng `group_implied`** (PK: from_group_id × to_group_id)
+> Group A `implies` Group B → A kế thừa toàn bộ permissions của B.
+
+**Bảng `user_groups`** (PK: user_id × group_id)
+
+| Cột          | Ghi chú                          |
+| ------------ | -------------------------------- |
+| `granted_at` | Thời điểm assign                 |
+| `granted_by` | Admin nào assign (audit trail)   |
+
+**Bảng `group_permissions`** (PK: group_id × resource)
+
+| Cột         | Ghi chú                                                            |
+| ----------- | ------------------------------------------------------------------ |
+| `resource`  | `'users'` \| `'ai_usage'` \| `'rate_limits'` \| `'metrics'` \| `'groups'` |
+| `can_read`  | boolean                                                            |
+| `can_write` | boolean                                                            |
+| `can_create`| boolean                                                            |
+| `can_delete`| boolean                                                            |
+
+**System Groups (seeded, `is_system=true`):**
+
+| Group | Implied | Permissions tóm tắt |
+| ----- | ------- | ------------------- |
+| `system.administrator` | implies support | ALL resources: CRUD |
+| `system.support` | implies analyst | users:RW, ai_usage:R, metrics:R, groups:R |
+| `system.analyst` | — | metrics:R, ai_usage:R |
 
 ---
 
@@ -127,6 +208,15 @@ src/
 │   │   │   └── scanner/               # The Scanner
 │   │   │       └── history/[id]/      # Chi tiết lần scan
 │   │   └── editor/[cvId]/             # V1 CV editor (giữ lại)
+│   ├── (admin)/
+│   │   ├── layout.tsx                 # Admin shell layout (sidebar, auth check)
+│   │   └── admin/
+│   │       ├── page.tsx               # /admin — Dashboard metrics
+│   │       ├── users/                 # /admin/users — User management
+│   │       │   └── [id]/page.tsx      # Chi tiết user
+│   │       ├── groups/                # /admin/groups — RBAC group management
+│   │       ├── ai-usage/              # /admin/ai-usage — Usage monitoring
+│   │       └── rate-limits/           # /admin/rate-limits — Rate limit config
 │   └── api/
 │       ├── ai/
 │       │   ├── analyze-jd/            # Phân tích JD vs Master Profile
@@ -138,8 +228,13 @@ src/
 │       │   └── photo-upload/          # POST upload ảnh đại diện → profile-photos bucket
 │       ├── jobs/
 │       │   └── crawl-jd/              # Crawl JD từ URL qua Jina.ai
-│       └── vault/
-│           └── generate-summary/
+│       ├── vault/
+│       │   └── generate-summary/
+│       └── admin/
+│           ├── users/                 # GET list, GET/PATCH/DELETE by id
+│           ├── groups/                # CRUD groups, members, permissions
+│           ├── ai-usage/              # GET aggregated usage stats
+│           └── rate-limits/           # GET/PATCH ai_rate_limit_config
 ├── components/
 │   ├── cv/
 │   │   ├── templates/                 # Template Engine (xem Section 5)
@@ -382,6 +477,73 @@ CREATE POLICY "Users read own files" ON storage.objects FOR SELECT TO authentica
 
 - **Supabase RLS:** Bật Row Level Security cho **tất cả** bảng và storage buckets.
 - **Policy chuẩn:** `(auth.uid() = user_id)`. User A không thể truy cập dữ liệu User B.
+- **Soft Delete RLS:** Tất cả bảng user data thêm filter `active = false` trong SELECT policy.
 - **API Protection:** Các route `/api/ai/*` và `/api/cv/*` bắt buộc check `auth.getUser()` trước khi thực thi.
+- **AI Rate Limiting:** Tất cả 5 AI routes có rate limit check qua `checkAndRecordAIUsage()`. `free` tier = 10 lượt/ngày (admin-configurable). `beta_free`, `sprint_pass`, `pro_pass` = unlimited.
+- **Admin Route Protection:** Middleware check `user_groups` trước khi cho phép vào `/admin/*`. Permission chi tiết (`can_read`, `can_write`...) check trong từng API route/Server Component.
 - **SSRF Protection:** Route crawl-jd chặn private IPs và non-HTTP schemes.
 - **File Validation:** Kiểm tra MIME type và file size phía server trước khi upload Storage.
+
+---
+
+## 9. Admin Panel
+
+Trang quản trị tại `/admin` — chỉ dành cho users thuộc ít nhất 1 RBAC Group.
+
+### 9.1. Route Structure
+
+```
+src/app/
+├── (admin)/
+│   ├── layout.tsx              # Admin shell: sidebar + permission context provider
+│   └── admin/
+│       ├── page.tsx            # Dashboard: metrics tổng quan
+│       ├── users/
+│       │   ├── page.tsx        # Danh sách user (search, filter, pagination)
+│       │   └── [id]/page.tsx   # Chi tiết: đổi tier, gán group, suspend/restore
+│       ├── groups/
+│       │   └── page.tsx        # CRUD groups + permission matrix UI
+│       ├── ai-usage/
+│       │   └── page.tsx        # AI usage monitor, top users, filter by feature/date
+│       └── rate-limits/
+│           └── page.tsx        # Inline-edit ai_rate_limit_config table
+```
+
+### 9.2. Admin API Routes
+
+```
+/api/admin/
+├── users/                      GET (list, search, filter)
+├── users/[id]/                 GET, PATCH (tier/groups/active), DELETE (hard purge)
+├── groups/                     GET, POST
+├── groups/[id]/                PATCH, DELETE
+├── groups/[id]/members/        GET, POST, DELETE
+├── groups/[id]/permissions/    GET, PATCH
+├── ai-usage/                   GET (aggregated stats)
+└── rate-limits/                GET, PATCH (bulk update)
+```
+
+### 9.3. Permission Enforcement Pattern
+
+```typescript
+// src/lib/admin-auth.ts
+export async function requirePermission(
+  supabase: SupabaseClient,
+  userId: string,
+  resource: string,  // 'users' | 'ai_usage' | 'rate_limits' | 'metrics' | 'groups'
+  action: 'read' | 'write' | 'create' | 'delete'
+): Promise<void>  // throws Response 403 if not permitted
+```
+
+Implied groups được resolve khi check: nếu user thuộc `system.administrator`, tự động có tất cả permissions của `system.support` và `system.analyst`.
+
+### 9.4. Middleware Logic (bổ sung)
+
+```typescript
+// src/middleware.ts
+// Nếu path bắt đầu bằng /admin:
+//   1. Check session (nếu không có → redirect /login)
+//   2. Check user_profiles.active = false (nếu true → redirect /account-suspended)
+//   3. Check user_groups có ít nhất 1 row (nếu không → redirect /403)
+// Permission chi tiết check trong từng route/page
+```

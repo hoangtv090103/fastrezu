@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faClockRotateLeft,
-  faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import type { CVEvaluationResult } from "@/app/api/ai/evaluate-cv/route";
 import type { ExtractedProfile } from "@/app/api/ai/extract-profile-from-cv/route";

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { callOpenAI } from '@/lib/openai';
 import { analyzeJobSchema, validateSchema } from '@/lib/validation-schemas';
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from '@/lib/ai-rate-limit';
 
 const SYSTEM_PROMPT_VI = `Bạn là FastRezu AI, chuyên gia tư vấn nghề nghiệp và phân tích tuyển dụng.
 Nhiệm vụ: So sánh Mô tả Công việc (JD) với hồ sơ ứng viên, trả về điểm khớp và phân tích lỗ hổng.
@@ -40,6 +41,23 @@ export async function POST(request: NextRequest) {
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limiting
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "analyze-job",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
     }
 
     const body = await request.json();

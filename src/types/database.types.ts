@@ -250,6 +250,67 @@ export type Database = {
           },
         ]
       }
+      group_implied: {
+        Row: { from_group_id: string; to_group_id: string }
+        Insert: { from_group_id: string; to_group_id: string }
+        Update: { from_group_id?: string; to_group_id?: string }
+        Relationships: []
+      }
+      group_permissions: {
+        Row: {
+          group_id: string
+          resource: string
+          can_read: boolean
+          can_write: boolean
+          can_create: boolean
+          can_delete: boolean
+        }
+        Insert: {
+          group_id: string
+          resource: string
+          can_read?: boolean
+          can_write?: boolean
+          can_create?: boolean
+          can_delete?: boolean
+        }
+        Update: {
+          can_read?: boolean
+          can_write?: boolean
+          can_create?: boolean
+          can_delete?: boolean
+        }
+        Relationships: []
+      }
+      groups: {
+        Row: {
+          id: string
+          name: string
+          display_name: string
+          description: string | null
+          category: string
+          is_system: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          display_name: string
+          description?: string | null
+          category?: string
+          is_system?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          display_name?: string
+          description?: string | null
+          category?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jd_analyses: {
         Row: {
           analysis_result: Json | null
@@ -296,7 +357,10 @@ export type Database = {
       }
       job_analyses: {
         Row: {
+          active: boolean
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           gap_analysis: string | null
           id: string
           job_id: string
@@ -304,7 +368,10 @@ export type Database = {
           match_score: number | null
         }
         Insert: {
+          active?: boolean
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           gap_analysis?: string | null
           id?: string
           job_id: string
@@ -312,7 +379,10 @@ export type Database = {
           match_score?: number | null
         }
         Update: {
+          active?: boolean
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           gap_analysis?: string | null
           id?: string
           job_id?: string
@@ -331,8 +401,11 @@ export type Database = {
       }
       jobs: {
         Row: {
+          active: boolean
           company_name: string
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           job_url: string | null
           raw_jd_text: string | null
@@ -342,8 +415,11 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active?: boolean
           company_name: string
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_url?: string | null
           raw_jd_text?: string | null
@@ -353,8 +429,11 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active?: boolean
           company_name?: string
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_url?: string | null
           raw_jd_text?: string | null
@@ -375,24 +454,33 @@ export type Database = {
       }
       master_profiles: {
         Row: {
+          active: boolean
           content: Json | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           section_type: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          active?: boolean
           content?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           section_type: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          active?: boolean
           content?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           section_type?: string
           updated_at?: string | null
@@ -437,28 +525,37 @@ export type Database = {
       }
       resumes: {
         Row: {
+          active: boolean
           ats_score_final: number | null
           color_theme: string
           content_snapshot: Json | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           job_id: string
           template_id: string
         }
         Insert: {
+          active?: boolean
           ats_score_final?: number | null
           color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_id: string
           template_id?: string
         }
         Update: {
+          active?: boolean
           ats_score_final?: number | null
           color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_id?: string
           template_id?: string
@@ -475,40 +572,49 @@ export type Database = {
       }
       cv_scan_history: {
         Row: {
-          id: string
-          user_id: string
-          file_name: string
-          file_storage_path: string | null
-          overall_score: number | null
+          active: boolean
           ats_score: number | null
+          deleted_at: string | null
+          deleted_by: string | null
           design_score: number | null
           evaluation: Json
           extracted_profile: Json
+          file_name: string
+          file_storage_path: string | null
+          id: string
+          overall_score: number | null
           scanned_at: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          file_name: string
-          file_storage_path?: string | null
-          overall_score?: number | null
+          active?: boolean
           ats_score?: number | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           design_score?: number | null
           evaluation: Json
           extracted_profile: Json
+          file_name: string
+          file_storage_path?: string | null
+          id?: string
+          overall_score?: number | null
           scanned_at?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          file_name?: string
-          file_storage_path?: string | null
-          overall_score?: number | null
+          active?: boolean
           ats_score?: number | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           design_score?: number | null
           evaluation?: Json
           extracted_profile?: Json
+          file_name?: string
+          file_storage_path?: string | null
+          id?: string
+          overall_score?: number | null
           scanned_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -519,6 +625,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_groups: {
+        Row: {
+          user_id: string
+          group_id: string
+          granted_at: string
+          granted_by: string | null
+        }
+        Insert: {
+          user_id: string
+          group_id: string
+          granted_at?: string
+          granted_by?: string | null
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+        }
+        Relationships: []
       }
       vault_settings: {
         Row: {
@@ -554,7 +679,10 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          active: boolean
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           email: string
           full_name: string | null
           id: string
@@ -563,7 +691,10 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          active?: boolean
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email: string
           full_name?: string | null
           id: string
@@ -572,13 +703,61 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          active?: boolean
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email?: string
           full_name?: string | null
           id?: string
           phone?: string | null
           subscription_tier?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ai_usage_logs: {
+        Row: {
+          id: string
+          user_id: string
+          feature: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          feature: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          feature?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
+      ai_rate_limit_config: {
+        Row: {
+          id: string
+          tier: string
+          feature: string
+          daily_limit: number
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          tier: string
+          feature?: string
+          daily_limit?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          tier?: string
+          feature?: string
+          daily_limit?: number
+          updated_at?: string
         }
         Relationships: []
       }

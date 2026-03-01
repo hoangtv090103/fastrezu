@@ -1197,5 +1197,26 @@
       }
     },
     "backToList": "Về Phòng ứng tuyển"
+  },
+  "admin": {
+    "panelTitle": "Admin Panel",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Người dùng",
+      "groups": "Phân quyền",
+      "aiUsage": "AI Usage",
+      "rateLimits": "Rate Limits"
+    },
+    "backToMain": "← Về trang chính",
+    "forbidden": {
+      "title": "403",
+      "message": "Bạn không có quyền truy cập trang này.",
+      "backToDashboard": "Quay về Dashboard"
+    },
+    "accountSuspended": {
+      "title": "Tài khoản bị tạm khóa",
+      "message": "Tài khoản của bạn đã bị tạm khóa. Vui lòng liên hệ hỗ trợ để biết thêm thông tin.",
+      "contactSupport": "Liên hệ hỗ trợ"
+    }
   }
 }

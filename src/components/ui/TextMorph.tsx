@@ -57,6 +57,7 @@ export default function TextMorph({
     lastChildrenRef.current = children;
 
     // Start transition
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsVisible(false);
 
     const timeout = setTimeout(() => {

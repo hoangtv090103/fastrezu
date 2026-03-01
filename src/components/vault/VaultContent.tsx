@@ -83,7 +83,7 @@ interface VaultContentProps {
 
 // ── Tab definitions ───────────────────────────────────────────────────
 const getTabDefs = (
-  t: any,
+  t: (key: string, variables?: Record<string, string | number>) => string,
 ): {
   id: TabId;
   label: string;
@@ -190,7 +190,7 @@ function AddSectionPanel({
   available: ReturnType<typeof getTabDefs>;
   onAdd: (id: string) => void;
   enabledSections: string[];
-  t: any;
+  t: (key: string, variables?: Record<string, string | number>) => string;
 }) {
   const [open, setOpen] = useState(false);
   const [, startSave] = useTransition();

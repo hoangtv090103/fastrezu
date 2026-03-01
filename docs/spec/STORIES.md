@@ -367,5 +367,118 @@ _Mục tiêu: Người dùng upload CV sẵn có → AI có tầm nhìn (Vision)
 
 - **Mô tả:** Là một Developer, tôi muốn xóa bỏ các luồng Wizard cũ, các API route AI cũ không còn hợp với luồng Career OS để giảm nợ kỹ thuật (Technical Debt).
 - **Tiêu chí hoàn thành (AC):**
-  - [ ] Codebase sạch sẽ, không còn cảnh báo lỗi (linting/type errors).
+  - [x] Codebase sạch sẽ, không còn cảnh báo lỗi (linting/type errors). ESLint 0 errors.
   - [ ] Xóa các bảng `cvs`, `cv_sections` (nếu có) trên Supabase.
+
+---
+
+## EPIC 8: Admin Panel & RBAC (Quản trị hệ thống)
+
+_Mục tiêu: Xây dựng hệ thống phân quyền RBAC theo phong cách Odoo và trang Admin tại `/admin` để admin quản lý user, cấu hình rate limits, và monitoring AI usage. Áp dụng soft delete trên toàn bộ hệ thống._
+
+**Design Document:** [`docs/plans/2026-03-01-rbac-admin-design.md`](../plans/2026-03-01-rbac-admin-design.md)
+
+---
+
+### Story 8.1: Soft Delete Migration
+
+- **Mô tả:** Là một System Architect, tôi muốn thêm soft delete cho toàn bộ bảng dữ liệu user để không bao giờ mất dữ liệu khi user hoặc admin xóa record.
+- **Kỹ thuật:** Thêm 3 cột vào 6 bảng: `active BOOLEAN NOT NULL DEFAULT true` (index), `deleted_at TIMESTAMPTZ`, `deleted_by UUID FK`. Cập nhật RLS policies để chỉ hiện `active = true` với regular users.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Migration SQL chạy thành công. 6 bảng có đủ 3 cột soft delete: `user_profiles`, `master_profiles`, `jobs`, `job_analyses`, `resumes`, `cv_scan_history`.
+  - [ ] RLS SELECT policies trên tất cả bảng thêm `AND active = true`.
+  - [ ] TypeScript types (`database.types.ts`) được cập nhật.
+  - [ ] Khi user "xóa" job từ UI: SET `active = false, deleted_at = NOW()` thay vì DELETE.
+  - [ ] `user_profiles.active = false` = account bị suspend: middleware redirect về `/account-suspended`.
+
+---
+
+### Story 8.2: RBAC Database Schema & Seed Data
+
+- **Mô tả:** Là một System Architect, tôi muốn tạo hệ thống phân quyền RBAC theo phong cách Odoo với Groups, implied permissions và CRUD flags per resource — lưu toàn bộ trong DB để admin chỉnh từ UI.
+- **Kỹ thuật:** 4 bảng mới: `groups`, `group_implied`, `user_groups`, `group_permissions`. Seed 3 system groups: `system.administrator`, `system.support`, `system.analyst`.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] 4 bảng RBAC được tạo với đúng constraints và indexes.
+  - [ ] RLS: `groups` và `group_permissions` readable by authenticated; `user_groups` readable by owner; tất cả writable chỉ bằng service role.
+  - [ ] 3 system groups được seed với permissions matrix đúng theo thiết kế (`is_system = true`).
+  - [ ] `group_implied` seeded: `system.administrator` implies `system.support`; `system.support` implies `system.analyst`.
+  - [ ] TypeScript types cập nhật đủ 4 bảng mới.
+
+---
+
+### Story 8.3: Middleware & Admin Auth Protection
+
+- **Mô tả:** Là một Security Engineer, tôi muốn route `/admin/*` được bảo vệ tự động và utility function `requirePermission()` để enforce CRUD permissions trong từng admin API route.
+- **Kỹ thuật:**
+  - `src/middleware.ts`: Thêm matcher `/admin/:path*`. Check session → check `user_groups` → check `active` status.
+  - `src/lib/admin-auth.ts`: `requirePermission(supabase, userId, resource, action)` — resolve implied groups, check permission flags, throw 403 nếu không đủ quyền.
+  - Trang `/403` và `/account-suspended` (static pages).
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Truy cập `/admin` khi chưa đăng nhập → redirect `/login`.
+  - [ ] Truy cập `/admin` khi đã login nhưng không có group nào → redirect `/403`.
+  - [ ] Account bị suspend (`active = false`) → redirect `/account-suspended`.
+  - [ ] `requirePermission('users', 'read')` pass với `system.administrator` và `system.support`; throw 403 với `system.analyst`.
+  - [ ] Implied groups được resolve đúng: Administrator có tất cả quyền của Support.
+
+---
+
+### Story 8.4: Admin Dashboard (Metrics Overview)
+
+- **Mô tả:** Là một Admin, tôi muốn trang `/admin` hiển thị các số liệu tổng quan về hệ thống để nắm được tình trạng hoạt động mà không phải vào Supabase Dashboard.
+- **Kỹ thuật:** Server Component fetch từ service role client. Aggregate từ `user_profiles`, `ai_usage_logs`. Require `metrics:read` permission.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] Hiển thị: Tổng user theo tier (free / sprint_pass / pro_pass / beta_free), tổng user bị suspend.
+  - [ ] Tổng AI calls hôm nay, 7 ngày, 30 ngày (từ `ai_usage_logs`).
+  - [ ] Top 5 features được gọi nhiều nhất.
+  - [ ] Accessible tại `/admin`, layout Admin sidebar hiển thị đúng.
+
+---
+
+### Story 8.5: Admin User Management
+
+- **Mô tả:** Là một Admin, tôi muốn xem danh sách tất cả user, tìm kiếm/lọc, và thực hiện các action (đổi tier, gán group, suspend/restore) trực tiếp từ UI.
+- **Kỹ thuật:** API `GET /api/admin/users` (cursor pagination, filter). `PATCH /api/admin/users/[id]` (tier, groups, active). Require `users:read` để xem, `users:write` để sửa. Admin API dùng Supabase service role để bypass RLS.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] `/admin/users`: Table hiển thị email, full_name, subscription_tier, groups, created_at, trạng thái active/suspended.
+  - [ ] Search theo email/full_name. Filter theo tier, group, status.
+  - [ ] Inline action: Dropdown đổi tier → call PATCH API → cập nhật ngay (optimistic update).
+  - [ ] Suspend/Restore button: SET `active = false/true`, `deleted_at`, `deleted_by`.
+  - [ ] `/admin/users/[id]`: Chi tiết user + AI usage chart 30 ngày + lịch sử tier/group changes.
+  - [ ] Users với `users:read` chỉ thấy data, không thấy action buttons.
+
+---
+
+### Story 8.6: Admin Group Management
+
+- **Mô tả:** Là một Admin, tôi muốn tạo group mới, gán permissions (CRUD matrix per resource) và quản lý danh sách thành viên trong mỗi group — tất cả từ UI.
+- **Kỹ thuật:** API `GET/POST /api/admin/groups`, `PATCH/DELETE /api/admin/groups/[id]`, `GET/POST/DELETE /api/admin/groups/[id]/members/`, `GET/PATCH /api/admin/groups/[id]/permissions/`. Require `groups:read/write/create/delete`.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] `/admin/groups`: List groups với số thành viên. System groups (`is_system=true`): disable Delete button, disable rename.
+  - [ ] Tạo group mới: nhập `display_name`, chọn implied groups, save → group mới xuất hiện.
+  - [ ] Permission matrix UI: Grid rows = resources, columns = can_read/write/create/delete. Checkbox. Save.
+  - [ ] Add/Remove members: Search user by email → add. Remove button trên member list.
+  - [ ] Implied group changes propagate đúng khi check permissions.
+
+---
+
+### Story 8.7: Admin AI Usage Monitor
+
+- **Mô tả:** Là một Admin, tôi muốn xem chi tiết AI usage để phát hiện super-users tốn nhiều credits và đưa ra quyết định điều chỉnh rate limits.
+- **Kỹ thuật:** API `GET /api/admin/ai-usage` với aggregation query: GROUP BY user_id, feature; filter by date range. Require `ai_usage:read`.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] `/admin/ai-usage`: Table hiển thị user (email), feature, calls (24h / 7d / 30d).
+  - [ ] Filter by: feature name, subscription_tier, date range.
+  - [ ] Highlight row khi calls > 80% daily_limit trong 24h.
+  - [ ] Link từ user row → `/admin/users/[id]` để xem chi tiết user.
+
+---
+
+### Story 8.8: Admin Rate Limit Config
+
+- **Mô tả:** Là một Admin, tôi muốn chỉnh giới hạn AI calls per tier/feature trực tiếp từ UI mà không cần vào Supabase dashboard hay redeploy code.
+- **Kỹ thuật:** API `GET /api/admin/rate-limits` và `PATCH /api/admin/rate-limits` (bulk update). Require `rate_limits:write`. Inline-edit table render từ `ai_rate_limit_config`.
+- **Tiêu chí hoàn thành (AC):**
+  - [ ] `/admin/rate-limits`: Matrix table: rows = tiers, columns = features (+ 'default'). Mỗi ô là input số. `-1` hiển thị là "∞ Unlimited".
+  - [ ] Chỉnh số → Click "Lưu thay đổi" → PATCH API → toast thành công.
+  - [ ] Thay đổi có hiệu lực ngay với AI calls tiếp theo (không cần redeploy).
+  - [ ] Tooltip giải thích ý nghĩa `default` vs feature-specific.

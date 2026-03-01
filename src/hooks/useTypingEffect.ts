@@ -65,7 +65,6 @@ export function useTypingEffect(
 
         // Type multiple chars per tick for longer texts (progressive speedup)
         const charsPerTick = fullText.length > 300 ? 3 : 1;
-        const chunk = fullText.slice(i, i + charsPerTick);
         i += charsPerTick;
 
         onTextChange(fullText.slice(0, i));

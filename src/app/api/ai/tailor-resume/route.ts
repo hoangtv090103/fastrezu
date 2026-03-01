@@ -9,6 +9,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { handleAPIError, logError } from "@/lib/error-handler";
 import { tailorResumeSchema, validateSchema } from "@/lib/validation-schemas";
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from "@/lib/ai-rate-limit";
 
 // Allow longer processing time for heavy AI model
 export const maxDuration = 180;
@@ -57,6 +58,23 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: check per-user daily AI usage quota
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "tailor-resume",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
     }
 
     // Fetch job data (verify ownership via user_id)
@@ -164,7 +182,6 @@ export async function POST(request: NextRequest) {
       .upsert(
         {
           job_id: jobId,
-          user_id: user.id,
           content_snapshot: tailoredCV,
         },
         { onConflict: "job_id" }

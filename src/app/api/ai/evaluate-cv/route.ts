@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import OpenAI from "openai";
 import { z } from "zod";
 import { getAIClient, getAIModel, injectDateContext } from "@/lib/openai";
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from "@/lib/ai-rate-limit";
 
 export const maxDuration = 60;
 
@@ -188,6 +189,23 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
+    // Rate limiting: check per-user daily AI usage quota
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "evaluate-cv",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
     }
 
     const body = await request.json();

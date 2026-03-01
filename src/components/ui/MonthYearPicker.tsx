@@ -56,6 +56,7 @@ export default function MonthYearPicker({
   // Reset viewYear when opening if selected changes
   useEffect(() => {
     if (open && selected) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setViewYear(selected.year);
     } else if (open && !selected) {
       setViewYear(new Date().getFullYear());

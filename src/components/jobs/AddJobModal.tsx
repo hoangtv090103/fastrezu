@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import {
   addJob,
   updateJob,
@@ -32,6 +32,7 @@ export default function AddJobModal({
 }: AddJobModalProps) {
   const { t } = useTranslation();
   const isEditMode = Boolean(editJob);
+  const mouseDownTargetRef = useRef<EventTarget | null>(null);
   const [title, setTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [jobUrl, setJobUrl] = useState("");
@@ -128,11 +129,11 @@ export default function AddJobModal({
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-      onClick={onClose}
+      onMouseDown={(e) => { mouseDownTargetRef.current = e.target; }}
+      onClick={(e) => { if (mouseDownTargetRef.current === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-2xl p-6 max-w-lg w-full mx-4 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold text-gray-900 mb-5">
           {isEditMode ? t("warRoom.addJobModal.titleEdit") : t("warRoom.addJobModal.titleAdd")}

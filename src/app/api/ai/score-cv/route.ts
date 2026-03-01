@@ -5,6 +5,7 @@ import { handleAPIError, logError } from '@/lib/error-handler';
 import { logger, logAIOperation } from '@/lib/logger';
 import { createClient } from "@/lib/supabase-server";
 import { scoreCVWithDataSchema, validateSchema } from "@/lib/validation-schemas";
+import { checkAndRecordAIUsage, rateLimitExceededResponse } from "@/lib/ai-rate-limit";
 
 // Increase timeout for AI scoring (can take up to 2 minutes)
 export const maxDuration = 120; // 2 minutes
@@ -16,10 +17,30 @@ export async function POST(request: NextRequest) {
   });
 
   try {
-    // Get user ID for tracking
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: check per-user daily AI usage quota
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const rateLimit = await checkAndRecordAIUsage(
+      supabase,
+      user.id,
+      "score-cv",
+      profile?.subscription_tier,
+    );
+    if (!rateLimit.allowed) {
+      return rateLimitExceededResponse(rateLimit.used, rateLimit.limit);
+    }
+
     const body = await request.json();
     
     // Validate with Zod

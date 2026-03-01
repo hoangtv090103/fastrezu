@@ -132,7 +132,7 @@ Prioritize concrete nouns, verbs, and industry-standard terminology found in the
 1.  Write 5-7 distinct bullet points in **Vietnamese**.
 2.  Each bullet point MUST start with a strong **Vietnamese action verb** (e.g., "Phát triển", "Quản lý", "Triển khai", "Tối ưu hóa", "Đạt được", "Giảm thiểu").
 3.  Focus on **achievements and results**, not just listing duties. Use the STAR method implicitly.
-4.  **Quantify results** whenever logical (e.g., "tăng 25%", "giảm 10 giờ/tuần", "hoàn thành trong 3 tháng", "quản lý ngân sách 500 triệu VND").
+4.  **CHỈ DÙNG SỐ LIỆU ĐÃ CÓ:** Nếu thông tin đầu vào đã chứa số liệu cụ thể (%, số lượng, thời gian, ngân sách), hãy sử dụng chúng. Nếu KHÔNG có số liệu nào được cung cấp, mô tả tác động một cách định tính (ví dụ: "cải thiện đáng kể", "giảm thời gian xử lý", "tăng hiệu suất") — TUYỆT ĐỐI KHÔNG tự bịa ra con số.
 5.  **Naturally integrate relevant \`jdKeywords\`** provided into the bullet points. Aim to use several different keywords across the bullets.
 6.  Ensure bullet points are relevant to the \`jobTitle\` and \`experienceLevel\`.
 7.  Keep each bullet point concise (ideally 1-2 lines).
@@ -160,7 +160,7 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 1.  Write 5-7 distinct bullet points in **English**.
 2.  Each bullet point MUST start with a strong **English action verb** (e.g., "Developed", "Managed", "Implemented", "Optimized", "Achieved", "Reduced").
 3.  Focus on **achievements and results**, not just listing duties. Use the STAR method implicitly.
-4.  **Quantify results** whenever logical (e.g., "increased 25%", "reduced 10 hours/week", "completed in 3 months", "managed $500K budget").
+4.  **ONLY USE PROVIDED METRICS:** If the candidate's input already contains specific numbers, percentages, timeframes, or amounts, incorporate them. If NO metrics are provided, describe impact QUALITATIVELY (e.g., "significantly improved", "reduced processing time", "enhanced performance") — do NOT fabricate numbers.
 5.  **Naturally integrate relevant \`jdKeywords\`** provided into the bullet points. Aim to use several different keywords across the bullets.
 6.  Ensure bullet points are relevant to the \`jobTitle\` and \`experienceLevel\`.
 7.  Keep each bullet point concise (ideally 1-2 lines).
@@ -188,7 +188,7 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 
 **Instructions for Improvement:**
 1.  Start with a strong **Vietnamese action verb** (e.g., "Phát triển", "Tối ưu hóa", "Quản lý", "Triển khai", "Đạt được").
-2.  **Quantify the result** whenever possible (use numbers, percentages, timeframes, amounts - e.g., "tăng 30%", "giảm 15%", "trong 6 tháng", "cho 10,000 người dùng"). If no numbers are available, focus on the specific positive impact.
+2.  **CHỈ DÙNG SỐ LIỆU ĐÃ CÓ:** Nếu bullet point gốc hoặc context đã chứa số liệu cụ thể (%, số lượng, thời gian), hãy giữ lại và làm nổi bật chúng. Nếu KHÔNG có số liệu nào, mô tả tác động định tính — TUYỆT ĐỐI KHÔNG tự bịa ra con số.
 3.  Clearly state the **Action** taken.
 4.  Briefly imply the **Situation/Task** if needed for context.
 5.  If \`jdKeywords\` are provided, try to **naturally integrate 1-2 relevant keywords** without sacrificing clarity or impact.
@@ -210,7 +210,7 @@ You MUST output *only* a valid JSON object with the following structure. Do not 
 
 **Instructions for Improvement:**
 1.  Start with a strong **English action verb** (e.g., "Developed", "Optimized", "Managed", "Implemented", "Achieved").
-2.  **Quantify the result** whenever possible (use numbers, percentages, timeframes, amounts - e.g., "increased 30%", "reduced 15%", "in 6 months", "for 10,000 users"). If no numbers are available, focus on the specific positive impact.
+2.  **ONLY USE PROVIDED METRICS:** If the original bullet or context already contains specific numbers, percentages, or timeframes, preserve and highlight them. If NO metrics are provided, describe the impact qualitatively — do NOT fabricate numbers.
 3.  Clearly state the **Action** taken.
 4.  Briefly imply the **Situation/Task** if needed for context.
 5.  If \`jdKeywords\` are provided, try to **naturally integrate 1-2 relevant keywords** without sacrificing clarity or impact.

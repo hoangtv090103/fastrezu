@@ -1200,5 +1200,26 @@
       }
     },
     "backToList": "Back to War Room"
+  },
+  "admin": {
+    "panelTitle": "Admin Panel",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "groups": "Permissions",
+      "aiUsage": "AI Usage",
+      "rateLimits": "Rate Limits"
+    },
+    "backToMain": "← Back to Main",
+    "forbidden": {
+      "title": "403",
+      "message": "You do not have permission to access this page.",
+      "backToDashboard": "Back to Dashboard"
+    },
+    "accountSuspended": {
+      "title": "Account Suspended",
+      "message": "Your account has been suspended. Please contact support for more information.",
+      "contactSupport": "Contact Support"
+    }
   }
 }

@@ -522,6 +522,7 @@ export default function TailorResumeButton({
       });
       const data = await res.json();
       if (res.ok) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { resume_id, job_id: _j, ...cvSnapshot } = data;
         setResume(cvSnapshot as TailoredResumeData);
         if (resume_id) setResumeId(resume_id as string);
