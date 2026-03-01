@@ -44,19 +44,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       }>
     }
 
-    for (const row of body.rows) {
-      const { error } = await service
-        .from('group_permissions')
-        .upsert({
-          group_id: id,
-          resource: row.resource,
-          can_read: row.can_read,
-          can_write: row.can_write,
-          can_create: row.can_create,
-          can_delete: row.can_delete,
-        })
-      if (error) throw error
+    if (!Array.isArray(body.rows) || body.rows.length === 0) {
+      return NextResponse.json({ error: 'rows must be a non-empty array' }, { status: 400 })
     }
+
+    // Bulk upsert — single round-trip, atomic
+    const { error } = await service
+      .from('group_permissions')
+      .upsert(body.rows.map((row) => ({ group_id: id, ...row })))
+    if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (err) {

@@ -55,12 +55,16 @@ export default function GroupsPanel({ initialGroups, initialPermsByGroup, resour
       resource,
       ...getPerms(groupId, resource),
     }))
-    await fetch(`/api/admin/groups/${groupId}/permissions`, {
+    const res = await fetch(`/api/admin/groups/${groupId}/permissions`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ rows }),
     })
     setSaving(null)
+    if (!res.ok) {
+      const data = await res.json() as { error?: string }
+      alert(data.error ?? 'Không thể lưu quyền')
+    }
   }
 
   const deleteGroup = async (groupId: string) => {
