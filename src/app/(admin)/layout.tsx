@@ -16,7 +16,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq('id', user.id)
     .single()
 
-  if (profile && !profile.active) redirect('/account-suspended')
+  // Treat missing profile the same as suspended — fail safe
+  if (!profile || !profile.active) redirect('/account-suspended')
 
   // Check admin group membership via service client (bypasses RLS)
   const serviceClient = createServiceClient()
