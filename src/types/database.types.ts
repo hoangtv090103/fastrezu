@@ -307,7 +307,7 @@ export type Database = {
           match_score: number | null
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           created_at?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -318,7 +318,7 @@ export type Database = {
           match_score?: number | null
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           created_at?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -354,7 +354,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           company_name: string
           created_at?: string | null
           deleted_at?: string | null
@@ -368,7 +368,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           company_name?: string
           created_at?: string | null
           deleted_at?: string | null
@@ -404,7 +404,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           content?: Json | null
           created_at?: string | null
           deleted_at?: string | null
@@ -415,7 +415,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           content?: Json | null
           created_at?: string | null
           deleted_at?: string | null
@@ -476,7 +476,7 @@ export type Database = {
           template_id: string
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           ats_score_final?: number | null
           color_theme?: string
           content_snapshot?: Json | null
@@ -488,7 +488,7 @@ export type Database = {
           template_id?: string
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           ats_score_final?: number | null
           color_theme?: string
           content_snapshot?: Json | null
@@ -526,7 +526,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           ats_score?: number | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -541,7 +541,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           ats_score?: number | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -611,7 +611,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           created_at?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
@@ -623,7 +623,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           created_at?: string | null
           deleted_at?: string | null
           deleted_by?: string | null

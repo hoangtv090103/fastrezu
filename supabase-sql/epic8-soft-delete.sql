@@ -20,6 +20,8 @@ ALTER TABLE master_profiles
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
 
+CREATE INDEX IF NOT EXISTS idx_master_profiles_active ON master_profiles (active);
+
 -- ── jobs ─────────────────────────────────────────────────────────────────────
 ALTER TABLE jobs
   ADD COLUMN IF NOT EXISTS active     BOOLEAN     NOT NULL DEFAULT true,
@@ -34,17 +36,23 @@ ALTER TABLE job_analyses
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
 
+CREATE INDEX IF NOT EXISTS idx_job_analyses_active ON job_analyses (active);
+
 -- ── resumes ───────────────────────────────────────────────────────────────────
 ALTER TABLE resumes
   ADD COLUMN IF NOT EXISTS active     BOOLEAN     NOT NULL DEFAULT true,
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
 
+CREATE INDEX IF NOT EXISTS idx_resumes_active ON resumes (active);
+
 -- ── cv_scan_history ───────────────────────────────────────────────────────────
 ALTER TABLE cv_scan_history
   ADD COLUMN IF NOT EXISTS active     BOOLEAN     NOT NULL DEFAULT true,
   ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS deleted_by UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_cv_scan_history_active ON cv_scan_history (active);
 
 -- ── RLS: add active = true filter to existing SELECT policies ────────────────
 -- NOTE: Drop and recreate existing SELECT policies to add the active filter.
