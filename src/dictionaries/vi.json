@@ -856,20 +856,20 @@
       }
     },
     "features": {
-      "sectionTitle": "Các công cụ khác giúp bạn kiểm tra.",
-      "sectionTitleBreak": "FastRezu giúp bạn tạo và tối ưu.",
-      "sectionDescription": "Chúng tôi không chỉ chấm điểm CV có sẵn. Chúng tôi cung cấp bộ công cụ AI toàn diện để tạo CV vượt trội, được tối ưu ATS, giải quyết những thách thức cốt lõi của thị trường tuyển dụng AI.",
+      "sectionTitle": "Hệ sinh thái công cụ toàn diện.",
+      "sectionTitleBreak": "Tất cả những gì bạn cần để trúng tuyển.",
+      "sectionDescription": "Chúng tôi không chỉ giúp bạn tạo CV. FastRezu cung cấp 3 giải pháp đột phá để quản lý hồ sơ, đánh giá chất lượng và tự động may đo CV cho từng vị trí bạn ứng tuyển.",
       "feature1": {
-        "title": "Tạo nội dung tập trung vào thành tích",
-        "description": "Giải quyết vấn đề lớn nhất: Biến kinh nghiệm chung thành thành tích định lượng với số liệu và động từ mạnh. Khác với đối thủ, chúng tôi viết nội dung thuyết phục từ đầu bằng nhiều ngôn ngữ."
+        "title": "Hồ sơ gốc - Kho lưu trữ sự nghiệp",
+        "description": "Quản lý toàn bộ thông tin cá nhân, kinh nghiệm, học vấn và kỹ năng tại một nơi duy nhất. Dữ liệu được mã hóa chuẩn ngân hàng, luôn sẵn sàng để trích xuất cho bất kỳ CV nào."
       },
       "feature2": {
-        "title": "Tích hợp từ khóa JD nâng cao",
-        "description": "Tự động phân tích mô tả công việc và tích hợp liền mạch từ khóa quan trọng vào nội dung CV. Đảm bảo tương thích với hệ thống ATS hiện đại trên toàn cầu."
+        "title": "Bộ phân tích CV - Chấm điểm AI toàn diện",
+        "description": "Tải CV hiện tại lên để AI kiểm tra cả nội dung văn bản và cấu trúc thiết kế. Nhận điểm số mô phỏng hệ thống ATS thực tế và các gợi ý cải thiện chi tiết."
       },
       "feature3": {
-        "title": "Tương thích ATS & chấm điểm",
-        "description": "Tải CV hiện có để phân tích AI toàn diện, phát hiện lỗi ATS, và nhận gợi ý cải thiện cụ thể. Nhận điểm chi tiết và khuyến nghị hành động để vượt qua sàng lọc tự động."
+        "title": "Phòng ứng tuyển - May đo CV",
+        "description": "Lưu trữ CÔNG VIỆC bạn quan tâm. AI tự động đối chiếu MÔ TẢ CÔNG VIỆC với dữ liệu từ Hồ sơ gốc để sinh ra một phiên bản CV hoàn hảo nhất, đầy đủ từ khóa và nêu bật kinh nghiệm liên quan."
       }
     },
     "cta": {

@@ -102,8 +102,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4">
+      <header className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100/50">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2">
               <Image
@@ -114,7 +114,7 @@ export default function LandingPage() {
                 className="w-8 h-8 object-contain"
                 priority
               />
-              <span className="heading-feature text-xl text-gray-900">
+              <span className="heading-feature text-xl text-gray-900 tracking-tight">
                 {t("landing.header.brandName")}
               </span>
             </div>
@@ -122,7 +122,7 @@ export default function LandingPage() {
               <LanguageSwitcher />
               <button
                 onClick={handleCreateCV}
-                className="hidden sm:block px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 font-medium transition-colors rounded-lg cursor-pointer"
+                className="hidden sm:inline-flex px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all duration-200 rounded-full shadow-md hover:shadow-lg cursor-pointer text-sm items-center justify-center transform hover:-translate-y-0.5"
               >
                 {t("auth.login")}
               </button>
@@ -132,21 +132,28 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-linear-to-br from-blue-50 via-white to-indigo-50">
-        <div className="container mx-auto px-4 py-12 md:py-20 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <section className="relative overflow-hidden bg-linear-to-br from-indigo-50/80 via-white to-blue-50/80">
+        <div className="container mx-auto px-4 py-16 md:py-24 lg:py-32 max-w-7xl relative z-10">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             {/* Left Column - Text */}
             <div className="text-center lg:text-left animate-fade-in-up">
-              <h1 className="heading-main text-3xl sm:text-4xl lg:text-5xl text-gray-900 mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold uppercase tracking-wider mb-6 shadow-xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                AI-Powered ATS Optimization
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-[1.15] tracking-tight">
                 {t("landing.hero.title")}
-                <span className="block text-blue-600 mt-2">
+                <span className="block text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-indigo-600 mt-2 pb-1">
                   {t("landing.hero.titleHighlight")}
                 </span>
-                <span className="block gradient-text mt-1">
+                <span className="block text-gray-800 mt-1">
                   {t("landing.hero.titleAction")}
                 </span>
               </h1>
-              <p className="body-text text-gray-600 text-base sm:text-lg mb-6 max-w-xl mx-auto lg:mx-0">
+              <p className="body-text text-gray-600 text-lg sm:text-xl mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
                 {t("landing.hero.subtitle")}
               </p>
 
@@ -163,15 +170,16 @@ export default function LandingPage() {
 
             {/* Right Column - Upload Widget */}
             <div
-              className="animate-fade-in-up"
+              className="animate-fade-in-up relative"
               style={{ animationDelay: "0.2s" }}
             >
-              <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-100">
-                <div className="text-center mb-6">
-                  <h2 className="heading-sub text-xl sm:text-2xl text-gray-900 mb-2">
+              <div className="absolute inset-0 bg-linear-to-br from-blue-200/20 to-indigo-200/20 rounded-4xl blur-2xl transform scale-105"></div>
+              <div className="relative bg-white/90 backdrop-blur-xl rounded-4xl shadow-xl p-8 sm:p-10 border border-gray-100/80">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 tracking-tight">
                     {t("landing.uploadWidget.heading")}
                   </h2>
-                  <p className="body-text text-gray-600">
+                  <p className="text-gray-500 font-medium">
                     {t("landing.uploadWidget.subheading")}
                   </p>
                 </div>
@@ -185,7 +193,6 @@ export default function LandingPage() {
                   className="hidden"
                 />
 
-                {/* Upload Zone */}
                 <div
                   onClick={handleUploadClick}
                   onDragEnter={handleDragEnter}
@@ -206,15 +213,15 @@ export default function LandingPage() {
                       : t("landing.uploadWidget.button")
                   }
                   aria-disabled={isUploading}
-                  className={`border-2 border-dashed rounded-xl p-8 sm:p-10 cursor-pointer transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  className={`border-2 border-dashed rounded-2xl p-8 sm:p-12 cursor-pointer transition-all duration-300 group focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${
                     isDragging
-                      ? "border-blue-600 bg-blue-100"
-                      : "border-blue-300 hover:border-blue-500 hover:bg-blue-50/50"
-                  } ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
+                      ? "border-blue-500 bg-blue-50/50 scale-[1.02]"
+                      : "border-gray-200 hover:border-blue-400 hover:bg-gray-50/50"
+                  } ${isUploading ? "opacity-60 pointer-events-none" : ""}`}
                 >
                   <div className="flex flex-col items-center">
                     {/* Upload Icon / Loading */}
-                    <div className="mb-4 p-4 bg-blue-100 rounded-full group-hover:scale-110 transition-transform duration-300">
+                    <div className="mb-6 p-5 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
                       {isUploading ? (
                         <svg
                           className="w-10 h-10 text-blue-600 animate-spin"
@@ -253,7 +260,7 @@ export default function LandingPage() {
                     </div>
 
                     {/* Visual label - not a nested button */}
-                    <span className="btn-primary mb-3 text-base sm:text-lg px-6 py-3 pointer-events-none">
+                    <span className="inline-flex items-center justify-center px-8 py-3 mb-4 text-base font-semibold text-white bg-gray-900 rounded-full pointer-events-none shadow-md">
                       {isUploading
                         ? t("upload.processing")
                         : t("landing.uploadWidget.button")}
@@ -266,20 +273,19 @@ export default function LandingPage() {
                         : t("landing.uploadWidget.dragText")}
                     </p>
 
-                    {/* File formats */}
-                    <div className="mt-4 flex items-center gap-2">
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                        📄 PDF
+                    <div className="mt-6 flex items-center gap-3">
+                      <span className="px-3 py-1 bg-white border border-gray-100 shadow-sm text-gray-500 text-xs font-bold tracking-wider rounded-md">
+                        PDF
                       </span>
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
-                        📝 DOCX
+                      <span className="px-3 py-1 bg-white border border-gray-100 shadow-sm text-gray-500 text-xs font-bold tracking-wider rounded-md">
+                        DOCX
                       </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Trust badges */}
-                <div className="mt-6 flex items-center justify-center gap-4 text-sm text-gray-500">
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-sm font-medium text-gray-600">
                   <span className="flex items-center gap-1">
                     <svg
                       className="w-4 h-4 text-green-500"
@@ -320,9 +326,9 @@ export default function LandingPage() {
       </section>
 
       {/* Companies Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <p className="text-center small-text text-gray-500 mb-8">
+      <section className="py-12 border-b border-gray-100 bg-white">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <p className="text-center text-sm font-semibold tracking-wider text-gray-400 uppercase mb-8">
             {t("landing.companies.title")}
           </p>
           <CompanyCarousel />
@@ -330,24 +336,25 @@ export default function LandingPage() {
       </section>
 
       {/* Pain Points Section */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="heading-sub text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4">
+      <section className="py-20 md:py-28 bg-gray-50/50 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-blue-50/40 via-transparent to-transparent pointer-events-none"></div>
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="text-center mb-16 md:mb-20">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
               {t("landing.painPoints.sectionTitle")}
-              <span className="block text-blue-600 mt-2 font-bold">
+              <span className="block mt-2 pb-1 bg-clip-text text-transparent bg-linear-to-r from-indigo-600 to-blue-500">
                 {t("landing.painPoints.sectionTitleBreak")}
               </span>
             </h2>
-            <p className="body-text text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
               {t("landing.painPoints.sectionDescription")}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
             {/* Pain 1 */}
-            <div className="bg-linear-to-br from-red-50 to-orange-50 rounded-2xl p-6 lg:p-8 card-hover border border-red-100">
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="group bg-white/60 backdrop-blur-sm rounded-4xl p-8 lg:p-10 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-red-100/50 hover:bg-red-50/30">
+              <div className="w-14 h-14 bg-red-100/60 rounded-2xl flex items-center justify-center mb-6 text-red-600 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
                 <svg
                   className="w-6 h-6 text-red-600"
                   fill="none"
@@ -362,17 +369,17 @@ export default function LandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="heading-feature text-lg text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight group-hover:text-red-700 transition-colors">
                 {t("landing.painPoints.pain1.title")}
               </h3>
-              <p className="small-text text-gray-600">
+              <p className="text-gray-600 leading-relaxed font-medium">
                 {t("landing.painPoints.pain1.description")}
               </p>
             </div>
 
             {/* Pain 2 */}
-            <div className="bg-linear-to-br from-yellow-50 to-amber-50 rounded-2xl p-6 lg:p-8 card-hover border border-yellow-100">
-              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="group bg-white/60 backdrop-blur-sm rounded-4xl p-8 lg:p-10 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-orange-100/50 hover:bg-orange-50/30">
+              <div className="w-14 h-14 bg-orange-100/60 rounded-2xl flex items-center justify-center mb-6 text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
                 <svg
                   className="w-6 h-6 text-yellow-600"
                   fill="none"
@@ -387,17 +394,17 @@ export default function LandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="heading-feature text-lg text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight group-hover:text-orange-700 transition-colors">
                 {t("landing.painPoints.pain2.title")}
               </h3>
-              <p className="small-text text-gray-600">
+              <p className="text-gray-600 leading-relaxed font-medium">
                 {t("landing.painPoints.pain2.description")}
               </p>
             </div>
 
             {/* Pain 3 */}
-            <div className="bg-linear-to-br from-purple-50 to-indigo-50 rounded-2xl p-6 lg:p-8 card-hover border border-purple-100">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="group bg-white/60 backdrop-blur-sm rounded-4xl p-8 lg:p-10 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-yellow-100/50 hover:bg-yellow-50/30">
+              <div className="w-14 h-14 bg-yellow-100/60 rounded-2xl flex items-center justify-center mb-6 text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white transition-colors duration-300">
                 <svg
                   className="w-6 h-6 text-purple-600"
                   fill="none"
@@ -412,10 +419,10 @@ export default function LandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="heading-feature text-lg text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight group-hover:text-yellow-700 transition-colors">
                 {t("landing.painPoints.pain3.title")}
               </h3>
-              <p className="small-text text-gray-600">
+              <p className="text-gray-600 leading-relaxed font-medium">
                 {t("landing.painPoints.pain3.description")}
               </p>
             </div>
@@ -424,26 +431,30 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 md:py-24 bg-linear-to-b from-gray-50 to-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="heading-sub text-2xl sm:text-3xl lg:text-4xl text-gray-900 mb-4">
+      <section className="py-20 md:py-32 bg-white relative overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,var(--tw-gradient-stops))] from-blue-50/30 via-white to-white pointer-events-none"></div>
+
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          <div className="text-center mb-16 md:mb-20">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
               {t("landing.features.sectionTitle")}
-              <span className="block text-green-600 mt-2 font-bold">
+              <span className="block mt-2 bg-clip-text text-transparent bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 pb-1">
                 {t("landing.features.sectionTitleBreak")}
               </span>
             </h2>
-            <p className="body-text text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
               {t("landing.features.sectionDescription")}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
             {/* Feature 1 */}
-            <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="relative group rounded-4xl p-8 lg:p-10 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-gray-100">
+              <div className="absolute inset-0 rounded-4xl border-2 border-transparent group-hover:border-blue-100 transition-colors duration-300 pointer-events-none"></div>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 <svg
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -456,19 +467,20 @@ export default function LandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="heading-feature text-lg text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">
                 {t("landing.features.feature1.title")}
               </h3>
-              <p className="small-text text-gray-600">
+              <p className="text-gray-600 leading-relaxed font-medium">
                 {t("landing.features.feature1.description")}
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="relative group rounded-4xl p-8 lg:p-10 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-gray-100">
+              <div className="absolute inset-0 rounded-4xl border-2 border-transparent group-hover:border-emerald-100 transition-colors duration-300 pointer-events-none"></div>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-linear-to-br from-emerald-400 to-teal-500 text-white shadow-lg shadow-emerald-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 <svg
-                  className="w-6 h-6 text-green-600"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -481,19 +493,20 @@ export default function LandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="heading-feature text-lg text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">
                 {t("landing.features.feature2.title")}
               </h3>
-              <p className="small-text text-gray-600">
+              <p className="text-gray-600 leading-relaxed font-medium">
                 {t("landing.features.feature2.description")}
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white rounded-2xl p-6 lg:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
-              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4">
+            <div className="relative group rounded-4xl p-8 lg:p-10 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 border border-gray-100">
+              <div className="absolute inset-0 rounded-4xl border-2 border-transparent group-hover:border-purple-100 transition-colors duration-300 pointer-events-none"></div>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-linear-to-br from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 <svg
-                  className="w-6 h-6 text-indigo-600"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -506,10 +519,10 @@ export default function LandingPage() {
                   />
                 </svg>
               </div>
-              <h3 className="heading-feature text-lg text-gray-900 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">
                 {t("landing.features.feature3.title")}
               </h3>
-              <p className="small-text text-gray-600">
+              <p className="text-gray-600 leading-relaxed font-medium">
                 {t("landing.features.feature3.description")}
               </p>
             </div>
@@ -518,45 +531,58 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-linear-to-r from-blue-600 to-indigo-700">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="heading-sub text-2xl sm:text-3xl lg:text-4xl text-white mb-4">
-            {t("landing.cta.title")}
-          </h2>
-          <p className="body-text text-blue-100 max-w-2xl mx-auto mb-8">
-            {t("landing.cta.description")}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={handleUploadClick}
-              className="bg-white text-blue-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg text-lg"
-            >
-              {t("upload.ctaButtons.checkCV")}
-            </button>
-            <button
-              onClick={handleCreateCV}
-              className="border-2 border-white text-white hover:bg-white/10 font-bold py-4 px-8 rounded-lg transition-all duration-200"
-            >
-              {t("upload.ctaButtons.createCV")}
-            </button>
+      <section className="py-20 md:py-28 my-10 bg-white">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="relative rounded-4xl overflow-hidden bg-gray-900 shadow-2xl">
+            {/* Minimalistic CTA Effects */}
+            <div className="absolute inset-0 bg-linear-to-br from-indigo-900/40 via-blue-900/30 to-purple-900/40"></div>
+
+            <div className="relative z-10 px-8 py-20 md:py-24 text-center">
+              <h2 className="text-4xl sm:text-5xl font-extrabold text-white mb-6 tracking-tight max-w-3xl mx-auto leading-tight">
+                {t("landing.cta.title")}
+              </h2>
+              <p className="text-lg text-indigo-100 max-w-2xl mx-auto mb-10 leading-relaxed font-medium opacity-90">
+                {t("landing.cta.description")}
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+                <button
+                  onClick={handleUploadClick}
+                  className="w-full sm:w-auto px-10 py-4.5 text-lg font-bold text-gray-900 bg-white hover:bg-gray-50 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 inline-flex items-center justify-center gap-2"
+                >
+                  {t("upload.ctaButtons.checkCV")}
+                </button>
+                <button
+                  onClick={handleCreateCV}
+                  className="w-full sm:w-auto px-10 py-4.5 text-lg font-bold text-white bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-2xl transition-all duration-300 border border-white/20 hover:border-white/40 inline-flex items-center justify-center gap-2"
+                >
+                  {t("upload.ctaButtons.createCV")}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 bg-gray-900 text-gray-400">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Image
-              src="/fastrezu-logo/trans_bg.png"
-              alt="FastRezu Logo"
-              width={24}
-              height={24}
-              className="w-6 h-6 object-contain"
-            />
-            <span className="text-white font-semibold">FastRezu</span>
+      <footer className="py-12 bg-white border-t border-gray-100 mt-10">
+        <div className="container mx-auto px-4 max-w-7xl flex flex-col items-center justify-center text-center">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-100">
+              <Image
+                src="/fastrezu-logo/trans_bg.png"
+                alt="FastRezu Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <span className="text-xl font-extrabold text-gray-900 tracking-tight">
+              FastRezu
+            </span>
           </div>
-          <p className="small-text">{t("landing.footer.copyright")}</p>
+          <p className="text-sm font-medium text-gray-500">
+            {t("landing.footer.copyright")}
+          </p>
         </div>
       </footer>
     </div>

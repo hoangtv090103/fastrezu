@@ -859,20 +859,20 @@
       }
     },
     "features": {
-      "sectionTitle": "Others help you check.",
-      "sectionTitleBreak": "FastRezu helps you create and optimize.",
-      "sectionDescription": "We don't just score existing CVs. We provide comprehensive AI tools to create outstanding, ATS-optimized CVs that address the core challenges of modern AI-driven recruitment.",
+      "sectionTitle": "Comprehensive Tool Ecosystem.",
+      "sectionTitleBreak": "Everything you need to win over recruiters.",
+      "sectionDescription": "Discover FastRezu's tri-tool ecosystem that helps you manage your career profile, evaluate your current CV, and automatically tailor resumes for specific job applications.",
       "feature1": {
-        "title": "Achievement-focused content generation",
-        "description": "Solving the biggest pain point: Transform generic experience into quantifiable achievements with metrics and strong verbs. Unlike competitors, we write compelling content from scratch in multiple languages."
+        "title": "The Vault: Career Data Storage",
+        "description": "Manage all your personal info, experience, education, and skills in one central hub. Standardized data ready to be extracted for any application."
       },
       "feature2": {
-        "title": "Advanced JD keyword integration",
-        "description": "Automatically analyzes job descriptions and seamlessly integrates critical keywords into your CV content. Ensures compatibility with modern ATS systems worldwide."
+        "title": "The Scanner: ATS & Design Evaluation",
+        "description": "Upload your current CV. Our AI analyzes both text content and visual layout against ATS standards, providing detailed scores and actionable improvement suggestions."
       },
       "feature3": {
-        "title": "ATS compatibility & scoring",
-        "description": "Upload existing CVs for comprehensive AI analysis, ATS error detection, and specific improvement suggestions. Get detailed scores and actionable recommendations to beat automated screening."
+        "title": "War Room: Application Tailoring",
+        "description": "Save jobs you're interested in. AI automatically analyzes your match score and tailors a custom CV using data from The Vault to perfectly match the JD."
       }
     },
     "cta": {
