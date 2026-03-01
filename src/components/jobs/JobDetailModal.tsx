@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,6 +40,7 @@ export default function JobDetailModal({
   onResumeCreated,
 }: JobDetailModalProps) {
   const { t } = useTranslation();
+  const mouseDownTargetRef = useRef<EventTarget | null>(null);
 
   // Status config uses i18n keys
   const STATUS_CONFIG: Record<string, { bg: string; text: string; dot: string }> = {
@@ -96,11 +97,11 @@ export default function JobDetailModal({
   return (
     <div
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
-      onClick={onClose}
+      onMouseDown={(e) => { mouseDownTargetRef.current = e.target; }}
+      onClick={(e) => { if (mouseDownTargetRef.current === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[90vh]"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* ── Toolbar ── */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 shrink-0">
