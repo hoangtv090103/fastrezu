@@ -250,6 +250,67 @@ export type Database = {
           },
         ]
       }
+      group_implied: {
+        Row: { from_group_id: string; to_group_id: string }
+        Insert: { from_group_id: string; to_group_id: string }
+        Update: { from_group_id?: string; to_group_id?: string }
+        Relationships: []
+      }
+      group_permissions: {
+        Row: {
+          group_id: string
+          resource: string
+          can_read: boolean
+          can_write: boolean
+          can_create: boolean
+          can_delete: boolean
+        }
+        Insert: {
+          group_id: string
+          resource: string
+          can_read?: boolean
+          can_write?: boolean
+          can_create?: boolean
+          can_delete?: boolean
+        }
+        Update: {
+          can_read?: boolean
+          can_write?: boolean
+          can_create?: boolean
+          can_delete?: boolean
+        }
+        Relationships: []
+      }
+      groups: {
+        Row: {
+          id: string
+          name: string
+          display_name: string
+          description: string | null
+          category: string
+          is_system: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          display_name: string
+          description?: string | null
+          category?: string
+          is_system?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          name?: string
+          display_name?: string
+          description?: string | null
+          category?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jd_analyses: {
         Row: {
           analysis_result: Json | null
@@ -564,6 +625,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_groups: {
+        Row: {
+          user_id: string
+          group_id: string
+          granted_at: string
+          granted_by: string | null
+        }
+        Insert: {
+          user_id: string
+          group_id: string
+          granted_at?: string
+          granted_by?: string | null
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+        }
+        Relationships: []
       }
       vault_settings: {
         Row: {
