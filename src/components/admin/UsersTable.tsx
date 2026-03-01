@@ -120,12 +120,12 @@ export default function UsersTable({ initialUsers, groups }: Props) {
           </thead>
           <tbody className="divide-y">
             {users.map((u) => (
-              <tr key={u.id} className={u.active ? '' : 'bg-red-50'}>
+              <tr key={`${u.id}-${u.subscription_tier}`} className={u.active ? '' : 'bg-red-50'}>
                 <td className="px-4 py-3 text-gray-900">{u.email ?? '—'}</td>
                 <td className="px-4 py-3 text-gray-700">{u.full_name ?? '—'}</td>
                 <td className="px-4 py-3">
                   <select
-                    defaultValue={u.subscription_tier ?? 'free'}
+                    value={u.subscription_tier ?? 'free'}
                     onChange={(e) => patchUser(u.id, { subscription_tier: e.target.value })}
                     className="border rounded px-2 py-1 text-xs"
                   >

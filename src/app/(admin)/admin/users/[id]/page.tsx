@@ -19,7 +19,9 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
     .select('group_id, granted_at, granted_by')
     .eq('user_id', id)
 
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  const thirtyDaysAgo = new Date()
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const since = thirtyDaysAgo.toISOString()
   const { data: usage } = await service
     .from('ai_usage_logs')
     .select('feature, created_at')

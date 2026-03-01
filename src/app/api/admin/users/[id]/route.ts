@@ -71,14 +71,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     // Add group
     if (add_group) {
-      await service
+      const { error: addGroupError } = await service
         .from('user_groups')
         .upsert({ user_id: id, group_id: add_group, granted_by: user.id })
+      if (addGroupError) throw addGroupError
     }
 
     // Remove group
     if (remove_group) {
-      await service.from('user_groups').delete().eq('user_id', id).eq('group_id', remove_group)
+      const { error: removeGroupError } = await service
+        .from('user_groups')
+        .delete()
+        .eq('user_id', id)
+        .eq('group_id', remove_group)
+      if (removeGroupError) throw removeGroupError
     }
 
     return NextResponse.json({ success: true })
