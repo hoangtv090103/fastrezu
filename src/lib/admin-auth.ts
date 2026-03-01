@@ -1,14 +1,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database.types'
 
 export type AdminResource = 'users' | 'ai_usage' | 'rate_limits' | 'metrics' | 'groups'
 export type AdminAction = 'read' | 'write' | 'create' | 'delete'
+type AdminPermissionColumn = 'can_read' | 'can_write' | 'can_create' | 'can_delete'
 
 /**
  * Resolves all group IDs a user belongs to, including implied (inherited) groups.
  * e.g. if user is in 'administrator' which implies 'support', both IDs are returned.
  */
 async function resolveUserGroupIds(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<string[]> {
   // Direct memberships
@@ -49,7 +51,7 @@ async function resolveUserGroupIds(
  * Pass a service role supabase client to bypass RLS when reading permissions.
  */
 export async function requirePermission(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   userId: string,
   resource: AdminResource,
   action: AdminAction,
@@ -63,7 +65,9 @@ export async function requirePermission(
     )
   }
 
-  const actionColumn = `can_${action}` as const
+  // action is a closed union (AdminAction), so all possible column names are valid
+  // columns on group_permissions. Cast to the precise union for column-level type safety.
+  const actionColumn = `can_${action}` as AdminPermissionColumn
 
   const { data: permissions } = await supabase
     .from('group_permissions')
@@ -85,7 +89,7 @@ export async function requirePermission(
  * Returns true if user has any admin group (for layout-level gateway checks).
  */
 export async function hasAnyAdminGroup(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<boolean> {
   const { count } = await supabase
