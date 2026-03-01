@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuilding,

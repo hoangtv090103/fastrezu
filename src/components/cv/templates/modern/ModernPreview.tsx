@@ -51,6 +51,7 @@ export default function ModernPreview({
         {/* Photo */}
         {personal.photo_url && (
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={personal.photo_url}
               alt={personal.full_name}

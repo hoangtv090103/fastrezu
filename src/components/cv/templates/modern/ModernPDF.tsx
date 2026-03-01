@@ -63,6 +63,7 @@ export default function ModernPDF({ data, language = "vi", colorTheme = "blue" }
         {/* Sidebar */}
         <View style={styles.sidebar}>
           {personal.photo_url ? (
+            // eslint-disable-next-line jsx-a11y/alt-text
             <Image src={personal.photo_url} style={styles.photo} />
           ) : null}
           <Text style={styles.sideName}>{personal.full_name}</Text>

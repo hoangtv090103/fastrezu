@@ -47,6 +47,7 @@ export default function CreativePreview({
         }}
       >
         {personal.photo_url && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={personal.photo_url}
             alt={personal.full_name}

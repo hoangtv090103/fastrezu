@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { useCVEditor } from "@/contexts/CVEditorContext";
-import { apiPost, type RetryConfig } from "@/lib/api-client";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface SuccessModalProps {
@@ -20,6 +19,7 @@ export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
   // Initialize score from CV data
   useEffect(() => {
     if (state.cvData?.ats_score) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setScore(state.cvData.ats_score);
     }
   }, [state.cvData?.ats_score]);

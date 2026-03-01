@@ -88,6 +88,7 @@ export default function PDFViewer({
   useEffect(() => {
     if (containerWidth > 0 && pageWidth > 0) {
       const optimalScale = calculateOptimalScale();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setScale(optimalScale);
     }
   }, [containerWidth, pageWidth, calculateOptimalScale]);
@@ -96,6 +97,7 @@ export default function PDFViewer({
   useEffect(() => {
     // Only update customZoomInput if it's empty (user hasn't typed anything)
     if (customZoomInput === "") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCustomZoomInput(Math.round(scale * 100).toString());
     }
   }, [scale, customZoomInput]);

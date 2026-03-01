@@ -161,6 +161,7 @@ export default function PersonalInfoForm({
           {/* Preview circle */}
           <div className="shrink-0">
             {form.photo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={form.photo_url}
                 alt="Ảnh đại diện"

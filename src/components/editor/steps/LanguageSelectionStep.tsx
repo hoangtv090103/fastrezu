@@ -16,6 +16,7 @@ export default function LanguageSelectionStep() {
   // Initialize with existing language if available
   useEffect(() => {
     if (state.cvData?.language) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedLanguage(state.cvData.language);
     }
   }, [state.cvData?.language]);

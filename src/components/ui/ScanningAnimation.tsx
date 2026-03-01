@@ -40,6 +40,7 @@ export default function ScanningAnimation() {
       t("checkCV.calculating") || "Calculating score...",
     ];
     let currentIndex = 0;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatusText(statuses[0]);
 
     const interval = setInterval(() => {

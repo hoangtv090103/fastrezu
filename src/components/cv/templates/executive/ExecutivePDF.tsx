@@ -67,6 +67,7 @@ export default function ExecutivePDF({ data, language = "vi", colorTheme = "blue
         {/* Header Band */}
         <View style={styles.headerBand}>
           {personal.photo_url ? (
+            // eslint-disable-next-line jsx-a11y/alt-text
             <Image src={personal.photo_url} style={styles.photo} />
           ) : null}
           <View style={{ flex: 1 }}>

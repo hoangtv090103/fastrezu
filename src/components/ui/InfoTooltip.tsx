@@ -64,6 +64,7 @@ export default function InfoTooltip({
   useEffect(() => {
     const dismissedTooltips = getDismissedTooltips();
     if (dismissedTooltips.includes(id)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsDismissed(true);
     }
   }, [id]);

@@ -39,6 +39,7 @@ export default function ExecutivePreview({
       {/* ── Full-width color header band ── */}
       <div style={{ background: c.primary, padding: "28px 44px 24px", display: "flex", alignItems: "center", gap: "20px" }}>
         {personal.photo_url && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={personal.photo_url}
             alt={personal.full_name}

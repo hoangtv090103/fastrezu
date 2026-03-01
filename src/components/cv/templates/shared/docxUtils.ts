@@ -7,7 +7,6 @@ import {
   AlignmentType,
   BorderStyle,
   TabStopType,
-  TabStopPosition,
   convertInchesToTwip,
   ExternalHyperlink,
 } from "docx";
@@ -133,8 +132,8 @@ export function contactLine(label: string, value: string, isUrl = false): Paragr
 }
 
 /** Skills row: "Label:  skill1  ·  skill2  ·  skill3" */
-export function skillsRow(label: string, skills: string[], primaryColor: string): Paragraph {
-  const color = hexToDocxColor(primaryColor);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function skillsRow(label: string, skills: string[], _primaryColor: string): Paragraph {
   return new Paragraph({
     spacing: { after: 60 },
     children: [

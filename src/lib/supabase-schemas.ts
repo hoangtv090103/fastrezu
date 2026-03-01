@@ -8,7 +8,6 @@
  */
 
 import { z } from 'zod';
-import type { ATSuggestion } from '@/types';
 
 // ============================================================================
 // Generic Supabase Response Schemas

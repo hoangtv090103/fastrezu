@@ -27,7 +27,7 @@ import {
   bulletParagraphs,
   skillsRow,
 } from "../shared/docxUtils";
-import { parseBullets, dateRange } from "../shared/utils";
+import { dateRange } from "../shared/utils";
 
 void Packer;
 
@@ -70,106 +70,6 @@ function itemRow(title: string, sub: string | null | undefined, start: string | 
     );
   }
   return ps;
-}
-
-/** Build the colored header band as a full-width Table */
-function buildHeader(personal: TailoredResumeData["personal"], c: { primary: string }, lbl: typeof SECTION_LABELS["vi"], photoBuffer?: ArrayBuffer): Table {
-  const color = hexToDocxColor(c.primary);
-  const shading = { type: ShadingType.SOLID, fill: color, color };
-
-  // Contact items
-  const contactParts: string[] = [
-    personal.email ?? "",
-    personal.phone ?? "",
-    personal.address ?? "",
-    personal.linkedin ?? "",
-    personal.github ?? "",
-  ].filter(Boolean);
-
-  const contactText = contactParts.join("  ·  ");
-
-  const textCellChildren: Paragraph[] = [
-    new Paragraph({
-      spacing: { after: 40 },
-      children: [new TextRun({ text: personal.full_name, bold: true, size: 40, color: "FFFFFF" })],
-    }),
-    new Paragraph({
-      spacing: { after: 0 },
-      children: [new TextRun({ text: contactText, color: "FFFFFF", size: 16 })],
-    }),
-  ];
-
-  const noBorder = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
-  const cellBorders = { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder };
-
-  if (photoBuffer) {
-    // Two-cell header: photo left, name/contact right
-    return new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      borders: { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder, },
-      rows: [
-        new TableRow({
-          children: [
-            // Photo cell
-            new TableCell({
-              width: { size: 18, type: WidthType.PERCENTAGE },
-              shading,
-              borders: cellBorders,
-              verticalAlign: VerticalAlign.CENTER,
-              children: [
-                new Paragraph({
-                  spacing: { after: 0 },
-                  children: [
-                    new ImageRun({
-                      data: photoBuffer,
-                      transformation: { width: PHOTO_SIZE * 4, height: PHOTO_SIZE * 4 },
-                      type: "png",
-                    }),
-                  ],
-                }),
-              ],
-            }),
-            // Name/contact cell
-            new TableCell({
-              width: { size: 82, type: WidthType.PERCENTAGE },
-              shading,
-              borders: cellBorders,
-              verticalAlign: VerticalAlign.CENTER,
-              children: textCellChildren,
-            }),
-          ],
-        }),
-      ],
-    });
-  }
-
-  // Single-cell header
-  return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    borders: { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder, },
-    rows: [
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 100, type: WidthType.PERCENTAGE },
-            shading,
-            borders: cellBorders,
-            children: [
-              new Paragraph({
-                spacing: { before: 160, after: 60 },
-                children: [new TextRun({ text: "  " })],
-              }),
-              ...textCellChildren,
-              new Paragraph({
-                spacing: { before: 60, after: 0 },
-                children: [new TextRun({ text: "  " })],
-              }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  });
 }
 
 export function buildExecutiveDOCX(
