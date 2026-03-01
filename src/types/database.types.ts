@@ -296,7 +296,10 @@ export type Database = {
       }
       job_analyses: {
         Row: {
+          active: boolean
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           gap_analysis: string | null
           id: string
           job_id: string
@@ -304,7 +307,10 @@ export type Database = {
           match_score: number | null
         }
         Insert: {
+          active?: boolean | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           gap_analysis?: string | null
           id?: string
           job_id: string
@@ -312,7 +318,10 @@ export type Database = {
           match_score?: number | null
         }
         Update: {
+          active?: boolean | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           gap_analysis?: string | null
           id?: string
           job_id?: string
@@ -331,8 +340,11 @@ export type Database = {
       }
       jobs: {
         Row: {
+          active: boolean
           company_name: string
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           job_url: string | null
           raw_jd_text: string | null
@@ -342,8 +354,11 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active?: boolean | null
           company_name: string
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_url?: string | null
           raw_jd_text?: string | null
@@ -353,8 +368,11 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active?: boolean | null
           company_name?: string
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_url?: string | null
           raw_jd_text?: string | null
@@ -375,24 +393,33 @@ export type Database = {
       }
       master_profiles: {
         Row: {
+          active: boolean
           content: Json | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           section_type: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          active?: boolean | null
           content?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           section_type: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          active?: boolean | null
           content?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           section_type?: string
           updated_at?: string | null
@@ -437,28 +464,37 @@ export type Database = {
       }
       resumes: {
         Row: {
+          active: boolean
           ats_score_final: number | null
           color_theme: string
           content_snapshot: Json | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           job_id: string
           template_id: string
         }
         Insert: {
+          active?: boolean | null
           ats_score_final?: number | null
           color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_id: string
           template_id?: string
         }
         Update: {
+          active?: boolean | null
           ats_score_final?: number | null
           color_theme?: string
           content_snapshot?: Json | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           job_id?: string
           template_id?: string
@@ -475,40 +511,49 @@ export type Database = {
       }
       cv_scan_history: {
         Row: {
-          id: string
-          user_id: string
-          file_name: string
-          file_storage_path: string | null
-          overall_score: number | null
+          active: boolean
           ats_score: number | null
+          deleted_at: string | null
+          deleted_by: string | null
           design_score: number | null
           evaluation: Json
           extracted_profile: Json
+          file_name: string
+          file_storage_path: string | null
+          id: string
+          overall_score: number | null
           scanned_at: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          file_name: string
-          file_storage_path?: string | null
-          overall_score?: number | null
+          active?: boolean | null
           ats_score?: number | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           design_score?: number | null
           evaluation: Json
           extracted_profile: Json
+          file_name: string
+          file_storage_path?: string | null
+          id?: string
+          overall_score?: number | null
           scanned_at?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          file_name?: string
-          file_storage_path?: string | null
-          overall_score?: number | null
+          active?: boolean | null
           ats_score?: number | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           design_score?: number | null
           evaluation?: Json
           extracted_profile?: Json
+          file_name?: string
+          file_storage_path?: string | null
+          id?: string
+          overall_score?: number | null
           scanned_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -554,7 +599,10 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          active: boolean
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           email: string
           full_name: string | null
           id: string
@@ -563,7 +611,10 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          active?: boolean | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email: string
           full_name?: string | null
           id: string
@@ -572,7 +623,10 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          active?: boolean | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email?: string
           full_name?: string | null
           id?: string
